@@ -36,6 +36,7 @@ Laborreihe gebraucht wird. Einzige Ausnahme ist D10, falls das Agentenpaar auf d
 | A51 | Reward-Zerlegung: Warum brechen die abgestimmten Agenten im letzten Drittel ein? | A51, A62 | 2 h | 10 min | nein | ✅ 26.09. |
 | D12 | Neutraining mit geändertem Reward (ohne Basis-Terme / Basis-Bonus nur auf der Bahn / dicht und gekoppelt) | A51, A62 | 3 h | ≈ 1–1,5 h je Variante und Seed | Entscheidung (f) | läuft seit 26.09. |
 | D13 | Wie D12, aber mit den Optionen des frühen PPO (Modus 0 bis 2, 3 Seeds) | A51, A62 | 1 h | 20 min + 20 min Auswertung | nein | ✅ 27.09., gescheitert (Training instabil) |
+| D14 | Wie D13, synchron und mit Gradient Clipping | A51, A62 | 1 h | 65 min + 15 min Auswertung | nein | ✅ 27.09. |
 
 Summe D0 bis D9: etwa 15 bis 22 h Arbeit und 2 h Rechenzeit. Dort ist die Rechenzeit kein Engpass. D10 und D11
 sind Trainings, dort bestimmt die Rechenzeit die Dauer. D11 belegt den Desktop 1 bis 1,5 Tage mit allen Kernen,
@@ -513,6 +514,10 @@ Befehl rechnet).
   **Korrektur nach D12:** Der Schluss auf den Reward allein ist zu stark. Ohne Basis-Terme, aber mit den Optionen
   von Optimized (D12 a) folgt der Agent dem letzten Drittel ebenfalls nicht und bricht sogar ab. Erfolgreich war
   bisher nur die Kombination aus Reward ohne Basis-Terme und den Optionen des frühen PPO.
+  **Stand nach D14 (27.09.):** Bei stabilem Training mit den Optionen des frühen PPO bricht der heutige Reward in
+  allen drei Seeds ein, ohne Basis-Terme oder mit an die Bahn gebundenem Basis-Bonus folgen alle sechs Agenten der
+  ganzen Bahn. Ursache ist damit der Basis-Bonus in Verbindung mit dem Reward, die Optionen von Optimized
+  erschweren zusätzlich das Lernen des letzten Drittels.
 - Return unter dem heutigen Reward (40 Hz): frühes PPO deterministisch 1699, stochastisch 1652–1664. Alle anderen
   40-Hz-Agenten liegen darunter (deterministisch 1428–1593, stochastisch höchstens 1566). Der Einbruch ist also
   nicht das Optimum des Rewards.
@@ -603,6 +608,42 @@ Ergebnis: Kein Agent hat die Aufgabe gelernt.
   trainiert wurde (parallel oder nicht, Episodenzahl, Modellstand von `SpaceKinova.slx` im Commit `50ad2ce`), ist
   nicht dokumentiert. D13 kann die Frage „Reward oder Hyperparameter“ daher nicht beantworten.
 - Nächster Versuch (D14): dieselben Läufe synchron statt asynchron und mit Gradient Clipping.
+
+### D14 Synchrones Training mit Gradient Clipping ✅ 27.09.2026
+
+Wie D13 (Optionen des frühen PPO, Modus 0 bis 2, Seeds 0 bis 2, 1000 Episoden), aber synchrones paralleles
+Training und Gradient Clipping (Schwelle 1) für Actor und Critic (`optsSet = 'base_sync'`). Aufruf
+`desktop_d12_run(0:2, 0:2, [], 'base_sync')`, Agenten in `SavedAgents/MotionProfile/D14/`, Lernkurven
+`D14_40hz_r*_seed*_train_*.csv`, Auswertung `D14_eval_20260927_013936_*` (D14-Agenten und die elf A51-Agenten).
+Ein Training dauerte 6–8 min. Alle neun liefen stabil, keine NaN, in den letzten 200 Episoden keine Abbrüche.
+
+Letztes Viertel und größter Basis-Orientierungsfehler, deterministisch und über zehn stochastische Episoden:
+
+| Reward | Agenten | letztes Viertel det [m] | letztes Viertel stoch [m] | Basis max stoch [rad] | Return (Modus 0) stoch |
+|---|---|---|---|---|---|
+| Modus 0 (heute) | Seeds 0–2 | 0,115–0,134 | 0,131–0,172 | 0,006–0,021 | 1313–1487 |
+| Modus 1 (ohne Basis-Terme) | Seeds 0–2 | 0,006–0,015 | 0,005–0,018 | 0,069–0,080 | 1578–1663 |
+| Modus 2 (Basis-Bonus nur auf der Bahn) | Seeds 0–2 | 0,011–0,021 | 0,005–0,018 | 0,071–0,080 | 1629–1746 |
+| zum Vergleich: frühes PPO | – | 0,009 | 0,009–0,010 | 0,056–0,057 | 1657 |
+| zum Vergleich: Optimized | – | 0,111 | 0,111–0,121 | 0,016–0,019 | 1537 |
+
+- Mit gleichem, stabilem Training bricht nur der heutige Reward ein (3 von 3 Seeds). Ohne Basis-Terme und mit an die
+  Bahn gebundenem Basis-Bonus folgen 6 von 6 Agenten der ganzen Bahn. Die Ursache des Einbruchs liegt damit im
+  Reward, genauer im Basis-Bonus, der auch neben der Bahn gezahlt wird. Die Optionen von Optimized (Lernrate 5,7e-5)
+  erschweren zusätzlich, dass das letzte Drittel gelernt wird (D12 a und b).
+- Unter dem heutigen Reward (Auswertung mit Modus 0) holen die Modus-2-Agenten den höchsten Return aller Agenten,
+  deterministisch bis 1778 gegen 1699 (frühes PPO) und 1593 (Optimized). Das bestätigt, dass der Einbruch ein lokales
+  Optimum des heutigen Rewards ist.
+- Basisbewegung je Drittel (deterministisch, größter Orientierungsfehler): Modus 2 hält die Basis in den ersten
+  zwei Dritteln so ruhig wie Modus 0 (Basis-Bonus in 100 % und 78–85 % der Schritte, Modus 1 nur 89–93 % und
+  45–71 %). Im letzten Drittel drehen Modus 1 und 2 die Basis auf 0,076–0,084 rad, das frühe PPO auf 0,056 rad.
+  Kein Agent folgt dem letzten Drittel mit weniger als 0,02 rad.
+- Deutung: Das letzte Drittel des Halbkreises verlangt in diesem Aufbau eine Basisdrehung deutlich über der
+  Bonus-Schwelle von 0,02 rad. Das frühe PPO zeigt, dass etwa 0,056 rad reichen. Ob weniger möglich ist, zeigt nur
+  eine kinematische Rechnung. Modus 2 ist der bisher beste Kompromiss: volle Bahn, ruhige Basis in den ersten zwei
+  Dritteln.
+- Einschränkungen: D14 unterscheidet sich von D10 und D12 in den Optionen und im Trainingsmodus. Der saubere Vergleich
+  ist der innerhalb von D14. Ein Seed-Satz, 1000 Episoden, nur Halbkreis, 65 kg.
 
 ### D11 Algorithmenvergleich neu
 
