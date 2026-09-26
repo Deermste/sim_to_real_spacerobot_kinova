@@ -35,6 +35,7 @@ Laborreihe gebraucht wird. Einzige Ausnahme ist D10, falls das Agentenpaar auf d
 | D11 | Algorithmenvergleich neu, 6 Verfahren × 3 Seeds | A8, A20, Fig. 4, Table II | 3–4 h | 20–30 h | Entscheidung (e) | nach der Ausrichtung |
 | A51 | Reward-Zerlegung: Warum brechen die abgestimmten Agenten im letzten Drittel ein? | A51, A62 | 2 h | 10 min | nein | ✅ 26.09. |
 | D12 | Neutraining mit geändertem Reward (ohne Basis-Terme / Basis-Bonus nur auf der Bahn / dicht und gekoppelt) | A51, A62 | 3 h | ≈ 1–1,5 h je Variante und Seed | Entscheidung (f) | läuft seit 26.09. |
+| D13 | Wie D12, aber mit den Optionen des frühen PPO (Modus 0 bis 2, 3 Seeds) | A51, A62 | 1 h | 20 min + 20 min Auswertung | nein | ✅ 27.09., gescheitert (Training instabil) |
 
 Summe D0 bis D9: etwa 15 bis 22 h Arbeit und 2 h Rechenzeit. Dort ist die Rechenzeit kein Engpass. D10 und D11
 sind Trainings, dort bestimmt die Rechenzeit die Dauer. D11 belegt den Desktop 1 bis 1,5 Tage mit allen Kernen,
@@ -580,6 +581,28 @@ zehn stochastische Episoden, Abbrüche (EE-Fehler > 0,5 m) von zehn:
   zeigt D12 nicht. Das ließe sich mit einer kinematischen Rechnung prüfen (Endeffektor exakt auf der Bahn, Basisdrehung
   aus dem Impulserhalt, mit und ohne Nutzung des Nullraums).
 
+
+### D13 Optionen des frühen PPO ✅ 27.09.2026 (gescheitert)
+
+Frage: Liegt der Unterschied zwischen dem frühen PPO und den übrigen Agenten an den Hyperparametern? Dazu dieselben
+Trainings wie D12, aber mit den Optionen des frühen PPO: Horizont 1024, Minibatch 128, Lernraten 1e-3 (Actor) und
+5e-4 (Critic). Netz, Epochen, Clip, gamma, GAE und Entropie sind bei allen Agenten gleich (geprüft, 2 × 128 ReLU).
+Aufruf `desktop_d12_run(0:2, 0:2, [], 'base')`, Agenten in `SavedAgents/MotionProfile/D13/`, Lernkurven
+`D13_40hz_r*_seed*_train_*.csv`, Auswertung `D13_eval_20260927_002036_*` (enthält auch alle A51- und D12-Agenten).
+
+Ergebnis: Kein Agent hat die Aufgabe gelernt.
+
+- 6 von 9 Trainings sind numerisch abgestürzt: Alle 22 158 Gewichte des Actors sind NaN, der Critic ist intakt.
+  Der Absturz kam nach 89–161 Episoden, danach endete jede Episode im ersten Schritt mit −50. Betroffen sind
+  Modus 0 Seed 2, Modus 1 Seeds 0 und 2, Modus 2 Seeds 0 bis 2. Daher die kurzen Laufzeiten (1,1–1,8 min).
+- Modus 0 Seed 0 und Modus 1 Seed 1: endliche Gewichte, aber die Aktionen stehen fast an der Sättigung (±0,9). Die
+  Episoden brechen nach wenigen Sekunden ab (EE-Fehler > 0,5 m, Basis 0,13 rad).
+- Modus 0 Seed 1: läuft durch, verliert die Bahn aber noch früher als die Kontrolle (drittes Viertel 0,18 m,
+  letztes 0,25–0,29 m) und hält die Basis bei 0,010–0,016 rad.
+- Deutung: Mit asynchronem Training auf 8 Workern ist die Actor-Lernrate 1e-3 zu hoch. Wie das frühe PPO im März
+  trainiert wurde (parallel oder nicht, Episodenzahl, Modellstand von `SpaceKinova.slx` im Commit `50ad2ce`), ist
+  nicht dokumentiert. D13 kann die Frage „Reward oder Hyperparameter“ daher nicht beantworten.
+- Nächster Versuch (D14): dieselben Läufe synchron statt asynchron und mit Gradient Clipping.
 
 ### D11 Algorithmenvergleich neu
 
