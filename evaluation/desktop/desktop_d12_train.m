@@ -1,11 +1,14 @@
-function out = desktop_d12_train(rewardMode, seed, nEpisodes, tag)
-%DESKTOP_D12_TRAIN  Trainiert einen 40-Hz-PPO-Agenten mit geaendertem Reward (Desktop-Plan D12, Befund A51).
+function out = desktop_d12_train(rewardMode, seed, nEpisodes, tag, optsSet)
+%DESKTOP_D12_TRAIN  Trainiert einen 40-Hz-PPO-Agenten mit geaendertem Reward (Desktop-Plan D12 und D13, Befund A51).
 %   out = desktop_d12_train(2, 0)              Variante b, Seed 0, 1000 Episoden
 %   out = desktop_d12_train(3, 0, 16, 'test')  Kurztest, speichert nur unter data/.../_test
+%   out = desktop_d12_train(2, 0, [], '', 'base')   D13: Optionen des fruehen PPO statt Optimized
 %
 %   Aufbau wie D10 bei 40 Hz (desktop_d10_train): SK_desktop, Halbkreis 8,5 s, Referenz nach Zeit, 65 kg, keine
 %   Verzoegerung, kein CDR, Optionen wie Optimized.mat (Horizont 600, Minibatch 200, 10 Epochen, Clip 0,2,
 %   gamma 0,99, GAE 0,95, Entropie 1e-3, Lernraten 5,7e-5 / 1e-3, 2 x 128 ReLU), 1000 Episoden.
+%   optsSet 'base' (D13) nimmt stattdessen die Optionen des fruehen PPO (SpaceKinova_PPO_agent_motionprofile.mat):
+%   Horizont 1024, Minibatch 128, Lernraten 1e-3 / 5e-4, sonst gleich (Netz ebenfalls 2 x 128 ReLU).
 %   Einziger Unterschied ist der Reward (p_reward_mode, siehe desktop_build_model):
 %     0  wie im Training seit 09.04. Das ist D10 (SavedAgents/MotionProfile/D10/D10_ppo_40hz_seed*.mat)
 %     1  (a) ohne Basis-Terme, wie beim fruehen PPO. Kontrolle, trennt Reward und Hyperparameter
@@ -19,6 +22,10 @@ function out = desktop_d12_train(rewardMode, seed, nEpisodes, tag)
 if nargin < 2, seed = 0; end
 if nargin < 3 || isempty(nEpisodes), nEpisodes = 1000; end
 if nargin < 4, tag = ''; end
+if nargin < 5 || isempty(optsSet), optsSet = 'optimized'; end
+assert(ismember(optsSet, {'optimized', 'base'}), 'desktop_d12_train:opts', 'optsSet muss optimized oder base sein');
+study = 'D12';
+if strcmp(optsSet, 'base'), study = 'D13'; end
 assert(ismember(rewardMode, 0:3), 'desktop_d12_train:mode', 'rewardMode muss 0 bis 3 sein');
 
 setup_project;
@@ -29,6 +36,7 @@ set_param(mdl, 'SimMechanicsOpenEditorOnUpdate', 'off');
 
 cfg = struct();
 cfg.rewardMode = rewardMode;
+cfg.optsSet = optsSet;
 cfg.rateHz = 40;
 cfg.seed = seed;
 cfg.nEpisodes = nEpisodes;
@@ -39,6 +47,12 @@ cfg.base_mass = 65;
 cfg.hidden = 128;
 cfg.opts = struct('ExperienceHorizon', 600, 'MiniBatchSize', 200, 'NumEpoch', 10, 'ClipFactor', 0.2, ...
     'DiscountFactor', 0.99, 'GAEFactor', 0.95, 'EntropyLossWeight', 1e-3, 'ActorLR', 5.7e-5, 'CriticLR', 1e-3);
+if strcmp(optsSet, 'base')
+    cfg.opts.ExperienceHorizon = 1024;
+    cfg.opts.MiniBatchSize = 128;
+    cfg.opts.ActorLR = 1e-3;
+    cfg.opts.CriticLR = 5e-4;
+end
 
 % --- Workspace wie in desktop_run_episode (Standardwerte, keine Stoerung) ---
 ec = desktop_config('Ts', cfg.Ts, 'Ts_agent', cfg.Ts_agent, 'T', cfg.T, 'base_mass', cfg.base_mass);
@@ -104,12 +118,13 @@ if isempty(pool)
         pool = parpool('Processes');
     end
 end
-fprintf('D12: Reward-Modus %d, Seed %d, %d Episoden, %d Worker\n', rewardMode, seed, nEpisodes, pool.NumWorkers);
+fprintf('%s: Reward-Modus %d, Optionen %s, Seed %d, %d Episoden, %d Worker\n', study, rewardMode, optsSet, ...
+    seed, nEpisodes, pool.NumWorkers);
 
 tStart = tic;
 stats = train(agent, env, trainOpts);
 wallTime = toc(tStart);
-fprintf('D12: Training fertig nach %.1f min\n', wallTime / 60);
+fprintf('%s: Training fertig nach %.1f min\n', study, wallTime / 60);
 
 % --- Speichern ---
 info = struct('wallTime_s', wallTime, 'numWorkers', pool.NumWorkers, 'matlab', version, ...
@@ -120,13 +135,13 @@ curve = table((1:numel(stats.EpisodeReward)).', stats.EpisodeReward(:), stats.Av
     {'episode', 'reward', 'avg_reward', 'q0', 'steps'});
 
 stamp = char(datetime('now', 'Format', 'yyyyMMdd_HHmmss'));
-name = sprintf('D12_ppo_40hz_r%d_seed%d', rewardMode, seed);
+name = sprintf('%s_ppo_40hz_r%d_seed%d', study, rewardMode, seed);
 if nEpisodes ~= 1000
     name = sprintf('%s_ep%d', name, nEpisodes);
 end
 dataDir = sk_path('data', 'simulation', 'desktop');
 if isempty(tag)
-    agentDir = sk_path('SavedAgents', 'MotionProfile', 'D12');
+    agentDir = sk_path('SavedAgents', 'MotionProfile', study);
 else
     agentDir = fullfile(dataDir, '_test');
     name = [name '_' tag];
@@ -136,7 +151,7 @@ agentFile = fullfile(agentDir, [name '.mat']);
 save(agentFile, 'agent', 'cfg', 'info', 'curve');
 csvDir = dataDir;
 if ~isempty(tag), csvDir = agentDir; end
-csvFile = fullfile(csvDir, sprintf('%s_train_%s.csv', strrep(name, 'D12_ppo', 'D12'), stamp));
+csvFile = fullfile(csvDir, sprintf('%s_train_%s.csv', strrep(name, [study '_ppo'], study), stamp));
 writetable(curve, csvFile);
 fprintf('Gespeichert: %s\n            %s\n', agentFile, csvFile);
 
