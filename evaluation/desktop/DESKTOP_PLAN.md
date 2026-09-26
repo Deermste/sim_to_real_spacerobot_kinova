@@ -33,6 +33,8 @@ Laborreihe gebraucht wird. Einzige Ausnahme ist D10, falls das Agentenpaar auf d
 | D9 | Vorhandenen Sprungtest des Gen3 auswerten | H1, H2 (❓) | 1 h | keine | nein | ✅ 25.09. (H2) |
 | D10 | Gleiches Agentenpaar 40/10 Hz trainieren (optional) | A21, R1.6 auf der Hardware | 2–3 h | 1,5 h (1 Seed), 4–5 h (3 Seeds) | Entscheidung (d) | vor dem Labor, falls auf Hardware |
 | D11 | Algorithmenvergleich neu, 6 Verfahren × 3 Seeds | A8, A20, Fig. 4, Table II | 3–4 h | 20–30 h | Entscheidung (e) | nach der Ausrichtung |
+| A51 | Reward-Zerlegung: Warum brechen die abgestimmten Agenten im letzten Drittel ein? | A51, A62 | 2 h | 10 min | nein | ✅ 26.09. |
+| D12 | Neutraining mit geändertem Reward (ohne Basis-Terme / ohne Basis-Bonus / stärkere Tracking-Strafe) | A51, A62 | 2–3 h | 1,5 h je Variante und Seed | Entscheidung (f) | nach A51 |
 
 Summe D0 bis D9: etwa 15 bis 22 h Arbeit und 2 h Rechenzeit. Dort ist die Rechenzeit kein Engpass. D10 und D11
 sind Trainings, dort bestimmt die Rechenzeit die Dauer. D11 belegt den Desktop 1 bis 1,5 Tage mit allen Kernen,
@@ -489,6 +491,51 @@ ohne Abbruch:
   40 Hz, scheitert aber nicht. Der Unterschied (11 %) ist kleiner als der zwischen `Optimized` und dem neuen
   40-Hz-Agenten (0,00347 gegen 0,00460 m², 33 %). Seeds 1 und 2 würden zeigen, wie groß die Streuung ist.
 
+### A51 Reward-Zerlegung ✅ 26.09.2026
+
+Skript `desktop_a51_reward.m`, Ergebnis `data/simulation/desktop/A51_reward_20260926_221303_*` (11 Agenten, je eine
+deterministische und zehn stochastische Episoden, 65 kg, Halbkreis 8,5 s, Trainingsrate). Der Reward wird aus den
+geloggten Signalen nachgerechnet und je Term und Bahndrittel summiert (deterministisch höchstens 0,14 Abweichung pro
+Schritt zum geloggten Reward, stochastisch weicht die Summe um 1–4 % ab, weil die Aktionsstrafe mit dem verrauschten
+Befehl rechnet).
+
+- Der Reward (`rewardFcn` im Modell-Chart) ist in allen Modellständen seit 09.04. gleich (40 Hz, CDR, `SK_desktop`).
+  Im 10-Hz-Modell `SpaceKinova_MotionProfile.slx` ist nur der Episodenabbruch auskommentiert.
+- Das frühe PPO (`SpaceKinova_PPO_agent_motionprofile.mat`, 26.03.) wurde mit einem Reward **ohne Basis-Terme**
+  trainiert. Commit `50ad2ce` (27.03.) enthält die Agenten-Datei (MD5 gleich) und `SpaceKinova.slx` mit
+  `rewardFcn(ep, ev, dq_cmd, dq_cmd_prev)`. Die Basis-Terme (−8·c_ori, −4·c_w, +2 bei ori < 0,02 rad und
+  ω < 0,01 rad/s) kamen danach dazu („NEU: Basis-Stabilitaet“ im Code). Befund A62.
+- Einbruch im letzten Viertel (Mittel des EE-Fehlers): frühes PPO 0,009–0,010 m in allen elf Episoden. Alle zehn
+  Agenten mit Basis-Termen brechen in allen Episoden ein, 0,097–0,141 m. Das gilt für `_basisori` (30.03., Optionen
+  fast wie das frühe PPO: Horizont 1024, Minibatch 265, Lernraten 5e-4 / 1e-3), `ppo_10hz` (eigene Optionen),
+  Optimized, CDR2-4 und D10 bei 40 und 10 Hz mit je drei Seeds. Hyperparameter und Seed erklären den Einbruch nicht.
+- Return unter dem heutigen Reward (40 Hz): frühes PPO deterministisch 1699, stochastisch 1652–1664. Alle anderen
+  40-Hz-Agenten liegen darunter (deterministisch 1428–1593, stochastisch höchstens 1566). Der Einbruch ist also
+  nicht das Optimum des Rewards.
+- Letztes Drittel (114 Schritte, deterministisch): Die abgestimmten Agenten holen den Basis-Bonus in 100 % der
+  Schritte (228 Punkte) und den EE-Bonus kaum (21–35 statt 456). Das frühe PPO holt den EE-Bonus voll und den
+  Basis-Bonus in 3,5 % der Schritte (8 Punkte). In den ersten zwei Dritteln liegen die abgestimmten Agenten durch den
+  Basis-Bonus etwa 100 Punkte vorn, im letzten Drittel das frühe PPO etwa 220 Punkte.
+- Deutung (nicht durch ein Training belegt): Der Basis-Bonus ist ein Sprung von +2 pro Schritt. Die dichte
+  Positionsstrafe ist bei 0,1 m Fehler nur −0,2 pro Schritt, ab 5 cm Fehler fehlt der EE-Bonus als Gradient. Eine
+  Policy, die die Basis unter 0,02 rad hält, findet deshalb lokal keinen Anreiz, der Bahn im letzten Drittel zu
+  folgen. Die Schulter J2 bleibt stehen (D8). Das ist ein lokales Optimum des Rewards.
+
+### D12 Neutraining mit geändertem Reward (geplant)
+
+Ziel: die Deutung aus A51 mit einem kontrollierten Training prüfen. Gleiches Skript wie D10 (40 Hz, Optionen wie
+Optimized, 1000 Episoden, 65 kg), nur der Reward ändert sich über einen neuen Parameter `p_reward_mode` in
+`SK_desktop` (Reward-Chart wie die Beobachtung per Skript ersetzen).
+
+| Variante | Reward | Erwartung, wenn die Deutung stimmt |
+|---|---|---|
+| a | ohne Basis-Terme (wie das frühe PPO) | kein Einbruch, Basis bewegt sich stärker |
+| b | Basis-Strafen ja, Basis-Bonus nein | kein oder kleiner Einbruch, Basis ruhiger als a |
+| c | wie heute, dichte Positionsstrafe ×5 | kleiner Einbruch |
+
+Erst je ein Seed (etwa 4,5 h für alle drei), danach die beste Variante mit drei Seeds. Auswertung mit
+`desktop_a51_reward` (neue Agenten ergänzen).
+
 ### D11 Algorithmenvergleich neu
 
 - PPO, TRPO, PG, DDPG, TD3 und SAC mit Toolbox-Standardwerten wie in Sec. IV-A, Seeds 0 bis 2, je 1000 Episoden.
@@ -511,6 +558,7 @@ ohne Abbruch:
 - (c) Welcher PPO-Agent in Fig. 5 gezeigt wird.
 - (d) D10 ja oder nein, und ob das Paar auf die Hardware soll.
 - (e) D11 erst nach der Ausrichtung. Der Desktop rechnet dann 1 bis 1,5 Tage durch.
+- (f) D12: welche Reward-Varianten, und ob neue Agenten auf die Hardware sollen.
 
 ## Reihenfolge (Vorschlag)
 
