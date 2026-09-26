@@ -34,7 +34,7 @@ Laborreihe gebraucht wird. Einzige Ausnahme ist D10, falls das Agentenpaar auf d
 | D10 | Gleiches Agentenpaar 40/10 Hz trainieren (optional) | A21, R1.6 auf der Hardware | 2–3 h | 1,5 h (1 Seed), 4–5 h (3 Seeds) | Entscheidung (d) | vor dem Labor, falls auf Hardware |
 | D11 | Algorithmenvergleich neu, 6 Verfahren × 3 Seeds | A8, A20, Fig. 4, Table II | 3–4 h | 20–30 h | Entscheidung (e) | nach der Ausrichtung |
 | A51 | Reward-Zerlegung: Warum brechen die abgestimmten Agenten im letzten Drittel ein? | A51, A62 | 2 h | 10 min | nein | ✅ 26.09. |
-| D12 | Neutraining mit geändertem Reward (ohne Basis-Terme / ohne Basis-Bonus / stärkere Tracking-Strafe) | A51, A62 | 2–3 h | 1,5 h je Variante und Seed | Entscheidung (f) | nach A51 |
+| D12 | Neutraining mit geändertem Reward (ohne Basis-Terme / Basis-Bonus nur auf der Bahn / dicht und gekoppelt) | A51, A62 | 3 h | ≈ 1–1,5 h je Variante und Seed | Entscheidung (f) | läuft seit 26.09. |
 
 Summe D0 bis D9: etwa 15 bis 22 h Arbeit und 2 h Rechenzeit. Dort ist die Rechenzeit kein Engpass. D10 und D11
 sind Trainings, dort bestimmt die Rechenzeit die Dauer. D11 belegt den Desktop 1 bis 1,5 Tage mit allen Kernen,
@@ -509,6 +509,9 @@ Befehl rechnet).
   Agenten mit Basis-Termen brechen in allen Episoden ein, 0,097–0,141 m. Das gilt für `_basisori` (30.03., Optionen
   fast wie das frühe PPO: Horizont 1024, Minibatch 265, Lernraten 5e-4 / 1e-3), `ppo_10hz` (eigene Optionen),
   Optimized, CDR2-4 und D10 bei 40 und 10 Hz mit je drei Seeds. Hyperparameter und Seed erklären den Einbruch nicht.
+  **Korrektur nach D12:** Der Schluss auf den Reward allein ist zu stark. Ohne Basis-Terme, aber mit den Optionen
+  von Optimized (D12 a) folgt der Agent dem letzten Drittel ebenfalls nicht und bricht sogar ab. Erfolgreich war
+  bisher nur die Kombination aus Reward ohne Basis-Terme und den Optionen des frühen PPO.
 - Return unter dem heutigen Reward (40 Hz): frühes PPO deterministisch 1699, stochastisch 1652–1664. Alle anderen
   40-Hz-Agenten liegen darunter (deterministisch 1428–1593, stochastisch höchstens 1566). Der Einbruch ist also
   nicht das Optimum des Rewards.
@@ -521,20 +524,62 @@ Befehl rechnet).
   Policy, die die Basis unter 0,02 rad hält, findet deshalb lokal keinen Anreiz, der Bahn im letzten Drittel zu
   folgen. Die Schulter J2 bleibt stehen (D8). Das ist ein lokales Optimum des Rewards.
 
-### D12 Neutraining mit geändertem Reward (geplant)
+### D12 Neutraining mit geändertem Reward ✅ 26.09.2026
 
-Ziel: die Deutung aus A51 mit einem kontrollierten Training prüfen. Gleiches Skript wie D10 (40 Hz, Optionen wie
-Optimized, 1000 Episoden, 65 kg), nur der Reward ändert sich über einen neuen Parameter `p_reward_mode` in
-`SK_desktop` (Reward-Chart wie die Beobachtung per Skript ersetzen).
+Ziel: die Deutung aus A51 mit einem kontrollierten Training prüfen, ohne das Ziel einer ruhigen Basis aufzugeben.
+Aufbau wie D10 bei 40 Hz (`desktop_d12_train.m`): `SK_desktop`, Halbkreis 8,5 s, 65 kg, Optionen wie Optimized,
+1000 Episoden. Nur der Reward ändert sich über `p_reward_mode` (Reward-Chart in `desktop_build_model.m`,
+Funktion `rewardCode`). Kontrolle mit dem heutigen Reward (Modus 0) sind die vorhandenen D10-40-Hz-Agenten.
 
-| Variante | Reward | Erwartung, wenn die Deutung stimmt |
-|---|---|---|
-| a | ohne Basis-Terme (wie das frühe PPO) | kein Einbruch, Basis bewegt sich stärker |
-| b | Basis-Strafen ja, Basis-Bonus nein | kein oder kleiner Einbruch, Basis ruhiger als a |
-| c | wie heute, dichte Positionsstrafe ×5 | kleiner Einbruch |
+| Modus | Variante | Reward | Erwartung, wenn die Deutung stimmt |
+|---|---|---|---|
+| 0 | Kontrolle (D10) | wie im Training seit 09.04. | Einbruch (A51: 0,106–0,135 m) |
+| 1 | a | ohne Basis-Terme wie das frühe PPO | kein Einbruch, Basis bewegt sich stärker. Trennt Reward und Hyperparameter |
+| 2 | b | Basis-Bonus nur bei EE-Fehler < 5 cm, sonst wie 0 | kein oder kleiner Einbruch, Basis ruhiger als a |
+| 3 | c | glatte EE-Boni (Breite 5 und 2 cm), Basis-Bonus × Tracking-Güte exp(−(d/0,05)²), linearer Term −5·min(d; 0,2), Strafen wie 0 | kein Einbruch, Basis ruhiger als a |
 
-Erst je ein Seed (etwa 4,5 h für alle drei), danach die beste Variante mit drei Seeds. Auswertung mit
-`desktop_a51_reward` (neue Agenten ergänzen).
+Prüfungen vor dem Start (26.09.): Modus 0 liefert für das frühe PPO und Optimized exakt die Returns aus A51
+(1698,9196 und 1593,0836). Modus 2 ändert beim frühen PPO nichts (immer auf der Bahn) und nimmt Optimized 170
+Punkte (Basis-Bonus neben der Bahn). Der Modus kommt über `ResetFcn` im RL-Env an (Optimized in Modus 3: 1031,6
+im Env gegen 1029,1 in `desktop_run_episode`). Beim ersten Entwurf von c (−10·d ohne Grenze) lag ein zufälliger
+Agent bei −3 bis −6 pro Schritt. Ein Abbruch (−50) wäre dann billiger als Weiterfahren. Deshalb ist der lineare Term
+auf höchstens −1 pro Schritt begrenzt. Ob die Agenten trotzdem früh abbrechen, zeigen die Schrittzahlen der
+Lernkurven.
+
+Ablauf der Nachtrechnung (`desktop_d12_run(1:3, 0); desktop_d12_run([2 3], [1 2])`): a, b, c mit Seed 0, dann b und
+c mit Seeds 1 und 2. Nach jedem Block wertet `desktop_a51_reward` alle D12-Agenten zusammen mit den A51-Agenten aus
+(`data/simulation/desktop/D12_eval_<Zeit>_*`).
+
+Ergebnis (`D12_eval_20260926_231907_*`, Lernkurven `D12_40hz_r*_seed*_train_*.csv`). Ein Training dauerte nur
+4–6 min (8 Worker), nicht 1,5 h wie für D10 geschätzt. Letztes Viertel und größter Basis-Orientierungsfehler über
+zehn stochastische Episoden, Abbrüche (EE-Fehler > 0,5 m) von zehn:
+
+| Agent | Reward | letztes Viertel [m] | Basis max [rad] | Abbrüche | Lernkurve, letzte 200 Episoden |
+|---|---|---|---|---|---|
+| frühes PPO | ohne Basis-Terme, eigene Optionen | 0,009–0,010 | 0,056–0,057 | 0 | – |
+| D10 40 Hz, Seeds 0–2 (Kontrolle) | Modus 0 | 0,114–0,135 | 0,015–0,023 | 0 | keine Abbrüche |
+| a, Seed 0 | Modus 1 | 0,435 | 0,179–0,189 | 10 | alle Episoden brechen ab (Schritt 201–281) |
+| b, Seed 0 | Modus 2 | 0,095–0,108 | 0,027–0,032 | 0 | keine Abbrüche |
+| b, Seed 1 | Modus 2 | **0,006–0,024** | 0,070–0,081 | 0 | keine Abbrüche |
+| b, Seed 2 | Modus 2 | 0,058–0,087 | 0,041–0,052 | 0 | keine Abbrüche |
+| c, Seeds 0–2 | Modus 3 | 0,104–0,476 | 0,016–0,059 | 0–10 | 26–100 % Abbrüche |
+
+- a: Ohne Basis-Terme und mit den Optionen von Optimized lernt der Agent das letzte Drittel nicht. Er läuft nach
+  etwa 5–7 s über 0,5 m hinaus. Die Kontrolle bestätigt die Deutung aus A51 damit nicht. Der Unterschied zwischen dem
+  frühen PPO und den übrigen Agenten liegt nicht allein im Reward. Die Optionen (Lernrate des Actors 1e-3 statt
+  5,7e-5, Horizont 1024 statt 600) oder die Trainingsdauer des frühen PPO spielen mit. Die Basis-Terme halten die
+  Agenten mit Modus 0 sogar auf der Bahn, ohne sie würden sie abbrechen.
+- b: Der an die Bahn gebundene Basis-Bonus beseitigt den Einbruch in zwei von drei Seeds ganz oder teilweise. Die
+  Agenten, die dem letzten Viertel folgen, drehen die Basis dafür bis 0,05–0,08 rad, so weit wie das frühe PPO oder
+  mehr. Kein Agent erreicht beides, weniger als 2 cm im letzten Viertel und weniger als 0,02 rad Basisdrehung.
+- c: Der dichte, gekoppelte Reward lernt in 1000 Episoden vor allem abzubrechen. Die Befürchtung aus der
+  Vorbereitung ist eingetreten. Die Begrenzung des linearen Terms reicht nicht.
+- Deutung (vorsichtig): Das letzte Drittel des Halbkreises verlangt in diesem Aufbau offenbar eine Basisdrehung von
+  etwa 0,05 rad oder mehr. Der Reward mit Modus 0 macht das zu teuer, die Agenten halten dann lieber die Basis ruhig.
+  Ob die Drehung physikalisch nötig ist oder eine bessere Policy sie über die Redundanz des Arms vermeiden könnte,
+  zeigt D12 nicht. Das ließe sich mit einer kinematischen Rechnung prüfen (Endeffektor exakt auf der Bahn, Basisdrehung
+  aus dem Impulserhalt, mit und ohne Nutzung des Nullraums).
+
 
 ### D11 Algorithmenvergleich neu
 
