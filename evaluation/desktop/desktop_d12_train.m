@@ -9,6 +9,8 @@ function out = desktop_d12_train(rewardMode, seed, nEpisodes, tag, optsSet)
 %   gamma 0,99, GAE 0,95, Entropie 1e-3, Lernraten 5,7e-5 / 1e-3, 2 x 128 ReLU), 1000 Episoden.
 %   optsSet 'base' (D13) nimmt stattdessen die Optionen des fruehen PPO (SpaceKinova_PPO_agent_motionprofile.mat):
 %   Horizont 1024, Minibatch 128, Lernraten 1e-3 / 5e-4, sonst gleich (Netz ebenfalls 2 x 128 ReLU).
+%   optsSet 'base_sync' (D14) wie 'base', aber synchrones paralleles Training und Gradient Clipping (Schwelle 1,
+%   L2-Norm) fuer Actor und Critic. Grund: In D13 wurden 6 von 9 Actors mit asynchronem Training NaN.
 %   Einziger Unterschied ist der Reward (p_reward_mode, siehe desktop_build_model):
 %     0  wie im Training seit 09.04. Das ist D10 (SavedAgents/MotionProfile/D10/D10_ppo_40hz_seed*.mat)
 %     1  (a) ohne Basis-Terme, wie beim fruehen PPO. Kontrolle, trennt Reward und Hyperparameter
@@ -23,9 +25,11 @@ if nargin < 2, seed = 0; end
 if nargin < 3 || isempty(nEpisodes), nEpisodes = 1000; end
 if nargin < 4, tag = ''; end
 if nargin < 5 || isempty(optsSet), optsSet = 'optimized'; end
-assert(ismember(optsSet, {'optimized', 'base'}), 'desktop_d12_train:opts', 'optsSet muss optimized oder base sein');
+assert(ismember(optsSet, {'optimized', 'base', 'base_sync'}), 'desktop_d12_train:opts', ...
+    'optsSet muss optimized, base oder base_sync sein');
 study = 'D12';
 if strcmp(optsSet, 'base'), study = 'D13'; end
+if strcmp(optsSet, 'base_sync'), study = 'D14'; end
 assert(ismember(rewardMode, 0:3), 'desktop_d12_train:mode', 'rewardMode muss 0 bis 3 sein');
 
 setup_project;
@@ -47,11 +51,17 @@ cfg.base_mass = 65;
 cfg.hidden = 128;
 cfg.opts = struct('ExperienceHorizon', 600, 'MiniBatchSize', 200, 'NumEpoch', 10, 'ClipFactor', 0.2, ...
     'DiscountFactor', 0.99, 'GAEFactor', 0.95, 'EntropyLossWeight', 1e-3, 'ActorLR', 5.7e-5, 'CriticLR', 1e-3);
-if strcmp(optsSet, 'base')
+cfg.parMode = 'async';
+cfg.gradThreshold = Inf;
+if ismember(optsSet, {'base', 'base_sync'})
     cfg.opts.ExperienceHorizon = 1024;
     cfg.opts.MiniBatchSize = 128;
     cfg.opts.ActorLR = 1e-3;
     cfg.opts.CriticLR = 5e-4;
+end
+if strcmp(optsSet, 'base_sync')
+    cfg.parMode = 'sync';
+    cfg.gradThreshold = 1;
 end
 
 % --- Workspace wie in desktop_run_episode (Standardwerte, keine Stoerung) ---
@@ -86,6 +96,8 @@ o.GAEFactor = cfg.opts.GAEFactor;
 o.EntropyLossWeight = cfg.opts.EntropyLossWeight;
 o.ActorOptimizerOptions.LearnRate = cfg.opts.ActorLR;
 o.CriticOptimizerOptions.LearnRate = cfg.opts.CriticLR;
+o.ActorOptimizerOptions.GradientThreshold = cfg.gradThreshold;
+o.CriticOptimizerOptions.GradientThreshold = cfg.gradThreshold;
 agent.AgentOptions = o;
 assignin('base', 'agent', agent);
 
@@ -95,7 +107,7 @@ env.ResetFcn = @(in) setVariable(setVariable(setVariable(in, 'reward_init', 0), 
     'p_reward_mode', rewardMode);
 
 % --- Training ---
-par = rl.option.ParallelTraining('Mode', 'async');
+par = rl.option.ParallelTraining('Mode', cfg.parMode);
 trainOpts = rlTrainingOptions( ...
     'MaxEpisodes', nEpisodes, ...
     'MaxStepsPerEpisode', floor(cfg.T / cfg.Ts_agent), ...
