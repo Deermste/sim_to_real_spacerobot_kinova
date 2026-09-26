@@ -1,7 +1,10 @@
-function [E, S, H] = desktop_a51_reward(nStoch)
+function [E, S, H] = desktop_a51_reward(nStoch, extra, prefix)
 %DESKTOP_A51_REWARD  Zerlegt den Return der Tracking-Agenten in die Reward-Terme (Befund A51).
 %   [E, S, H] = desktop_a51_reward()     10 stochastische Episoden je Agent
 %   [E, S, H] = desktop_a51_reward(2)    Kurztest
+%   [E, S, H] = desktop_a51_reward(10, extra, 'D12_eval')   zusaetzliche Agenten (struct-Array mit label, file, hz),
+%                                   z. B. die D12-Agenten. Ausgewertet wird immer mit dem Reward des Trainings
+%                                   seit 09.04. (reward_mode 0), damit die Returns vergleichbar bleiben
 %
 %   Frage: Belohnt der Reward den Einbruch der abgestimmten Agenten im letzten Drittel des Halbkreises, oder
 %   haben sie ein schlechteres Optimum desselben Rewards gefunden? Dazu laeuft jeder Agent in SK_desktop
@@ -18,6 +21,8 @@ function [E, S, H] = desktop_a51_reward(nStoch)
 %   Ergebnis: data/simulation/desktop/A51_reward_<Zeit>_episodes.csv, _summary.csv, _hyper.csv und .mat
 
 if nargin < 1, nStoch = 10; end
+if nargin < 2, extra = []; end
+if nargin < 3, prefix = 'A51_reward'; end
 setup_project;
 desktop_build_model();
 
@@ -34,6 +39,9 @@ ag = struct( ...
              fullfile(d10, 'D10_ppo_10hz_seed0_ep4000.mat'), fullfile(d10, 'D10_ppo_10hz_seed1_ep4000.mat'), ...
              fullfile(d10, 'D10_ppo_10hz_seed2_ep4000.mat')}, ...
     'hz', {40, 40, 40, 40, 40, 40, 40, 10, 10, 10, 10});
+if ~isempty(extra)
+    ag = [ag, extra(:).'];
+end
 
 % Hyperparameter der Agenten
 H = table();
@@ -78,7 +86,7 @@ S = sortrows(addvars(S, ord, 'Before', 1), {'ord', 'stoch'});
 S.ord = [];
 
 stamp = char(datetime('now', 'Format', 'yyyyMMdd_HHmmss'));
-out = sk_path('data', 'simulation', 'desktop', ['A51_reward_' stamp]);
+out = sk_path('data', 'simulation', 'desktop', [prefix '_' stamp]);
 writetable(E, [out '_episodes.csv']);
 writetable(S, [out '_summary.csv']);
 writetable(H, [out '_hyper.csv']);

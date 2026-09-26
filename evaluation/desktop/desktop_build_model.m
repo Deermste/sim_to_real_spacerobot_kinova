@@ -17,6 +17,7 @@ function mdlFile = desktop_build_model(force)
 %     p_cmd_scale    Faktor auf den Befehl nach der Kette (speedScale der Deploy-Skripte, A18)
 %     p_obs_mode     0 = Beobachtung wie im Training, 1 = wie Deploy-Skript V2.1 (A22)
 %     p_obs_noise    29x1 Standardabweichungen fuer Beobachtungsrauschen vor dem Agenten (D7), Standard 0
+%     p_reward_mode  Reward-Variante (D12, A51), 0 = wie im Training. Siehe rewardCode unten
 %   Zusaetzlich geloggt: Rohaktion, gesaettigte, gefilterte, ratenbegrenzte und skalierte Aktion,
 %   Gelenkwinkel-Befehl hinter der Positionssaettigung, Beobachtung (obs) und Agenten-Eingang (obs_agent),
 %   isDone.
@@ -52,6 +53,13 @@ for k = 1:4
 end
 % Der MATLAB-Function-Block des Rewards hat im Original eine feste Abtastzeit von 0,025 s
 set_param([dst '/Reward/MATLAB Function'], 'SystemSampleTime', 'p_Ts_agent');
+
+% --- Reward-Variante als Parameter (D12, Befund A51). Modus 0 rechnet wie rewardFcn im Original ---
+rwBlk = [dst '/Reward/MATLAB Function'];
+rw = sfroot().find('-isa', 'Stateflow.EMChart', 'Path', rwBlk);
+rw.Script = rewardCode();
+pm = rw.find('-isa', 'Stateflow.Data', 'Name', 'p_reward_mode');
+pm.Scope = 'Parameter';
 
 % --- Basis ---
 inertia = [dst '/Robot/base_link/Inertia'];
@@ -142,6 +150,80 @@ code = strjoin({
 '    dqlim = [1.3963; 1.3963; 1.3963; 1.3963; 1.2218; 1.2218; 1.2218];'
 '    hi = [0.5*ones(3,1); 1.0*ones(3,1); -qlo; dqlim; 0.5*ones(3,1); 1.0*ones(3,1); pi*ones(3,1)];'
 '    y = min(max(y, -hi), hi);'
+'end'
+}, newline);
+end
+
+function code = rewardCode()
+% Modus 0 ist Zeile fuer Zeile der Reward des Originalmodells (rewardFcn, gleich seit 09.04.2026).
+code = strjoin({
+'function [reward, isDone] = rewardFcn(ep, ev, dq_cmd, dq_cmd_prev, w_base, e_ori, p_reward_mode)'
+'% Reward des Tracking-Trainings mit Varianten fuer D12 (Befund A51)'
+'%   p_reward_mode 0: wie im Training seit 09.04. (Basis-Strafen und Basis-Bonus)'
+'%                 1: ohne Basis-Terme, wie beim fruehen PPO (Modell im Commit 50ad2ce, ohne Abbruch bei ori > 1)'
+'%                 2: wie 0, der Basis-Bonus gilt nur bei EE-Fehler < 5 cm'
+'%                 3: dicht und gekoppelt: glatte EE-Boni, Basis-Bonus mit der Tracking-Guete gewichtet,'
+'%                    linearer Positionsterm -5*min(|ep|, 0,2) (hoechstens -1 pro Schritt, damit ein Abbruch'
+'%                    nicht billiger wird als Weiterfahren). Basis-Strafen wie 0'
+'mode = p_reward_mode;'
+''
+'if any(~isfinite([ep; ev; dq_cmd; dq_cmd_prev; w_base; e_ori]))'
+'    reward = -50;'
+'    isDone = true;'
+'    return;'
+'end'
+''
+'dist   = norm(ep);'
+'vel    = norm(ev);'
+'w_norm = norm(w_base);'
+'ori    = norm(e_ori);'
+''
+'if dist > 0.5 || vel > 2.0 || (mode ~= 1 && ori > 1.0)'
+'    reward = -50;'
+'    isDone = true;'
+'    return;'
+'end'
+''
+'c_pos = min(ep.'' * ep, 0.25);'
+'c_vel = min(ev.'' * ev, 4.0);'
+'c_u   = min(dq_cmd.'' * dq_cmd, 10.0);'
+'du    = dq_cmd - dq_cmd_prev;'
+'c_du  = min(du.'' * du, 10.0);'
+'c_ori = min(e_ori.'' * e_ori, 0.5);'
+'c_w   = min(w_base.'' * w_base, 1.0);'
+''
+'if mode == 1'
+'    reward = - 20.0 * c_pos - 2.0 * c_vel - 0.02 * c_u - 0.05 * c_du;'
+'else'
+'    reward = ...'
+'        - 20.0  * c_pos ...'
+'        -  2.0  * c_vel ...'
+'        -  0.02 * c_u   ...'
+'        -  0.05 * c_du  ...'
+'        -  8.0  * c_ori ...'
+'        -  4.0  * c_w;'
+'end'
+''
+'if mode == 3'
+'    g = exp(-(dist / 0.05)^2);'
+'    reward = reward - 5.0 * min(dist, 0.2) + 1.0 * g + 3.0 * exp(-(dist / 0.02)^2) ...'
+'        + 2.0 * g * exp(-(ori / 0.02)^2) * exp(-(w_norm / 0.01)^2);'
+'else'
+'    if dist < 0.05'
+'        reward = reward + 1;'
+'    end'
+'    if dist < 0.02'
+'        reward = reward + 3;'
+'    end'
+'    if mode == 0 && ori < 0.02 && w_norm < 0.01'
+'        reward = reward + 2;'
+'    end'
+'    if mode == 2 && ori < 0.02 && w_norm < 0.01 && dist < 0.05'
+'        reward = reward + 2;'
+'    end'
+'end'
+''
+'isDone = false;'
 'end'
 }, newline);
 end
