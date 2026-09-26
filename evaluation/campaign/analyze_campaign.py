@@ -36,6 +36,7 @@ import scipy.io as sio
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 CAMPAIGN = os.path.join(ROOT, 'data', 'hardware', 'campaign')
 FIRST_WINDOW_S = 3.4                   # Zeitfenster fuer den Vergleich mit abgebrochenen Laeufen
+N_QUARTERS = 4                         # Abschnitte der Bahn fuer den Fehlerverlauf (Sec. VI-C)
 ACTIVE_JOINTS = [1, 3]                 # J2, J4 (0-basiert)
 TIMING_ORDER = ['M_send', 'M_fb', 'M_fk', 'M_full']
 SP_TOL = 0.05                          # Erfolgstoleranz der Set-Point-Reihe [m], wie Table VIII
@@ -93,6 +94,15 @@ def tracking_metrics(path, meta, cfg, L):
         v = v[np.isfinite(v)]
         durs[k] = float(np.median(v)) * 1e3 if v.size else float('nan')
     stop = str(meta.stopReason)
+    # Mittlerer Fehler je Viertel der Bahn (Wandzeit, die Referenz laeuft mit der Wandzeit). Das letzte
+    # Viertel schliesst alle Schritte ab 3/4 der Bahndauer ein.
+    T = float(meta.pathDuration)
+    quarters = {}
+    for i in range(N_QUARTERS):
+        m = ok & (tw >= i * T / N_QUARTERS)
+        if i < N_QUARTERS - 1:
+            m &= tw < (i + 1) * T / N_QUARTERS
+        quarters[f'q{i + 1}_mean'] = float(np.mean(ep[m])) if m.any() else float('nan')
     return {
         'file': os.path.relpath(path, CAMPAIGN).replace('\\', '/'),
         'condId': str(meta.condId), 'repetition': int(meta.repetition), 'dry': bool(meta.dryRun),
@@ -104,6 +114,8 @@ def tracking_metrics(path, meta, cfg, L):
         'tEnd': float(tw[-1]), 'rms': float(np.sqrt(np.mean(ep[ok] ** 2))) if ok.any() else float('nan'),
         'rms_first': float(np.sqrt(np.mean(ep[w] ** 2))) if w.any() else float('nan'),
         'max': float(np.max(ep[ok])) if ok.any() else float('nan'),
+        't_max': float(tw[ok][np.argmax(ep[ok])]) if ok.any() else float('nan'),
+        **quarters,
         'loopMean_ms': float(np.mean(dt)) * 1e3 if dt.size else float('nan'),
         'loopMedian_ms': float(np.median(dt)) * 1e3 if dt.size else float('nan'),
         'anyCap': bool(np.any(arr(L.cap_active, 7))), 'anySoftLimit': bool(np.any(arr(L.softlimit_active, 7))),
@@ -243,6 +255,14 @@ def table4(tracking, out, numbers):
         for key, val in [('runs', len(rs)), ('completed', len(done)), ('rms_mean', rms_m), ('rms_sd', rms_sd),
                          ('rms_first_mean', first_m), ('max_mean', max_m), ('loop_mean_ms_median', loop)]:
             numbers.append({'table': 'IV', 'condId': cid, 'quantity': key, 'value': val, 'source': files})
+        # Fehlerverlauf ueber die Bahn (Text Sec. VI-C): Mittel ueber die abgeschlossenen Laeufe je Viertel
+        for i in range(N_QUARTERS):
+            key = f'q{i + 1}_mean'
+            numbers.append({'table': 'text_VI-C', 'condId': cid, 'quantity': f'ep_{key}',
+                            'value': st.mean(r[key] for r in done) if done else float('nan'), 'source': files})
+        if done:
+            numbers.append({'table': 'text_VI-C', 'condId': cid, 'quantity': 't_max_min_s',
+                            'value': min(r['t_max'] for r in done), 'source': files})
     with open(os.path.join(out, 'table4_tracking.tex'), 'w', encoding='utf8') as f:
         f.write('\n'.join(lines) + '\n')
 
@@ -347,6 +367,13 @@ def table_setpoint(setpoint, out, numbers):
                                 'source': files})
         numbers.append({'table': 'setpoint_hw', 'condId': cid, 'quantity': 'success_rate_50mm',
                         'value': len(ok) / len(rs), 'source': ';'.join(r['file'] for r in rs)})
+        # Soft-Limit-Bremsung (Sicherheitslogik): Laeufe mit Bremsung und hoechster Anteil der Schritte
+        braked = [r for r in rs if r['anySoftLimit']]
+        numbers.append({'table': 'text_VI', 'condId': cid, 'quantity': 'softlimit_runs', 'value': len(braked),
+                        'source': ';'.join(r['file'] for r in braked)})
+        numbers.append({'table': 'text_VI', 'condId': cid, 'quantity': 'softlimit_frac_max',
+                        'value': max((r['softLimitFrac'] for r in braked), default=0.0),
+                        'source': ';'.join(r['file'] for r in braked)})
     with open(os.path.join(out, 'table_setpoint_hw.tex'), 'w', encoding='utf8') as f:
         f.write('\n'.join(lines) + '\n')
 
