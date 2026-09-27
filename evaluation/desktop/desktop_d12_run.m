@@ -37,8 +37,9 @@ if j6Lim ~= 0.1, study = 'D16'; end
 d = dir(sk_path('SavedAgents', 'MotionProfile', study, [study '_ppo_40hz_r*_seed*.mat']));
 extra = struct('label', {}, 'file', {}, 'hz', {}, 'j6', {});
 for k = 1:numel(d)
-    tok = regexp(d(k).name, '^(D1\d)_ppo_40hz_r(\d)_seed(\d+)', 'tokens', 'once');
-    extra(end + 1) = struct('label', sprintf('%s_r%s_s%s', tok{1}, tok{2}, tok{3}), ...
+    % Laengere Trainings tragen _ep<N> im Namen (z. B. _ep3000), das Label uebernimmt den Zusatz
+    tok = regexp(d(k).name, '^(D1\d)_ppo_40hz_r(\d)_seed(\d+)(_ep\d+)?', 'tokens', 'once');
+    extra(end + 1) = struct('label', sprintf('%s_r%s_s%s%s', tok{1}, tok{2}, tok{3}, tok{4}), ...
         'file', fullfile(d(k).folder, d(k).name), 'hz', 40, 'j6', j6Lim); %#ok<AGROW>
 end
 prefix = [study '_eval'];
