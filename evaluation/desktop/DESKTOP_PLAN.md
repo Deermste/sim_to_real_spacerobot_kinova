@@ -631,9 +631,9 @@ Letztes Viertel und größter Basis-Orientierungsfehler, deterministisch und üb
   Bahn gebundenem Basis-Bonus folgen 6 von 6 Agenten der ganzen Bahn. Die Ursache des Einbruchs liegt damit im
   Reward, genauer im Basis-Bonus, der auch neben der Bahn gezahlt wird. Die Optionen von Optimized (Lernrate 5,7e-5)
   erschweren zusätzlich, dass das letzte Drittel gelernt wird (D12 a und b).
-- Unter dem heutigen Reward (Auswertung mit Modus 0) holen die Modus-2-Agenten den höchsten Return aller Agenten,
-  deterministisch bis 1778 gegen 1699 (frühes PPO) und 1593 (Optimized). Das bestätigt, dass der Einbruch ein lokales
-  Optimum des heutigen Rewards ist.
+- Unter dem heutigen Reward (Auswertung mit Modus 0) holen alle drei Modus-2-Agenten mehr Return als jeder mit
+  Modus 0 trainierte Agent (stochastisch 1629–1746 gegen höchstens 1537), zwei davon auch mehr als das frühe PPO
+  (1657). Das stützt, dass der Einbruch ein lokales Optimum des heutigen Rewards ist.
 - Basisbewegung je Drittel (deterministisch, größter Orientierungsfehler): Modus 2 hält die Basis in den ersten
   zwei Dritteln so ruhig wie Modus 0 (Basis-Bonus in 100 % und 78–85 % der Schritte, Modus 1 nur 89–93 % und
   45–71 %). Im letzten Drittel drehen Modus 1 und 2 die Basis auf 0,076–0,084 rad, das frühe PPO auf 0,056 rad.
