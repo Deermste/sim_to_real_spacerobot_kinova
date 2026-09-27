@@ -703,6 +703,13 @@ Alle sechs Trainings stabil (6,8–7,6 min), keine Abbrüche in den letzten 200 
   Basisdrehung, nahe am Physik-Check D15 (0,021 rad). Seed 1 folgt mit 0,042–0,054 rad, Seed 0 bricht wieder ein
   (0,108–0,125 m, Basis 0,017–0,025 rad). Die ruhige Bewegung ist damit lernbar, aber noch nicht verlässlich.
   Nächster Schritt wären mehr Seeds und längeres Training mit r4.
+- Nachtrag r4 lang (27.09.): 8 Seeds × 3000 Episoden, J6 0,9774 rad/s
+  (`desktop_d12_run(4, 0:7, 3000, 'base_sync', 0.9774)`, je ≈ 21 min, Auswertung `D16_eval_20260927_133923_*`).
+  Alle 8 folgen der ganzen Bahn (deterministisch letztes Viertel 0,007–0,040 m, keiner bricht ein). Die Basis pendelt
+  sich bei 0,023–0,060 rad ein (Median 0,051 rad, 6 von 8 ≥ 0,042 rad), ähnlich dem frühen PPO. Seed 2 (nach 1000
+  Episoden 0,017–0,028 rad) liegt nach 3000 Episoden bei 0,044–0,052 rad. Längeres Training macht das Tracking
+  verlässlich, die ruhige Bewegung bleibt aber nicht. Bei 0,05 rad bringt der glatte Basis-Term noch +0,74 pro
+  Schritt, die EE-Boni +4. Gewicht oder Breite des Basis-Terms wären der nächste Parameter (nicht getestet).
 
 ### D11 Algorithmenvergleich neu (entschieden 27.09.2026, geplant)
 
