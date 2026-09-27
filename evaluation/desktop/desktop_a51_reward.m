@@ -39,7 +39,9 @@ ag = struct( ...
              fullfile(d10, 'D10_ppo_10hz_seed0_ep4000.mat'), fullfile(d10, 'D10_ppo_10hz_seed1_ep4000.mat'), ...
              fullfile(d10, 'D10_ppo_10hz_seed2_ep4000.mat')}, ...
     'hz', {40, 40, 40, 40, 40, 40, 40, 10, 10, 10, 10});
+[ag.j6] = deal(0.1);                     % J6-Saettigung wie im Training
 if ~isempty(extra)
+    if ~isfield(extra, 'j6'), [extra.j6] = deal(0.1); end
     ag = [ag, extra(:).'];
 end
 
@@ -61,7 +63,8 @@ rows = {};
 for a = 1:numel(ag)
     for k = 0:nStoch
         cfg = desktop_config('agentFile', ag(a).file, 'agentLabel', ag(a).label, 'Ts', 0.005, ...
-            'Ts_agent', 1 / ag(a).hz, 'base_mass', 65, 'keepTs', true, 'explore', k > 0, 'seed', max(k, 1));
+            'Ts_agent', 1 / ag(a).hz, 'base_mass', 65, 'keepTs', true, 'explore', k > 0, 'seed', max(k, 1), ...
+            'j6_lim', ag(a).j6);
         r = desktop_run_episode(cfg);
         row = episodeRow(r, cfg);
         row.agent = string(ag(a).label);

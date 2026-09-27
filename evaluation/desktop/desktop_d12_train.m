@@ -1,4 +1,4 @@
-function out = desktop_d12_train(rewardMode, seed, nEpisodes, tag, optsSet)
+function out = desktop_d12_train(rewardMode, seed, nEpisodes, tag, optsSet, j6Lim)
 %DESKTOP_D12_TRAIN  Trainiert einen 40-Hz-PPO-Agenten mit geaendertem Reward (Desktop-Plan D12 und D13, Befund A51).
 %   out = desktop_d12_train(2, 0)              Variante b, Seed 0, 1000 Episoden
 %   out = desktop_d12_train(3, 0, 16, 'test')  Kurztest, speichert nur unter data/.../_test
@@ -11,6 +11,8 @@ function out = desktop_d12_train(rewardMode, seed, nEpisodes, tag, optsSet)
 %   Horizont 1024, Minibatch 128, Lernraten 1e-3 / 5e-4, sonst gleich (Netz ebenfalls 2 x 128 ReLU).
 %   optsSet 'base_sync' (D14) wie 'base', aber synchrones paralleles Training und Gradient Clipping (Schwelle 1,
 %   L2-Norm) fuer Actor und Critic. Grund: In D13 wurden 6 von 9 Actors mit asynchronem Training NaN.
+%   j6Lim (Standard 0,1 rad/s) setzt die Saettigung von J6. Ein anderer Wert ergibt die Studie D16
+%   (Physik-Check D15: mit 0,1 rad/s verlangt die Bahn etwa 0,055 rad Basisdrehung).
 %   Einziger Unterschied ist der Reward (p_reward_mode, siehe desktop_build_model):
 %     0  wie im Training seit 09.04. Das ist D10 (SavedAgents/MotionProfile/D10/D10_ppo_40hz_seed*.mat)
 %     1  (a) ohne Basis-Terme, wie beim fruehen PPO. Kontrolle, trennt Reward und Hyperparameter
@@ -30,6 +32,8 @@ assert(ismember(optsSet, {'optimized', 'base', 'base_sync'}), 'desktop_d12_train
 study = 'D12';
 if strcmp(optsSet, 'base'), study = 'D13'; end
 if strcmp(optsSet, 'base_sync'), study = 'D14'; end
+if nargin < 6 || isempty(j6Lim), j6Lim = 0.1; end
+if j6Lim ~= 0.1, study = 'D16'; end             % D16: hoehere J6-Grenze (Physik-Check D15)
 assert(ismember(rewardMode, 0:3), 'desktop_d12_train:mode', 'rewardMode muss 0 bis 3 sein');
 
 setup_project;
@@ -41,6 +45,7 @@ set_param(mdl, 'SimMechanicsOpenEditorOnUpdate', 'off');
 cfg = struct();
 cfg.rewardMode = rewardMode;
 cfg.optsSet = optsSet;
+cfg.j6Lim = j6Lim;
 cfg.rateHz = 40;
 cfg.seed = seed;
 cfg.nEpisodes = nEpisodes;
@@ -70,7 +75,7 @@ ec = desktop_config('Ts', cfg.Ts, 'Ts_agent', cfg.Ts_agent, 'T', cfg.T, 'base_ma
 vars = struct('EE_ref', EE_ref, 'EE_vref', EE_vref, 'reward_init', 0, 'isdone_init', 0, ...
     'p_Ts', ec.Ts, 'p_Ts_agent', ec.Ts_agent, 'p_T', ec.T, 'p_base_mass', ec.base_mass, ...
     'p_delay_steps', 0, 'p_damp_scale', 1, 'p_slew', ec.slew, 'p_cmd_scale', 1, 'p_obs_mode', 0, ...
-    'p_obs_noise', zeros(29, 1), 'p_reward_mode', rewardMode);
+    'p_obs_noise', zeros(29, 1), 'p_reward_mode', rewardMode, 'p_j6_lim', j6Lim);
 fn = fieldnames(vars);
 for k = 1:numel(fn)
     assignin('base', fn{k}, vars.(fn{k}));
@@ -103,8 +108,8 @@ assignin('base', 'agent', agent);
 
 % --- Umgebung. Der Reward-Modus wird zusaetzlich pro Episode gesetzt, damit er sicher bei den Workern ankommt ---
 env = rlSimulinkEnv(mdl, [mdl '/RL_Agent'], obsInfo, actInfo);
-env.ResetFcn = @(in) setVariable(setVariable(setVariable(in, 'reward_init', 0), 'isdone_init', 0), ...
-    'p_reward_mode', rewardMode);
+env.ResetFcn = @(in) setVariable(setVariable(setVariable(setVariable(in, 'reward_init', 0), 'isdone_init', 0), ...
+    'p_reward_mode', rewardMode), 'p_j6_lim', j6Lim);
 
 % --- Training ---
 par = rl.option.ParallelTraining('Mode', cfg.parMode);
@@ -130,8 +135,8 @@ if isempty(pool)
         pool = parpool('Processes');
     end
 end
-fprintf('%s: Reward-Modus %d, Optionen %s, Seed %d, %d Episoden, %d Worker\n', study, rewardMode, optsSet, ...
-    seed, nEpisodes, pool.NumWorkers);
+fprintf('%s: Reward-Modus %d, Optionen %s, J6 %.4g rad/s, Seed %d, %d Episoden, %d Worker\n', study, rewardMode, ...
+    optsSet, j6Lim, seed, nEpisodes, pool.NumWorkers);
 
 tStart = tic;
 stats = train(agent, env, trainOpts);

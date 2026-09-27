@@ -30,6 +30,7 @@ function cfg = desktop_config(varargin)
 %     obs_noise    29x1 Standardabweichungen des Beobachtungsrauschens (Reihenfolge wie im Training), Standard 0
 %     reward_mode  Reward-Variante (D12, A51). 0 = wie im Training seit 09.04. (Standard), 1 = ohne Basis-Terme,
 %                  2 = Basis-Bonus nur auf der Bahn, 3 = dicht und gekoppelt. Siehe desktop_build_model
+%     j6_lim       Saettigung von J6 [rad/s], Training 0,1 (D16 testet 0,9774 wie J2 und J4)
 %     ref_timing   'wall' = Referenz nach Zeit. 'sample' = Referenz rueckt pro Agentenschritt um Ts_ref_step
 %                  vor (Verhalten von V2.1), die Geschwindigkeitsreferenz bleibt die nominale
 %     Ts_ref_step  Referenzvorschub pro Schritt bei 'sample' [s], Standard 0,025
@@ -58,6 +59,7 @@ cfg.cmd_scale   = 1;
 cfg.obs_mode    = 0;
 cfg.obs_noise   = zeros(29, 1);
 cfg.reward_mode = 0;
+cfg.j6_lim      = 0.1;
 cfg.ref_timing  = 'wall';
 cfg.Ts_ref_step = 0.025;
 cfg.explore     = false;

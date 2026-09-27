@@ -40,7 +40,7 @@ vars = struct('agent', agent, 'EE_ref', EE_ref, 'EE_vref', EE_vref, 'reward_init
     'p_Ts', cfg.Ts, 'p_Ts_agent', cfg.Ts_agent, 'p_T', cfg.T, 'p_base_mass', cfg.base_mass, ...
     'p_delay_steps', cfg.delay_steps, 'p_damp_scale', cfg.damp_scale, 'p_slew', cfg.slew, ...
     'p_cmd_scale', cfg.cmd_scale, 'p_obs_mode', cfg.obs_mode, 'p_obs_noise', obsNoise(cfg), ...
-    'p_reward_mode', cfg.reward_mode);
+    'p_reward_mode', cfg.reward_mode, 'p_j6_lim', cfg.j6_lim);
 fn = fieldnames(vars);
 for k = 1:numel(fn)
     assignin('base', fn{k}, vars.(fn{k}));
@@ -207,7 +207,7 @@ if m.early_stop
 end
 
 % Saettigung der Rohaktion (Grenzen aus dem Saturation-Block)
-lim = [0.0; 0.9774; 0.0; 0.9774; 0.0; 0.1; 0.0];
+lim = [0.0; 0.9774; 0.0; 0.9774; 0.0; cfg.j6_lim; 0.0];
 araw = getTs(logsout, 'a_raw');
 if ~isempty(araw)
     a = toNx(araw.Data, 7);

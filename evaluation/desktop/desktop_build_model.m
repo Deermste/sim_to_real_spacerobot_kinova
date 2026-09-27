@@ -18,6 +18,7 @@ function mdlFile = desktop_build_model(force)
 %     p_obs_mode     0 = Beobachtung wie im Training, 1 = wie Deploy-Skript V2.1 (A22)
 %     p_obs_noise    29x1 Standardabweichungen fuer Beobachtungsrauschen vor dem Agenten (D7), Standard 0
 %     p_reward_mode  Reward-Variante (D12, A51), 0 = wie im Training. Siehe rewardCode unten
+%     p_j6_lim       Saettigung von J6 [rad/s] (D16), Training 0,1
 %   Zusaetzlich geloggt: Rohaktion, gesaettigte, gefilterte, ratenbegrenzte und skalierte Aktion,
 %   Gelenkwinkel-Befehl hinter der Positionssaettigung, Beobachtung (obs) und Agenten-Eingang (obs_agent),
 %   isDone.
@@ -53,6 +54,10 @@ for k = 1:4
 end
 % Der MATLAB-Function-Block des Rewards hat im Original eine feste Abtastzeit von 0,025 s
 set_param([dst '/Reward/MATLAB Function'], 'SystemSampleTime', 'p_Ts_agent');
+
+% --- J6-Grenze der Saettigung als Parameter (D16). Original 0,1 rad/s, J2 und J4 bleiben bei 0,9774 rad/s ---
+set_param([dst '/Saturation'], 'UpperLimit', '[0.0; 0.9774; 0.0; 0.9774; 0.0; p_j6_lim; 0.0]', ...
+    'LowerLimit', '-1 * [0.0; 0.9774; 0.0; 0.9774; 0.0; p_j6_lim; 0.0]');
 
 % --- Reward-Variante als Parameter (D12, Befund A51). Modus 0 rechnet wie rewardFcn im Original ---
 rwBlk = [dst '/Reward/MATLAB Function'];
