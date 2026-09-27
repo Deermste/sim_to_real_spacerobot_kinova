@@ -697,6 +697,12 @@ Alle sechs Trainings stabil (6,8–7,6 min), keine Abbrüche in den letzten 200 
   die Policies in 1000 Episoden nicht. Mit r2 fehlt ein Anreiz, die Basis unter der Schwelle zu halten, sobald
   der Bonus ohnehin verloren ist. Möglich wären ein dichter Basis-Term, der auf der Bahn wirkt, oder längeres
   Training. Nicht getestet.
+- Nachtrag Modus 4 (27.09.): wie r2, dazu bei EE-Fehler < 5 cm ein glatter Basis-Term +2*exp(-(ori/0,05)^2).
+  Drei Seeds mit J6 0,9774 rad/s (`desktop_d12_run(4, 0:2, [], 'base_sync', 0.9774)`, Auswertung
+  `D16_eval_20260927_102655_*`). Seed 2 folgt der ganzen Bahn (letztes Viertel 0,004–0,018 m) mit 0,017–0,028 rad
+  Basisdrehung, nahe am Physik-Check D15 (0,021 rad). Seed 1 folgt mit 0,042–0,054 rad, Seed 0 bricht wieder ein
+  (0,108–0,125 m, Basis 0,017–0,025 rad). Die ruhige Bewegung ist damit lernbar, aber noch nicht verlässlich.
+  Nächster Schritt wären mehr Seeds und längeres Training mit r4.
 
 ### D11 Algorithmenvergleich neu
 
