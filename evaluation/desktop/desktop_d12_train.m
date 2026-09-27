@@ -18,6 +18,7 @@ function out = desktop_d12_train(rewardMode, seed, nEpisodes, tag, optsSet, j6Li
 %     1  (a) ohne Basis-Terme, wie beim fruehen PPO. Kontrolle, trennt Reward und Hyperparameter
 %     2  (b) Basis-Bonus nur bei EE-Fehler < 5 cm
 %     3  (c) dicht und gekoppelt
+%     4  wie 2, dazu auf der Bahn ein glatter Basis-Term +2*exp(-(ori/0,05)^2) (nach D16)
 %
 %   Ergebnis:
 %     SavedAgents/MotionProfile/D12/D12_ppo_40hz_r<Modus>_seed<Seed>.mat   agent, cfg, info, curve
@@ -34,7 +35,7 @@ if strcmp(optsSet, 'base'), study = 'D13'; end
 if strcmp(optsSet, 'base_sync'), study = 'D14'; end
 if nargin < 6 || isempty(j6Lim), j6Lim = 0.1; end
 if j6Lim ~= 0.1, study = 'D16'; end             % D16: hoehere J6-Grenze (Physik-Check D15)
-assert(ismember(rewardMode, 0:3), 'desktop_d12_train:mode', 'rewardMode muss 0 bis 3 sein');
+assert(ismember(rewardMode, 0:4), 'desktop_d12_train:mode', 'rewardMode muss 0 bis 4 sein');
 
 setup_project;
 desktop_build_model();
