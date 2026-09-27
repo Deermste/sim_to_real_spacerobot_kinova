@@ -722,8 +722,7 @@ Aufbau (für alle Verfahren gleich):
 - Verfahren: PPO, TRPO, PG (on-policy), DDPG, TD3, SAC (off-policy), MATLAB Reinforcement Learning Toolbox R2026a.
 - Netz: 2 × 128 ReLU für Actor und Critic bei allen Verfahren (`rlAgentInitializationOptions`).
 - Hyperparameter: Toolbox-Standardwerte wie im Paper beschrieben, einheitlich Gradient Clipping 1. Keine
-  verfahrensspezifische Abstimmung (bleibt als Grenze im Text). Optional zusätzlich je Verfahren eine kleine
-  Lernraten-Reihe (3 Werte) mit einem Seed, um zu prüfen, ob TD3, SAC und PG nur an den Standardwerten scheitern.
+  verfahrensspezifische Abstimmung und keine Lernraten-Reihe (Entscheidung 27.09.), bleibt als Grenze im Text.
 - Budget: 1000 Episoden je Lauf (gleiche Zahl an Umgebungsschritten für alle), 5 Seeds (0 bis 4).
 - Training: on-policy synchron wie D14 (asynchron wurde in D13 instabil). Off-policy parallel, sofern die Toolbox
   es für das Verfahren unterstützt, sonst seriell. Der Modus wird je Verfahren im Log festgehalten.
@@ -751,7 +750,7 @@ Schritte und Aufwand:
 6. Alte Agenten und Table II als Stand vom März in `fig/unused/` bzw. im Archiv belassen, `paper_numbers.md`
    und `reviewer_comments.md` (A8, A20, A28, A29, A64) aktualisieren.
 
-Offen vor dem Start: ob die optionale Lernraten-Reihe für die off-policy Verfahren mitlaufen soll (+3–6 h).
+Entschieden 27.09.: keine zusätzliche Lernraten-Reihe.
 
 ### Nicht geplant
 
@@ -765,7 +764,7 @@ Offen vor dem Start: ob die optionale Lernraten-Reihe für die off-policy Verfah
 - (b) Agent für Table VII. Vorschlag: `test_agent_fixed1` wie auf der Hardware, `test_agent_rand2` als Vergleich.
 - (c) Welcher PPO-Agent in Fig. 5 gezeigt wird.
 - (d) D10 ja oder nein, und ob das Paar auf die Hardware soll.
-- (e) D11: ✅ 27.09. entschieden, sauber neu rechnen (5 Seeds, heutiges Modell). Offen: optionale Lernraten-Reihe für DDPG, TD3, SAC.
+- (e) D11: ✅ 27.09. entschieden, sauber neu rechnen (5 Seeds, heutiges Modell), ohne Lernraten-Reihe.
 - (f) D12: welche Reward-Varianten, und ob neue Agenten auf die Hardware sollen.
 
 ## Reihenfolge (Vorschlag)
