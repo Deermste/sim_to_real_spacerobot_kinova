@@ -32,7 +32,7 @@ Laborreihe gebraucht wird. Einzige Ausnahme ist D10, falls das Agentenpaar auf d
 | D8 | Fig. 5 neu in Zielgröße | R1.4, AE.3 | 1 h | 5 min | Agent in Fig. 5 (c) | ✅ 25.09. |
 | D9 | Vorhandenen Sprungtest des Gen3 auswerten | H1, H2 (❓) | 1 h | keine | nein | ✅ 25.09. (H2) |
 | D10 | Gleiches Agentenpaar 40/10 Hz trainieren (optional) | A21, R1.6 auf der Hardware | 2–3 h | 1,5 h (1 Seed), 4–5 h (3 Seeds) | Entscheidung (d) | vor dem Labor, falls auf Hardware |
-| D11 | Algorithmenvergleich neu, 6 Verfahren × 3 Seeds | A8, A20, Fig. 4, Table II | 3–4 h | 20–30 h | Entscheidung (e) | nach der Ausrichtung |
+| D11 | Algorithmenvergleich neu, 6 Verfahren × 5 Seeds, heutiges Modell und Reward aus Sec. III | A8, A20, A28, A64, Fig. 4, Table II | 6–8 h | 10–20 h (Probelauf misst es genau) | ✅ entschieden 27.09.: sauber neu rechnen | nach dem laufenden r4-Lauf (D16, 3000 Episoden) |
 | A51 | Reward-Zerlegung: Warum brechen die abgestimmten Agenten im letzten Drittel ein? | A51, A62 | 2 h | 10 min | nein | ✅ 26.09. |
 | D12 | Neutraining mit geändertem Reward (ohne Basis-Terme / Basis-Bonus nur auf der Bahn / dicht und gekoppelt) | A51, A62 | 3 h | ≈ 1–1,5 h je Variante und Seed | Entscheidung (f) | läuft seit 26.09. |
 | D13 | Wie D12, aber mit den Optionen des frühen PPO (Modus 0 bis 2, 3 Seeds) | A51, A62 | 1 h | 20 min + 20 min Auswertung | nein | ✅ 27.09., gescheitert (Training instabil) |
@@ -704,14 +704,54 @@ Alle sechs Trainings stabil (6,8–7,6 min), keine Abbrüche in den letzten 200 
   (0,108–0,125 m, Basis 0,017–0,025 rad). Die ruhige Bewegung ist damit lernbar, aber noch nicht verlässlich.
   Nächster Schritt wären mehr Seeds und längeres Training mit r4.
 
-### D11 Algorithmenvergleich neu
+### D11 Algorithmenvergleich neu (entschieden 27.09.2026, geplant)
 
-- PPO, TRPO, PG, DDPG, TD3 und SAC mit Toolbox-Standardwerten wie in Sec. IV-A, Seeds 0 bis 2, je 1000 Episoden.
-  Lernkurven und Agenten werden gespeichert.
-- Rechenzeit grob: PPO, TRPO und PG je 0,5 bis 1 h, DDPG, TD3 und SAC je 1,5 bis 2,5 h, zusammen etwa 20 bis 30 h.
-  Die Läufe laufen nacheinander, weil jeder alle 8 Kerne nutzt. Danach KPI-Auswertung, etwa 1 h.
-- Table II und Fig. 4 ändern sich, weil das Modell seit März geändert wurde (A20).
-- Erst sinnvoll, wenn die Ausrichtung feststeht. Bei Option A reicht eventuell, im Text „ein Seed“ zu schreiben.
+Anlass: Der Vergleich in Sec. IV-A (Table II, Fig. 4) ist so nicht haltbar.
+- Die sechs Agenten in `SavedAgents/Torque/Circular/` entstanden am 16.03.2026 mit einem anderen Reward als Gl. 3
+  (Commit `9e6bda2`: fortschrittsbasiert, andere Gewichte, Gauß-Bonus, geteilt durch 500, Abbruch erst bei NaN
+  oder 10 m Fehler, Befund A64). Die Returns K4 in Table II passen nicht zu diesem Reward.
+- Die im Paper genannten drei Seeds sind nicht belegt, nur ein Agent je Verfahren liegt vor (A8, A29).
+- Ein Lauf je Verfahren, Standardwerte, stochastische Auswertung von einem Start (A28), mit dem heutigen Modell
+  nicht reproduzierbar (A20).
+
+Ziel: ein fairer, reproduzierbarer Vergleich auf genau dem MDP aus Sec. III, mit Streuung über Seeds.
+
+Aufbau (für alle Verfahren gleich):
+- Modell `SK_desktop` mit Reward-Modus 0 (Gl. 3 mit den Boni aus Sec. III-C), 40 Hz, Solver 5 ms, 65 kg,
+  Halbkreis 8,5 s, J6-Grenze wie im Training (0,1 rad/s), Beobachtung und Aktion wie `Optimized.mat`.
+- Verfahren: PPO, TRPO, PG (on-policy), DDPG, TD3, SAC (off-policy), MATLAB Reinforcement Learning Toolbox R2026a.
+- Netz: 2 × 128 ReLU für Actor und Critic bei allen Verfahren (`rlAgentInitializationOptions`).
+- Hyperparameter: Toolbox-Standardwerte wie im Paper beschrieben, einheitlich Gradient Clipping 1. Keine
+  verfahrensspezifische Abstimmung (bleibt als Grenze im Text). Optional zusätzlich je Verfahren eine kleine
+  Lernraten-Reihe (3 Werte) mit einem Seed, um zu prüfen, ob TD3, SAC und PG nur an den Standardwerten scheitern.
+- Budget: 1000 Episoden je Lauf (gleiche Zahl an Umgebungsschritten für alle), 5 Seeds (0 bis 4).
+- Training: on-policy synchron wie D14 (asynchron wurde in D13 instabil). Off-policy parallel, sofern die Toolbox
+  es für das Verfahren unterstützt, sonst seriell. Der Modus wird je Verfahren im Log festgehalten.
+- Gespeichert: Agent, alle Optionen, Lernkurve je Episode (Return, Schritte, Q0), Git-Stand, Laufzeit.
+
+Auswertung:
+- Deterministische Policy wie auf der Hardware, dazu 10 stochastische Episoden je Agent.
+- Mehrere Bedingungen statt eines festen Starts: nominal (65 kg) und 20 Basismassen-Ziehungen wie in D1.
+- Kennzahlen K1 bis K5 wie Table II (K4 = Return unter Gl. 3), dazu letztes Viertel und größte Basisdrehung wie
+  in Sec. V. Je Verfahren Mittelwert ± Standardabweichung und Median über die 5 Seeds, zusätzlich die Zahl der
+  Seeds ohne frühe Abbrüche.
+- Neue Table II (Mittel ± Std über Seeds) und neue Fig. 4 (Lernkurven als Mittel mit Band über die Seeds, ein
+  Plot je Verfahren oder alle in einem, Schrift in Zielgröße, R1.4).
+
+Schritte und Aufwand:
+1. Skript `desktop_d11_train(algo, seed, nEpisodes, tag)` nach dem Muster von `desktop_d12_train` (1–2 h).
+2. Probelauf je Verfahren mit 20 Episoden: läuft es, wie lange dauert es, stimmen die Optionen (30 min).
+3. Hauptlauf 6 × 5 Trainings über Nacht. Grobe Schätzung aus D14: on-policy etwa 7 min je 1000 Episoden, also
+   etwa 2 h für 15 Läufe. Off-policy unbekannt, geschätzt 20–60 min je Lauf, also 5–15 h für 15 Läufe.
+4. Auswertung `desktop_d11_eval` (etwa 30 Agenten × 31 Episoden, 1–2 h Rechnung) und Plot-Skript für Table II
+   und Fig. 4 im Paper-Repo (2 h).
+5. Text Sec. IV-A neu: Modellstand und Reward nennen, Satz zu den drei Seeds ersetzen, Streuung berichten,
+   Begründung der PPO-Wahl auf die neuen Zahlen stützen. Wenn sich die Reihenfolge ändert, entsprechend
+   formulieren (1–2 h).
+6. Alte Agenten und Table II als Stand vom März in `fig/unused/` bzw. im Archiv belassen, `paper_numbers.md`
+   und `reviewer_comments.md` (A8, A20, A28, A29, A64) aktualisieren.
+
+Offen vor dem Start: ob die optionale Lernraten-Reihe für die off-policy Verfahren mitlaufen soll (+3–6 h).
 
 ### Nicht geplant
 
@@ -725,7 +765,7 @@ Alle sechs Trainings stabil (6,8–7,6 min), keine Abbrüche in den letzten 200 
 - (b) Agent für Table VII. Vorschlag: `test_agent_fixed1` wie auf der Hardware, `test_agent_rand2` als Vergleich.
 - (c) Welcher PPO-Agent in Fig. 5 gezeigt wird.
 - (d) D10 ja oder nein, und ob das Paar auf die Hardware soll.
-- (e) D11 erst nach der Ausrichtung. Der Desktop rechnet dann 1 bis 1,5 Tage durch.
+- (e) D11: ✅ 27.09. entschieden, sauber neu rechnen (5 Seeds, heutiges Modell). Offen: optionale Lernraten-Reihe für DDPG, TD3, SAC.
 - (f) D12: welche Reward-Varianten, und ob neue Agenten auf die Hardware sollen.
 
 ## Reihenfolge (Vorschlag)
