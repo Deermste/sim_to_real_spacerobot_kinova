@@ -163,6 +163,10 @@ Ablauf in `ANLEITUNG_LABOR_TAG2.md`, Bedingungen in `campaign_plan.m` (`plan.day
   sechs im Zielbereich des ROS-Plugins und drei am Rand, Starts S00, S06, S07. Vorhersage aus dem kinematischen
   Trockenlauf in `day2_dryrun_prediction.csv`: T01, T02, T03, T05 unter 50 mm, T04, T06 und alle Randziele nicht.
 
+Erweiterungen (Nutzer, 27.09.): zweiter r4-Seed `T40_r4_3k_s4` und `S21_targets_all` (T01 bis T06 von allen 15
+Starts, 90 Läufe). Im Trockenlauf erreicht der Agent T01, T02, T03 und T05 von allen 15 Starts, T04 und T06 von
+keinem. Gesamtdauer etwa 3–4 h.
+
 Codeänderungen dafür: `deploy_setpoint_v24` kennt `targetMode 'list'` mit `targetId`, prüft Start und Ziel gegen
 die jeweils letzte Freigabe (A58). `check_setpoint_starts('list', 'targets')` gibt die Zielposen frei.
 `deploy_tracking_v24` übernimmt J6-Grenze und Sicherheitsfaktor aus der Bedingung. `campaign_env_meta` zählt

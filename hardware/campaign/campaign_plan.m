@@ -12,6 +12,9 @@ function plan = campaign_plan()
 %                     .timing   Reihenfolge {condId, Wiederholung} der neuen Timing-Messungen
 %                     .tracking Reihenfolge {condId, Wiederholung} der r4/r0-Tracking-Laeufe
 %                     .setpoint Reihenfolge {condId, targetId, startId, Wiederholung}
+%                     .trackingExt  Erweiterung: zweiter r4-Seed {condId, Wiederholung}
+%                     .setpointAll  Erweiterung: Plugin-Ziele von allen 15 Starts
+%                                   {condId, targetId, startId, Wiederholung}
 %                     Die Ziele stehen in hardware/campaign/setpoint_targets.mat
 %                     (make_setpoint_targets).
 %   Die Auswertung (evaluation/campaign/analyze_campaign.py) gruppiert nach condId.
@@ -24,9 +27,10 @@ aCdr = 'SavedAgents/MotionProfile/CDR/PPO/CDR2-4.mat';
 aPpo = 'SavedAgents/MotionProfile/Circle/PPO/SpaceKinova_PPO_agent_motionprofile.mat';
 % Labortag 2: Neutraining aus Sec. V (D16), J6-Grenze 0.9774 rad/s. Auswahl vorab nach Regel: je Gruppe
 % der Seed mit dem mittleren deterministischen EE-MSE in der Simulation (D16_eval_20260927_102655 und
-% _133923). r4 3000 Episoden: Seeds 0-7, Median zwischen s7 und s4, gewaehlt s7. r4 und r0 1000 Episoden:
-% Seeds 0-2, Median s2 (r4) und s0 (r0).
+% _133923). r4 3000 Episoden: Seeds 0-7, Median zwischen s7 und s4, gewaehlt s7, s4 als Erweiterung.
+% r4 und r0 1000 Episoden: Seeds 0-2, Median s2 (r4) und s0 (r0).
 aR4k3 = 'SavedAgents/MotionProfile/D16/D16_ppo_40hz_r4_seed7_ep3000.mat';
+aR4k3b = 'SavedAgents/MotionProfile/D16/D16_ppo_40hz_r4_seed4_ep3000.mat';
 aR4k1 = 'SavedAgents/MotionProfile/D16/D16_ppo_40hz_r4_seed2.mat';
 aR0k1 = 'SavedAgents/MotionProfile/D16/D16_ppo_40hz_r0_seed0.mat';
 
@@ -57,6 +61,9 @@ t(end+1) = cond('T40_r0_j6', aR0k1, 'PPO r0 J6 0.98 (D16 s0)', 40, 8.5, 1.0, 5, 
     'das letzte Viertel.'], 0.9774, 0.8);
 t(end+1) = cond('T40_r4_1k', aR4k1, 'PPO r4 1000 ep (D16 s2)', 40, 8.5, 1.0, 5, 2, ...
     'r4 nach 1000 Episoden, gleiche Episodenzahl wie T40_r0_j6.', 0.9774, 0.8);
+t(end+1) = cond('T40_r4_3k_s4', aR4k3b, 'PPO r4 3000 ep (D16 s4)', 40, 8.5, 1.0, 5, 2, ...
+    ['Erweiterung: zweiter r4-Seed (der andere der beiden mittleren von acht), damit die Hardware-Aussage ' ...
+    'nicht an einem Agenten haengt.'], 0.9774, 0.8);
 plan.tracking = t;
 
 m = struct('condId', {}, 'mode', {}, 'nCycles', {}, 'nRepetitions', {}, 'agentFile', {}, 'purpose', {});
@@ -114,6 +121,9 @@ sp(end+1) = spcond('S20_targets', aP2p, 1.0, 25, 'fk', 'list', [], {'S00', 'S06'
     ['Set-Point-Agent zu neun festen Zielen: sechs im Zielbereich des ROS-Plugins (0.15 und 0.25 m um ' ...
     'das Nominalziel), drei am Rand (0.40 m). Starts S00, S06, S07, sonst wie S10_nom. Wiederholung 2 ' ...
     'nur wenn Zeit bleibt.']);
+sp(end+1) = spcond('S21_targets_all', aP2p, 1.0, 25, 'fk', 'list', [], 'all', 1, 2, ...
+    ['Erweiterung: die sechs Plugin-Ziele T01-T06 von allen 15 freigegebenen Starts, je einmal. Karte, aus ' ...
+    'welchen Richtungen und Abstaenden der Agent die Ziele im Plugin-Bereich erreicht.']);
 plan.setpoint = sp;
 
 % Reihenfolge: Reproduktion, dann Wiederholung 1 nach aufsteigendem d0 und
@@ -156,6 +166,28 @@ for r = 1:2
         if r == 2, o3 = fliplr(o3); end
         for j = 1:3
             d2.setpoint(end+1, :) = {'S20_targets', tgt{i}, o3{j}, r};
+        end
+    end
+end
+% Erweiterung 1: zweiter r4-Seed.
+d2.trackingExt = {};
+for i = 1:5
+    d2.trackingExt(end+1, :) = {'T40_r4_3k_s4', i};
+end
+% Erweiterung 2: Plugin-Ziele von allen Starts. Je Ziel nach d0 zu diesem Ziel sortiert, abwechselnd
+% aufsteigend und absteigend, damit Drift nicht mit d0 zusammenfaellt.
+d2.setpointAll = {};
+tf = fullfile(fileparts(mfilename('fullpath')), 'setpoint_targets.mat');
+if isfile(tf) && isfile(startsFile)
+    LT = load(tf);
+    ids = {L.S.starts.id};
+    tgtAll = {'T01', 'T02', 'T03', 'T05', 'T04', 'T06'};   % T04 und T06 zuletzt (im Trockenlauf 0/15)
+    for i = 1:6
+        tt = LT.T.targets(strcmp({LT.T.targets.id}, tgtAll{i}));
+        [~, ix] = sort(tt.d0_from_starts_m);
+        if mod(i, 2) == 0, ix = fliplr(ix); end
+        for j = ix
+            d2.setpointAll(end+1, :) = {'S21_targets_all', tgtAll{i}, ids{j}, 1};
         end
     end
 end

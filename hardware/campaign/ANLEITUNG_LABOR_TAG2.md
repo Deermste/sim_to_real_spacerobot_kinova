@@ -8,9 +8,32 @@ Ziele des Tages:
 
 | Teil | Frage | Paper | Dauer |
 |---|---|---|---|
-| A | Wartet jeder blockierende API-Aufruf auf einen internen Takt von etwa 25 ms? | A60, Sec. VI-C | 15 min |
-| B | Folgt ein Agent mit dem Basis-Bonus nur auf der Bahn (r4, Sec. V) auch auf dem festen Arm der ganzen Bahn? | Sec. V, VII | 45 min |
-| C | Erreicht der Set-Point-Agent andere Ziele als das Trainingsziel? | A57, Sec. VI-D, ROS-Plugin | 2–3 h |
+| A | Wartet jeder blockierende API-Aufruf auf einen internen Takt von etwa 25 ms? | A60, Sec. VI-C | 5–10 min |
+| B | Folgt ein Agent mit dem Basis-Bonus nur auf der Bahn (r4, Sec. V) auch auf dem festen Arm der ganzen Bahn? | Sec. V, VII | 15–20 min |
+| B+ | Erweiterung: zweiter r4-Seed | Sec. V | 5 min |
+| C | Erreicht der Set-Point-Agent andere Ziele als das Trainingsziel? | A57, Sec. VI-D, ROS-Plugin | 45–55 min |
+| C+ | Erweiterung: die sechs Plugin-Ziele von allen 15 Starts | ROS-Plugin, Sec. VI-D | 60–75 min |
+
+## Zeitplan
+
+Die Zeiten stammen aus den Zeitstempeln vom 26.09.: ein Tracking-Lauf mit Anfahrt etwa 35 s, ein Set-Point-Lauf
+20–60 s, eine Posenfreigabe etwa 20 s.
+
+| Block | Läufe | Zeit |
+|---|---|---|
+| 0. Vorbereitung | – | 20–30 min |
+| A. Timing | 9 Messungen | 5–10 min |
+| B. Tracking | 15 | 15–20 min |
+| B+. Zweiter r4-Seed | 5 | 5 min |
+| C1. Ziele freigeben | 9 Posen | 5 min |
+| C2. Set-Point, Wiederholung 1 | 27 | 20–25 min |
+| C3. Set-Point, Wiederholung 2 | 27 | 20–25 min |
+| C+. Plugin-Ziele von allen Starts | 90 | 60–75 min |
+| Abschluss | – | 10–15 min |
+| **Summe** | 164 Läufe + 9 Messungen | **etwa 3–4 h**, mit Pausen ein halber bis dreiviertel Tag |
+
+Reihenfolge wie in dieser Anleitung. Wird die Zeit knapp, entfallen in dieser Reihenfolge: das Ende von C+ (T04 und
+T06 stehen zuletzt), C3, B+.
 
 ## 0. Vorbereitung
 
@@ -62,7 +85,7 @@ end
 Jeder Aufruf fragt vor der Bewegung nach ENTER. Nach jedem Lauf Stoppgrund, RMS und Loop-Zeit ins Laborbuch
 schreiben.
 
-Vorhersage auf fester Basis (`desktop_day2_tracking_pred.m`, deterministisch, 20 Hz wie die API):
+Vorhersage auf fester Basis (`desktop_day2_tracking_pred.m`, `DAY2_tracking_pred_20260927_211737.csv`, deterministisch, 20 Hz wie die API):
 
 | Bedingung | RMS [m] | mittlerer Fehler letztes Viertel [m] |
 |---|---|---|
@@ -70,6 +93,16 @@ Vorhersage auf fester Basis (`desktop_day2_tracking_pred.m`, deterministisch, 20
 | `T40_r0_j6` | 0,088 | 0,159 |
 | `T40_r4_1k` | 0,014 | 0,020 |
 | zum Vergleich `T40_cdr_nom` (26.09. auf der Hardware 0,024–0,055) | 0,051 | 0,092 |
+
+**B+. Zweiter r4-Seed (Erweiterung):** Seed 4, der andere der beiden mittleren Seeds von acht. Vorhersage RMS
+0,014 m, letztes Viertel 0,020 m.
+
+```matlab
+p = campaign_plan();
+for i = 1:size(p.day2.trackingExt, 1)
+    deploy_tracking_v24(p.day2.trackingExt{i, 1}, p.day2.trackingExt{i, 2});
+end
+```
 
 Die Basisdrehung, um die es beim Zielkonflikt geht, ist auf dem festen Arm nicht messbar. Sie wird hinterher in der
 Simulation aus den gemessenen Gelenkbahnen nachgerechnet.
@@ -116,6 +149,35 @@ end
 
 **C3. Wiederholung 2 (wenn Zeit bleibt):** gleiche Schleife mit `[o{:, 4}] == 2`. Die Startreihenfolge je Ziel ist
 umgekehrt.
+
+**C+. Plugin-Ziele von allen 15 Starts (Erweiterung):** Bedingung `S21_targets_all`, T01 bis T06 von S00 bis
+S14, je einmal, 90 Läufe. Alle 15 Starts sind seit dem 26.09. freigegeben. Je Ziel sind die Starts nach dem Abstand
+zu diesem Ziel sortiert, abwechselnd auf- und absteigend. T04 und T06 kommen zuletzt.
+
+```matlab
+p = campaign_plan();
+o = p.day2.setpointAll;
+for i = 1:size(o, 1)
+    deploy_setpoint_v24(o{i, 1}, o{i, 3}, o{i, 4}, 'targetId', o{i, 2});
+end
+```
+
+Soll die Schleife nach einer Pause weiterlaufen, mit `for i = <nächste Nummer>:size(o, 1)` fortsetzen. Die
+Nummer des letzten Laufs steht in der Konsole.
+
+Vorhersage aus dem kinematischen Trockenlauf (`day2_dryrun_prediction_s21.csv`):
+
+| Ziel | unter 50 mm | davon konvergiert | Endfehler Median |
+|---|---|---|---|
+| T01 | 15/15 | 8 | 19 mm |
+| T02 | 15/15 | 11 | 18 mm |
+| T03 | 15/15 | 13 | 17 mm |
+| T05 | 15/15 | 13 | 16 mm |
+| T04 | 0/15 | 0 | 130 mm |
+| T06 | 0/15 | 0 | 108 mm |
+
+T04 und T06 werden von keinem Start erreicht. Das Problem liegt also beim Ziel, nicht beim Start. Für das
+ROS-Plugin heißt das: Der erlaubte Zielbereich von 0,30 m um das Trainingsziel ist nach vorn und nach oben zu weit.
 
 Ein Einzellauf geht auch direkt, zum Beispiel `deploy_setpoint_v24('S20_targets', 'S06', 1, 'targetId', 'T04')`.
 Ein Timeout ist ein gültiges Ergebnis. Der Endfehler steht trotzdem im Log.
