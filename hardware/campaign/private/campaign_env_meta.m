@@ -18,5 +18,9 @@ root = sk_path();
 [st, h] = system(sprintf('git -C "%s" rev-parse --short HEAD', root));
 if st == 0, m.gitHash = strtrim(h); else, m.gitHash = 'unknown'; end
 [st, d] = system(sprintf('git -C "%s" status --porcelain --untracked-files=no', root));
-m.gitDirty = st == 0 && ~isempty(strtrim(d));
+% Index und Freigabelisten unter data/hardware/campaign/ wachsen mit jedem Lauf und
+% zaehlen nicht als Code-Aenderung (A58).
+lines = strtrim(splitlines(strtrim(d)));
+lines = lines(~cellfun(@isempty, lines) & ~contains(lines, 'data/hardware/campaign/'));
+m.gitDirty = st == 0 && ~isempty(lines);
 end

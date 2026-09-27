@@ -38,7 +38,7 @@ CAMPAIGN = os.path.join(ROOT, 'data', 'hardware', 'campaign')
 FIRST_WINDOW_S = 3.4                   # Zeitfenster fuer den Vergleich mit abgebrochenen Laeufen
 N_QUARTERS = 4                         # Abschnitte der Bahn fuer den Fehlerverlauf (Sec. VI-C)
 ACTIVE_JOINTS = [1, 3]                 # J2, J4 (0-basiert)
-TIMING_ORDER = ['M_send', 'M_fb', 'M_fk', 'M_full']
+TIMING_ORDER = ['M_send', 'M_fb', 'M_fk', 'M_full', 'M_fbonly', 'M_sendfb']
 SP_TOL = 0.05                          # Erfolgstoleranz der Set-Point-Reihe [m], wie Table VIII
 SP_HOLD = 0.5                          # Haltezeit fuer die Setzzeit [s]
 # Gelenkgrenzen des Gen3 (Datenblatt) [deg]. Training und Deploy nutzen fuer J2, J4 weitere
@@ -47,7 +47,9 @@ HW_LIMIT_DEG = np.array([np.inf, 128.9, np.inf, 147.8, np.inf, 120.3, np.inf])
 TIMING_LABEL = {'send_only': 'Send only (\\texttt{SendJointSpeedCommand})',
                 'send_feedback': 'Send + feedback',
                 'send_feedback_fk': 'Send + feedback + FK',
-                'closed_loop_zero': 'Closed loop (+ \\texttt{getAction}, pipeline, logging)'}
+                'closed_loop_zero': 'Closed loop (+ \\texttt{getAction}, pipeline, logging)',
+                'feedback_only': 'Feedback only (\\texttt{RefreshFeedback})',
+                'send_then_feedback': 'Send, then feedback'}
 
 
 def load_run(path):
@@ -172,9 +174,15 @@ def setpoint_metrics(path, meta, cfg, L):
     qdeg = (np.degrees(arr(L.q, 7)) + 180.0) % 360.0 - 180.0
     at_hw = np.nanmax(np.abs(qdeg), axis=0) >= HW_LIMIT_DEG - 0.5
     stop = str(meta.stopReason)
+    target = str(getattr(meta, 'targetId', '') or '')      # Labortag 2: Ziel aus setpoint_targets.mat
+    if target in ('', '[]'):
+        target = ''
     return {
         'file': os.path.relpath(path, CAMPAIGN).replace('\\', '/'),
         'condId': str(meta.condId), 'startId': str(meta.startId), 'repetition': int(meta.repetition),
+        'targetId': target or 'N00', 'targetGroup': str(getattr(meta, 'targetGroup', '') or 'nominal'),
+        'targetDist_m': float(getattr(meta, 'targetDist_m', 0.0) or 0.0),
+        'spKey': f'{target}/{meta.startId}' if target else str(meta.startId),
         'dry': bool(meta.dryRun), 'agentLabel': str(meta.agentLabel), 'cmdScale': float(meta.cmdScale),
         'eeSource': str(meta.eeSource), 'maxDuration': float(meta.maxDuration),
         'scriptVersion': str(meta.scriptVersion), 'gitHash': str(meta.gitHash), 'gitDirty': bool(meta.gitDirty),
@@ -308,7 +316,9 @@ def pyplot():
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    plt.rcParams.update({'pdf.fonttype': 42, 'ps.fonttype': 42, 'font.family': 'Arial', 'font.size': 8,
+    # Arial wie im Paper, unter Linux Liberation Sans (A58)
+    plt.rcParams.update({'pdf.fonttype': 42, 'ps.fonttype': 42,
+                         'font.family': ['Arial', 'Liberation Sans', 'DejaVu Sans'], 'font.size': 8,
                          'mathtext.fontset': 'custom', 'mathtext.rm': 'Arial', 'mathtext.it': 'Arial:italic',
                          'axes.linewidth': 0.6, 'axes.edgecolor': INK, 'xtick.color': INK,
                          'ytick.color': INK})
@@ -348,7 +358,7 @@ def table_setpoint(setpoint, out, numbers):
         ok = [r for r in rs if r['success50']]
         lines.append(f'% {cid}{dry}: {len(ok)}/{len(rs)} Laeufe unter 50 mm, Faktor '
                      f'{sorted({r["cmdScale"] for r in rs})}, Regelpunkt {sorted({r["eeSource"] for r in rs})}')
-        by_start = group(rs, 'startId')
+        by_start = group(rs, 'spKey')
         for sid in sorted(by_start, key=lambda s: st.mean(r['d0_m'] for r in by_start[s])):
             g = by_start[sid]
             succ = [r for r in g if r['success50']]
@@ -411,6 +421,29 @@ def fig_setpoint(setpoint, out):
     plt.close(fig)
 
 
+def table_targets(setpoint, out, numbers):
+    """Labortag 2: Erfolg je Ziel ueber alle Starts und Wiederholungen (Bedingung S20_targets)."""
+    rows = []
+    for cid, rs in sorted(group(setpoint).items()):
+        for tid, g in sorted(group(rs, 'targetId').items()):
+            if tid == 'N00':
+                continue
+            ok = [r for r in g if r['success50']]
+            row = {'condId': cid, 'targetId': tid, 'group': g[0]['targetGroup'], 'dist_m': g[0]['targetDist_m'],
+                   'runs': len(g), 'success50': len(ok), 'converged': sum(r['converged'] for r in g),
+                   'final_mean_mm': st.mean(r['final_m'] for r in g) * 1e3,
+                   'final_max_mm': max(r['final_m'] for r in g) * 1e3,
+                   'dry': any(r['dry'] for r in g), 'files': ';'.join(r['file'] for r in g)}
+            rows.append(row)
+            numbers.append({'table': 'setpoint_targets', 'condId': f'{cid}/{tid}', 'quantity': 'success50',
+                            'value': f'{len(ok)}/{len(g)}', 'source': row['files']})
+    if rows:
+        write_csv(rows, os.path.join(out, 'table_setpoint_targets.csv'))
+        for r in rows:
+            print(f"  {r['condId']} {r['targetId']} ({r['group']}, {r['dist_m']:.2f} m): {r['success50']}/{r['runs']} "
+                  f"< 50 mm, Endfehler im Mittel {r['final_mean_mm']:.1f} mm")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--include-dry', action='store_true', help='Trockenlaeufe mit auswerten (nur zum Testen)')
@@ -434,6 +467,7 @@ def main():
     if setpoint:
         table_setpoint(setpoint, a.out, numbers)
         fig_setpoint(setpoint, a.out)
+        table_targets(setpoint, a.out, numbers)
     write_csv(numbers, os.path.join(a.out, 'paper_numbers.csv'))
     print(f'Ergebnisse in {a.out}')
 

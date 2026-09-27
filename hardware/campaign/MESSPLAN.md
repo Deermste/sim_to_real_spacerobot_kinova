@@ -149,3 +149,22 @@ stehen. Bei beiden steht J6 an seiner Grenze von 115,2° und die Soft-Limit-Brem
 ## Noch offen
 
 - Open-Loop-Playback (Sec. V-B) muss nicht wiederholt werden. Die Läufe 001 bis 006 reichen und sind ausgewertet.
+
+## Labortag 2 (vorbereitet am 27.09.2026)
+
+Ablauf in `ANLEITUNG_LABOR_TAG2.md`, Bedingungen in `campaign_plan.m` (`plan.day2`). Drei Teile:
+
+- **Timing (A60):** `M_fbonly` (nur `RefreshFeedback`) und `M_sendfb` (Senden, dann Feedback), dazu `M_fb` als
+  Vergleich. Prüft, ob jeder blockierende Aufruf auf einen internen Takt von etwa 25 ms wartet.
+- **Tracking mit dem Neutraining aus Sec. V:** `T40_r4_3k`, `T40_r0_j6`, `T40_r4_1k` (D16, J6-Grenze 0,9774 rad/s,
+  Hardware-Kappe 0,8 × Gelenkmaximum). Seeds vorab nach dem mittleren EE-MSE in der Simulation gewählt.
+  Vorhersage auf fester Basis in `data/simulation/desktop/DAY2_tracking_pred_*.csv`.
+- **Set-Point zu neun Zielen (A57):** `S20_targets`, Ziele aus `setpoint_targets.mat` (`make_setpoint_targets.m`),
+  sechs im Zielbereich des ROS-Plugins und drei am Rand, Starts S00, S06, S07. Vorhersage aus dem kinematischen
+  Trockenlauf in `day2_dryrun_prediction.csv`: T01, T02, T03, T05 unter 50 mm, T04, T06 und alle Randziele nicht.
+
+Codeänderungen dafür: `deploy_setpoint_v24` kennt `targetMode 'list'` mit `targetId`, prüft Start und Ziel gegen
+die jeweils letzte Freigabe (A58). `check_setpoint_starts('list', 'targets')` gibt die Zielposen frei.
+`deploy_tracking_v24` übernimmt J6-Grenze und Sicherheitsfaktor aus der Bedingung. `campaign_env_meta` zählt
+Index und Freigabelisten nicht mehr als Code-Änderung (A58). `analyze_campaign.py` wertet je Ziel aus
+(`table_setpoint_targets.csv`) und hat Liberation Sans als Ausweichschrift (A58).

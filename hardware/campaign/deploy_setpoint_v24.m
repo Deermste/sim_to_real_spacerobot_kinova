@@ -6,6 +6,9 @@ function result = deploy_setpoint_v24(varargin)
 %       aus hardware/campaign/setpoint_starts.mat (z. B. 'S10_nom', 'S05', 1).
 %   result = DEPLOY_SETPOINT_V24(condId, startId, repetition, Name, Value, ...)
 %       Ueberschreibt einzelne Einstellungen, z. B. 'dryRun', true.
+%   result = DEPLOY_SETPOINT_V24('S20_targets', startId, repetition, 'targetId', 'T03')
+%       Zweite Reihe (Labortag 2): Ziel aus hardware/campaign/setpoint_targets.mat
+%       (make_setpoint_targets). Ziel und Start muessen im Labor freigegeben sein.
 %
 %   Basis ist V3.0 (hardware/deploy/deploy_agent_kinova_point.m, Laeufe 068-073)
 %   mit derselben Observation [ep; ev; v_base; w_base; q; dq; e_ori], derselben
@@ -37,6 +40,7 @@ function result = deploy_setpoint_v24(varargin)
 %        aus konvergiert.
 %
 %   Logs: data/hardware/campaign/<condId>/<condId>_<startId>_rNN_<Zeitstempel>.mat
+%   (bei targetMode 'list': <condId>_<targetId>_<startId>_rNN_<Zeitstempel>.mat)
 %   (Variable "run", Schema sk_campaign_setpoint_v1) und eine Zeile in
 %   data/hardware/campaign/campaign_index.csv. Trockenlaeufe landen in _dryrun/.
 %
@@ -52,7 +56,7 @@ cfg = default_config();
 cfg = derive_config(cfg);
 
 env = campaign_env_meta();
-fprintf('\n=== deploy_setpoint_v24 | %s %s r%02d | %s ===\n', cfg.condId, cfg.startId, cfg.repetition, ...
+fprintf('\n=== deploy_setpoint_v24 | %s %s %s r%02d | %s ===\n', cfg.condId, cfg.targetId, cfg.startId, cfg.repetition, ...
         env.datetimeStart);
 if env.gitDirty
     warning('deploy_setpoint_v24:dirty', ['Git-Arbeitsstand hat uncommittete Aenderungen (%s). ' ...
@@ -99,6 +103,18 @@ switch cfg.targetMode
         assert(strcmp(cfg.eeSource, 'kortex') && numel(cfg.targetKortex) == 3, ...
                'targetMode kortex_fixed braucht eeSource kortex und targetKortex.');
         cfg.target = cfg.targetKortex(:);           % Kortex-Frame, Werkzeugpunkt (wie V3.0)
+    case 'list'
+        assert(strcmp(cfg.eeSource, 'fk') && ~isempty(cfg.targetId), ...
+               'targetMode list braucht eeSource fk und targetId (z. B. ''T03'').');
+        LT = load(cfg.targetsFile);
+        iT = find(strcmp({LT.T.targets.id}, cfg.targetId));
+        assert(~isempty(iT), 'Ziel %s nicht in %s.', cfg.targetId, cfg.targetsFile);
+        cfg.targetsMd5 = file_md5(cfg.targetsFile);
+        cfg.target = LT.T.targets(iT).ee_urdf(:);   % URDF-Frame wie das Trainingsziel
+        cfg.targetGroup = LT.T.targets(iT).group;
+        cfg.targetDist  = LT.T.targets(iT).dist_m;
+        fprintf('Ziel %s (%s, %.2f m vom Nominalziel), Kortex-Frame [%s] m\n', cfg.targetId, ...
+                cfg.targetGroup, cfg.targetDist, num2str(LT.T.targets(iT).ee_real, '%.3f '));
 end
 
 obsLow  = [-cfg.ePLim*ones(3,1); -cfg.eVLim*ones(3,1); -cfg.vBLim*ones(3,1); -cfg.wBLim*ones(3,1); ...
@@ -386,7 +402,9 @@ else
     saveDir = fullfile(cfg.saveRoot, cfg.condId);
 end
 if ~isfolder(saveDir), mkdir(saveDir); end
-fname = sprintf('%s_%s_r%02d_%s.mat', cfg.condId, cfg.startId, cfg.repetition, ...
+runTag = cfg.startId;
+if strcmp(cfg.targetMode, 'list'), runTag = [cfg.targetId '_' cfg.startId]; end
+fname = sprintf('%s_%s_r%02d_%s.mat', cfg.condId, runTag, cfg.repetition, ...
                 char(datetime('now', 'Format', 'yyyyMMdd_HHmmss')));
 filePath = fullfile(saveDir, fname);
 save(filePath, 'run', '-v7');
@@ -463,6 +481,12 @@ cfg.stopOnTimingOverrun = true;
 cfg.eeSource     = 'fk';             % 'fk' (URDF, wie Training) oder 'kortex' (tool_pose, wie V3.0)
 cfg.targetMode   = 'nominal';        % 'nominal' (Trainingsziel) oder 'kortex_fixed'
 cfg.targetKortex = [];               % [x y z] im Kortex-Frame, nur fuer kortex_fixed
+cfg.targetId     = '';               % Ziel aus setpoint_targets.mat, nur fuer targetMode 'list'
+cfg.targetsFile  = sk_path('hardware', 'campaign', 'setpoint_targets.mat');
+cfg.targetsMd5   = '';
+cfg.targetGroup  = '';
+cfg.targetDist   = 0;
+cfg.targetApprovalFile = sk_path('data', 'hardware', 'campaign', 'setpoint_target_check.csv');
 
 % Erfolgsabbruch wie rewardFcn im Trainingsmodell, plus Haltezeit wie V3.0
 cfg.stopOnConvergence = true;
@@ -528,16 +552,29 @@ if isempty(cfg.watchdogTimeout)
 end
 assert(cfg.cmdScale > 0 && cfg.cmdScale <= 1, 'cmdScale muss in (0, 1] liegen.');
 assert(any(strcmp(cfg.eeSource, {'fk', 'kortex'})), 'eeSource unbekannt.');
-assert(any(strcmp(cfg.targetMode, {'nominal', 'kortex_fixed'})), 'targetMode unbekannt.');
+assert(any(strcmp(cfg.targetMode, {'nominal', 'kortex_fixed', 'list'})), 'targetMode unbekannt.');
 end
 
 function check_approval(cfg)
+% Es gilt die letzte Antwort zu einer Pose (A58): eine spaetere Sperre hebt eine
+% fruehere Freigabe auf.
 assert(isfile(cfg.approvalFile), ['Keine Freigaben gefunden (%s). Startposen zuerst mit ' ...
        'check_setpoint_starts im Labor anfahren und freigeben.'], cfg.approvalFile);
-T = readtable(cfg.approvalFile, 'TextType', 'char', 'Delimiter', ',');
-ok = strcmp(T.id, cfg.startId) & T.approved == 1 & strcmp(T.listMd5, cfg.startsMd5);
-assert(any(ok), ['Startpose %s ist fuer die aktuelle Startliste (MD5 %s) nicht freigegeben. ' ...
+assert(latest_approval(cfg.approvalFile, cfg.startId, cfg.startsMd5), ...
+       ['Startpose %s ist fuer die aktuelle Startliste (MD5 %s) nicht freigegeben. ' ...
        'check_setpoint_starts(''ids'', {''%s''}) ausfuehren.'], cfg.startId, cfg.startsMd5, cfg.startId);
+if strcmp(cfg.targetMode, 'list')
+    assert(isfile(cfg.targetApprovalFile) && ...
+           latest_approval(cfg.targetApprovalFile, cfg.targetId, cfg.targetsMd5), ...
+           ['Ziel %s ist nicht freigegeben. check_setpoint_starts(''list'', ''targets'', ' ...
+           '''ids'', {''%s''}) ausfuehren.'], cfg.targetId, cfg.targetId);
+end
+end
+
+function ok = latest_approval(file, id, md5)
+T = readtable(file, 'TextType', 'char', 'Delimiter', ',');
+rows = find(strcmp(T.id, id) & strcmp(T.listMd5, md5));
+ok = ~isempty(rows) && T.approved(rows(end)) == 1;
 end
 
 %% ========================================================================
@@ -665,6 +702,10 @@ meta.cmdScale      = cfg.cmdScale;
 meta.eeSource      = cfg.eeSource;
 meta.targetMode    = cfg.targetMode;
 meta.target        = cfg.target(:).';
+meta.targetId      = cfg.targetId;
+meta.targetGroup   = cfg.targetGroup;
+meta.targetDist_m  = cfg.targetDist;
+meta.targetsMd5    = cfg.targetsMd5;
 meta.startsMd5     = cfg.startsMd5;
 meta.d0List_m      = cfg.d0List;
 meta.oodThreshold  = cfg.oodThreshold;

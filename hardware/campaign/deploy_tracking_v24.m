@@ -477,6 +477,9 @@ else
     cfg.cmdScale        = c.cmdScale;
     cfg.referenceTiming = c.referenceTiming;
     cfg.purpose         = c.purpose;
+    cfg.satUpper(6)     = c.j6Lim;          % J6-Grenze des Trainings (0.1 oder 0.9774 rad/s)
+    cfg.satLower        = -cfg.satUpper;
+    cfg.safetyFactor    = c.safetyFactor;
     ov = struct();
     rest = varargin(3:end);
 end
@@ -500,6 +503,8 @@ cfg.maxDuration = cfg.pathDuration;
 cfg.omega       = pi / cfg.maxDuration;
 cfg.center      = [cfg.startPoint(1), cfg.startPoint(2), cfg.startPoint(3) - cfg.r];
 cfg.dqHwCap     = cfg.safetyFactor * cfg.dqLim;
+assert(all(cfg.dqHwCap >= cfg.satUpper - 1e-3), ['Hardware-Kappe safetyFactor*dqLim liegt unter der ' ...
+       'Saettigung des Trainings. safetyFactor erhoehen oder Bedingung pruefen.']);
 if isempty(cfg.watchdogTimeout)
     cfg.watchdogTimeout = max(0.10, 1.5 * cfg.Ts);
 end

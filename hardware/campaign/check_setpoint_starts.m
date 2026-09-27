@@ -8,6 +8,9 @@ function T = check_setpoint_starts(varargin)
 %   faehrt zurueck zum Anker.
 %   CHECK_SETPOINT_STARTS('ids', {'S05', 'S06'}) prueft nur die genannten Posen.
 %   CHECK_SETPOINT_STARTS('dryRun', true) zeigt nur den Ablauf.
+%   CHECK_SETPOINT_STARTS('list', 'targets') prueft die Pruefposen der Zielliste
+%   hardware/campaign/setpoint_targets.mat (make_setpoint_targets, Labortag 2) und
+%   schreibt nach data/hardware/campaign/setpoint_target_check.csv.
 %
 %   Jede Antwort wird mit der gemessenen Kortex-tool_pose und der aus der FK
 %   vorhergesagten Position an data/hardware/campaign/setpoint_start_check.csv
@@ -23,6 +26,7 @@ p = inputParser;
 p.addParameter('ids', {});
 p.addParameter('dryRun', false);
 p.addParameter('operatorNote', '');
+p.addParameter('list', 'starts');
 p.parse(varargin{:});
 o = p.Results;
 
@@ -32,30 +36,44 @@ cfg.kinovaIP = '192.168.0.10'; cfg.kinovaUser = 'admin'; cfg.kinovaPassword = 'a
 cfg.sessionTimeoutMs = uint32(60000); cfg.controlTimeoutMs = uint32(200); cfg.speedCmdDuration = 0;
 cfg.homingTimeout_s = 60; cfg.homingTol_deg = 1.0; cfg.homingSettle_s = 1.0;
 cfg.qAnchor = deg2rad([0; 15; 180; -130; 0; 55; 90]);
-cfg.startsFile = sk_path('hardware', 'campaign', 'setpoint_starts.mat');
-if o.dryRun
-    outFile = sk_path('data', 'hardware', 'campaign', '_dryrun', 'setpoint_start_check_dryrun.csv');
+assert(any(strcmp(o.list, {'starts', 'targets'})), 'list muss starts oder targets sein.');
+isTargets = strcmp(o.list, 'targets');
+if isTargets
+    cfg.startsFile = sk_path('hardware', 'campaign', 'setpoint_targets.mat');
+    outName = 'setpoint_target_check';
 else
-    outFile = sk_path('data', 'hardware', 'campaign', 'setpoint_start_check.csv');
+    cfg.startsFile = sk_path('hardware', 'campaign', 'setpoint_starts.mat');
+    outName = 'setpoint_start_check';
+end
+if o.dryRun
+    outFile = sk_path('data', 'hardware', 'campaign', '_dryrun', [outName '_dryrun.csv']);
+else
+    outFile = sk_path('data', 'hardware', 'campaign', [outName '.csv']);
 end
 
 L = load(cfg.startsFile);
-S = L.S;
 listMd5 = file_md5(cfg.startsFile);
 rbt = importrobot(sk_path('robot', 'SpaceKinova.urdf'));
 rbt.DataFormat = 'row';
 F = kortex_frames(rbt);
 env = campaign_env_meta();
 
-poses = struct('id', 'Z00', 'q', deg2rad(S.target.q_check_deg(:)), 'd0', 0);
-for i = 1:numel(S.starts)
-    poses(end+1) = struct('id', S.starts(i).id, 'q', deg2rad(S.starts(i).q_deg(:)), ...
-                          'd0', S.starts(i).d0_m); %#ok<AGROW>
+if isTargets
+    TL = L.T.targets([L.T.targets.checkOk]);
+    poses = struct('id', {TL.id}, 'q', cellfun(@(q) deg2rad(q(:)), {TL.q_check_deg}, 'UniformOutput', false), ...
+                   'd0', {TL.dist_m});
+else
+    S = L.S;
+    poses = struct('id', 'Z00', 'q', deg2rad(S.target.q_check_deg(:)), 'd0', 0);
+    for i = 1:numel(S.starts)
+        poses(end+1) = struct('id', S.starts(i).id, 'q', deg2rad(S.starts(i).q_deg(:)), ...
+                              'd0', S.starts(i).d0_m); %#ok<AGROW>
+    end
 end
 if ~isempty(o.ids)
     poses = poses(ismember({poses.id}, o.ids));
 end
-fprintf('\n=== Anfahrtest %d Posen, Startliste MD5 %s ===\n', numel(poses), listMd5);
+fprintf('\n=== Anfahrtest %d Posen (%s), Liste MD5 %s ===\n', numel(poses), o.list, listMd5);
 fprintf('E-Stop in der Hand. Jede Anfahrt startet am Anker [0 15 180 -130 0 55 90] deg.\n');
 
 apiHandle = [];
@@ -69,7 +87,8 @@ end
 rows = {};
 for i = 1:numel(poses)
     ps = poses(i);
-    fprintf('\n-- %s (d0 = %.2f m), q = [%s] deg\n', ps.id, ps.d0, num2str(round(rad2deg(ps.q(:).'), 1)));
+    fprintf('\n-- %s (%s = %.2f m), q = [%s] deg\n', ps.id, ternary(isTargets, 'Abstand zu N', 'd0'), ps.d0, ...
+            num2str(round(rad2deg(ps.q(:).'), 1)));
     if o.dryRun
         fprintf('   [Trockenlauf] Anker -> %s -> Anker\n', ps.id);
         continue;
@@ -103,6 +122,10 @@ for i = 1:numel(poses)
 end
 T = rows;
 fprintf('\nErgebnisse: %s\n', outFile);
+end
+
+function v = ternary(c, a, b)
+if c, v = a; else, v = b; end
 end
 
 function q = unwrap_to(q, ref)

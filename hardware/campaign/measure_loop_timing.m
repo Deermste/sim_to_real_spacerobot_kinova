@@ -13,6 +13,8 @@ function result = measure_loop_timing(condId, repetition, varargin)
 %     send_feedback_fk : + FK und Jacobi (entspricht dem Open-Loop-Playback)
 %     closed_loop_zero : + Observation, getAction, Trainings-Kette und Logging wie
 %                        deploy_tracking_v24, gesendet wird trotzdem Null
+%     feedback_only    : nur RefreshFeedback, kein Senden (Labortag 2, A60)
+%     send_then_feedback : erst Senden, direkt danach RefreshFeedback (Labortag 2, A60)
 %   Der Befehlsinhalt beeinflusst die API-Laufzeit nicht. Die Messung zeigt daher
 %   dieselben Zeiten wie ein bewegter Lauf, ohne dass sich der Arm bewegt.
 %
@@ -41,9 +43,13 @@ for i = 1:2:numel(varargin)
     assert(isfield(cfg, varargin{i}), 'Unbekannte Einstellung: %s', varargin{i});
     cfg.(varargin{i}) = varargin{i + 1};
 end
-modes = {'send_only', 'send_feedback', 'send_feedback_fk', 'closed_loop_zero'};
+modes = {'send_only', 'send_feedback', 'send_feedback_fk', 'closed_loop_zero', 'feedback_only', ...
+         'send_then_feedback'};
 iMode = find(strcmp(modes, cfg.mode));
 assert(~isempty(iMode), 'Unbekannter Modus %s', cfg.mode);
+doSend = iMode ~= 5;
+fbAfterSend = iMode == 6;
+if iMode >= 5, iMode = 2; end        % sonst wie send_feedback: keine FK, kein Agent
 env = campaign_env_meta();
 
 needFk = iMode >= 3;
@@ -79,7 +85,7 @@ for k = 1:n
     L.t_wall(k) = t0;
     if k > 1, L.dt_loop(k) = t0 - tPrev; end
     tPrev = t0;
-    if iMode >= 2
+    if iMode >= 2 && ~fbAfterSend
         tA = toc(tRun);
         if ~cfg.dryRun
             st = kinova_read_state(apiHandle, cfg);
@@ -110,10 +116,19 @@ for k = 1:n
         L.dur_pipeline(k) = toc(tRun) - tE;
     end
     tF = toc(tRun);
-    if ~cfg.dryRun
+    if ~cfg.dryRun && doSend
         kinova_send_deg(apiHandle, zeros(1, cfg.nJ), cfg);
     end
     L.dur_send(k) = toc(tRun) - tF;
+    if fbAfterSend
+        tA = toc(tRun);
+        if ~cfg.dryRun
+            st = kinova_read_state(apiHandle, cfg);
+            L.fault(k) = st.fault;
+            if st.fault, warning('Fault in Zyklus %d, Messung beendet.', k); break; end
+        end
+        L.dur_feedback(k) = toc(tRun) - tA;
+    end
     if needAgent
         tG = toc(tRun);
         Lx.q(k, :) = q.'; Lx.obs(k, :) = obs.'; Lx.dq_raw(k, :) = dq_raw.';
