@@ -711,7 +711,7 @@ Alle sechs Trainings stabil (6,8–7,6 min), keine Abbrüche in den letzten 200 
   verlässlich, die ruhige Bewegung bleibt aber nicht. Bei 0,05 rad bringt der glatte Basis-Term noch +0,74 pro
   Schritt, die EE-Boni +4. Gewicht oder Breite des Basis-Terms wären der nächste Parameter (nicht getestet).
 
-### D11 Algorithmenvergleich neu (entschieden 27.09.2026, geplant)
+### D11 Algorithmenvergleich neu (entschieden 27.09.2026, erledigt 27.09.)
 
 Anlass: Der Vergleich in Sec. IV-A (Table II, Fig. 4) ist so nicht haltbar.
 - Die sechs Agenten in `SavedAgents/Torque/Circular/` entstanden am 16.03.2026 mit einem anderen Reward als Gl. 3
@@ -758,6 +758,26 @@ Schritte und Aufwand:
    und `reviewer_comments.md` (A8, A20, A28, A29, A64) aktualisieren.
 
 Entschieden 27.09.: keine zusätzliche Lernraten-Reihe.
+
+Ergebnis (27.09.): `desktop_d11_run()` von 13:52 bis 17:09 (Training 3 h 15 min, Auswertung 30 min), deutlich
+schneller als geschätzt. Je Lauf: PPO ≈ 6 min, TRPO ≈ 11 min, PG ≈ 5 min, DDPG und TD3 ≈ 3 min, SAC ≈ 6 min.
+DDPG und TD3 sind so kurz, weil ihre Episoden früh abbrechen (im Mittel 119 bzw. 106 Tsd. Umgebungsschritte statt
+≈ 335 Tsd.). Auswertung `D11_eval_20260927_170951_*`, Aktionen `D11_actions_20260927_171831.csv`
+(`desktop_d11_actions.m`), Tabelle und Abbildung mit `fig/src/plot_d11_algos.py` im Paper-Repo.
+
+| Verfahren | Seeds ohne Abbruch (nominal) | K1 [m²] Mittel ± Std | K3 [rad] | letztes Viertel [m] | Befund |
+|---|---|---|---|---|---|
+| PPO | 4/5 | 0,0136 ± 0,0203 (ohne Seed 0: 0,0045) | 0,043 (0,022) | 0,118 | Seed 0 sättigt J2/J4, Abbruch nach 1,65 s |
+| TRPO | 5/5 | 0,0065 ± 0,0026 | 0,016 | 0,146 | gleichmäßigste Seeds, höchster Return 1430 |
+| PG | 0/5 | 0,058 | 0,118 | – | drei von fünf Seeds gesättigt |
+| DDPG | 0/5 | 0,047 | 0,134 | – | alle gesättigt (Betrag ≥ 0,91), Abbruch ≤ 3,45 s |
+| TD3 | 0/5 | 0,052 | 0,130 | – | wie DDPG, gleiche Vorzeichenmuster ergeben identische Bahnen |
+| SAC | 5/5 | 0,094 | 0,029 | 0,409 | Befehle ≈ 0 (Betrag < 0,04), Arm bleibt fast stehen, sammelt Basis-Bonus |
+
+Deutung: Mit Standardwerten und 1000 Episoden lernen nur PPO und TRPO die Bahn. Beide verlieren im letzten
+Viertel an Genauigkeit wie die r0-Agenten in D14 (Sec. V). SAC landet im lokalen Optimum „ruhige Basis, kein
+Tracking“. Die Off-Policy-Verfahren sind mit Puffer 10⁴, Lernrate 10⁻² und Episodenbudget benachteiligt, das steht
+als Grenze im Text. PPO bleibt gewählt, der Text sagt, dass der Vergleich keinen Vorsprung vor TRPO zeigt.
 
 ### Nicht geplant
 
