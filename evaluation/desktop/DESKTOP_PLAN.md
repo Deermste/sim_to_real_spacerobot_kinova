@@ -38,6 +38,7 @@ Laborreihe gebraucht wird. Einzige Ausnahme ist D10, falls das Agentenpaar auf d
 | D13 | Wie D12, aber mit den Optionen des frühen PPO (Modus 0 bis 2, 3 Seeds) | A51, A62 | 1 h | 20 min + 20 min Auswertung | nein | ✅ 27.09., gescheitert (Training instabil) |
 | D14 | Wie D13, synchron und mit Gradient Clipping | A51, A62 | 1 h | 65 min + 15 min Auswertung | nein | ✅ 27.09. |
 | D15 | Physik-Check: kleinste Basisdrehung bei exakter Bahn (Impulserhaltung, verallgemeinerte Jacobi-Matrix) | A51 | ½ Tag | ≈ 1,5 h | nein | ✅ 27.09. |
+| D16 | Wie D14 (r0 und r2), J6-Grenze 0,9774 statt 0,1 rad/s | A51, D15 | 1 h | 40 min + 15 min Auswertung | nein | ✅ 27.09. |
 
 Summe D0 bis D9: etwa 15 bis 22 h Arbeit und 2 h Rechenzeit. Dort ist die Rechenzeit kein Engpass. D10 und D11
 sind Trainings, dort bestimmt die Rechenzeit die Dauer. D11 belegt den Desktop 1 bis 1,5 Tage mit allen Kernen,
@@ -673,6 +674,29 @@ Modell `[0 0 0]`), `desktop_d15_base_rotation.m` (Validierung und schrittweise B
   Policy sind nur über die Beschleunigungsgrenze berücksichtigt.
 - Nächster sinnvoller Versuch: Neutraining mit höherer J6-Grenze (z. B. 0,98 rad/s wie J2/J4) und r0 oder r2. Wenn
   der Physik-Check stimmt, sollte die Basis dann unter etwa 0,02–0,05 rad bleiben können.
+
+### D16 Höhere J6-Grenze ✅ 27.09.2026
+
+Frage aus D15: Folgen die Agenten der Bahn mit ruhigerer Basis, wenn J6 schneller sein darf? Aufbau wie D14
+(Optionen des frühen PPO, synchron, Gradient Clipping, 1000 Episoden, 65 kg), aber Sättigung von J6 bei
+0,9774 rad/s wie J2 und J4 (neuer Parameter `p_j6_lim` in `SK_desktop`, Standard 0,1 und damit alle früheren
+Ergebnisse unverändert, geprüft: 1698,9196 und 1593,0836). Aufruf `desktop_d12_run([0 2], 0:2, [], 'base_sync', 0.9774)`,
+Agenten in `SavedAgents/MotionProfile/D16/`, Auswertung `D16_eval_20260927_092501_*` (jeder Agent mit seiner J6-Grenze).
+Alle sechs Trainings stabil (6,8–7,6 min), keine Abbrüche in den letzten 200 Episoden.
+
+| Reward, J6 0,9774 rad/s | letztes Viertel stoch [m] | Basis max stoch [rad] | Return (Modus 0) stoch |
+|---|---|---|---|
+| r0, Seeds 0–2 | 0,117–0,170 | 0,006–0,022 | 1303–1331 |
+| r2, Seeds 0–2 | 0,006–0,039 | 0,031–0,080 | 1513–1672 |
+
+- r0 bricht in allen drei Seeds wieder ein, die Basis bleibt unter der Bonus-Schwelle. An der Ursache aus D14
+  ändert die J6-Grenze nichts.
+- r2 folgt in allen drei Seeds. Nur Seed 0 dreht die Basis deutlich weniger (0,031–0,041 rad), dafür 3–4 cm Fehler
+  im letzten Viertel. Seeds 1 und 2 liegen bei 0,059–0,080 rad wie in D14.
+- Deutung: Die ruhigere Bewegung, die der Physik-Check D15 ohne J6-Grenze zeigt (0,021 rad bei ≤ 22 mm), finden
+  die Policies in 1000 Episoden nicht. Mit r2 fehlt ein Anreiz, die Basis unter der Schwelle zu halten, sobald
+  der Bonus ohnehin verloren ist. Möglich wären ein dichter Basis-Term, der auf der Bahn wirkt, oder längeres
+  Training. Nicht getestet.
 
 ### D11 Algorithmenvergleich neu
 
