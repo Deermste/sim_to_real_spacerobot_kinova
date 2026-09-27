@@ -37,6 +37,7 @@ Laborreihe gebraucht wird. Einzige Ausnahme ist D10, falls das Agentenpaar auf d
 | D12 | Neutraining mit geändertem Reward (ohne Basis-Terme / Basis-Bonus nur auf der Bahn / dicht und gekoppelt) | A51, A62 | 3 h | ≈ 1–1,5 h je Variante und Seed | Entscheidung (f) | läuft seit 26.09. |
 | D13 | Wie D12, aber mit den Optionen des frühen PPO (Modus 0 bis 2, 3 Seeds) | A51, A62 | 1 h | 20 min + 20 min Auswertung | nein | ✅ 27.09., gescheitert (Training instabil) |
 | D14 | Wie D13, synchron und mit Gradient Clipping | A51, A62 | 1 h | 65 min + 15 min Auswertung | nein | ✅ 27.09. |
+| D15 | Physik-Check: kleinste Basisdrehung bei exakter Bahn (Impulserhaltung, verallgemeinerte Jacobi-Matrix) | A51 | ½ Tag | ≈ 1,5 h | nein | ✅ 27.09. |
 
 Summe D0 bis D9: etwa 15 bis 22 h Arbeit und 2 h Rechenzeit. Dort ist die Rechenzeit kein Engpass. D10 und D11
 sind Trainings, dort bestimmt die Rechenzeit die Dauer. D11 belegt den Desktop 1 bis 1,5 Tage mit allen Kernen,
@@ -644,6 +645,34 @@ Letztes Viertel und größter Basis-Orientierungsfehler, deterministisch und üb
   Dritteln.
 - Einschränkungen: D14 unterscheidet sich von D10 und D12 in den Optionen und im Trainingsmodus. Der saubere Vergleich
   ist der innerhalb von D14. Ein Seed-Satz, 1000 Episoden, nur Halbkreis, 65 kg.
+
+### D15 Physik-Check: Wie weit muss sich die Basis drehen? ✅ 27.09.2026
+
+Skripte `desktop_freefloat.m` (verallgemeinerte Jacobi-Matrix nach Umetani und Yoshida aus `robot/SpaceKinova.urdf`,
+Basis 65 kg, Trägheit 10,833 kg m², Arm 0,5 m über dem Basis-Schwerpunkt, Anfangsimpuls null, Schwerkraft im
+Modell `[0 0 0]`), `desktop_d15_base_rotation.m` (Validierung und schrittweise Bahnrechnung) und
+`desktop_d15_j6_sweep.m` (J6-Profile). Ergebnisse `D15_base_rotation_20260927_065320*.csv` und
+`D15_j6_sweep_20260927_081731.csv`.
+
+- Validierung: Die geloggten Gelenkbahnen aus Simscape (deterministisch, 65 kg) eingespielt. Basisdrehung max
+  frühes PPO 0,0568 gegen 0,0562 rad, Optimized 0,0179 gegen 0,0179 rad, größte Abweichung 0,001 rad,
+  Endeffektor-Bahn auf 5 mm. Das Modell gibt die Simscape-Kopplung wieder.
+- Mit J2/J4/J6 und den Trainingsgrenzen (0,9774 / 0,9774 / 0,1 rad/s, Gelenkwinkel wie im Training) folgt der
+  Endeffektor dem Halbkreis auf 2 mm. Die Basisdrehung liegt dann bei 0,055–0,076 rad: J6-Profile mit einem
+  Umschaltpunkt (75 Profile, alle zulässig) 0,055–0,076 rad, bestes Profil J6 durchgehend −0,1 rad/s (0,0548 rad),
+  J6 fest 0,070 rad. Die schrittweise Minimierung der Basis-Winkelgeschwindigkeit ergab 0,065–0,075 rad. Das frühe
+  PPO (0,056 rad) liegt praktisch am besten gefundenen Wert, allerdings mit bis zu 18 mm Bahnfehler.
+- Ohne die J6-Grenze (J6 bis 0,9774 rad/s, Gelenkwinkel begrenzt) fand die schrittweise Rechnung 0,053 rad bei
+  exakter Bahn und, mit der Beschleunigungsgrenze des Rate Limiters (0,5 rad/s²), 0,021 rad bei höchstens 22 mm
+  Bahnfehler. Ohne Gelenkwinkel-Grenzen wären 0,005 rad möglich, J6 dreht dann aber bis 3,1 rad (Grenze 2,01).
+  Mit allen 7 Gelenken (Set-Point-Grenzen) 0,046–0,048 rad (schrittweise, obere Schranke).
+- Deutung: Mit den Trainingsgrenzen verlangt die Bahn etwa 0,055 rad Basisdrehung, fast das Dreifache der
+  Bonus-Schwelle von 0,02 rad. Der Basis-Bonus war damit bei voller Bahn nicht erreichbar, der Einbruch ist die
+  Folge dieses Zielkonflikts. Die J6-Grenze von 0,1 rad/s ist ein Hauptgrund. Alle Werte sind obere Schranken
+  (schrittweise Rechnung, Profile mit einem Umschaltpunkt), kein bewiesenes Minimum. Filter und Rate Limiter der
+  Policy sind nur über die Beschleunigungsgrenze berücksichtigt.
+- Nächster sinnvoller Versuch: Neutraining mit höherer J6-Grenze (z. B. 0,98 rad/s wie J2/J4) und r0 oder r2. Wenn
+  der Physik-Check stimmt, sollte die Basis dann unter etwa 0,02–0,05 rad bleiben können.
 
 ### D11 Algorithmenvergleich neu
 
