@@ -32,6 +32,7 @@ function cfg = desktop_config(varargin)
 %                  2 = Basis-Bonus nur auf der Bahn, 3 = dicht und gekoppelt, 4 = wie 2 plus glatter
 %                  Basis-Term auf der Bahn. Siehe desktop_build_model
 %     j6_lim       Saettigung von J6 [rad/s], Training 0,1 (D16 testet 0,9774 wie J2 und J4)
+%     base_w       Gewicht des glatten Basis-Terms in reward_mode 4, Standard 2 (D16), variiert in D17
 %     ref_timing   'wall' = Referenz nach Zeit. 'sample' = Referenz rueckt pro Agentenschritt um Ts_ref_step
 %                  vor (Verhalten von V2.1), die Geschwindigkeitsreferenz bleibt die nominale
 %     Ts_ref_step  Referenzvorschub pro Schritt bei 'sample' [s], Standard 0,025
@@ -61,6 +62,7 @@ cfg.obs_mode    = 0;
 cfg.obs_noise   = zeros(29, 1);
 cfg.reward_mode = 0;
 cfg.j6_lim      = 0.1;
+cfg.base_w      = 2;
 cfg.ref_timing  = 'wall';
 cfg.Ts_ref_step = 0.025;
 cfg.explore     = false;

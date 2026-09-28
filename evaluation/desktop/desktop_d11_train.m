@@ -51,7 +51,7 @@ ec = desktop_config('Ts', cfg.Ts, 'Ts_agent', cfg.Ts_agent, 'T', cfg.T, 'base_ma
 vars = struct('EE_ref', EE_ref, 'EE_vref', EE_vref, 'reward_init', 0, 'isdone_init', 0, ...
     'p_Ts', ec.Ts, 'p_Ts_agent', ec.Ts_agent, 'p_T', ec.T, 'p_base_mass', ec.base_mass, ...
     'p_delay_steps', 0, 'p_damp_scale', 1, 'p_slew', ec.slew, 'p_cmd_scale', 1, 'p_obs_mode', 0, ...
-    'p_obs_noise', zeros(29, 1), 'p_reward_mode', cfg.rewardMode, 'p_j6_lim', cfg.j6Lim);
+    'p_obs_noise', zeros(29, 1), 'p_reward_mode', cfg.rewardMode, 'p_j6_lim', cfg.j6Lim, 'p_base_w', 2);
 fn = fieldnames(vars);
 for k = 1:numel(fn)
     assignin('base', fn{k}, vars.(fn{k}));
@@ -82,8 +82,8 @@ assignin('base', 'agent', agent);
 
 % --- Umgebung ---
 env = rlSimulinkEnv(mdl, [mdl '/RL_Agent'], obsInfo, actInfo);
-env.ResetFcn = @(in) setVariable(setVariable(setVariable(setVariable(in, 'reward_init', 0), 'isdone_init', 0), ...
-    'p_reward_mode', cfg.rewardMode), 'p_j6_lim', cfg.j6Lim);
+env.ResetFcn = @(in) setVariable(setVariable(setVariable(setVariable(setVariable(in, 'reward_init', 0), ...
+    'isdone_init', 0), 'p_reward_mode', cfg.rewardMode), 'p_j6_lim', cfg.j6Lim), 'p_base_w', 2);
 
 % --- Training ---
 par = rl.option.ParallelTraining('Mode', cfg.parMode);

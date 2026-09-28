@@ -19,6 +19,7 @@ function mdlFile = desktop_build_model(force)
 %     p_obs_noise    29x1 Standardabweichungen fuer Beobachtungsrauschen vor dem Agenten (D7), Standard 0
 %     p_reward_mode  Reward-Variante (D12, A51), 0 = wie im Training. Siehe rewardCode unten
 %     p_j6_lim       Saettigung von J6 [rad/s] (D16), Training 0,1
+%     p_base_w       Gewicht des glatten Basis-Terms in Reward-Modus 4 (D17), Standard 2 wie in D16
 %   Zusaetzlich geloggt: Rohaktion, gesaettigte, gefilterte, ratenbegrenzte und skalierte Aktion,
 %   Gelenkwinkel-Befehl hinter der Positionssaettigung, Beobachtung (obs) und Agenten-Eingang (obs_agent),
 %   isDone.
@@ -65,6 +66,8 @@ rw = sfroot().find('-isa', 'Stateflow.EMChart', 'Path', rwBlk);
 rw.Script = rewardCode();
 pm = rw.find('-isa', 'Stateflow.Data', 'Name', 'p_reward_mode');
 pm.Scope = 'Parameter';
+pw = rw.find('-isa', 'Stateflow.Data', 'Name', 'p_base_w');
+pw.Scope = 'Parameter';
 
 % --- Basis ---
 inertia = [dst '/Robot/base_link/Inertia'];
@@ -162,7 +165,7 @@ end
 function code = rewardCode()
 % Modus 0 ist Zeile fuer Zeile der Reward des Originalmodells (rewardFcn, gleich seit 09.04.2026).
 code = strjoin({
-'function [reward, isDone] = rewardFcn(ep, ev, dq_cmd, dq_cmd_prev, w_base, e_ori, p_reward_mode)'
+'function [reward, isDone] = rewardFcn(ep, ev, dq_cmd, dq_cmd_prev, w_base, e_ori, p_reward_mode, p_base_w)'
 '% Reward des Tracking-Trainings mit Varianten fuer D12 (Befund A51)'
 '%   p_reward_mode 0: wie im Training seit 09.04. (Basis-Strafen und Basis-Bonus)'
 '%                 1: ohne Basis-Terme, wie beim fruehen PPO (Modell im Commit 50ad2ce, ohne Abbruch bei ori > 1)'
@@ -170,7 +173,8 @@ code = strjoin({
 '%                 3: dicht und gekoppelt: glatte EE-Boni, Basis-Bonus mit der Tracking-Guete gewichtet,'
 '%                    linearer Positionsterm -5*min(|ep|, 0,2) (hoechstens -1 pro Schritt, damit ein Abbruch'
 '%                    nicht billiger wird als Weiterfahren). Basis-Strafen wie 0'
-'%                 4: wie 2, dazu auf der Bahn (EE-Fehler < 5 cm) ein glatter Basis-Term +2*exp(-(ori/0,05)^2)'
+'%                 4: wie 2, dazu auf der Bahn (EE-Fehler < 5 cm) ein glatter Basis-Term'
+'%                    +p_base_w*exp(-(ori/0,05)^2), p_base_w = 2 in D16, variiert in D17'
 'mode = p_reward_mode;'
 ''
 'if any(~isfinite([ep; ev; dq_cmd; dq_cmd_prev; w_base; e_ori]))'
@@ -228,7 +232,7 @@ code = strjoin({
 '        reward = reward + 2;'
 '    end'
 '    if mode == 4 && dist < 0.05'
-'        reward = reward + 2.0 * exp(-(ori / 0.05)^2);'
+'        reward = reward + p_base_w * exp(-(ori / 0.05)^2);'
 '        if ori < 0.02 && w_norm < 0.01'
 '            reward = reward + 2;'
 '        end'
