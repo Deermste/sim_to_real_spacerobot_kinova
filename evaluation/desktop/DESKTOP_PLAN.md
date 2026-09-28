@@ -779,7 +779,7 @@ Viertel an Genauigkeit wie die r0-Agenten in D14 (Sec. V). SAC landet im lokalen
 Tracking“. Die Off-Policy-Verfahren sind mit Puffer 10⁴, Lernrate 10⁻² und Episodenbudget benachteiligt, das steht
 als Grenze im Text. PPO bleibt gewählt, der Text sagt, dass der Vergleich keinen Vorsprung vor TRPO zeigt.
 
-### D17 Kurve Tracking gegen Basisdrehung (gestartet 28.09.2026)
+### D17 Kurve Tracking gegen Basisdrehung ✅ 28.09.2026
 
 Frage: Wie viel Basisdrehung kostet wie viel Tracking-Genauigkeit? Nach D16 folgen alle acht r4-Agenten der Bahn,
 die Basis dreht sich aber um etwa 0,05 rad. Der kinematische Check (D15) erlaubt etwa 0,02 rad. Das Gewicht des
@@ -795,6 +795,26 @@ Mit Standardwert liefern Modus 0, 2 und 4 bitgleiche Returns wie vorher (Optimiz
 - Auswertung `desktop_d17_eval`: deterministisch und 10 stochastische Episoden je Agent, RMS- und Viertelfehler,
   größter Basis-Orientierungsfehler, Abbrüche. Ergebnis `D17_eval_<Zeit>_*`.
 - Dauer geschätzt 12 × ≈ 21 min ≈ 4,2 h plus Auswertung.
+
+Ergebnis (`D17_eval_20260928_144737_*`, Training 9:50–14:41, je 21–26 min): Alle 20 Agenten (Gewichte 0, 4, 8,
+16 mit je drei Seeds und Gewicht 2 mit acht Seeds) folgen der ganzen Bahn, keine Episode bricht ab.
+
+| Gewicht | Seeds | größte Basisdrehung det. [rad], Median (Bereich) | RMS det. [mm] | ruhige Gruppe |
+|---|---|---|---|---|
+| 0 | 3 | 0,053 (0,025–0,058) | 9–24 | 1 |
+| 2 | 8 | 0,051 (0,023–0,060) | 8–27 | 2 |
+| 4 | 3 | 0,044 (0,031–0,071) | 9–26 | 1 |
+| 8 | 3 | 0,052 (0,050–0,066) | 12–14 | 0 |
+| 16 | 3 | 0,045 (0,025–0,060) | 13–16 | 1 |
+
+- Kein Trend mit dem Gewicht. Über alle Agenten zwei Gruppen: 5 Agenten mit 0,023–0,031 rad und RMS 16–27 mm
+  (Median 24 mm), 15 Agenten mit 0,044–0,071 rad und RMS 8–18 mm (Median 11 mm). Die ruhige Gruppe liegt nahe am
+  kinematischen Profil ohne J6-Grenze (0,021 rad, D15). Eine ruhige Basis kostet etwa den doppelten Tracking-Fehler.
+- Welche Lösung ein Agent findet, entscheidet der Seed. Ein Reward-Gewicht allein wählt die ruhige Lösung nicht
+  zuverlässig aus. Nächster Kandidat wäre eine Nebenbedingung auf die Basisdrehung (z. B. Lagrange-PPO) oder ein
+  Curriculum auf den Basis-Term (nicht getestet).
+- Im Paper: Absatz und neue Abbildung `fig:tradeoff` in Sec. V-C, Satz in Beitrag 2 und im Fazit
+  (`fig/src/plot_d17_tradeoff.py` im Paper-Repo).
 
 ### Nicht geplant
 
