@@ -779,6 +779,23 @@ Viertel an Genauigkeit wie die r0-Agenten in D14 (Sec. V). SAC landet im lokalen
 Tracking“. Die Off-Policy-Verfahren sind mit Puffer 10⁴, Lernrate 10⁻² und Episodenbudget benachteiligt, das steht
 als Grenze im Text. PPO bleibt gewählt, der Text sagt, dass der Vergleich keinen Vorsprung vor TRPO zeigt.
 
+### D17 Kurve Tracking gegen Basisdrehung (gestartet 28.09.2026)
+
+Frage: Wie viel Basisdrehung kostet wie viel Tracking-Genauigkeit? Nach D16 folgen alle acht r4-Agenten der Bahn,
+die Basis dreht sich aber um etwa 0,05 rad. Der kinematische Check (D15) erlaubt etwa 0,02 rad. Das Gewicht des
+glatten Basis-Terms war der offene Parameter.
+
+Aufbau wie der lange r4-Lauf aus D16: Reward-Modus 4, Optionen `base_sync`, J6 0,9774 rad/s, 3000 Episoden. Neu ist
+der Modellparameter `p_base_w` (Gewicht von +w·exp(−(ori/0,05)²), nur auf der Bahn), Standard 2 wie in D16.
+Mit Standardwert liefern Modus 0, 2 und 4 bitgleiche Returns wie vorher (Optimized 1593,0836, D16 r4 s7 in Modus 4
+2436,3279, D16 r2 s1 in Modus 2 1805,0139). Kurztest mit 8 Workern: Gewicht 16 kommt bei den Workern an.
+
+- Gewichte 0, 4, 8, 16 mit Seeds 0–2 (`desktop_d17_run()`), Gewicht 2 aus D16 mit Seeds 0–7. Gewicht 0 entspricht
+  Modus 2 (nur binärer Basis-Bonus auf der Bahn).
+- Auswertung `desktop_d17_eval`: deterministisch und 10 stochastische Episoden je Agent, RMS- und Viertelfehler,
+  größter Basis-Orientierungsfehler, Abbrüche. Ergebnis `D17_eval_<Zeit>_*`.
+- Dauer geschätzt 12 × ≈ 21 min ≈ 4,2 h plus Auswertung.
+
 ### Nicht geplant
 
 - CDR neu trainieren (A23): Das parametrisierte Modell müsste erst wiederhergestellt werden. Stattdessen D5.
