@@ -11,6 +11,7 @@ Ziele des Tages:
 | A | Wartet jeder blockierende API-Aufruf auf einen internen Takt von etwa 25 ms? | A60, Sec. VI-C | 5–10 min |
 | B | Folgt ein Agent mit dem Basis-Bonus nur auf der Bahn (r4, Sec. V) auch auf dem festen Arm der ganzen Bahn? | Sec. V, VII | 15–20 min |
 | B+ | Erweiterung: zweiter r4-Seed | Sec. V | 5 min |
+| B++ | Erweiterung (03.10.): r4-Agent mit ruhiger Basis aus D17 | Sec. V-C | 5 min |
 | C | Erreicht der Set-Point-Agent andere Ziele als das Trainingsziel? | A57, Sec. VI-D, ROS-Plugin | 45–55 min |
 | C+ | Erweiterung: die sechs Plugin-Ziele von allen 15 Starts | ROS-Plugin, Sec. VI-D | 60–75 min |
 
@@ -25,15 +26,16 @@ Die Zeiten stammen aus den Zeitstempeln vom 26.09.: ein Tracking-Lauf mit Anfahr
 | A. Timing | 9 Messungen | 5–10 min |
 | B. Tracking | 15 | 15–20 min |
 | B+. Zweiter r4-Seed | 5 | 5 min |
+| B++. Ruhiger r4-Agent | 5 | 5 min |
 | C1. Ziele freigeben | 9 Posen | 5 min |
 | C2. Set-Point, Wiederholung 1 | 27 | 20–25 min |
 | C3. Set-Point, Wiederholung 2 | 27 | 20–25 min |
 | C+. Plugin-Ziele von allen Starts | 90 | 60–75 min |
 | Abschluss | – | 10–15 min |
-| **Summe** | 164 Läufe + 9 Messungen | **etwa 3–4 h**, mit Pausen ein halber bis dreiviertel Tag |
+| **Summe** | 169 Läufe + 9 Messungen | **etwa 3–4 h**, mit Pausen ein halber bis dreiviertel Tag |
 
 Reihenfolge wie in dieser Anleitung. Wird die Zeit knapp, entfallen in dieser Reihenfolge: das Ende von C+ (T04 und
-T06 stehen zuletzt), C3, B+.
+T06 stehen zuletzt), C3, B+, B++.
 
 ## 0. Vorbereitung
 
@@ -101,6 +103,24 @@ Vorhersage auf fester Basis (`desktop_day2_tracking_pred.m`, `DAY2_tracking_pred
 p = campaign_plan();
 for i = 1:size(p.day2.trackingExt, 1)
     deploy_tracking_v24(p.day2.trackingExt{i, 1}, p.day2.trackingExt{i, 2});
+end
+```
+
+**B++. Ruhiger r4-Agent (Erweiterung, 03.10.):** Bedingung `T40_r4_3k_s1`, D16 r4 Seed 1. D17 hat zwei Gruppen von
+r4-Agenten gezeigt: die meisten drehen die Basis um etwa 0,05 rad bei etwa 11 mm RMS, fünf nur um etwa 0,025 rad bei
+etwa doppeltem Tracking-Fehler. Seed 7 und Seed 4 (B, B+) gehören zur ersten Gruppe. Seed 1 hat von den acht D16-Seeds
+die kleinste Basisdrehung (0,023 rad, RMS 21,5 mm mit beweglicher Basis) und zeigt die andere Seite des
+Zielkonflikts. Erwartung vor dem Lauf (03.10., aus D17 mit beweglicher Basis, 40 Hz): Seed 1 hat den etwa
+doppelten RMS von Seed 7 und Seed 4 (21,5 gegen 10,3 und 11,4 mm). Auf der Hardware sollte sein RMS deshalb
+deutlich über dem von B und B+ liegen (dort 0,018 und 0,017 m). Die Vorhersage auf fester Basis
+(`desktop_day2_tracking_pred.m`) ließ sich am Labor-PC nicht rechnen, weil das Aerospace Blockset fehlt
+(`SK_desktop` nutzt `Quaternion Normalize`). Sie wird auf dem Desktop-Rechner nachgerechnet. Die Rechnung ist
+deterministisch und unabhängig vom Hardware-Ergebnis.
+
+```matlab
+p = campaign_plan();
+for i = 1:size(p.day2.trackingQuiet, 1)
+    deploy_tracking_v24(p.day2.trackingQuiet{i, 1}, p.day2.trackingQuiet{i, 2});
 end
 ```
 

@@ -13,6 +13,7 @@ function plan = campaign_plan()
 %                     .tracking Reihenfolge {condId, Wiederholung} der r4/r0-Tracking-Laeufe
 %                     .setpoint Reihenfolge {condId, targetId, startId, Wiederholung}
 %                     .trackingExt  Erweiterung: zweiter r4-Seed {condId, Wiederholung}
+%                     .trackingQuiet  Erweiterung: r4-Agent mit ruhiger Basis {condId, Wiederholung}
 %                     .setpointAll  Erweiterung: Plugin-Ziele von allen 15 Starts
 %                                   {condId, targetId, startId, Wiederholung}
 %                     Die Ziele stehen in hardware/campaign/setpoint_targets.mat
@@ -31,6 +32,9 @@ aPpo = 'SavedAgents/MotionProfile/Circle/PPO/SpaceKinova_PPO_agent_motionprofile
 % r4 und r0 1000 Episoden: Seeds 0-2, Median s2 (r4) und s0 (r0).
 aR4k3 = 'SavedAgents/MotionProfile/D16/D16_ppo_40hz_r4_seed7_ep3000.mat';
 aR4k3b = 'SavedAgents/MotionProfile/D16/D16_ppo_40hz_r4_seed4_ep3000.mat';
+% Ruhige Gruppe aus D17 (D17_eval_20260928_144737): von den acht D16-Seeds der mit der kleinsten
+% Basisdrehung (s1, 0,023 rad, RMS 21,5 mm). s7 und s4 liegen in der unruhigen Gruppe (0,060 und 0,049 rad).
+aR4k3q = 'SavedAgents/MotionProfile/D16/D16_ppo_40hz_r4_seed1_ep3000.mat';
 aR4k1 = 'SavedAgents/MotionProfile/D16/D16_ppo_40hz_r4_seed2.mat';
 aR0k1 = 'SavedAgents/MotionProfile/D16/D16_ppo_40hz_r0_seed0.mat';
 
@@ -64,6 +68,9 @@ t(end+1) = cond('T40_r4_1k', aR4k1, 'PPO r4 1000 ep (D16 s2)', 40, 8.5, 1.0, 5, 
 t(end+1) = cond('T40_r4_3k_s4', aR4k3b, 'PPO r4 3000 ep (D16 s4)', 40, 8.5, 1.0, 5, 2, ...
     ['Erweiterung: zweiter r4-Seed (der andere der beiden mittleren von acht), damit die Hardware-Aussage ' ...
     'nicht an einem Agenten haengt.'], 0.9774, 0.8);
+t(end+1) = cond('T40_r4_3k_s1', aR4k3q, 'PPO r4 3000 ep (D16 s1)', 40, 8.5, 1.0, 5, 2, ...
+    ['Erweiterung: r4-Agent aus der ruhigen Gruppe von D17 (kleine Basisdrehung, doppelter Tracking-Fehler ' ...
+    'in Simulation). Zeigt die andere Seite des Zielkonflikts in Sec. V-C auf der Hardware.'], 0.9774, 0.8);
 plan.tracking = t;
 
 m = struct('condId', {}, 'mode', {}, 'nCycles', {}, 'nRepetitions', {}, 'agentFile', {}, 'purpose', {});
@@ -173,6 +180,11 @@ end
 d2.trackingExt = {};
 for i = 1:5
     d2.trackingExt(end+1, :) = {'T40_r4_3k_s4', i};
+end
+% Erweiterung 3 (03.10.): r4-Agent mit ruhiger Basis (D17).
+d2.trackingQuiet = {};
+for i = 1:5
+    d2.trackingQuiet(end+1, :) = {'T40_r4_3k_s1', i};
 end
 % Erweiterung 2: Plugin-Ziele von allen Starts. Je Ziel nach d0 zu diesem Ziel sortiert, abwechselnd
 % aufsteigend und absteigend, damit Drift nicht mit d0 zusammenfaellt.

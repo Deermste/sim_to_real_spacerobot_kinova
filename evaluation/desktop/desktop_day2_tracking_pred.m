@@ -3,7 +3,8 @@ function T = desktop_day2_tracking_pred()
 %   T = desktop_day2_tracking_pred()
 %
 %   Wie desktop_d3_base Teil A: Basis fest (1e9 kg), deterministisch, Halbkreis 8,5 s, Referenz nach Wandzeit.
-%   Agenten der Bedingungen T40_r4_3k, T40_r0_j6, T40_r4_1k, T40_r4_3k_s4 (J6-Grenze 0,9774 rad/s) und zum Vergleich der
+%   Agenten der Bedingungen T40_r4_3k, T40_r0_j6, T40_r4_1k, T40_r4_3k_s4,
+%   T40_r4_3k_s1 (J6-Grenze 0,9774 rad/s) und zum Vergleich der
 %   CDR-Agent der Kampagne (J6 0,1 rad/s). Jeweils mit 40 Hz (Trainingsrate) und 20 Hz (Rate, die die
 %   High-Level-API in der Kampagne erlaubte). Kennzahlen: RMS-Fehler, mittlerer Fehler je Bahnviertel.
 %   Ergebnis: data/simulation/desktop/DAY2_tracking_pred_<Zeit>.csv
@@ -11,11 +12,13 @@ function T = desktop_day2_tracking_pred()
 setup_project;
 desktop_build_model();
 d16 = sk_path('SavedAgents', 'MotionProfile', 'D16');
-ag = struct('cond', {'T40_r4_3k', 'T40_r0_j6', 'T40_r4_1k', 'T40_r4_3k_s4', 'T40_cdr_nom'}, ...
+ag = struct('cond', {'T40_r4_3k', 'T40_r0_j6', 'T40_r4_1k', 'T40_r4_3k_s4', 'T40_r4_3k_s1', ...
+                 'T40_cdr_nom'}, ...
     'file', {fullfile(d16, 'D16_ppo_40hz_r4_seed7_ep3000.mat'), fullfile(d16, 'D16_ppo_40hz_r0_seed0.mat'), ...
              fullfile(d16, 'D16_ppo_40hz_r4_seed2.mat'), fullfile(d16, 'D16_ppo_40hz_r4_seed4_ep3000.mat'), ...
+             fullfile(d16, 'D16_ppo_40hz_r4_seed1_ep3000.mat'), ...
              sk_path('SavedAgents', 'MotionProfile', 'CDR', 'PPO', 'CDR2-4.mat')}, ...
-    'j6', {0.9774, 0.9774, 0.9774, 0.9774, 0.1});
+    'j6', {0.9774, 0.9774, 0.9774, 0.9774, 0.9774, 0.1});
 rows = {};
 for a = 1:numel(ag)
     for Tsr = [0.025 0.05]

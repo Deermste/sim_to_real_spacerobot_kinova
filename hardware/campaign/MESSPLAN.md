@@ -167,6 +167,9 @@ Erweiterungen (Nutzer, 27.09.): zweiter r4-Seed `T40_r4_3k_s4` und `S21_targets_
 Starts, 90 Läufe). Im Trockenlauf erreicht der Agent T01, T02, T03 und T05 von allen 15 Starts, T04 und T06 von
 keinem. Gesamtdauer etwa 3–4 h.
 
+Erweiterung (Nutzer, 03.10.): `T40_r4_3k_s1`, der r4-Agent mit der kleinsten Basisdrehung der acht D16-Seeds (ruhige
+Gruppe aus D17). Die Agenten von B und B+ liegen beide in der unruhigen Gruppe.
+
 Codeänderungen dafür: `deploy_setpoint_v24` kennt `targetMode 'list'` mit `targetId`, prüft Start und Ziel gegen
 die jeweils letzte Freigabe (A58). `check_setpoint_starts('list', 'targets')` gibt die Zielposen frei.
 `deploy_tracking_v24` übernimmt J6-Grenze und Sicherheitsfaktor aus der Bedingung. `campaign_env_meta` zählt
