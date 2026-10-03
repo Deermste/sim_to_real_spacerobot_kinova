@@ -15,6 +15,8 @@ Ausgabe (Standard: data/hardware/campaign/results/):
     table_setpoint_hw.tex   Tabellenzeilen fuer die Set-Point-Tabelle (Erfolg ueber d0)
     fig7_loop_histogram.pdf Verteilung der Schleifenzeiten (Fig. 7), Vektor-PDF
     fig_setpoint_d0.pdf     Endfehler ueber dem Startabstand d0, Vektor-PDF
+    table_targets_day2.csv  Labortag 2: je Ziel ueber beide Bedingungen (Min/Max, Annaeherung, Soft-Limit)
+    day2_dryrun_compare.csv Labortag 2: jeder Lauf gegen den kinematischen Trockenlauf
     paper_numbers.csv       jede Zahl der Tabellen mit Quelle (Bedingung, Laeufe)
 
 Aufruf (aus dem Repo-Wurzelordner):
@@ -41,6 +43,8 @@ ACTIVE_JOINTS = [1, 3]                 # J2, J4 (0-basiert)
 TIMING_ORDER = ['M_send', 'M_fb', 'M_fk', 'M_full', 'M_fbonly', 'M_sendfb']
 SP_TOL = 0.05                          # Erfolgstoleranz der Set-Point-Reihe [m], wie Table VIII
 SP_HOLD = 0.5                          # Haltezeit fuer die Setzzeit [s]
+# Labortag 2: Bedingung -> kinematischer Trockenlauf in hardware/campaign/ (A69)
+DAY2_DRYRUN = {'S20_targets': 'day2_dryrun_prediction.csv', 'S21_targets_all': 'day2_dryrun_prediction_s21.csv'}
 # Gelenkgrenzen des Gen3 (Datenblatt) [deg]. Training und Deploy nutzen fuer J2, J4 weitere
 # Grenzen (138.1, 152.4 deg), J6 enger (115.2 deg). Siehe Befund A43.
 HW_LIMIT_DEG = np.array([np.inf, 128.9, np.inf, 147.8, np.inf, 120.3, np.inf])
@@ -444,6 +448,73 @@ def table_targets(setpoint, out, numbers):
                   f"< 50 mm, Endfehler im Mittel {r['final_mean_mm']:.1f} mm")
 
 
+def targets_day2(setpoint, out, numbers):
+    """Labortag 2, Text Sec. VI-D (A69): Kennzahlen je Ziel ueber S20_targets und S21_targets_all zusammen
+    und der Abgleich jedes Laufs mit dem kinematischen Trockenlauf (hardware/campaign/day2_dryrun_prediction*.csv)."""
+    rs = [r for r in setpoint if r['condId'] in DAY2_DRYRUN and not r['dry']]
+    if not rs:
+        return
+    rows = []
+    for tid, g in sorted(group(rs, 'targetId').items()):
+        miss = [r for r in g if not r['success50']]
+        stops = {}
+        for r in g:
+            stops[r['stopReason']] = stops.get(r['stopReason'], 0) + 1
+        row = {'targetId': tid, 'runs': len(g), 'success50': sum(r['success50'] for r in g),
+               'converged': sum(r['converged'] for r in g),
+               'final_min_mm': min(r['final_m'] for r in g) * 1e3, 'final_max_mm': max(r['final_m'] for r in g) * 1e3,
+               'closest_min_missed_mm': min((r['closest_m'] for r in miss), default=float('nan')) * 1e3,
+               'missed_within_50mm': sum(r['closest_m'] < SP_TOL for r in miss),
+               'softlimit_runs': sum(bool(r['anySoftLimit']) for r in g),
+               'stops': ' '.join(f'{k}:{v}' for k, v in sorted(stops.items()))}
+        rows.append(row)
+        for key in ('runs', 'success50', 'converged', 'final_min_mm', 'final_max_mm', 'closest_min_missed_mm',
+                    'missed_within_50mm', 'softlimit_runs'):
+            numbers.append({'table': 'text_VI-D', 'condId': f'day2/{tid}', 'quantity': key, 'value': row[key],
+                            'source': ';'.join(r['file'] for r in g)})
+    numbers.append({'table': 'text_VI-D', 'condId': 'day2', 'quantity': 'softlimit_runs',
+                    'value': f'{sum(bool(r["anySoftLimit"]) for r in rs)}/{len(rs)}', 'source': 'runs_setpoint.csv'})
+
+    # Abgleich mit dem Trockenlauf, Lauf fuer Lauf ueber Bedingung, Ziel und Start
+    pred = {}
+    for cid, fname in DAY2_DRYRUN.items():
+        with open(os.path.join(ROOT, 'hardware', 'campaign', fname), encoding='utf8') as f:
+            for p in csv.DictReader(f):
+                pred[(cid, p['target'], p['start'])] = p
+    cmp_rows = []
+    for r in rs:
+        p = pred.get((r['condId'], r['targetId'], r['startId']))
+        if p is None:
+            print(f'  Hinweis: kein Trockenlauf fuer {r["file"]}')
+            continue
+        fp = float(p['finalErr_m'])
+        cmp_rows.append({'file': r['file'], 'condId': r['condId'], 'targetId': r['targetId'], 'startId': r['startId'],
+                         'repetition': r['repetition'], 'stop_hw': r['stopReason'], 'stop_dry': p['stopReason'],
+                         'final_hw_mm': r['final_m'] * 1e3, 'final_dry_mm': fp * 1e3,
+                         'diff_mm': abs(r['final_m'] - fp) * 1e3,
+                         'success_hw': bool(r['success50']), 'success_dry': fp < SP_TOL})
+    write_csv(cmp_rows, os.path.join(out, 'day2_dryrun_compare.csv'))
+    same = [c for c in cmp_rows if c['stop_hw'] == c['stop_dry']]
+    other = [c for c in cmp_rows if c['stop_hw'] != c['stop_dry']]
+    flips = [c for c in other if {c['stop_hw'], c['stop_dry']} == {'converged', 'timeout'}]
+    summary = {'runs_compared': len(cmp_rows),
+               'success50_agree': sum(c['success_hw'] == c['success_dry'] for c in cmp_rows),
+               'same_stop': len(same),
+               'same_stop_diff_max_mm': max((c['diff_mm'] for c in same), default=float('nan')),
+               'flip_converged_timeout': len(flips),
+               'flip_diff_max_mm': max((c['diff_mm'] for c in flips), default=float('nan')),
+               'other_stop': ' '.join(f'{c["targetId"]}/{c["startId"]}:{c["stop_hw"]}' for c in other
+                                      if c not in flips)}
+    for key, val in summary.items():
+        numbers.append({'table': 'text_VI-D', 'condId': 'day2_dryrun', 'quantity': key, 'value': val,
+                        'source': 'day2_dryrun_compare.csv'})
+    write_csv(rows, os.path.join(out, 'table_targets_day2.csv'))
+    print(f'  Labortag 2: {summary["success50_agree"]}/{summary["runs_compared"]} Laeufe mit gleichem Erfolg wie der '
+          f'Trockenlauf, {summary["same_stop"]} mit gleichem Stoppgrund (max {summary["same_stop_diff_max_mm"]:.1f} mm), '
+          f'{summary["flip_converged_timeout"]} Kippfaelle (max {summary["flip_diff_max_mm"]:.1f} mm), '
+          f'sonst {summary["other_stop"] or "-"}')
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--include-dry', action='store_true', help='Trockenlaeufe mit auswerten (nur zum Testen)')
@@ -468,6 +539,7 @@ def main():
         table_setpoint(setpoint, a.out, numbers)
         fig_setpoint(setpoint, a.out)
         table_targets(setpoint, a.out, numbers)
+        targets_day2(setpoint, a.out, numbers)
     write_csv(numbers, os.path.join(a.out, 'paper_numbers.csv'))
     print(f'Ergebnisse in {a.out}')
 
