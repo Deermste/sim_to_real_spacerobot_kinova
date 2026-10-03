@@ -39,6 +39,7 @@ Laborreihe gebraucht wird. Einzige Ausnahme ist D10, falls das Agentenpaar auf d
 | D14 | Wie D13, synchron und mit Gradient Clipping | A51, A62 | 1 h | 65 min + 15 min Auswertung | nein | ✅ 27.09. |
 | D15 | Physik-Check: kleinste Basisdrehung bei exakter Bahn (Impulserhaltung, verallgemeinerte Jacobi-Matrix) | A51 | ½ Tag | ≈ 1,5 h | nein | ✅ 27.09. |
 | D16 | Wie D14 (r0 und r2), J6-Grenze 0,9774 statt 0,1 rad/s | A51, D15 | 1 h | 40 min + 15 min Auswertung | nein | ✅ 27.09. |
+| D18 | Set-Point: Stopp nach dem Minimum und Neustart (kinematischer Trockenlauf) | Labortag 2, ROS-Plugin | 1 h | 5 min | nein | ✅ 03.10. |
 
 Summe D0 bis D9: etwa 15 bis 22 h Arbeit und 2 h Rechenzeit. Dort ist die Rechenzeit kein Engpass. D10 und D11
 sind Trainings, dort bestimmt die Rechenzeit die Dauer. D11 belegt den Desktop 1 bis 1,5 Tage mit allen Kernen,
@@ -815,6 +816,34 @@ Ergebnis (`D17_eval_20260928_144737_*`, Training 9:50–14:41, je 21–26 min): 
   Curriculum auf den Basis-Term (nicht getestet).
 - Im Paper: Absatz und neue Abbildung `fig:tradeoff` in Sec. V-C, Satz in Beitrag 2 und im Fazit
   (`fig/src/plot_d17_tradeoff.py` im Paper-Repo).
+
+### D18 Stopp nach dem Minimum und Neustart ✅ 03.10.2026
+
+Frage (Nutzer, Labortag 2): In den nicht konvergierten Läufen von `S20_targets` erreicht der Arm ein Minimum und
+entfernt sich danach wieder vom Ziel. Hilft es, dort zu stoppen? Und erreicht der Agent das Ziel, wenn man ihn dort
+anhält und neu lädt?
+
+Aufbau: `deploy_setpoint_v24` hat dafür die Option `progressRule` (Änderung 11, Standard `'none'`). Regel: `||ep||`
+liegt 3 Schritte in Folge mehr als 5 mm über dem bisherigen Minimum. `'stop'` beendet den Lauf, `'restart'` sendet
+Null, lädt Agent und Befehlskette (Filter, Rate Limiter) neu und fährt weiter. `desktop_d18_progress_stop.m` prüft
+zuerst, dass `'none'` alle 27 Werte aus `day2_dryrun_prediction.csv` reproduziert (Abweichung < 1e-6 m), und rechnet
+dann die 19 nicht konvergierten Kombinationen mit `none`, `stop`, `restart` (1 Neustart) und `restart` (bis 5).
+Kinematischer Trockenlauf, er trifft die Hardware in C2 auf ±2 mm. Ergebnis `D18_progress_stop_20261003_161250.csv`.
+
+- Das Actor-Netz ist ein `dlnetwork` ohne rekurrente Schichten. Neu laden ändert den Agenten nicht, der Neustart
+  setzt nur Gelenkgeschwindigkeit und Befehlskette auf null.
+- **Neustart:** Der Arm läuft danach zum selben Endpunkt wie ohne Stopp (T04 129,5/129,7/130,5 mm für none/1/5
+  Neustarts, T06 S06 109/109/105 mm), bei E02 sogar weiter weg (S06 130 → 141 mm). Die Policy hat einen Fixpunkt
+  neben dem Ziel, den sie von überall wieder anläuft. Das Minimum ist ein Durchgangspunkt.
+- **Stopp:** Bei T04, T06 und E02/E03 sinkt der Endfehler deutlich (T04 S06 131 → 71 mm, E02 S07 110 → 56 mm). Bei
+  T01 S00, T02 S00 und E01 S00 steigt er (26 → 37, 22 → 34, 67 → 93 mm), weil sich der Arm dort nach etwa 8 s
+  erst entfernt und dann langsam wieder nähert. Kein Fehlschlag wird zum Erfolg, schon das Minimum liegt dort über
+  50 mm (knappster Fall E02 S07, 50,4 mm). Gewinn ist vor allem Zeit (Ende nach 6–11 s statt 25 s).
+- Hardware dazu (C+): `T01 S11` kam bis 11 mm (wie vorhergesagt), erfüllte aber das Konvergenzkriterium (3 cm/s
+  für 0,5 s) nicht durchgehend und lief auf 27 mm zurück. Hier hätte ein Stopp nach dem Minimum geholfen.
+- Für das ROS-Plugin: Ziele außerhalb des Bereichs, in dem der Agent konvergiert, vorher ablehnen (nach vorn und
+  oben enger als 0,30 m) und einen Fehlschlag früh melden statt 25 s zu warten. Ein Stopp nach dem Minimum lohnt
+  sich nur, wenn der Arm schon nahe am Ziel war (etwa unter 50 mm).
 
 ### Nicht geplant
 

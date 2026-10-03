@@ -38,6 +38,10 @@ function result = deploy_setpoint_v24(varargin)
 %        entspricht dem Trainingsmodell (Gelenke bewegungsgesteuert) ohne Verzoegerung
 %        und Rauschen. So zeigt sich vor dem Labor, ob der Agent von der Startpose
 %        aus konvergiert.
+%    11. Fortschrittsregel (03.10., D18), Standard aus: progressRule 'stop' beendet den
+%        Lauf, sobald ||ep|| progressSteps Schritte in Folge mehr als progressMargin
+%        ueber dem bisherigen Minimum liegt. 'restart' haelt dann an, laedt Agent und
+%        Befehlskette neu und faehrt weiter (hoechstens maxRestarts Mal).
 %
 %   Logs: data/hardware/campaign/<condId>/<condId>_<startId>_rNN_<Zeitstempel>.mat
 %   (bei targetMode 'list': <condId>_<targetId>_<startId>_rNN_<Zeitstempel>.mat)
@@ -193,6 +197,7 @@ log = init_log(nStepsMax, cfg.nJ, cfg.expectedObsDim);
 q = q_start; dq = zeros(cfg.nJ, 1); dq_cmd = zeros(cfg.nJ, 1);
 stopReason = 'max_steps'; stopStep = 0; kLast = 0;
 convSince = NaN;
+runMin = inf; progCnt = 0; nRestarts = 0;
 fastDry = cfg.dryRun && ~cfg.rateControlInDryRun;
 
 r = rateControl(cfg.rateHz);
@@ -312,6 +317,33 @@ for k = 1:nStepsMax
         break;
     end
 
+    % --- Fortschrittsregel (Aenderung 11) ---
+    runMin = min(runMin, norm(ep));
+    if norm(ep) > runMin + cfg.progressMargin, progCnt = progCnt + 1; else, progCnt = 0; end
+    if ~strcmp(cfg.progressRule, 'none') && progCnt >= cfg.progressSteps
+        if strcmp(cfg.progressRule, 'restart') && nRestarts < cfg.maxRestarts
+            send_zero(apiHandle, cfg);
+            if ~cfg.dryRun, pause(cfg.restartPause); end
+            loaded = load(cfg.agentFile);
+            agent  = loaded.agent;
+            agent.UseExplorationPolicy = false;
+            state = struct('yFilt', zeros(cfg.nJ, 1), 'dqPrev', zeros(cfg.nJ, 1));
+            dq_cmd = zeros(cfg.nJ, 1);
+            nRestarts = nRestarts + 1;
+            runMin = norm(ep); progCnt = 0;
+            fprintf('   Neustart %d bei t = %.1f s, Fehler %.1f mm\n', nRestarts, tNow, 1e3 * norm(ep));
+            s.step_kind = 4;
+            log = log_step(log, k, s); kLast = k;
+            continue;
+        elseif strcmp(cfg.progressRule, 'stop')
+            send_zero(apiHandle, cfg);
+            s.step_kind = 5;
+            log = log_step(log, k, s); kLast = k;
+            stopReason = 'progress_stop'; stopStep = k;
+            break;
+        end
+    end
+
     % --- Agent ---
     action = getAction(agent, {obs});
     tE = toc(tRunStart);
@@ -386,6 +418,8 @@ send_zero(apiHandle, cfg);
 %  =========================
 log  = truncate_log(log, max(kLast, 1));
 meta = build_meta(cfg, env, overrides, q_start, dev_deg, stopReason, stopStep, log);
+meta.progressRule = cfg.progressRule;
+meta.nRestarts    = nRestarts;
 
 fprintf('\n== Lauf beendet: %s nach %d Schritten (%.2f s) ==\n', stopReason, meta.nSteps, meta.tEnd);
 fprintf('   d0 = %.3f m, Endfehler = %.1f mm, naechster Abstand = %.1f mm, Erfolg (50 mm) = %d\n', ...
@@ -494,6 +528,13 @@ cfg.convDist  = 0.02;
 cfg.convVel   = 0.03;
 cfg.convDwell = 0.5;
 
+% Fortschrittsregel (Aenderung 11, D18). 'none' (Standard), 'stop' oder 'restart'
+cfg.progressRule   = 'none';
+cfg.progressMargin = 0.005;          % [m] ueber dem bisherigen Minimum
+cfg.progressSteps  = 3;              % so viele Schritte in Folge
+cfg.maxRestarts    = 1;
+cfg.restartPause   = 1.0;            % [s] Stillstand vor dem Neustart (nur Hardware)
+
 cfg.oodMax      = 2.0;               % d_failure im Training
 cfg.oodMargin   = 0.4;               % Stopp, wenn ||ep|| > d0 + oodMargin
 cfg.heightGuard = 0.05;              % [m] ueber der Montageflaeche
@@ -553,6 +594,7 @@ end
 assert(cfg.cmdScale > 0 && cfg.cmdScale <= 1, 'cmdScale muss in (0, 1] liegen.');
 assert(any(strcmp(cfg.eeSource, {'fk', 'kortex'})), 'eeSource unbekannt.');
 assert(any(strcmp(cfg.targetMode, {'nominal', 'kortex_fixed', 'list'})), 'targetMode unbekannt.');
+assert(any(strcmp(cfg.progressRule, {'none', 'stop', 'restart'})), 'progressRule unbekannt.');
 end
 
 function check_approval(cfg)
@@ -620,7 +662,8 @@ end
 %  ========================================================================
 function L = init_log(n, nJ, nObs)
 L = struct();
-L.step_kind       = nan(n, 1);   % 0 normal, 1 OOD-Stopp, 2 anderer Stopp, 3 Konvergenz-Stopp
+L.step_kind       = nan(n, 1);   % 0 normal, 1 OOD-Stopp, 2 anderer Stopp, 3 Konvergenz-Stopp,
+                                 % 4 Neustart, 5 Fortschritts-Stopp
 L.t_wall          = nan(n, 1);   % Schleifenstart [s] (schneller Trockenlauf: k*Ts)
 L.t_ref           = nan(n, 1);
 L.dt_loop         = nan(n, 1);
