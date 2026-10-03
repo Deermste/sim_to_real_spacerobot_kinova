@@ -117,6 +117,10 @@ deutlich über dem von B und B+ liegen (dort 0,018 und 0,017 m). Die Vorhersage 
 (`SK_desktop` nutzt `Quaternion Normalize`). Sie wird auf dem Desktop-Rechner nachgerechnet. Die Rechnung ist
 deterministisch und unabhängig vom Hardware-Ergebnis.
 
+Nachgerechnet am 03.10. nach dem Labortag (`DAY2_tracking_pred_20261003_182546.csv`, die übrigen fünf Agenten
+gleich wie am 27.09.): Vorhersage RMS 0,028 m, letztes Viertel 0,044 m (20 Hz). Hardware RMS 0,030 m (Mittel
+über 5 Läufe), letztes Viertel 0,045 m.
+
 ```matlab
 p = campaign_plan();
 for i = 1:size(p.day2.trackingQuiet, 1)
