@@ -1,4 +1,4 @@
-function out = desktop_d12_train(rewardMode, seed, nEpisodes, tag, optsSet, j6Lim, baseW)
+function out = desktop_d12_train(rewardMode, seed, nEpisodes, tag, optsSet, j6Lim, baseW, ckptEvery)
 %DESKTOP_D12_TRAIN  Trainiert einen 40-Hz-PPO-Agenten mit geaendertem Reward (Desktop-Plan D12 und D13, Befund A51).
 %   out = desktop_d12_train(2, 0)              Variante b, Seed 0, 1000 Episoden
 %   out = desktop_d12_train(3, 0, 16, 'test')  Kurztest, speichert nur unter data/.../_test
@@ -15,6 +15,8 @@ function out = desktop_d12_train(rewardMode, seed, nEpisodes, tag, optsSet, j6Li
 %   (Physik-Check D15: mit 0,1 rad/s verlangt die Bahn etwa 0,055 rad Basisdrehung).
 %   baseW (Standard 2) ist das Gewicht des glatten Basis-Terms in Modus 4. Ein anderer Wert ergibt die Studie D17
 %   (Kurve Tracking gegen Basisdrehung), der Name enthaelt dann _w<Gewicht>.
+%   ckptEvery (Standard 0) speichert alle ckptEvery Episoden einen Zwischenstand (Studie D20, Befund A68) unter
+%   SavedAgents/MotionProfile/D20/<Name>_ckpt/ (rlTrainingOptions SaveAgentCriteria 'EpisodeFrequency').
 %   Einziger Unterschied ist der Reward (p_reward_mode, siehe desktop_build_model):
 %     0  wie im Training seit 09.04. Das ist D10 (SavedAgents/MotionProfile/D10/D10_ppo_40hz_seed*.mat)
 %     1  (a) ohne Basis-Terme, wie beim fruehen PPO. Kontrolle, trennt Reward und Hyperparameter
@@ -38,10 +40,12 @@ if strcmp(optsSet, 'base_sync'), study = 'D14'; end
 if nargin < 6 || isempty(j6Lim), j6Lim = 0.1; end
 if j6Lim ~= 0.1, study = 'D16'; end             % D16: hoehere J6-Grenze (Physik-Check D15)
 if nargin < 7 || isempty(baseW), baseW = 2; end
+if nargin < 8 || isempty(ckptEvery), ckptEvery = 0; end
 if baseW ~= 2
     assert(rewardMode == 4, 'desktop_d12_train:basew', 'baseW wirkt nur in Reward-Modus 4');
     study = 'D17';
 end
+if ckptEvery > 0, study = 'D20'; end            % D20: Zwischenstaende, eigener Ordner (D16 bleibt unberuehrt)
 assert(ismember(rewardMode, 0:4), 'desktop_d12_train:mode', 'rewardMode muss 0 bis 4 sein');
 
 setup_project;
@@ -55,6 +59,7 @@ cfg.rewardMode = rewardMode;
 cfg.optsSet = optsSet;
 cfg.j6Lim = j6Lim;
 cfg.baseW = baseW;
+cfg.ckptEvery = ckptEvery;
 cfg.rateHz = 40;
 cfg.seed = seed;
 cfg.nEpisodes = nEpisodes;
@@ -133,6 +138,18 @@ trainOpts = rlTrainingOptions( ...
     'StopOnError', 'off', ...
     'UseParallel', true, ...
     'ParallelizationOptions', par);
+if ckptEvery > 0
+    ckName = sprintf('%s_ppo_40hz_r%d_seed%d_ep%d', study, rewardMode, seed, nEpisodes);
+    if isempty(tag)
+        ckDir = sk_path('SavedAgents', 'MotionProfile', study, [ckName '_ckpt']);
+    else
+        ckDir = fullfile(sk_path('data', 'simulation', 'desktop', '_test'), [ckName '_' tag '_ckpt']);
+    end
+    trainOpts.SaveAgentCriteria = 'EpisodeFrequency';
+    trainOpts.SaveAgentValue = ckptEvery;
+    trainOpts.SaveAgentDirectory = ckDir;
+    fprintf('%s: Zwischenstand alle %d Episoden nach %s\n', study, ckptEvery, ckDir);
+end
 
 pool = gcp('nocreate');
 if isempty(pool)

@@ -41,6 +41,7 @@ Laborreihe gebraucht wird. Einzige Ausnahme ist D10, falls das Agentenpaar auf d
 | D16 | Wie D14 (r0 und r2), J6-Grenze 0,9774 statt 0,1 rad/s | A51, D15 | 1 h | 40 min + 15 min Auswertung | nein | ✅ 27.09. |
 | D18 | Set-Point: Stopp nach dem Minimum und Neustart (kinematischer Trockenlauf) | Labortag 2, ROS-Plugin | 1 h | 5 min | nein | ✅ 03.10. |
 | D19 | Basisdrehung aus den gemessenen Gelenkbahnen der Tracking-Läufe (Impulserhalt wie D15) | Labortag 2, D15, D17 | 1 h | 20 min | nein | ✅ 03.10. |
+| D20 | r4 wie D16 (8 Seeds × 3000 Episoden) mit Zwischenstand alle 250 Episoden: tritt die ruhige und genaue Lösung im Training auf? | A68, D16, D17, D19 | 1 h | ≈ 3 h | nein | läuft seit 03.10. |
 
 Summe D0 bis D9: etwa 15 bis 22 h Arbeit und 2 h Rechenzeit. Dort ist die Rechenzeit kein Engpass. D10 und D11
 sind Trainings, dort bestimmt die Rechenzeit die Dauer. D11 belegt den Desktop 1 bis 1,5 Tage mit allen Kernen,
@@ -708,9 +709,11 @@ Alle sechs Trainings stabil (6,8–7,6 min), keine Abbrüche in den letzten 200 
 - Nachtrag r4 lang (27.09.): 8 Seeds × 3000 Episoden, J6 0,9774 rad/s
   (`desktop_d12_run(4, 0:7, 3000, 'base_sync', 0.9774)`, je ≈ 21 min, Auswertung `D16_eval_20260927_133923_*`).
   Alle 8 folgen der ganzen Bahn (deterministisch letztes Viertel 0,007–0,040 m, keiner bricht ein). Die Basis pendelt
-  sich bei 0,023–0,060 rad ein (Median 0,051 rad, 6 von 8 ≥ 0,042 rad), ähnlich dem frühen PPO. Seed 2 (nach 1000
-  Episoden 0,017–0,028 rad) liegt nach 3000 Episoden bei 0,044–0,052 rad. Längeres Training macht das Tracking
-  verlässlich, die ruhige Bewegung bleibt aber nicht. Bei 0,05 rad bringt der glatte Basis-Term noch +0,74 pro
+  sich bei 0,023–0,060 rad ein (Median 0,051 rad, 6 von 8 ≥ 0,042 rad), ähnlich dem frühen PPO. Der Lauf mit Seed 2
+  und 3000 Episoden liegt bei 0,044–0,052 rad, der Lauf mit Seed 2 und 1000 Episoden bei 0,017–0,028 rad.
+  Korrektur 03.10.: Das sind zwei getrennte Läufe. Das parallele Training ist nicht deterministisch, die Lernkurven
+  weichen ab Episode 1 ab. Der lange Lauf setzt den kurzen also nicht fort, „die ruhige Bewegung geht verloren“ ist
+  nicht belegt (siehe D20). Mit 3000 Episoden folgen alle acht Läufe der Bahn. Bei 0,05 rad bringt der glatte Basis-Term noch +0,74 pro
   Schritt, die EE-Boni +4. Gewicht oder Breite des Basis-Terms wären der nächste Parameter (nicht getestet).
 
 ### D11 Algorithmenvergleich neu (entschieden 27.09.2026, erledigt 27.09.)
@@ -874,10 +877,28 @@ Ergebnis `D19_base_from_hw_20261003_191634_agents.csv` und `_runs.csv`.
 - Zielkonflikt auf der Hardware-Bewegung: s1 dreht die Basis etwa halb so weit wie s7 und s4 (0,024 gegen 0,048 und
   0,040 rad) bei 1,6- bis 1,8-fachem RMS (0,030 gegen 0,019 und 0,017 m).
 - Der r4-Agent nach 1000 Episoden (s2) ist ruhig (0,022 rad) und hat zugleich den kleinsten RMS aller
-  Hardware-Agenten (0,014 m). Nach 3000 Episoden verliert derselbe Seed die ruhige Bewegung (D16, etwa 0,05 rad).
+  Hardware-Agenten (0,014 m). Der Lauf mit demselben Seed und 3000 Episoden liegt bei etwa 0,05 rad (D16). Das ist
+  ein getrennter Lauf, kein fortgesetztes Training (Korrektur 03.10., siehe D20).
 - In Simscape (geschlossener Kreis, frei schwebend) dreht s7 die Basis stärker als in der Fixed-Base-Bahn (0,060
   gegen 0,047 rad). Die Policy reagiert dort auf die Basis, deshalb ist die offene Rechnung nur eine Schätzung.
 - Im Paper: Sec. VI-C (neuer Absatz), Fazit, Sec. VIII.
+
+### D20 Zwischenstände des r4-Trainings (läuft seit 03.10.2026)
+
+Frage (A68): Der r4-Agent aus dem Lauf mit 1000 Episoden (D16 Seed 2) dreht die Basis um etwa 0,02 rad und war auf
+der Hardware der genaueste (D19). Von den acht Läufen mit 3000 Episoden fanden nur zwei die ruhige Lösung (D17).
+Tritt sie in den anderen Läufen zwischendurch auf und geht wieder verloren? Dann wäre eine Checkpoint-Auswahl nach
+Basisdrehung und Tracking-Fehler eine einfache Abhilfe.
+
+Hintergrund: Bisher hieß es, „Seed 2 verliert die ruhige Bewegung mit längerem Training“. Die Lernkurven zeigen aber,
+dass der Lauf mit 3000 Episoden ab Episode 1 vom Lauf mit 1000 Episoden abweicht (paralleles Training nicht
+deterministisch). Die Aussage war nicht belegt und ist in Paper und Plan korrigiert.
+
+Aufbau: `desktop_d20_run.m` ruft `desktop_d12_train(4, s, 3000, '', 'base_sync', 0.9774, 2, 250)` für die Seeds 0–7
+auf. Neu in `desktop_d12_train` ist das achte Argument `ckptEvery` (rlTrainingOptions `SaveAgentCriteria`
+'EpisodeFrequency', Studienname D20, eigener Ordner, D16 bleibt unberührt). Kurztest: Zwischenstände ändern sich
+mit dem Training, der letzte ist gleich dem gespeicherten Endagenten. `desktop_d20_eval.m` wertet jeden Zwischenstand
+deterministisch aus wie D17 (RMS, letztes Viertel, größte Basisdrehung, Abbruch). Ergebnis `D20_eval_<Zeit>.csv`.
 
 ### Nicht geplant
 
