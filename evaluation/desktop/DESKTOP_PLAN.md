@@ -41,7 +41,7 @@ Laborreihe gebraucht wird. Einzige Ausnahme ist D10, falls das Agentenpaar auf d
 | D16 | Wie D14 (r0 und r2), J6-Grenze 0,9774 statt 0,1 rad/s | A51, D15 | 1 h | 40 min + 15 min Auswertung | nein | ✅ 27.09. |
 | D18 | Set-Point: Stopp nach dem Minimum und Neustart (kinematischer Trockenlauf) | Labortag 2, ROS-Plugin | 1 h | 5 min | nein | ✅ 03.10. |
 | D19 | Basisdrehung aus den gemessenen Gelenkbahnen der Tracking-Läufe (Impulserhalt wie D15) | Labortag 2, D15, D17 | 1 h | 20 min | nein | ✅ 03.10. |
-| D20 | r4 wie D16 (8 Seeds × 3000 Episoden) mit Zwischenstand alle 250 Episoden: tritt die ruhige und genaue Lösung im Training auf? | A68, D16, D17, D19 | 1 h | ≈ 3 h | nein | läuft seit 03.10. |
+| D20 | r4 wie D16 (8 Seeds × 3000 Episoden) mit Zwischenstand alle 250 Episoden: tritt die ruhige und genaue Lösung im Training auf? | A68, D16, D17, D19 | 1 h | ≈ 3,5 h + 10 min | nein | ✅ 04.10. |
 
 Summe D0 bis D9: etwa 15 bis 22 h Arbeit und 2 h Rechenzeit. Dort ist die Rechenzeit kein Engpass. D10 und D11
 sind Trainings, dort bestimmt die Rechenzeit die Dauer. D11 belegt den Desktop 1 bis 1,5 Tage mit allen Kernen,
@@ -883,7 +883,7 @@ Ergebnis `D19_base_from_hw_20261003_191634_agents.csv` und `_runs.csv`.
   gegen 0,047 rad). Die Policy reagiert dort auf die Basis, deshalb ist die offene Rechnung nur eine Schätzung.
 - Im Paper: Sec. VI-C (neuer Absatz), Fazit, Sec. VIII.
 
-### D20 Zwischenstände des r4-Trainings (läuft seit 03.10.2026)
+### D20 Zwischenstände des r4-Trainings ✅ 04.10.2026
 
 Frage (A68): Der r4-Agent aus dem Lauf mit 1000 Episoden (D16 Seed 2) dreht die Basis um etwa 0,02 rad und war auf
 der Hardware der genaueste (D19). Von den acht Läufen mit 3000 Episoden fanden nur zwei die ruhige Lösung (D17).
@@ -899,6 +899,28 @@ auf. Neu in `desktop_d12_train` ist das achte Argument `ckptEvery` (rlTrainingOp
 'EpisodeFrequency', Studienname D20, eigener Ordner, D16 bleibt unberührt). Kurztest: Zwischenstände ändern sich
 mit dem Training, der letzte ist gleich dem gespeicherten Endagenten. `desktop_d20_eval.m` wertet jeden Zwischenstand
 deterministisch aus wie D17 (RMS, letztes Viertel, größte Basisdrehung, Abbruch). Ergebnis `D20_eval_<Zeit>.csv`.
+
+Durchführung: Training 03.10. 21:23 bis 04.10. 01:02 (Seed 0 im ersten Lauf, Seeds 1–7 als eigenständiger Prozess,
+weil Hintergrundaufträge nach etwa 30 min enden). Probleme:
+- Die Zwischenstände der Toolbox enthalten das ganze bisherige Trainingsergebnis (`savedAgentResult`) und wachsen um
+  etwa 160 MB je 250 Episoden. Ab etwa 1,1 GB schlug das Speichern fehl (Dateien mit 381 Byte, bei Seed 0 ab 2250
+  unlesbar). Lesbar: 250–1750 bei allen Seeds, 2000 bei Seeds 0, 1, 3, 6, dazu der Endagent (3000). 36 von 96
+  Zwischenständen fehlen. Der Ordner `SavedAgents/MotionProfile/D20/` belegt 37 GB.
+- Die erste Auswertung schrieb jeden Stand in dieselbe Zwischendatei. `desktop_run_episode` speichert Agenten nach
+  Dateinamen zwischen, alle Stände ergaben deshalb dieselben Werte. Behoben: eigene Datei je Stand
+  (`<Name>_ckpt_agent/agent_ep<n>.mat`, nur `agent`, klein).
+
+Ergebnis (`D20_eval_20261004_015108.csv`, 68 lesbare Stände, deterministisch):
+- Alle acht Endagenten folgen der Bahn: RMS 7–14 mm, Basis 0,049–0,062 rad. Keiner liegt in der ruhigen Gruppe
+  (D17 hatte zwei von acht).
+- Ruhige Phasen mit Bahnfolge (letztes Viertel < 50 mm, Basis < 0,035 rad) traten in zwei von acht Läufen auf:
+  Seed 1 bei 1250–2000 Episoden (0,026–0,031 rad, RMS 19–28 mm) und Seed 4 bei 1500–1750 (0,027–0,030 rad,
+  RMS 25–28 mm). Beide liegen am Ende bei etwa 0,05 rad mit 7 bzw. 14 mm. Die ruhige Phase hat also den größeren
+  Fehler der ruhigen Gruppe aus D17 (16–27 mm), danach wechselt das Training zur genaueren, unruhigeren Lösung.
+- Weitere ruhige Stände (Seed 3 bei 500–1500, Seed 4 bei 500–1000) folgen der Bahn noch nicht (RMS 48–78 mm).
+- Kein Stand war zugleich ruhig (< 0,035 rad) und genau (RMS < 15 mm). Der Zielkonflikt zeigt sich also auch im
+  Verlauf des Trainings. Mit einer Checkpoint-Auswahl ließe sich die ruhige Seite wählen, aber nicht beides.
+- Grenze: Die Stände 2000–2750 fehlen bei den meisten Seeds, der Wechsel liegt in dieser Lücke.
 
 ### Nicht geplant
 
