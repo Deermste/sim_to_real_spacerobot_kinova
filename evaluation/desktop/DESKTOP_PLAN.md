@@ -40,6 +40,7 @@ Laborreihe gebraucht wird. Einzige Ausnahme ist D10, falls das Agentenpaar auf d
 | D15 | Physik-Check: kleinste Basisdrehung bei exakter Bahn (Impulserhaltung, verallgemeinerte Jacobi-Matrix) | A51 | ½ Tag | ≈ 1,5 h | nein | ✅ 27.09. |
 | D16 | Wie D14 (r0 und r2), J6-Grenze 0,9774 statt 0,1 rad/s | A51, D15 | 1 h | 40 min + 15 min Auswertung | nein | ✅ 27.09. |
 | D18 | Set-Point: Stopp nach dem Minimum und Neustart (kinematischer Trockenlauf) | Labortag 2, ROS-Plugin | 1 h | 5 min | nein | ✅ 03.10. |
+| D19 | Basisdrehung aus den gemessenen Gelenkbahnen der Tracking-Läufe (Impulserhalt wie D15) | Labortag 2, D15, D17 | 1 h | 20 min | nein | ✅ 03.10. |
 
 Summe D0 bis D9: etwa 15 bis 22 h Arbeit und 2 h Rechenzeit. Dort ist die Rechenzeit kein Engpass. D10 und D11
 sind Trainings, dort bestimmt die Rechenzeit die Dauer. D11 belegt den Desktop 1 bis 1,5 Tage mit allen Kernen,
@@ -844,6 +845,39 @@ Kinematischer Trockenlauf, er trifft die Hardware in C2 auf ±2 mm. Ergebnis `D1
 - Für das ROS-Plugin: Ziele außerhalb des Bereichs, in dem der Agent konvergiert, vorher ablehnen (nach vorn und
   oben enger als 0,30 m) und einen Fehlschlag früh melden statt 25 s zu warten. Ein Stopp nach dem Minimum lohnt
   sich nur, wenn der Arm schon nahe am Ziel war (etwa unter 50 mm).
+
+### D19 Basisdrehung aus den Hardware-Gelenkbahnen ✅ 03.10.2026
+
+Frage (Labortag 2, B++): Zeigen die r4-Agenten auf der Hardware denselben Zielkonflikt wie in D17? Die
+Basisdrehung ist auf dem festen Arm nicht messbar.
+
+Aufbau: `desktop_day2_base_from_hw.m` spielt die gemessene Gelenkbahn jedes Tracking-Laufs (`log.q`, Kampagne
+26.09. und Labortag 2) wie D15 in die Kinematik des frei schwebenden Systems ein (Impulserhalt, Anfangsimpuls null,
+65 kg). Die Rechnung ist offen, die Policy reagiert nicht auf die Basis. Bei Anfangsimpuls null hängt die Drehung
+nur vom Weg im Gelenkraum ab, nicht vom Timing. Je Agent zum Vergleich: Simscape frei schwebend bei Trainingsrate,
+dieselbe Bahn eingespielt (Validierung) und die Gelenkbahn der Fixed-Base-Simulation bei der Hardware-Rate.
+Ergebnis `D19_base_from_hw_20261003_191634_agents.csv` und `_runs.csv`.
+
+| Bedingung | Simscape | eingespielt | Fixed-Base | Hardware (Mittel, Bereich) |
+|---|---|---|---|---|
+| r4 s7 3000 ep | 0,0604 | 0,0619 | 0,0474 | 0,0482 (0,0468–0,0498) |
+| r4 s4 3000 ep | 0,0486 | 0,0494 | 0,0417 | 0,0402 (0,0400–0,0404) |
+| r4 s1 3000 ep | 0,0234 | 0,0242 | 0,0229 | 0,0239 (0,0226–0,0254) |
+| r4 s2 1000 ep | 0,0263 | 0,0272 | 0,0240 | 0,0220 (0,0217–0,0223) |
+| r0 s0 J6 0,98 | 0,0183 | 0,0184 | 0,0215 | 0,0229 (0,0215–0,0237) |
+| CDR2-4 | 0,0125 | 0,0125 | 0,0135 | 0,0127 |
+| frühes PPO | 0,0562 | 0,0568 | 0,0501 | 0,0496 |
+| ppo_10hz | 0,0133 | 0,0134 | 0,0135 | 0,0130 |
+
+- Einspielung trifft Simscape auf höchstens 1,5 mrad, Hardware und Fixed-Base-Simulation liegen höchstens 2 mrad
+  auseinander.
+- Zielkonflikt auf der Hardware-Bewegung: s1 dreht die Basis etwa halb so weit wie s7 und s4 (0,024 gegen 0,048 und
+  0,040 rad) bei 1,6- bis 1,8-fachem RMS (0,030 gegen 0,019 und 0,017 m).
+- Der r4-Agent nach 1000 Episoden (s2) ist ruhig (0,022 rad) und hat zugleich den kleinsten RMS aller
+  Hardware-Agenten (0,014 m). Nach 3000 Episoden verliert derselbe Seed die ruhige Bewegung (D16, etwa 0,05 rad).
+- In Simscape (geschlossener Kreis, frei schwebend) dreht s7 die Basis stärker als in der Fixed-Base-Bahn (0,060
+  gegen 0,047 rad). Die Policy reagiert dort auf die Basis, deshalb ist die offene Rechnung nur eine Schätzung.
+- Im Paper: Sec. VI-C (neuer Absatz), Fazit, Sec. VIII.
 
 ### Nicht geplant
 
