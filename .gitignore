@@ -62,3 +62,7 @@ ros_kortex/kortex_description/arms/gen3/7dof/*
 # Trockenlaeufe der Messkampagne (hardware/campaign, dryRun = true)
 data/hardware/campaign/_dryrun/
 data/hardware/campaign/campaign_index_dryrun.csv
+
+# Zwischenstaende der RL Toolbox (SaveAgentCriteria): enthalten das ganze Trainingsergebnis, bis ueber 1 GB je Datei.
+# Ausgewertete Agenten liegen klein in *_ckpt_agent/ (desktop_d20_eval).
+SavedAgents/**/*_ckpt/

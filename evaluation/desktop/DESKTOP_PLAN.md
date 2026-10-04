@@ -905,7 +905,9 @@ weil Hintergrundaufträge nach etwa 30 min enden). Probleme:
 - Die Zwischenstände der Toolbox enthalten das ganze bisherige Trainingsergebnis (`savedAgentResult`) und wachsen um
   etwa 160 MB je 250 Episoden. Ab etwa 1,1 GB schlug das Speichern fehl (Dateien mit 381 Byte, bei Seed 0 ab 2250
   unlesbar). Lesbar: 250–1750 bei allen Seeds, 2000 bei Seeds 0, 1, 3, 6, dazu der Endagent (3000). 36 von 96
-  Zwischenständen fehlen. Der Ordner `SavedAgents/MotionProfile/D20/` belegt 37 GB.
+  Zwischenständen fehlen. Der Ordner `SavedAgents/MotionProfile/D20/` belegte 37 GB. Am 04.10. (Nutzer) die
+  großen `*_ckpt/`-Ordner gelöscht, `SavedAgents/**/*_ckpt/` steht in `.gitignore`. Erhalten und versioniert sind
+  die Endagenten und die lesbaren Zwischenstände klein in `*_ckpt_agent/` (14 MB).
 - Die erste Auswertung schrieb jeden Stand in dieselbe Zwischendatei. `desktop_run_episode` speichert Agenten nach
   Dateinamen zwischen, alle Stände ergaben deshalb dieselben Werte. Behoben: eigene Datei je Stand
   (`<Name>_ckpt_agent/agent_ep<n>.mat`, nur `agent`, klein).
