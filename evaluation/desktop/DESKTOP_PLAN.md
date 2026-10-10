@@ -848,6 +848,8 @@ Kinematischer Trockenlauf, er trifft die Hardware in C2 auf ±2 mm. Ergebnis `D1
 - Für das ROS-Plugin: Ziele außerhalb des Bereichs, in dem der Agent konvergiert, vorher ablehnen (nach vorn und
   oben enger als 0,30 m) und einen Fehlschlag früh melden statt 25 s zu warten. Ein Stopp nach dem Minimum lohnt
   sich nur, wenn der Arm schon nahe am Ziel war (etwa unter 50 mm).
+- Umgesetzt im Plugin am 10.10. (`rl_planner_handoff`, `c991ab8`, A67): Grenze je Richtung, Trockenlauf vor der
+  Annahme und statt eines Stopps nach dem Minimum ein Stopp `stalled` für Läufe, die nie unter 50 mm kamen.
 
 ### D19 Basisdrehung aus den Hardware-Gelenkbahnen ✅ 03.10.2026
 
