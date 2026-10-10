@@ -31,9 +31,11 @@ Ablauf nach `hardware/campaign/ANLEITUNG_LABOR_TAG2.md`, Bedingungen in `campaig
 - **C1. Zielposen** (14:02–14:04): alle 9 Ziele freigegeben, `tool_pose`-Abweichung zur FK 2,4–6,8 mm. Bei E02
   wurde die erste Eingabe leer abgeschickt, die zweite war `j`.
 - **C2 / C3. `S20_targets`** (14:05–14:26 und 14:39–14:53), je 27 Läufe. Je 12/27 unter 50 mm: T01, T02, T03, T05
-  von allen drei Starts, T04, T06 und E01–E03 von keinem. Alle Läufe wie im kinematischen Trockenlauf (Endfehler
-  ±2 mm). Einziger Unterschied zwischen C2 und C3: T01 S06 (r01 timeout 31 mm, r02 converged 19,6 mm, Grenzfall
-  an der 20-mm-Schwelle).
+  von allen drei Starts, T04, T06 und E01–E03 von keinem. Erfolg bei 50 mm in allen Läufen wie im kinematischen
+  Trockenlauf. In C2 stimmen auch Stoppgrund und Endfehler (höchstens 1,8 mm daneben). In C3 kippt T01 S06 r02
+  an der 20-mm-Schwelle (converged 19,6 mm statt timeout, 11,6 mm Unterschied im Endfehler). Das ist zugleich der
+  einzige Unterschied zwischen C2 und C3 (r01 timeout 31 mm). Abgleich über alle 144 Läufe in A66 und
+  `results/day2_dryrun_compare.csv`.
 - **C+. `S21_targets_all`** (15:14–16:08), 90 Läufe. T01, T02, T03, T05 je 15/15 unter 50 mm, T04 und T06 je
   0/15, wie vorhergesagt. Unterbrochen nach Lauf 55 (siehe unten).
 

@@ -150,7 +150,22 @@ stehen. Bei beiden steht J6 an seiner Grenze von 115,2° und die Soft-Limit-Brem
 
 - Open-Loop-Playback (Sec. V-B) muss nicht wiederholt werden. Die Läufe 001 bis 006 reichen und sind ausgewertet.
 
-## Labortag 2 (vorbereitet am 27.09.2026)
+## Labortag 2 (vorbereitet am 27.09.2026, gefahren am 03.10.2026)
+
+**Ergebnis 03.10.** (Laborbuch `data/hardware/campaign/LABORBUCH_2026-10-03.md`, Auswertung in
+`data/hardware/campaign/results/`): alle Teile gefahren, 169 Läufe und 9 Messungen.
+
+- Timing (A60): `RefreshFeedback` allein 25,0 ms, Senden dann Feedback 50,0 ms. Jeder blockierende Aufruf wartet
+  auf einen Takt von etwa 25 ms.
+- Tracking: beide r4-Agenten folgen der ganzen Bahn (`T40_r4_3k`, `T40_r4_3k_s4`), `T40_r4_1k` hat den kleinsten
+  RMS (0,0141 m), `T40_r0_j6` verliert das Ende (0,092 m). Der ruhige Agent `T40_r4_3k_s1` (B++) hat etwa den
+  1,7-fachen RMS. Basisdrehung aus den Gelenkbahnen in D19 (`DESKTOP_PLAN.md`).
+- Set-Point (A57): T01, T02, T03, T05 von allen Starts unter 50 mm, T04, T06 und E01–E03 von keinem. Der
+  kinematische Trockenlauf trifft den Erfolg bei 50 mm in allen 144 Läufen. Stoppgrund und Endfehler (höchstens
+  2,3 mm daneben) stimmen in 139 Läufen. In vier Läufen nahe der 2-cm-Grenze kippt der Stoppgrund (bis 16 mm),
+  einer endete mit Watchdog (A66, `day2_dryrun_compare.csv`).
+- Störungen: MATLAB-Absturz im Kortex-MEX nach Lauf 55 von `S21_targets_all`, Watchdog-Stopp bei T06 S13 (A65).
+
 
 Ablauf in `ANLEITUNG_LABOR_TAG2.md`, Bedingungen in `campaign_plan.m` (`plan.day2`). Drei Teile:
 
