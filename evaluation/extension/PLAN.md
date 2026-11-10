@@ -70,7 +70,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X3.1 | Kinematische Free-Floating-Emulation im Deploy-Skript, Validierung in Simulation | 3 Tage | 2 h | X0.2 | ✅ 10.11. (Vorhersage offen) |
 | X3.2 | Labortag: Emulation an gegen aus | 1 Tag Labor + 1 Tag Auswertung | – | Labor, E5 | ⏸ |
 | X4.1 | Gewichtsreihe aus D17 auf 10 Seeds auffüllen | ½ Tag | ≈ 13 h | E3 | 🔄 läuft seit 10.11. 10:51 |
-| X4.2 | Alle Bestandsagenten mit dem Protokoll X0.1 neu auswerten | ½ Tag | 2 h | X0.1 | ⬜ |
+| X4.2 | Alle Bestandsagenten mit dem Protokoll X0.1 neu auswerten | ½ Tag | 2 h | X0.1 | 🔄 Nachtkette Schritt 5 |
 | X4.3 | Ratenpaar D10 auf 10 Seeds (optional) | ½ Tag | ≈ 3 h | E6 | ⏸ |
 | X4.4 | Entscheidung, was aus dem Paper fliegt oder in den Anhang geht | ½ Tag | – | Betreuer | ⏸ |
 | X5.1 | 3D-Bahn mit allen 7 Gelenken: Modell, Machbarkeit mit dem Regler aus X2 | 2–3 Tage | 1 h | X2.1 | 🔄 Machbarkeit ✅ 10.11., SK_desktop offen |
@@ -337,6 +337,10 @@ den D17-Agenten zusammen auswertbar.
 Alle Agenten, die im neuen Paper vorkommen könnten, mit X0.1: D14 (r0, r1, r2), D16 (r0, r2, r4 kurz und lang), D17,
 D20 (Endagenten), frühes PPO, Optimized, CDR2-4, ppo_10hz. Danach stammen alle Simulationszahlen im Paper aus einem
 Protokoll.
+
+Stand 10.11.2026: `ext_x4_2_list` (93 Agenten, dazu D10, D11, D12, D13, CDR1-4 und basisori, weil das Paper sie
+nutzt) und `ext_x4_2_run`. Läuft als Schritt 5 der Nachtkette (`ext_x2_4_night`) nach X1.2 auf 8 Workern, nicht
+parallel zu X4.1 (Arbeitsspeicher). D17 kommt aus `ext_x4_1_eval`.
 
 ### X4.3 Ratenpaar auf 10 Seeds (optional, E6)
 

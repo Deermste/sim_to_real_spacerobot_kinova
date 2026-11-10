@@ -9,6 +9,7 @@ function ext_x2_4_night()
 %      Protokoll X2_4_runlog.csv.
 %   3. ext_x2_robust mit allen r4-Agenten (D16, D17 inklusive X4.1) und den X2.4-Agenten.
 %   4. Pilot X1.2 (ext_x1_2_run).
+%   5. X4.2: alle Bestandsagenten mit dem Protokoll X0.1 (ext_x4_2_run, ergaenzt 10.11. abends, etwa 30 min).
 %   Gestartet von einem PowerShell-Prozess, der auf das Ende von X4.1 wartet.
 
 setup_project;
@@ -50,7 +51,18 @@ catch err
 end
 
 fprintf('\n=== Nacht: Pilot X1.2 (%.0f min) ===\n', toc(t0) / 60);
-ext_x1_2_run();
+try
+    ext_x1_2_run();
+catch err
+    fprintf(2, 'X1.2 fehlgeschlagen: %s\n', err.message);
+end
+
+fprintf('\n=== Nacht: X4.2 Bestandsagenten (%.0f min) ===\n', toc(t0) / 60);
+try
+    ext_x4_2_run();
+catch err
+    fprintf(2, 'X4.2 fehlgeschlagen: %s\n', err.message);
+end
 fprintf('\n=== Nacht fertig nach %.0f min ===\n', toc(t0) / 60);
 end
 

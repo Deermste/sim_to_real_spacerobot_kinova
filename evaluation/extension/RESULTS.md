@@ -686,6 +686,23 @@ Gestartet am 10.11.2026 um 10:51 mit `ext_x4_1_run()` als eigener MATLAB-Prozess
 Gewichte 0, 2, 4, 8, 16, neue Seeds 3–9 (Gewicht 2: 8–9), je 3000 Episoden. Danach automatisch `ext_x4_1_eval`.
 Kurztest vorher bestanden (2 × 16 Episoden, Auswertung der 20 vorhandenen Agenten in 4,7 min).
 
+### X4.2 Bestandsagenten nach Protokoll X0.1 (vorbereitet, läuft in der Nacht 10./11.11.)
+
+**Aufbau:** `ext_x4_2_run()` mit der Liste aus `ext_x4_2_list()`. 93 Agenten: frühes PPO und basisori,
+Optimized, ppo_10hz, CDR1-4 und CDR2-4, D10 (7, Ratenpaar), D11 (30, sechs Algorithmen × 5 Seeds), D12 (7),
+D13 (9), D14 (9), D16 (17, r0, r2, r4 kurz und lang), D20 (8 Endagenten). D17 wertet `ext_x4_1_eval` aus.
+Trainingsbedingungen aus dem `cfg` (Inventar `X4_2_inventory.csv`): Takt 0,1 s bei ppo_10hz und D10 10 Hz,
+sonst 0,025 s. J6 0,9774 nur bei D16 und D20, sonst 0,1. Reward-Modus 0 bis 4 wie im Training. Alle Dateien
+enthalten `agent`.
+
+**Rauchtest** (3 Agenten, nur nominal, seriell): frühes PPO 1698,9196 und Optimized 1593,0836, gleich der
+Basislinie aus X0.1. Testdateien gelöscht.
+
+**Ablauf:** Schritt 5 der Nachtkette nach X1.2, 8 Worker, etwa 1953 Episoden, etwa 30 min. Nicht parallel zu
+X4.1 gestartet, weil X4.1 etwa 14 GB belegt und nur 6,5 GB frei waren.
+
+Paper: alle Simulationszahlen der Bestandsagenten (Tabellen und Text zu D10 bis D16). Offen.
+
 ## X5 3D
 
 ### X5.1 Machbarkeit im kinematischen Simulator ✅ 10.11.2026 (SK_desktop offen)
