@@ -11,8 +11,12 @@ function mdlFile = desktop_build_model(force, dst)
 %     p_Ts           Solver-Schritt [s] (Rate Transition vor dem Integrator)
 %     p_Ts_agent     Agenten-Takt [s] (Beobachtung, Reward)
 %     p_T            Episodendauer [s]
-%     p_base_mass    Basismasse [kg], Traegheit skaliert mit (Wuerfel 1 m). 1e9 kg haelt die Basis fest
-%     p_delay_steps  Aktionsverzoegerung in Agentenschritten (0 = keine)
+%     p_base_mass    Basismasse [kg], Traegheit skaliert mit (Wuerfel 1 m). 1e9 kg haelt die Basis fest.
+%                    Mass_conf und MomentsOfInertia_conf = runtime, damit sie mit Fast Restart je Episode
+%                    aenderbar ist (X2.4, ext_x2_4_tunable: compiletime wird sonst stillschweigend ignoriert)
+%     p_inertia_scale  zusaetzlicher Faktor auf die Basistraegheit (X2.4), Standard 1
+%     p_delay_steps  Aktionsverzoegerung in Agentenschritten (0 = keine). Ueber den Eingangsport des
+%                    Delay-Blocks (Konstante), damit sie mit Fast Restart aenderbar ist (X2.4)
 %     p_damp_scale   Faktor auf die Gelenkdaempfung (ohne Wirkung auf die Bewegung, Gelenke sind
 %                    bewegungsgesteuert, A23)
 %     p_slew         Anstieg des Rate Limiters [1/s] (Training 0,5)
@@ -89,10 +93,14 @@ set_param([dst '/Integrator'], 'InitialConditionSource', 'internal', 'InitialCon
 % --- Basis ---
 inertia = [dst '/Robot/base_link/Inertia'];
 set_param(inertia, 'Mass', 'p_base_mass', ...
-    'MomentsOfInertia', '[10.833, 10.833, 10.833] * p_base_mass / 65');
+    'MomentsOfInertia', '[10.833, 10.833, 10.833] * p_base_mass / 65 * p_inertia_scale', ...
+    'Mass_conf', 'runtime', 'MomentsOfInertia_conf', 'runtime');
 
 % --- Verzoegerung ---
-set_param([dst '/Delay'], 'DelayLength', 'p_delay_steps', 'DelayLengthUpperLimit', '100');
+set_param([dst '/Delay'], 'DelayLengthSource', 'Input port', 'DelayLengthUpperLimit', '100');
+add_block('simulink/Sources/Constant', [dst '/Delay Steps'], 'Value', 'p_delay_steps', ...
+    'Position', blockPos([dst '/Delay'], [0 80]));
+add_line(dst, 'Delay Steps/1', 'Delay/2', 'autorouting', 'on');
 
 % --- Daempfung (Nennwerte wie im 40-Hz-Modell: J1-J4 0,5, J5-J7 0,3) ---
 for j = 1:7
