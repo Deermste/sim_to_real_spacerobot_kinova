@@ -5,6 +5,8 @@ function [E, S, outFile] = ext_x2_robust(varargin)
 %   [E, S] = ext_x2_robust('scenarios', {'nominal', 'mass_0.5'})   nur einzelne Szenarien
 %   [E, S] = ext_x2_robust('controllers', {'R0k2', {'beta', 0, 'kOri', 2}})   weitere Regler (Name, Optionen)
 %   [E, S] = ext_x2_robust('agents', 'none')     nur Regler
+%   Liegt X2_4_ctrl_tuned.mat vor (ext_x2_4_tune_ctrl), kommen die dort eingestellten Regler dazu
+%   ('useTuned', false schaltet das ab).
 %
 %   Alles im kinematischen Simulator (ext_kinsim, volle Befehlskette, J6 0,9774 rad/s, Halbkreis 8,5 s, 40 Hz).
 %   Die Regler (ext_x2_controller mit Inversion der Kette) rechnen immer mit dem Nominalmodell (65 kg) und kennen
@@ -28,6 +30,7 @@ p = inputParser;
 p.addParameter('agents', []);
 p.addParameter('scenarios', {});
 p.addParameter('controllers', {});
+p.addParameter('useTuned', true);
 p.addParameter('save', true);
 p.parse(varargin{:});
 o = p.Results;
@@ -39,6 +42,12 @@ subj = struct('label', {}, 'group', {}, 'make', {});
 ctl = {'R0', {'beta', 0}; 'Rb1', {'beta', 1, 'j6_side', -1}; 'Rb21', {'beta', 21.544, 'j6_side', -1}; ...
        'Rb46', {'beta', 46.416, 'j6_side', -1}};
 ctl = [ctl; o.controllers];
+% Auf die DR-voll-Verteilung eingestellte Regler (ext_x2_4_tune_ctrl), falls vorhanden
+tf = sk_path('data', 'simulation', 'extension', 'X2_4_ctrl_tuned.mat');
+if o.useTuned && isfile(tf)
+    L = load(tf, 'tuned');
+    ctl = [ctl; L.tuned];
+end
 for c = 1:size(ctl, 1)
     args = [{'j6_lim', 0.9774, 'invert', true, 'K', Knom}, ctl{c, 2}];
     subj(end + 1) = struct('label', ctl{c, 1}, 'group', 'ctrl', 'make', @() ctrlRunner(args)); %#ok<AGROW>

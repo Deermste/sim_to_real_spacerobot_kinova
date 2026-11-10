@@ -373,6 +373,53 @@ Datenquelle: Kurztest unter `data/simulation/desktop/_test/X1_ppo_40hz_r5_c1_th3
 
 Paper: Sec. Methode (Nebenbedingung), offen.
 
+### X1.4 Sicherheitsfilter, Teil 1: vorhandene Agenten ✅ 10.11.2026
+
+**Frage:** Hält ein modellbasierter Filter das Budget auch für eine Policy ohne passendes Training, und was kostet
+das an Tracking?
+
+**Aufbau:**
+- `ext_x1_shield`: h = θ² − φ² mit φ = Basisdrehung um y (Komponente des Drehvektors), Bedingung ḣ ≥ −α·h. Mit
+  der verallgemeinerten Jacobi-Matrix (Nominalmodell) eine lineare Ungleichung in q̇. Bei Verletzung kleinste
+  euklidische Korrektur der Geschwindigkeiten von J2, J4, J6, danach Sättigung.
+- Zwei Orte: nach der Befehlskette (Hook in `ext_kinsim`, kann die Beschleunigungsgrenze verletzen) und vor der
+  Kette (Korrektur der Rohaktion, Kette bleibt eingehalten, wirkt verzögert).
+- `ext_x1_4_eval()`: θ ∈ {0,02; 0,03; 0,04; 0,05} rad, α ∈ {1; 5} 1/s. Agenten: 20 r4-Agenten (J6 0,9774) und als
+  Ersatz für die r1-Agenten aus X1.3 die drei r1-Agenten aus D14 (nur Tracking, J6 0,1). 391 Episoden, nominal,
+  kinematischer Simulator. „Hält das Budget“: folgt der Bahn und größte Basisdrehung ≤ θ + 0,005 rad.
+
+**Ergebnis r4-Agenten** (ohne Filter: RMS Median 12,2 mm, Basis Median 51 mrad, 20/20 folgen, Ruck 9,3):
+
+| Ort | θ [rad] | α | RMS Median (Δ) [mm] | Basis Median / Max [mrad] | folgt | hält Budget | Eingriff |
+|---|---|---|---|---|---|---|---|
+| nach | 0,02 | 5 | 22,9 (+10,4) | 19,6 / 20,3 | 18/20 | 18/20 | 15 % |
+| nach | 0,03 | 5 | 17,2 (+4,0) | 29,6 / 30,2 | 19/20 | 19/20 | 11 % |
+| nach | 0,04 | 5 | 13,7 (+0,5) | 39,5 / 40,1 | 20/20 | 20/20 | 7 % |
+| nach | 0,03 | 1 | 20,0 (+6,6) | 25,5 / 29,6 | 19/20 | 19/20 | 17 % |
+| vor | 0,03 | 1 | 18,2 (+4,9) | 28,7 / 36,0 | 19/20 | 18/20 | 18 % |
+| vor | 0,03 | 5 | 15,9 (+1,6) | 33,9 / 39,8 | 19/20 | 10/20 | 13 % |
+
+- Nach der Kette hält der Filter das Budget praktisch exakt (größte Basisdrehung höchstens 0,3 mrad über θ). Die
+  Agenten, die dabei die Bahn verlieren, sind dieselben, die schon ohne Filter am Rand lagen. Der Ruck steigt nicht.
+- Vor der Kette reicht die Korrektur wegen Filter und Rate Limiter oft nicht. Mit α = 5 hält nur die Hälfte das
+  Budget von 0,03 rad, mit α = 1 fast alle.
+- Vergleich mit dem Regler (X2.1): Bei 0,020 rad hat der Regler 5,7 mm, die gefilterten Agenten im Median 22,9 mm.
+  Der Filter macht die Budgets verlässlich, an der Lücke zur Front ändert er wenig.
+- Für X1.3 ist das die Messlatte: Die Nebenbedingung im Training muss das Budget ähnlich zuverlässig halten wie
+  der Filter, und das mit weniger Bahnfehler.
+
+**Ergebnis r1-Agenten aus D14 (J6 0,1):** Ohne Filter 10,2 mm bei 79 mrad. Mit Filter wird das Budget gehalten,
+aber für θ ≤ 0,04 folgt keiner mehr der Bahn (24–67 mm). Mit J6 0,1 rad/s braucht die Bahn etwa 0,06 rad
+(X2.1, D15). Der Filter zeigt hier also die Grenze der Physik, nicht seine eigene. Die r1-Agenten aus X1.3 mit
+J6 0,9774 folgen später.
+
+**Noch offen in X1.4:** r1-Agenten aus X1.3, Filter unter den Störungen aus X2.3 (falsches Modell, Verzögerung),
+drei Fälle in Simscape.
+
+Datenquelle: `X1_4_eval_20261110_130405.csv`.
+
+Paper: Abschnitt Nebenbedingung (Vergleich Filter gegen Training). Offen.
+
 ## X2 Modellbasierte Vergleichsbasis
 
 ### X2.1 Regler und Machbarkeit ✅ 10.11.2026
@@ -537,11 +584,11 @@ w* = −kOri·e_ori statt 0 (`ext_x2_controller`, Option `kOri`).
   RMS [mm] / größte Basisdrehung [mrad], ✗ = in mindestens einer Wiederholung nicht gefolgt.
 - Mit kOri 0,5 sind bei der Gegendrift alle 20 Agenten dominiert (vorher 5 nicht dominiert). Nur bei Montage
   z +5 cm bleibt ein Agent nicht dominiert.
-- Mit kOri 5 folgt der Regler in 15 von 26 Szenarien nicht in jeder Wiederholung. Betroffen sind Verzögerung
-  50 ms, Servo τ 50 ms, beide Rauschstufen, beide Messfehler, Startstellung, Drift um y in beide Richtungen,
-  Basismasse ×1,5 und ×2, Trägheit ×2 und die drei Montagefehler. Ein scharf eingestellter Regler erreicht nominal die ruhigste Basis, ist aber brüchig. Die
-  Robustheit des modellbasierten Reglers hängt also an einer zurückhaltenden Einstellung. Das ist der Punkt, an dem
-  ein randomisiert trainierter Agent einen Vorteil haben könnte (X2.4).
+- Mit kOri 5 folgt der Regler in 15 von 26 Szenarien nicht in jeder Wiederholung. Betroffen sind Verzögerung 50 ms,
+  Servo τ 50 ms, beide Rauschstufen, beide Messfehler, Startstellung, Drift um y in beide Richtungen, Basismasse
+  ×1,5 und ×2, Trägheit ×2 und die drei Montagefehler. Ein scharf eingestellter Regler erreicht nominal die ruhigste
+  Basis, ist aber brüchig. Die Robustheit des modellbasierten Reglers hängt also an einer zurückhaltenden
+  Einstellung. Das ist der Punkt, an dem ein randomisiert trainierter Agent einen Vorteil haben könnte (X2.4).
 - Die Drift um x kann keiner der Regler ausgleichen, weil die drei Gelenke nur in der Ebene wirken.
 
 **Noch offen in X2.3:** Agenten aus X4.1, X1.3 und X2.4 sowie der Sicherheitsfilter aus X1.4.
@@ -549,6 +596,34 @@ w* = −kOri·e_ori statt 0 (`ext_x2_controller`, Option `kOri`).
 Datenquelle: `X2_robust_20261110_115447_episodes.csv`, `_summary.csv`, `.mat`.
 
 Paper: neue Vergleichsbasis (Robustheit), Einleitung (Aussage zu Trägheitsparametern). Offen.
+
+### X2.4 Domain Randomization: Vorbereitung und Einstellung des Reglers ✅ 10.11.2026 (Training läuft)
+
+**Abstimmbarkeit** (`ext_x2_4_tunable`): Unter Fast Restart (wie im RL-Training) wurden Basismasse (Simscape,
+compiletime) und Verzögerung (Dialogwert des Delay-Blocks) stillschweigend ignoriert. Verstärkung, Startstellung
+und Rauschen wirkten. Umgestellt in `desktop_build_model`: Masse und Trägheit mit `Mass_conf` und
+`MomentsOfInertia_conf` = runtime, neuer Trägheitsfaktor `p_inertia_scale`, Verzögerung über den Eingangsport des
+Delay-Blocks. Danach alle sechs Parameter abstimmbar, Modi 0, 2, 4 bitgleich zur Basislinie. Die CDR-Studie im
+Paper ist nicht betroffen (`SpaceKinova_CDR_FRO.m` kompiliert je Teilphase neu).
+
+**Training** (`ext_x2_4_train`): r4 mit Gewicht 2, sonst wie D16/D17. DR-M (Masse ×[0,25; 2], Trägheit ×[0,5; 2],
+log-gleichverteilt) und DR-voll (dazu Verzögerung 0–2 Schritte, Verstärkung [0,9; 1,1], Rauschen 0–2-fach,
+Startstellung ±2°), je Episode in der ResetFcn. Kurztraining 16 Episoden, 4 Worker: Die ResetFcn läuft auf den
+Workern, jede Episode zieht andere Werte. Nachgespielt im Simulator passt jede Episode zu genau einer Ziehung
+(Abweichung ≤ 1e-6, nächstbeste ≥ 0,017). Läuft in der Nacht 10./11.11. (`ext_x2_4_night`).
+
+**Einstellung des Reglers auf dieselbe Verteilung** (`ext_x2_4_tune_ctrl`, fairer Vergleich): 98 Regler (β, kOri,
+Kp, J6-Seite) auf 40 Ziehungen aus der DR-voll-Verteilung, Nominalmodell, Inversion der Kette. 10 min.
+- Nur 32 von 98 Reglern folgen in allen 40 Ziehungen. Kp 10 verliert in 17–23 % der Ziehungen die Bahn, starke
+  Rückführung der Basislage ebenso. Robust sind nur zurückhaltende Einstellungen (Kp 5).
+- Front im 90-%-Quantil: 12,6 mm / 51 mrad (β 4,6) bis 27,4 mm / 18,5 mrad (β 100), alle mit Kp 5, J6-Seite −.
+  R0 folgt überall, liegt aber mit 14,2 mm / 162 mrad hinter der Front.
+- Drei Vertreter für den Vergleich mit den DR-Agenten (`X2_4_ctrl_tuned.mat`, gehen automatisch in
+  `ext_x2_robust` ein): Rt_acc β 4,6 (12,6 mm / 51 mrad), Rt_mid β 46 (18,8 / 28), Rt_calm β 100 (27,4 / 18,5).
+
+Datenquelle: `X2_4_tune_ctrl_20261110_125630.csv`, `X2_4_ctrl_tuned.mat`.
+
+Paper: Robustheitsvergleich (Methode, Fairness). Offen.
 
 ## X3 Kinematische Emulation
 
