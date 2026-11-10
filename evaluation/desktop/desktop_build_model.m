@@ -20,6 +20,9 @@ function mdlFile = desktop_build_model(force)
 %     p_reward_mode  Reward-Variante (D12, A51), 0 = wie im Training. Siehe rewardCode unten
 %     p_j6_lim       Saettigung von J6 [rad/s] (D16), Training 0,1
 %     p_base_w       Gewicht des glatten Basis-Terms in Reward-Modus 4 (D17), Standard 2 wie in D16
+%     p_q0           7x1 Anfangswert des Gelenkwinkel-Integrators [rad] (Startstellung, X0.1). Standard
+%                    zeros(7,1) = gestreckte Nullstellung wie bisher. Die Gelenke folgen dem Integrator
+%                    (InputMotion), damit ist p_q0 die Startstellung des Arms
 %   Zusaetzlich geloggt: Rohaktion, gesaettigte, gefilterte, ratenbegrenzte und skalierte Aktion,
 %   Gelenkwinkel-Befehl hinter der Positionssaettigung, Beobachtung (obs) und Agenten-Eingang (obs_agent),
 %   isDone.
@@ -68,6 +71,9 @@ pm = rw.find('-isa', 'Stateflow.Data', 'Name', 'p_reward_mode');
 pm.Scope = 'Parameter';
 pw = rw.find('-isa', 'Stateflow.Data', 'Name', 'p_base_w');
 pw.Scope = 'Parameter';
+
+% --- Startstellung als Parameter (X0.1). Original: Anfangswert intern 0 ---
+set_param([dst '/Integrator'], 'InitialConditionSource', 'internal', 'InitialCondition', 'p_q0');
 
 % --- Basis ---
 inertia = [dst '/Robot/base_link/Inertia'];

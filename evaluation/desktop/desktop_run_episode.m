@@ -7,7 +7,7 @@ function res = desktop_run_episode(cfg)
 %     rms_ee       Wurzel daraus [m]
 %     max_ee       groesster EE-Fehler [m] (K2)
 %     ori_mean     mittlerer Basis-Orientierungsfehler [rad] (K3), ori_max groesster
-%     w_mean       mittlere Basis-Winkelgeschwindigkeit [rad/s] (K4)
+%     w_mean       mittlere Basis-Winkelgeschwindigkeit [rad/s] (K4), w_max groesste
 %     ret          Return (K7)
 %     early_stop   Episode vor T beendet (K8), t_end Endzeit, n_steps Agentenschritte
 %     ood04        EE-Fehler ueberschreitet 0,4 m (OOD-Stopp der Hardware), ood04_step/_t erster Schritt
@@ -40,7 +40,7 @@ vars = struct('agent', agent, 'EE_ref', EE_ref, 'EE_vref', EE_vref, 'reward_init
     'p_Ts', cfg.Ts, 'p_Ts_agent', cfg.Ts_agent, 'p_T', cfg.T, 'p_base_mass', cfg.base_mass, ...
     'p_delay_steps', cfg.delay_steps, 'p_damp_scale', cfg.damp_scale, 'p_slew', cfg.slew, ...
     'p_cmd_scale', cfg.cmd_scale, 'p_obs_mode', cfg.obs_mode, 'p_obs_noise', obsNoise(cfg), ...
-    'p_reward_mode', cfg.reward_mode, 'p_j6_lim', cfg.j6_lim, 'p_base_w', cfg.base_w);
+    'p_reward_mode', cfg.reward_mode, 'p_j6_lim', cfg.j6_lim, 'p_base_w', cfg.base_w, 'p_q0', startPose(cfg));
 fn = fieldnames(vars);
 for k = 1:numel(fn)
     assignin('base', fn{k}, vars.(fn{k}));
@@ -77,6 +77,13 @@ res.info = struct('wallTime', wallTime, 'trainTs', trainTs, 'matlab', version, .
 end
 
 % =====================================================================
+function q0 = startPose(cfg)
+% Startstellung, Standard null (aeltere cfg-Structs ohne Feld q0 laufen weiter)
+q0 = zeros(7, 1);
+if isfield(cfg, 'q0'), q0 = cfg.q0(:); end
+assert(numel(q0) == 7, 'desktop_run_episode:q0', 'q0 braucht 7 Werte');
+end
+
 function sig = obsNoise(cfg)
 sig = zeros(29, 1);
 if isfield(cfg, 'obs_noise'), sig = cfg.obs_noise(:); end
@@ -152,7 +159,9 @@ orin = vecnorm(toNx(ori.Data, 3), 2, 2);
 m.ori_mean = mean(orin);
 m.ori_max = max(orin);
 wb = getTs(logsout, 'w_base');
-m.w_mean = mean(vecnorm(toNx(wb.Data, 3), 2, 2));
+wbn = vecnorm(toNx(wb.Data, 3), 2, 2);
+m.w_mean = mean(wbn);
+m.w_max = max(wbn);
 
 % Basisbewegung (Position aus dem 6-DOF-Joint, falls geloggt)
 qb = getTs(logsout, 'q_base');

@@ -1,5 +1,8 @@
 # Desktop-Plan: Simulation und Auswertung ohne Labor
 
+> Abgeschlossen (D0 bis D20). Seit 10.11.2026 geht die Arbeit in `evaluation/extension/PLAN.md` weiter, die
+> Ergebnisse stehen in `evaluation/extension/RESULTS.md`. Diese Datei nur noch für Einzelheiten einer D-Nummer lesen.
+
 Stand 24.09.2026. Aufgaben, die auf dem Desktop (AMD Ryzen 7 7700, 8 Kerne, 32 GB, MATLAB R2026a) ohne Roboter
 laufen. Die Nummern (R1.6, A24, ...) verweisen auf `Reviews/Submission_1/reviewer_comments.md` im Paper-Repo. Die
 Laborreihe steht in `hardware/campaign/MESSPLAN.md`. Keine dieser Aufgaben erzeugt einen Agenten, der in der
