@@ -57,7 +57,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | ID | Aufgabe | Arbeit | Rechenzeit | braucht | Status |
 |---|---|---|---|---|---|
 | X0.1 | Einheitliches Auswerteprotokoll und Statistik-Skript | 1 Tag | 1 h | Entscheidung E1 | ✅ 10.11. |
-| X0.2 | Kinematischer Closed-Loop-Simulator (Policy, Befehlskette, GJM), gegen Simscape validiert | 2–3 Tage | 1 h | – | ⬜ |
+| X0.2 | Kinematischer Closed-Loop-Simulator (Policy, Befehlskette, GJM), gegen Simscape validiert | 2–3 Tage | 1 h | – | ✅ 10.11. |
 | X0.3 | Literaturprüfung für X2 und X3 (Neuheit, Zitate) | ½–1 Tag | – | – | ⬜ |
 | X1.1 | Lagrange-PPO umsetzen (Kostensignal, duale Aktualisierung, Logging) | 2 Tage | 1 h | – | ⬜ |
 | X1.2 | Pilot: Kostenform und Schrittweite | ½ Tag | ≈ 4 h | E2 | ⬜ |
@@ -381,5 +381,7 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
 - **E4** X5 Go/No-Go nach dem Pilot.
 - **E5** Agenten für den Labortag X3.2.
 - **E6** Ratenpaar auf 10 Seeds ja oder nein.
+- **E8** ✅ 10.11.2026 (Befund A72): Beobachtungsgrenzen für neue Trainings (X1, X2.4, X4.1, X5) belassen, damit
+  alle Agenten vergleichbar bleiben. Im Paper als Eigenschaft des Aufbaus nennen.
 - **E7** Mit dem Betreuer: neue Geschichte, Zielkonferenz, was nach X4.4 aus dem Paper fliegt, ob die
   Schnittstellendiagnose ein Abschnitt bleibt oder ein eigenes kurzes Paper wird.

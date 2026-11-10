@@ -23,7 +23,10 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 | K4 | Gelenkbahnen der Hardware ergeben dieselbe Basisdrehung wie die Fixed-Base-Simulation (≤ 2 mrad) | D19 | 8 Agenten, offene Rechnung |
 
 X0.1 (Auswerteprotokoll) steht und reproduziert D17. Mit ±2° Startstörung folgen 19 von 20 D16/D17-Agenten in
-allen 21 Episoden der Bahn, der Ausreißer ist ein ruhiger Agent. Noch keine Ergebnisse aus X0.2 bis X5.
+allen 21 Episoden der Bahn, der Ausreißer ist ein ruhiger Agent. X0.2 (kinematischer Simulator) trifft
+`SK_desktop` im geschlossenen Kreis auf ≤ 0,45 mm und ≤ 0,34 mrad, meist auf 1e-6, und ist etwa zwölfmal schneller.
+Neuer Befund A72: Die Beobachtungsgrenzen stehen in der falschen Reihenfolge, q4 wird in etwa der Hälfte der
+Schritte auf 1,4 rad begrenzt. Noch keine Ergebnisse aus X0.3 bis X5.
 
 ## Ausgangslage (aus dem alten Desktop-Plan und dem Paper, Stand 10.11.2026)
 
@@ -139,9 +142,82 @@ also etwa 15 min.
 Paper: Methodenteil (Auswerteprotokoll und Statistik), offen. Die D17-Zahlen mit vollem Protokoll ersetzen in
 X4.2 die alten.
 
-### X0.2 Kinematischer Simulator
+### X0.2 Kinematischer Simulator ✅ 10.11.2026
 
-Noch offen.
+**Frage:** Bildet ein rein kinematischer Simulator (Policy, Befehlskette, verallgemeinerte Jacobi-Matrix) den
+geschlossenen Kreis von `SK_desktop` so genau nach, dass X1.4, X2, X3 und X5 damit rechnen können?
+
+**Signalweg von `SK_desktop` (aus dem Modell gelesen und gemessen):**
+- Beobachtung [ep; ev; v_base; w_base; q; dq; e_ori]. ep, ev = Ist − Soll im Weltsystem (Transform Sensor, World).
+  v_base, w_base aus dem 6-DOF-Gelenk Welt–Basis, im Weltsystem. e_ori = Drehvektor der Basislage aus dem
+  Quaternion (`MATLAB Function2`, q0 = [1 0 0 0]). Die Basis liegt zu Beginn im Weltursprung.
+- Befehlskette: Delay → Sättigung → Filter y = 0,95 y + 0,05 u → Rate Limiter (0,5 · 0,025 je Schritt, Start 0)
+  → Cmd Scale. Die Rate Transition zum Solvertakt verzögert um einen Agentenschritt: Im Intervall [t_k, t_k+1]
+  wirkt der Befehl aus Schritt k−1 (gemessen, Abweichung 4e-13).
+- Integrator → Positionssättigung → Simulink-PS-Wandler mit Filter 1/(τs+1)², τ = 20 ms. Die Gelenke folgen also
+  nicht dem Integrator, sondern dem gefilterten Befehl (gemessen, Abweichung 5e-11 rad. Die Formen
+  1/(τ²s²/2+τs+1) und erster Ordnung weichen um 7 mrad ab).
+- Reward mit Rohaktion (vor der Sättigung) und vorheriger Rohaktion.
+- `getAction` und der RL-Agent-Block begrenzen die Beobachtung auf die Grenzen der ObservationInfo (siehe A72).
+
+**Umsetzung:** `ext_kin_model` (Kinematik und Massen aus der URDF, Optionen Basismasse, Gliedmassen, Lage des Arms),
+`ext_kin_eval` (G, pe, Je ohne rigidBodyTree, 0,17 ms je Aufruf), `ext_policy` (Mittelwert des Actors aus den
+Gewichten, mit Begrenzung der Beobachtung), `ext_reward` (Reward wie `rewardCode`), `ext_kinsim` (Simulator,
+Gelenkfilter exakt diskretisiert, Basislage als Quaternion mit Trapezregel bei 5 ms, Eingriff `cmdHook` für den
+Filter in X1.4, offene Einspielung `actionSeq`). Validierung `ext_x0_validate_kinsim`.
+
+**Validierung (`X0_validate_kinsim_20261110_092826`):**
+- Kinematik gegen `desktop_freefloat` an 20 Stellungen: G, pe, Je auf ≤ 9e-16.
+- Policy gegen `getAction` an 50 Beobachtungen je Agent: ≤ 6e-7 (einfache Genauigkeit des Netzes).
+- Reward aus den geloggten Signalen gegen den geloggten Reward: ≤ 2e-16.
+- Offene Einspielung der Simscape-Aktionen: EE-Bahn ≤ 2,2e-7 m RMS, Basisdrehung ≤ 2,9e-7 rad. Größte
+  Abweichung der Beobachtung 5,7e-4 in einem einzelnen Wert von dq6 (D16 r4 s2, t = 8,05 s).
+- Geschlossener Kreis, deterministisch:
+
+| Fall | EE-Abstand RMS [m] | Basis-Abstand max [rad] | RMS Simscape / kin [mm] | Return Simscape / kin |
+|---|---|---|---|---|
+| frühes PPO (Modus 0, J6 0,1) | 4,5e-4 | 3,4e-4 | 10,33 / 10,30 | 1698,92 / 1698,87 |
+| Optimized (Modus 0, J6 0,1) | 3,8e-8 | 1,8e-7 | 59,77 / 59,77 | 1593,08 / 1593,08 |
+| D16 r4 s2 (Modus 4, J6 0,9774) | 1,1e-6 | 1,8e-6 | 11,93 / 11,93 | 2614,24 / 2614,24 |
+| D16 r4 s2, Start gestört (Ziehung 1) | 1,0e-6 | 1,8e-6 | 18,58 / 18,58 | 2385,66 / 2385,66 |
+| D16 r4 s2, Basis 32,5 kg | 2,4e-7 | 3,3e-7 | 10,12 / 10,12 | 2539,29 / 2539,29 |
+
+- Beim frühen PPO wachsen Rundungsunterschiede im geschlossenen Kreis an. Bis t = 5,65 s bleibt die Beobachtung
+  unter 5e-5, die Policy verstärkt das auf 1e-3 in der Aktion, am Ende 0,45 mm. Das ist Empfindlichkeit des
+  Regelkreises, kein Modellfehler.
+- Laufzeit 0,3–0,4 s je Episode gegen 4–5 s in Simscape (ohne Kompilieren), also etwa zwölfmal schneller.
+
+**Deutung:** Ziel aus `PLAN.md` erreicht (EE ≤ 2 mm RMS, Basis ≤ 2 mrad, Beobachtung kanalweise). Ohne die Begrenzung
+der Beobachtung lief der geschlossene Kreis bis 34 mm auseinander. Der Simulator gilt nur für bewegungsgesteuerte
+Gelenke, Anfangsimpuls null und keine äußeren Kräfte, also genau für `SK_desktop`.
+
+**Grenzen:** Nur der Halbkreis (Bahn wie `desktop_run_episode`, `ref_timing` 'wall'). `obs_mode` 1 (V2.1) und die
+Dreiecksbahn fehlen. Die Positionssättigung wird nur an den Solverschritten geprüft. Die Lage des Arms
+(`mount_offset`) und die Gliedmassen sind eingebaut, aber nicht gegen Simscape geprüft (dort keine Parameter).
+
+**Datenquelle:** `data/simulation/extension/X0_validate_kinsim_20261110_092826.csv` und `.mat` (gültig).
+`X0_validate_kinsim_20261110_092204.*` ist der erste Lauf ohne Begrenzung der Beobachtung (Beleg für A72:
+geschlossener Kreis 17–34 mm auseinander, Policy bis 1,1 Abweichung).
+
+Paper: Methodenteil (kinematischer Simulator als Werkzeug für X1.4, X2, X3), offen.
+
+### A72 Beobachtungsgrenzen in der falschen Reihenfolge (Befund vom 10.11.2026)
+
+`getAction` begrenzt die Beobachtung elementweise auf `LowerLimit`/`UpperLimit` der ObservationInfo. Die Grenzen
+aller Agenten (kopiert aus `Optimized.mat`, auch in `desktop_d12_train`) stehen in der Reihenfolge des
+Deploy-Skripts V2.1 [ep; ev; q; dq; v_base; w_base; e_ori], die Beobachtung kommt aber in der Reihenfolge des
+Trainings [ep; ev; v_base; w_base; q; dq; e_ori]. Wirksam sind damit: q2–q5 auf ±1,4 rad, q6 und q7 auf ±1,22 rad,
+dq1 auf ±1,22 rad/s, dq2–dq4 auf ±0,5 rad/s, dq5–dq7 auf ±1 rad/s. ep, ev und e_ori haben die richtigen Grenzen,
+v_base und w_base sehr weite.
+- In den Validierungsepisoden greift die Begrenzung bei q4 in 48–52 % der Schritte (alle Agenten), bei q6 in
+  28–29 % (D16 r4 s2) und bei dq4 in 1 % (Optimized). Die Policy sieht J4 jenseits von 1,4 rad nicht.
+- Training, Simulation und Hardware nutzen alle `getAction` (Deploy-Skript v24, Zeile 266). Die Begrenzung ist
+  also überall gleich und erklärt keinen Sim-to-Real-Unterschied. Sie ist ein versteckter Informationsverlust
+  in der Beobachtung.
+- Entscheidung E8 (10.11.): Neue Trainings (X1, X2.4, X4.1, X5) behalten die Grenzen, damit alle Agenten
+  vergleichbar bleiben. Das Paper nennt die Begrenzung als Eigenschaft des Aufbaus.
+
+Paper: Sec. III (Beobachtung), offen. Eintrag als A72 in `reviewer_comments.md`.
 
 ### X0.3 Literatur
 
