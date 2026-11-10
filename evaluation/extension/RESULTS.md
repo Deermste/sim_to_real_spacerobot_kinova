@@ -22,6 +22,7 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 | K3 | Mit den Trainingsgrenzen braucht die Bahn etwa 0,055 rad Basisdrehung, ohne J6-Grenze reichen etwa 0,021 rad | D15 | obere Schranken, kein bewiesenes Minimum. Korrektur 10.11. (A73): ohne J6-Grenze 0,020 rad schon bei voller Bahn (1,2 mm, ideale Kette) bzw. 5,7 mm mit der Befehlskette |
 | K4 | Gelenkbahnen der Hardware ergeben dieselbe Basisdrehung wie die Fixed-Base-Simulation (≤ 2 mrad) | D19 | 8 Agenten, offene Rechnung |
 | K5 | Ein modellbasierter Regler (exaktes Modell, kennt die Befehlskette) dominiert alle RL-Agenten: 0,020 rad bei 5,7 mm, 0,013 rad bei 9 mm | X2.1 | Kinematischer Simulator, in Simscape auf 3e-7 bestätigt. Robustheit offen (X2.3) |
+| K6 | Auch mit Nominalmodell bleibt der Regler bei falscher Masse, Trägheit, Verzögerung, Verstärkung, Rauschen, Startstellung und Drift vor den Agenten. Am knappsten bei Kinematikfehlern (Montage) und Drift um x | X2.3 Teil 1 | 26 Szenarien, 20 Agenten ohne Randomisierung, nur kinematisch |
 
 X0.1 (Auswerteprotokoll) steht und reproduziert D17. Mit ±2° Startstörung folgen 19 von 20 D16/D17-Agenten in
 allen 21 Episoden der Bahn, der Ausreißer ist ein ruhiger Agent. X0.2 (kinematischer Simulator) trifft
@@ -32,7 +33,8 @@ Basisdrehung als Nebenbedingung und eine gelernte Policy auf einem festen Arm mi
 nicht gefunden. Die Methoden selbst sind bekannt, X3 wird als Prüfmethode beschrieben. Noch keine Ergebnisse aus
 X1 bis X5. X2.1: Ein modellbasierter Regler mit exaktem Modell erreicht bei
 gleicher Befehlskette 0,020 rad bei 5,7 mm RMS, alle RL-Agenten liegen deutlich hinter dieser Front (K5). D15
-unterschätzte den Spielraum ohne J6-Grenze (A73).
+unterschätzte den Spielraum ohne J6-Grenze (A73). X2.3 Teil 1: In 26 Szenarien mit Modell-, Aktor-, Sensor- und
+Anfangsfehlern fand sich kein Fall, in dem die Agenten robust besser sind als der Regler mit Nominalmodell (K6).
 
 ## Ausgangslage (aus dem alten Desktop-Plan und dem Paper, Stand 10.11.2026)
 
@@ -447,6 +449,76 @@ Fehler) war also zu hoch.
 Datenquelle: `X2_sweep_20261110_113752.csv`, `X2_replay_check_20261110_113958.csv`.
 
 Paper: neue Vergleichsbasis (Methode und Ergebnis), Sec. V-A (Aussage zum kinematischen Check, A73). Offen.
+
+### X2.3 Robustheit, Teil 1: Bestandsagenten ✅ 10.11.2026
+
+**Frage:** Wer verliert mehr, wenn Modell, Aktorik, Sensorik oder Anfangszustand von der Annahme abweichen: der
+modellbasierte Regler mit Nominalmodell oder die RL-Agenten? Gibt es Fälle, in denen RL im Vorteil ist?
+
+**Aufbau** (`ext_x2_robust()`, kinematischer Simulator, volle Befehlskette, J6 0,9774 rad/s):
+- Teilnehmer: vier Regler aus X2.1 mit Inversion der Kette und Nominalmodell (R0, Rβ mit β 1, 21,5, 46,4 und
+  J6-Seite −) und die 20 r4-Agenten aus D16/D17 (3000 Episoden, wie X0.1). Die Regler kennen weder Verzögerung
+  noch Aktorfehler noch Anfangsdrehimpuls.
+- 26 Szenarien in vier Gruppen. Modell: Basismasse und -trägheit ×0,25 bis ×2, nur Trägheit ×0,5 / ×2,
+  Gliedmassen ±20 %, Montage ±5 cm. Aktor: Verzögerung +25 / +50 ms, Verstärkung ×0,9 / ×1,1, Servo τ 50 ms.
+  Sensor: Rauschen realistisch und dreifach (je 5 Seeds), Lagefehler 10 mrad, EE-Fehler 5 mm. Anfang: Startstellung
+  ±2° (5 Ziehungen), Restdrehrate der Basis ±2 mrad/s um y und 2 mrad/s um x.
+- Neu in `ext_kinsim`: `obsBias` und `w0_init` (Drehimpuls ungleich null, P = 0, Twist G·dq + Hb⁻¹[0; Rbᵀ L]).
+  Geprüft: ohne Drehimpuls bitgleich zur X0.2-Validierung, mit ruhendem Arm dreht die Basis exakt mit w0.
+- Kennzahl „Faktor“: RMS des Agenten geteilt durch den kleinsten RMS eines Reglers, der der Bahn folgt und
+  höchstens dieselbe Basisdrehung hat. „Nicht dominiert“: kein solcher Regler oder Faktor < 1. Nur vier Regler,
+  der Faktor ist also eher zu klein.
+
+**Ergebnis** (RMS [mm] / größte Basisdrehung [mrad], RL als Median über 20 Agenten, 912 Episoden in 6 min):
+
+| Szenario | R0 | Rβ 1 | Rβ 46 | RL Median (Δ nominal) | RL ori | RL folgen | Faktor Median (Bereich) | nicht dominiert |
+|---|---|---|---|---|---|---|---|---|
+| nominal | 2,1 / 69 | 5,7 / 20 | 12,8 / 8 | 12,2 | 51 | 20 | 2,4 (1,5–4,7) | 0 |
+| Masse ×0,25 | 4,2 / 164 | 9,2 / 45 | 15,6 / 17 | 18,6 (+6,7) | 99 | 19 | 2,0 (1,3–3,9) | 0 |
+| Masse ×0,5 | 2,8 / 112 | 7,3 / 32 | 14,1 / 12 | 15,2 (+2,9) | 75 | 20 | 2,1 (1,3–4,3) | 0 |
+| Masse ×2 | 2,2 / 39 | 5,2 / 11 | 11,6 / 5 | 11,9 (−0,4) | 31 | 20 | 2,5 (1,3–5,1) | 0 |
+| Trägheit ×0,5 | 2,9 / 114 | 6,9 / 32 | 13,7 / 12 | 15,0 (+2,5) | 76 | 20 | 2,2 (1,3–4,4) | 0 |
+| Glieder ×1,2 | 2,2 / 79 | 6,0 / 23 | 13,1 / 9 | 13,0 (+0,5) | 57 | 20 | 2,3 (1,5–4,6) | 0 |
+| Montage x +5 cm | 14,6 / 112 | 12,0 / 31 | 20,6 / 19 | 29,7 (+17,7) | 61 | 18 | 2,5 (1,4–4,3) | 0 |
+| Montage x −5 cm | 12,9 / 56 | 14,6 / 29 | 21,0 / 20 | 39,6 (+25,7) | 38 | 19 | 2,5 (2,0–3,2) | 1 |
+| Montage z +5 cm | 39,0 / 64 | 30,0 / 37 | 27,7 / 14 | 33,5 (+19,8) | 57 | 18 | 1,3 (1,0–1,8) | 1 |
+| Verzögerung +50 ms | 3,4 / 64 | 7,6 / 21 | 13,4 / 8 | 14,5 (+3,0) | 50 | 19 | 2,1 (1,2–4,9) | 0 |
+| Verstärkung ×1,1 | 2,4 / 69 | 4,9 / 20 | 11,9 / 9 | 14,2 (+1,5) | 52 | 19 | 3,0 (1,9–7,2) | 0 |
+| Servo τ 50 ms | 3,3 / 65 | 7,9 / 21 | 13,6 / 8 | 13,9 (+0,4) | 50 | 20 | 1,9 (1,0–3,6) | 0 |
+| Rauschen ×3 | 6,7 / 58 | 7,4 / 25 | 12,4 / 10 | 12,2 (+0,2) | 51 | 20 | 1,6 (1,1–4,4) | 0 |
+| Lagefehler 10 mrad | 2,1 / 69 | 5,8 / 20 | 12,8 / 8 | 11,8 (0,0) | 51 | 20 | 2,2 (1,5–4,6) | 0 |
+| Startstellung ±2° | 3,3 / 86 | 6,6 / 22 | 13,5 / 11 | 13,6 (+1,9) | 53 | 19 | 2,0 (1,4–4,5) | 0 |
+| Drift y +2 mrad/s | 2,2 / 93 | 6,2 / 44 | 14,9 / 31 | 12,4 (+0,6) | 73 | 18 | 2,2 (1,4–5,2) | 0 |
+| Drift y −2 mrad/s | 2,2 / 45 | 5,3 / 27 | 11,0 / 23 | 15,7 (+3,3) | 30 | 20 | 2,8 (1,4–5,0) | 5 |
+| Drift x 2 mrad/s | 12,1 / 71 | 13,1 / 26 | 17,4 / 19 | 17,7 (+5,2) | 53 | 20 | 1,3 (1,1–2,2) | 0 |
+
+Die übrigen Szenarien (Masse ×0,75 / ×1,5, Trägheit ×2, Glieder ×0,8, Verzögerung +25 ms, Verstärkung ×0,9,
+Rauschen ×1, EE-Fehler 5 mm) liegen dazwischen. Alle in `X2_robust_20261110_115447_summary.csv`.
+
+**Deutung:**
+- Die Regler folgen in allen 26 Szenarien der Bahn. Von den Agenten fallen in 8 Szenarien ein oder zwei aus.
+- Falsche Basismasse oder -trägheit kostet den Regler kaum Bahn (R0 höchstens 4,2 mm, Rβ 46 höchstens 15,6 mm).
+  Die Basisdrehung folgt bei allen der wahren Masse. Die Agenten verlieren bei leichter Basis mehr (Median +6,7 mm
+  bei ×0,25). In der hier gerechneten kinematischen Form ist die Annahme der Einleitung, dass modellbasierte
+  Regelung an ungenauen Trägheitsparametern leidet, nicht gestützt.
+- Am stärksten trifft den Regler ein Fehler in der Kinematik (Montage z +5 cm: R0 39 mm) und eine Drehrate um x,
+  die die ebene Aufgabe nicht ausgleichen kann. Dort liegen die Agenten etwa gleichauf (Faktor 1,0–1,8). Die
+  Montagefehler treffen die Agenten aber ebenso (+18 bis +26 mm).
+- Bei einer Restdrehrate gegen die Drehrichtung (y −2 mrad/s) sind 5 Agenten nicht dominiert, weil die Drift ihre
+  Basisdrehung verkleinert und die vier Regler die Drift nicht ausgleichen (kOri = 0).
+- Ein Fall, in dem RL robust besser ist, wurde nicht gefunden. Die Agenten sind ohne Randomisierung trainiert.
+  X2.4 prüft, ob Randomisierung der Basismasse daran etwas ändert.
+- Grenzen: nur kinematisch (Gelenke bewegungsgesteuert). Momentengrenzen, Elastizität, Kontakt und Schwerkraft
+  auf der Hardware sind nicht abgebildet. Genau dort könnte ein modellfreies Verfahren Vorteile haben, das lässt
+  sich in diesem Aufbau nicht prüfen. Der Regler kennt die Befehlskette, den Zweig von J6 und die
+  Abtastrate.
+
+**Noch offen in X2.3:** Agenten aus X4.1, X1.3 und X2.4 sowie der Sicherheitsfilter aus X1.4. Regler mit
+Rückführung der Basislage (kOri > 0) gegen die Drift.
+
+Datenquelle: `X2_robust_20261110_115447_episodes.csv`, `_summary.csv`, `.mat`.
+
+Paper: neue Vergleichsbasis (Robustheit), Einleitung (Aussage zu Trägheitsparametern). Offen.
 
 ## X3 Kinematische Emulation
 

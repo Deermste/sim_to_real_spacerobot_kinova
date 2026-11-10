@@ -65,7 +65,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X1.4 | Sicherheitsfilter (CBF auf die Basisdrehung) auf r1-Agenten | 2 Tage | 2 h | X0.2 | ⬜ |
 | X2.1 | Modellbasierter Regler (GJM, Nullraum), Machbarkeit auf dem Halbkreis | 2 Tage | < 1 h | X0.2 | ✅ 10.11. |
 | X2.2 | Modellbasierte Pareto-Front, Vergleich mit RL | 1 Tag | < 1 h | X1.3, X4.1 | ⬜ |
-| X2.3 | Robustheit gegen falsche Trägheitsparameter, RL gegen Regler | 2 Tage | 3 h | X2.1, X1.3 | ⬜ |
+| X2.3 | Robustheit gegen falsche Trägheitsparameter, RL gegen Regler | 2 Tage | 3 h | X2.1, X1.3 | 🔄 Teil 1 ✅ 10.11. |
 | X2.4 | RL mit Basismassen-Randomisierung, 10 Seeds | 1 Tag | ≈ 5–6 h | X1.3 | ⬜ |
 | X3.1 | Kinematische Free-Floating-Emulation im Deploy-Skript, Validierung in Simulation | 3 Tage | 2 h | X0.2 | ⬜ |
 | X3.2 | Labortag: Emulation an gegen aus | 1 Tag Labor + 1 Tag Auswertung | – | Labor, E5 | ⏸ |

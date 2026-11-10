@@ -28,6 +28,10 @@ function res = ext_kinsim(policy, varargin)
 %   cmdHook @(cmd, S) -> cmd: Eingriff nach der Befehlskette, vor der Verzoegerung (fuer den Filter in X1.4).
 %     S hat die Felder t, q, dq, G, Je, quat, ori (Drehvektor).
 %   obsNoise 29x1 Standardabweichungen (Standard 0), rngSeed fuer das Rauschen,
+%   obsBias 29x1 fester Messfehler auf der Beobachtung (Standard 0, X2.3),
+%   w0_init 3x1 Anfangs-Drehrate der Basis im Weltsystem [rad/s] bei ruhendem Arm (Standard 0, X2.3). Daraus
+%     folgt ein Drehimpuls L ungleich null (Gesamtimpuls P = 0), der erhalten bleibt. Der Basis-Twist ist dann
+%     G dq + Hb \ [0; Rb' L], die EE-Geschwindigkeit erhaelt den passenden Anteil.
 %   keepTs (Standard true).
 %   actionSeq (N+1)x7 Rohaktionen statt der Policy (offene Einspielung zur Validierung), policy darf dann [] sein.
 %   ctrl @(obs, R) -> 7x1 Rohbefehl statt der Policy (X2). R hat die Felder t, pref, vref (Referenz zum
@@ -62,6 +66,8 @@ p.addParameter('K', []);
 p.addParameter('base_mass', 65);
 p.addParameter('cmdHook', []);
 p.addParameter('obsNoise', zeros(29, 1));
+p.addParameter('obsBias', zeros(29, 1));
+p.addParameter('w0_init', zeros(3, 1));
 p.addParameter('rngSeed', 0);
 p.addParameter('keepTs', true);
 p.addParameter('actionSeq', []);
@@ -124,9 +130,17 @@ end
 obsA = nan(N + 1, 29); aRaw = nan(N + 1, 7); aScl = nan(N + 1, 7); rew = nan(N + 1, 1); cst = nan(N + 1, 1);
 
 q = Z(1, :).'; dq = Z(2, :).';
-[G, pe, Je] = ext_kin_eval(K, q);
+[G, pe, Je, ~, Hb] = ext_kin_eval(K, q);
 Rb = q2r(quat);
-tw = G * dq;
+% Anfangsdrehimpuls aus w0_init (Arm in Ruhe, P = 0): M v0 + Hb(1:3,4:6) w0 = 0, L = Hb(4:6,:) [v0; w0]
+hasDrift = any(o.w0_init ~= 0);
+Lw = zeros(3, 1);
+if hasDrift
+    w0 = Rb.' * o.w0_init(:);
+    v0 = -Hb(1:3, 4:6) * w0 / Hb(1, 1);
+    Lw = Rb * (Hb(4:6, :) * [v0; w0]);
+end
+[tw, Dd] = twistOf(G, dq, Hb, pe, Rb);
 logSolver(1);
 
 done = false; stopReason = 'none'; kEnd = N; nEnd = nS;
@@ -134,10 +148,11 @@ for k = 0:N
     n = k * m;
     % --- Beobachtung zum Zeitpunkt t_k ---
     ep = pb + Rb * pe - traj(n + 1, :).';
-    ev = Rb * (Je * dq) - vref(n + 1, :).';
+    ev = Rb * (Je * dq + Dd) - vref(n + 1, :).';
     vb = Rb * tw(1:3); wb = Rb * tw(4:6);
     eo = rotvec(quat);
     obs = [ep; ev; vb; wb; q; dq; eo];
+    obs = obs + o.obsBias(:);
     if any(o.obsNoise > 0), obs = obs + o.obsNoise(:) .* randn(ns, 29, 1); end
     if isempty(o.actionSeq)
         if isempty(o.ctrl)
@@ -187,8 +202,8 @@ for k = 0:N
         x = xN; qc = qcN;
         q = Z(1, :).'; dq = Z(2, :).';
         twOld = tw; RbOld = Rb;
-        [G, pe, Je] = ext_kin_eval(K, q);
-        tw = G * dq;
+        [G, pe, Je, ~, Hb] = ext_kin_eval(K, q);
+        [tw, Dd] = twistOf(G, dq, Hb, pe, RbOld);
         wAvg = 0.5 * (twOld(4:6) + tw(4:6));
         quat = qmul(quat, qexp(wAvg * h));
         quat = quat / norm(quat);
@@ -227,6 +242,17 @@ if keep
         'a_raw', aRaw(ka, :), 'a_scaled', aScl(ka, :), 'reward', rew(ka), 'cost', cst(ka));
 end
 res.info = struct('wallTime', toc(tWall));
+
+    function [t2, D] = twistOf(Gm, dqv, Hm, pev, Rm)
+        % Basis-Twist [v0; w0] im Basissystem und Drift-Anteil der EE-Geschwindigkeit (null ohne Drehimpuls)
+        t2 = Gm * dqv;
+        D = zeros(3, 1);
+        if hasDrift
+            dd = Hm \ [zeros(3, 1); Rm.' * Lw];
+            t2 = t2 + dd;
+            D = dd(1:3) - [0 -pev(3) pev(2); pev(3) 0 -pev(1); -pev(2) pev(1) 0] * dd(4:6);
+        end
+    end
 
     function logSolver(j)
         epS(j, :) = (pb + Rb * pe - traj(j, :).').';

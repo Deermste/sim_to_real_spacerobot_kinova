@@ -1,4 +1,4 @@
-function [G, pe, Je, Jg] = ext_kin_eval(K, q)
+function [G, pe, Je, Jg, Hb] = ext_kin_eval(K, q)
 %EXT_KIN_EVAL  Verallgemeinerte Jacobi-Matrix des frei schwebenden Systems, schnell (X0.2).
 %   [G, pe, Je] = ext_kin_eval(K, q)      K aus ext_kin_model, q 7x1 [rad]
 %
@@ -8,6 +8,8 @@ function [G, pe, Je, Jg] = ext_kin_eval(K, q)
 %   pe  3x1  Endeffektor-Position
 %   Je  3x7  Endeffektor-Geschwindigkeit mit Basisbewegung = Je * qd
 %   Jg  6x7  geometrische Jacobi-Matrix des Endeffektors bei fester Basis [v; w] (fuer Regler, X2)
+%   Hb  6x6  Traegheitsmatrix der Basis im Gesamtsystem (Impuls um den Basis-Schwerpunkt = Hb [v0; w0] + ...),
+%            fuer einen Anfangsimpuls ungleich null (X2.3)
 
 nb = K.nb;
 R = zeros(3, 3, nb);
