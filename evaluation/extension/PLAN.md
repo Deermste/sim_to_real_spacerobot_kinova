@@ -58,7 +58,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 |---|---|---|---|---|---|
 | X0.1 | Einheitliches Auswerteprotokoll und Statistik-Skript | 1 Tag | 1 h | Entscheidung E1 | ✅ 10.11. |
 | X0.2 | Kinematischer Closed-Loop-Simulator (Policy, Befehlskette, GJM), gegen Simscape validiert | 2–3 Tage | 1 h | – | ✅ 10.11. |
-| X0.3 | Literaturprüfung für X2 und X3 (Neuheit, Zitate) | ½–1 Tag | – | – | ⬜ |
+| X0.3 | Literaturprüfung für X2 und X3 (Neuheit, Zitate) | ½–1 Tag | – | – | ✅ 10.11. |
 | X1.1 | Lagrange-PPO umsetzen (Kostensignal, duale Aktualisierung, Logging) | 2 Tage | 1 h | – | ⬜ |
 | X1.2 | Pilot: Kostenform und Schrittweite | ½ Tag | ≈ 4 h | E2 | ⬜ |
 | X1.3 | Hauptlauf: 5 Budgets × 10 Seeds, dazu r1 × 10 Seeds | 1 Tag | ≈ 25–30 h | E2 | ⬜ |
@@ -136,7 +136,10 @@ Integriert Gelenke und Basislage (Quaternion) mit festem Schritt.
 `ext_kinsim`. Ziel: Beobachtungen kanalweise, EE-Bahn auf ≤ 2 mm RMS, Basisdrehung auf ≤ 2 mrad. Ohne diese
 Übereinstimmung keine Aussage aus dem Simulator ins Paper, nur Simscape-Zahlen.
 
-### X0.3 Literaturprüfung
+### X0.3 Literaturprüfung ✅ 10.11.2026
+
+Ergebnis in `RESULTS.md`, X0.3. X3 wird als Prüfmethode beschrieben, nicht als neue Emulationsidee.
+
 
 - Für X2: Umetani und Yoshida (GJM), Nenchev u. a. (Reaction Null Space), Papadopoulos und Dubowsky, Kaigom 2011
   (schon zitiert). Was ist der übliche modellbasierte Vergleichsregler für Basisstörung?

@@ -26,7 +26,10 @@ X0.1 (Auswerteprotokoll) steht und reproduziert D17. Mit ±2° Startstörung fol
 allen 21 Episoden der Bahn, der Ausreißer ist ein ruhiger Agent. X0.2 (kinematischer Simulator) trifft
 `SK_desktop` im geschlossenen Kreis auf ≤ 0,45 mm und ≤ 0,34 mrad, meist auf 1e-6, und ist etwa zwölfmal schneller.
 Neuer Befund A72: Die Beobachtungsgrenzen stehen in der falschen Reihenfolge, q4 wird in etwa der Hälfte der
-Schritte auf 1,4 rad begrenzt. Noch keine Ergebnisse aus X0.3 bis X5.
+Schritte auf 1,4 rad begrenzt. X0.3 (Literatur): Einen RL-Vergleich mit einem GJM- oder RNS-Regler, eine
+Basisdrehung als Nebenbedingung und eine gelernte Policy auf einem festen Arm mit mitgerechneter Basis haben wir
+nicht gefunden. Die Methoden selbst sind bekannt, X3 wird als Prüfmethode beschrieben. Noch keine Ergebnisse aus
+X1 bis X5.
 
 ## Ausgangslage (aus dem alten Desktop-Plan und dem Paper, Stand 10.11.2026)
 
@@ -219,9 +222,110 @@ v_base und w_base sehr weite.
 
 Paper: Sec. III (Beobachtung), offen. Eintrag als A72 in `reviewer_comments.md`.
 
-### X0.3 Literatur
+### X0.3 Literatur ✅ 10.11.2026
 
-Noch offen.
+**Frage:** Was ist die übliche modellbasierte Vergleichsbasis (X2)? Gibt es die kinematische Emulation auf dem
+festen Arm schon (X3)? Wurde Basisstörung schon als Nebenbedingung oder mit Sicherheitsfilter behandelt (X1)?
+
+**Vorgehen:** Websuche (Stichworte je Frage, 17 Suchen), alle Angaben unten über Crossref nach DOI, Autoren, Band
+und Seiten geprüft. Gelesen wurden nur Abstracts und Kurzfassungen, keine Volltexte. „Nicht gefunden“ heißt also
+„in dieser Suche nicht gefunden“. Vor Phase P die Volltexte von [L5], [L9], [L13], [L14] lesen.
+
+**X2 Vergleichsregler:**
+- Die übliche Grundlage ist die verallgemeinerte Jacobi-Matrix mit Resolved-Rate-Regelung [L1]. Papadopoulos und
+  Dubowsky [L2] zeigen, dass Fixed-Base-Regler auf frei schwebende Systeme übertragbar sind, solange die Basislage
+  bekannt ist und dynamische Singularitäten gemieden werden.
+- Für Basisminimierung mit Redundanz ist der Reaction Null Space der Standard [L3, L4]. Rβ aus X2.1 ist eine
+  gewichtete Form davon. Im Paper so benennen, nicht als eigene Methode.
+- In den geprüften RL-Arbeiten zu frei schwebenden Armen [L10–L13] wird gegen andere RL-Verfahren oder eine
+  Gelenkvariante verglichen. Einen Vergleich mit einem GJM- oder RNS-Regler auf derselben Bahn haben wir dort nicht
+  gefunden. X2 schließt also eine Lücke. Es belegt auch die bisher unbelegte Aussage der Einleitung zu
+  ungenauen Trägheitsparametern (X2.3).
+
+**X3 Emulation:**
+- Vorläufer auf Modellebene: Virtual Manipulator [L5] und Dynamically Equivalent Manipulator [L6]. Beide bilden
+  das frei schwebende System auf einen fest montierten Ersatzarm ab.
+- Vorläufer auf Hardware-Ebene: OOS-SIM (im Paper als `artigas2015`), KUKA KUBE [L7], die Anlage von Al Ali u. a.
+  [L8] und eine UR10e-Anlage [L9]. Dort rechnet ein Rechner die Dynamik, und ein Industrieroboter fährt die
+  berechnete Bewegung nach.
+- Unterschied zu X3: Bei uns ist der echte Arm der Manipulator selbst. Nur die Basis ist virtuell und wird
+  kinematisch aus den gemessenen Gelenkwinkeln gerechnet. Keine Kräfte, keine Schwerkraftkompensation.
+- Eine gelernte Policy, die so auf einem festen Arm mit mitgerechneter Basis läuft, haben wir nicht gefunden. Der
+  einzige Treffer war das eigene Repo `sim_to_real_spacerobot_kinova`.
+- **Folge:** X3 im Paper als Prüfmethode beschreiben, die auf [L5, L6] und den HIL-Anlagen aufbaut. Kein Anspruch
+  auf eine neue Emulationsidee. Höchstens „to our knowledge, not yet used for a learned velocity-level policy“,
+  und erst nach Lesen der Volltexte von [L5] und [L9].
+
+**X1 Nebenbedingung und Filter:**
+- Grundlagen: CMDP [L15], CPO [L16], PPO-Lagrangian [L17], PID-Lagrangian [L18], CBF [L19].
+- Lagrange-PPO bei Space-Manipulatoren gibt es [L14]. Dort ist der Arm aber fest und die Nebenbedingungen sind
+  Kontaktkraft und EE-Geschwindigkeit, nicht die Basis.
+- RL bei frei schwebenden Armen behandelt die Basis bisher als Reward-Term [L10, L11, L13]. Bei [L12] regelt ein
+  zweiter Agent die aktuierte Basislage. Eine Basisdrehung als explizite Nebenbedingung mit Budget haben wir nicht
+  gefunden.
+- CBF-Filter für frei schwebende Systeme gibt es, auch mit der Basis-Winkelgeschwindigkeit als Grenze [L20], dort
+  in Simulation mit Reaktionsrädern und als Filter um beliebige Referenzbefehle. X1.4 unterscheidet sich durch das
+  Budget auf den Basiswinkel, die unaktuierte Basis und den Filter um eine gelernte Policy. [L20] muss zitiert
+  werden, es ist im selben Konferenzumfeld erschienen (iSpaRo 2025), ebenso [L13].
+- **Folge:** X1 ist für diesen Anwendungsfall neu, die Methode selbst nicht. Im Paper als Anwendung bekannter
+  Verfahren auf den Zielkonflikt aus D17 beschreiben.
+
+**Für X5:** [L11] findet, dass die zusätzliche Redundanz die Basisstörung vor allem über eine andere Verteilung der
+Gelenkbewegungen senkt. Das ist eine Vergleichsstelle für die 3D-Bahn mit Redundanz.
+
+**Liste (alle über Crossref geprüft, außer [L15–L18], die keine DOI haben):**
+
+- [L1] Y. Umetani, K. Yoshida, „Resolved motion rate control of space manipulators with generalized Jacobian
+  matrix“, IEEE Trans. Robot. Autom. 5(3), 303–314, 1989. doi:10.1109/70.34766
+- [L2] E. Papadopoulos, S. Dubowsky, „On the nature of control algorithms for free-floating space manipulators“,
+  IEEE Trans. Robot. Autom. 7(6), 750–758, 1991. doi:10.1109/70.105384
+- [L3] D. N. Nenchev, K. Yoshida, P. Vichitkulsawat, M. Uchiyama, „Reaction null-space control of flexible
+  structure mounted manipulator systems“, IEEE Trans. Robot. Autom. 15(6), 1011–1023, 1999. doi:10.1109/70.817666
+- [L4] D. N. Nenchev, K. Yoshida, „Impact analysis and post-impact motion control issues of a free-floating space
+  robot subject to a force impulse“, IEEE Trans. Robot. Autom. 15(3), 548–557, 1999. doi:10.1109/70.768186
+- [L5] Z. Vafa, S. Dubowsky, „The kinematics and dynamics of space manipulators: The virtual manipulator
+  approach“, Int. J. Robot. Res. 9(4), 3–21, 1990. doi:10.1177/027836499000900401
+- [L6] B. Liang, Y. Xu, M. Bergerman, „Mapping a space manipulator to a dynamically equivalent manipulator“,
+  J. Dyn. Syst. Meas. Control 120(1), 1–7, 1998. doi:10.1115/1.2801316
+- [L7] M. Wojtunik, P. Łuczak, T. Rybus, G. Granosik, „Application of the KUKA KUBE test-bed for the
+  hardware-in-the-loop validation of the space manipulator control system“, Artificial Satellites 58(s1),
+  230–248, 2023. doi:10.2478/arsa-2023-0025
+- [L8] A. Al Ali, B. Beigomi, Z. H. Zhu, „Development of 6DOF hardware-in-the-loop ground testbed for autonomous
+  robotic space debris removal“, Aerospace 11(11), 877, 2024. doi:10.3390/aerospace11110877
+- [L9] H. Jahanshahi, M. Alizadeh, Z. H. Zhu, „Hardware-in-the-loop emulation for 6-DOF free-floating spacecraft
+  using active gravity compensation with a collaborative robot“, Acta Astronaut. 247, 782–794, 2026.
+  doi:10.1016/j.actaastro.2026.05.058
+- [L10] H. Yang, X. Yang, J. Li, M. Hu, „Reinforcement learning control for free-floating space manipulator:
+  Truncated quantiles critics“, IFAC-PapersOnLine 59(20), 1255–1260, 2025. doi:10.1016/j.ifacol.2025.11.328
+- [L11] J. Zhao, T. Li, Z. Yang, S. Qin, J. Duan, H. Zhang, Y. Wang, „Redundant-motion coordination and base
+  disturbance suppression of a 6R1P free-floating space manipulator based on deep reinforcement learning“,
+  Machines 14(10), 1120, 2026. doi:10.3390/machines14101120
+- [L12] Y. Hu, D. Zhou, K. Ouyang, Z. Yu, J. Lv, X. Shao, „Prior policy guided dual-agent coordinated manipulation
+  planning of spacecraft-manipulator system“, Acta Astronaut. 248, 256–270, 2026.
+  doi:10.1016/j.actaastro.2026.06.007
+- [L13] J. L. Loettgen, M. Ceriotti, G. Aragon-Camarasa, K. Worrall, „Deep reinforcement learning for smooth
+  guidance of a free-floating robot in point-to-point tasks“, Proc. iSpaRo 2025, 547–552.
+  doi:10.1109/isparo66239.2025.11436749
+- [L14] L. Li, D. Xin, M. Li, H. Zhang, S. Xu, D. Zhang, „Compliant transfer method for space manipulators based
+  on αPPO-LAG“, Mathematics 14(16), 3004, 2026. doi:10.3390/math14163004
+- [L15] E. Altman, „Constrained Markov Decision Processes“, Chapman & Hall/CRC, 1999.
+- [L16] J. Achiam, D. Held, A. Tamar, P. Abbeel, „Constrained policy optimization“, Proc. ICML 2017, PMLR 70,
+  22–31.
+- [L17] A. Ray, J. Achiam, D. Amodei, „Benchmarking safe exploration in deep reinforcement learning“, OpenAI
+  Technical Report, 2019.
+- [L18] A. Stooke, J. Achiam, P. Abbeel, „Responsive safety in reinforcement learning by PID Lagrangian methods“,
+  Proc. ICML 2020, PMLR 119, 9133–9143.
+- [L19] A. D. Ames, S. Coogan, M. Egerstedt, G. Notomista, K. Sreenath, P. Tabuada, „Control barrier functions:
+  Theory and applications“, Proc. ECC 2019, 3420–3431. doi:10.23919/ECC.2019.8796030
+- [L20] J. L. Loettgen, K. Worrall, G. Aragon-Camerasa, M. Ceriotti, R. Lampariello, „Control barrier functions
+  for safe real-time control of spacecraft onboard robotic manipulators“, Proc. iSpaRo 2025, 539–546.
+  doi:10.1109/isparo66239.2025.11437383
+
+Weitere Treffer ohne Folgen für den Plan: Huang u. a., RL im Nullraum eines redundanten Space-Roboters zur
+Hindernisvermeidung (Actuators 12(2), 69, 2023, doi:10.3390/act12020069). Arshad und Bazzocchi, DRL mit
+Basisminimierung (22nd IAA Symp. Space Debris, 2024, doi:10.52202/078360-0181).
+
+Paper: Sec. I und II (verwandte Arbeiten), Sec. zu X1, X2, X3. Offen, Übertragung in Phase P.
 
 ## X1 Nebenbedingung
 
