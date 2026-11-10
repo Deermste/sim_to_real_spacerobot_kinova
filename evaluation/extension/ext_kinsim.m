@@ -3,6 +3,7 @@ function res = ext_kinsim(policy, varargin)
 %   res = ext_kinsim(agentFile)                              wie desktop_run_episode, Standardwerte wie desktop_config
 %   res = ext_kinsim(agentFile, 'j6_lim', 0.9774, 'reward_mode', 4)
 %   res = ext_kinsim(@(obs) ..., 'K', ext_kin_model('base_mass', 32.5))   Regler oder Policy als Funktion
+%   res = ext_kinsim([], 'ctrl', ext_x2_controller('beta', 1), 'chain', 'sat')   Regler mit Referenz (X2)
 %
 %   Grundlage: Die Gelenke von SK_desktop sind bewegungsgesteuert (InputMotion) und der Anfangsimpuls ist null.
 %   Dann haengt die Basisbewegung nur von der Gelenkbahn ab (Impulserhalt, verallgemeinerte Jacobi-Matrix), und
@@ -29,6 +30,10 @@ function res = ext_kinsim(policy, varargin)
 %   obsNoise 29x1 Standardabweichungen (Standard 0), rngSeed fuer das Rauschen,
 %   keepTs (Standard true).
 %   actionSeq (N+1)x7 Rohaktionen statt der Policy (offene Einspielung zur Validierung), policy darf dann [] sein.
+%   ctrl @(obs, R) -> 7x1 Rohbefehl statt der Policy (X2). R hat die Felder t, pref, vref (Referenz zum
+%     Agentenschritt, vref wie in der Beobachtung als Rueckwaertsdifferenz). Sonst nur die Beobachtung.
+%   chain 'full' (Standard, Befehlskette wie oben) oder 'sat' (nur Saettigung und Cmd Scale, ohne Filter und
+%     Rate Limiter, fuer einen idealen Regler in X2). Verzoegerung, Rate Transition und Gelenkfilter bleiben.
 %
 %   res.metrics  wie desktop_run_episode: mse_ee, rms_ee, max_ee, ep_q4, ori_mean, ori_max, w_mean, w_max, ret,
 %                early_stop, t_end, n_steps, stop_reason
@@ -60,6 +65,8 @@ p.addParameter('obsNoise', zeros(29, 1));
 p.addParameter('rngSeed', 0);
 p.addParameter('keepTs', true);
 p.addParameter('actionSeq', []);
+p.addParameter('ctrl', []);
+p.addParameter('chain', 'full');
 p.parse(varargin{:});
 o = p.Results;
 
@@ -69,7 +76,10 @@ if ischar(policy) || isstring(policy)
 else
     pol = policy;
 end
-assert(~isempty(pol) || ~isempty(o.actionSeq), 'ext_kinsim:policy', 'Policy oder actionSeq angeben');
+assert(~isempty(pol) || ~isempty(o.actionSeq) || ~isempty(o.ctrl), 'ext_kinsim:policy', ...
+       'Policy, ctrl oder actionSeq angeben');
+assert(ismember(o.chain, {'full', 'sat'}), 'ext_kinsim:chain', 'chain ist ''full'' oder ''sat''');
+fullChain = strcmp(o.chain, 'full');
 K = o.K;
 if isempty(K), K = ext_kin_model('base_mass', o.base_mass); end
 
@@ -130,7 +140,11 @@ for k = 0:N
     obs = [ep; ev; vb; wb; q; dq; eo];
     if any(o.obsNoise > 0), obs = obs + o.obsNoise(:) .* randn(ns, 29, 1); end
     if isempty(o.actionSeq)
-        a = pol(obs);
+        if isempty(o.ctrl)
+            a = pol(obs);
+        else
+            a = o.ctrl(obs, struct('t', k * o.Ts_agent, 'pref', traj(n + 1, :).', 'vref', vref(n + 1, :).'));
+        end
     else
         a = o.actionSeq(min(k + 1, size(o.actionSeq, 1)), :);
     end
@@ -145,9 +159,13 @@ for k = 0:N
     aPrev = a;
     % --- Befehlskette (Agententakt) ---
     sat = min(max(a, -lim), lim);
-    yf = 0.95 * yf + 0.05 * sat;
-    yr = yr + min(max(yf - yr, -dSlew), dSlew);
-    cmd = yr * o.cmd_scale;
+    if fullChain
+        yf = 0.95 * yf + 0.05 * sat;
+        yr = yr + min(max(yf - yr, -dSlew), dSlew);
+        cmd = yr * o.cmd_scale;
+    else
+        cmd = sat * o.cmd_scale;
+    end
     if ~isempty(o.cmdHook)
         S = struct('t', k * o.Ts_agent, 'q', q, 'dq', dq, 'G', G, 'Je', Je, 'quat', quat, 'ori', eo);
         cmd = o.cmdHook(cmd, S);

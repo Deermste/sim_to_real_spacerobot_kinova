@@ -19,8 +19,9 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 |---|---|---|---|
 | K1 | Der Basis-Bonus des alten Rewards (auch neben der Bahn gezahlt) erzeugt den späten Tracking-Verlust | D14, D16, Ausgangslage | 3 Seeds je Variante, Hardware bestätigt |
 | K2 | Ein Gewicht des glatten Basis-Terms steuert die Basisdrehung nicht, der Seed entscheidet zwischen ruhiger und genauer Lösung | D17, D20 | 3 bzw. 8 Seeds je Gewicht, wird in X4.1 auf 10 aufgefüllt |
-| K3 | Mit den Trainingsgrenzen braucht die Bahn etwa 0,055 rad Basisdrehung, ohne J6-Grenze reichen etwa 0,021 rad | D15 | obere Schranken, kein bewiesenes Minimum |
+| K3 | Mit den Trainingsgrenzen braucht die Bahn etwa 0,055 rad Basisdrehung, ohne J6-Grenze reichen etwa 0,021 rad | D15 | obere Schranken, kein bewiesenes Minimum. Korrektur 10.11. (A73): ohne J6-Grenze 0,020 rad schon bei voller Bahn (1,2 mm, ideale Kette) bzw. 5,7 mm mit der Befehlskette |
 | K4 | Gelenkbahnen der Hardware ergeben dieselbe Basisdrehung wie die Fixed-Base-Simulation (≤ 2 mrad) | D19 | 8 Agenten, offene Rechnung |
+| K5 | Ein modellbasierter Regler (exaktes Modell, kennt die Befehlskette) dominiert alle RL-Agenten: 0,020 rad bei 5,7 mm, 0,013 rad bei 9 mm | X2.1 | Kinematischer Simulator, in Simscape auf 3e-7 bestätigt. Robustheit offen (X2.3) |
 
 X0.1 (Auswerteprotokoll) steht und reproduziert D17. Mit ±2° Startstörung folgen 19 von 20 D16/D17-Agenten in
 allen 21 Episoden der Bahn, der Ausreißer ist ein ruhiger Agent. X0.2 (kinematischer Simulator) trifft
@@ -29,7 +30,9 @@ Neuer Befund A72: Die Beobachtungsgrenzen stehen in der falschen Reihenfolge, q4
 Schritte auf 1,4 rad begrenzt. X0.3 (Literatur): Einen RL-Vergleich mit einem GJM- oder RNS-Regler, eine
 Basisdrehung als Nebenbedingung und eine gelernte Policy auf einem festen Arm mit mitgerechneter Basis haben wir
 nicht gefunden. Die Methoden selbst sind bekannt, X3 wird als Prüfmethode beschrieben. Noch keine Ergebnisse aus
-X1 bis X5.
+X1 bis X5. X2.1: Ein modellbasierter Regler mit exaktem Modell erreicht bei
+gleicher Befehlskette 0,020 rad bei 5,7 mm RMS, alle RL-Agenten liegen deutlich hinter dieser Front (K5). D15
+unterschätzte den Spielraum ohne J6-Grenze (A73).
 
 ## Ausgangslage (aus dem alten Desktop-Plan und dem Paper, Stand 10.11.2026)
 
@@ -370,7 +373,80 @@ Paper: Sec. Methode (Nebenbedingung), offen.
 
 ## X2 Modellbasierte Vergleichsbasis
 
-Noch offen.
+### X2.1 Regler und Machbarkeit ✅ 10.11.2026
+
+**Frage:** Folgt ein modellbasierter Regler auf der verallgemeinerten Jacobi-Matrix dem Halbkreis, und welche
+Basisdrehung kostet das bei welcher Gewichtung?
+
+**Aufbau:**
+- `ext_x2_controller`: Je Agentenschritt eine Optimierung über die Geschwindigkeiten von J2, J4, J6. Bahnaufgabe in
+  der x-z-Ebene b = vref − Kp·ep, Basis-Winkelgeschwindigkeit W·x (beide im Weltsystem, aus dem eigenen Modell und
+  der Beobachtung). Gewichtet: min |Ax − b|² + β|Wx|². Vorrang: erst die Bahn, dann die Basis bei gleicher
+  EE-Geschwindigkeit (wie `min_rot` in D15). Schranken: Geschwindigkeitsgrenzen, Gelenkwinkel (Vorschau 0,1 s) und
+  bei invertierter Kette der Rate Limiter. Exakte Lösung durch Aufzählen der aktiven Schranken.
+- Varianten der Befehlskette in `ext_kinsim`: `sat` (nur Sättigung, idealer Regler), `full_inv` (volle Kette wie
+  bei den Agenten, der Regler kennt Filter und Rate Limiter und invertiert sie) und `full` (volle Kette ohne
+  Inversion).
+- Option `j6_side`: Der Regler hält J6 auf einer Seite. Ohne Schranken in der Optimierung treibt jede Gewichtung
+  J6 an seine Winkelgrenze (2,01 rad) und der Arm verliert die Bahn (erster Versuch, verworfen).
+- Sweep `ext_x2_sweep()`: β = 0 und 16 Stufen von 0,1 bis 1e4, Vorrang-Modus, Kp ∈ {5, 10} 1/s, J6-Grenze 0,1 und
+  0,9774 rad/s, J6-Seite frei, −, +. 436 Läufe in 3,8 min. Nominales Modell (65 kg) für Regler und Strecke.
+
+**Ergebnis R0 (β = 0, Kp 5):**
+
+| Kette | J6-Grenze | RMS [mm] | Basisdrehung [rad] | D15 track_only [rad] |
+|---|---|---|---|---|
+| sat | 0,1 | 1,3 | 0,0755 | 0,0747 |
+| sat | 0,9774 | 1,2 | 0,0725 | 0,0734 |
+| full_inv | 0,1 | 2,7 | 0,0750 | – |
+| full_inv | 0,9774 | 2,1 | 0,0691 | – |
+| full (ohne Inversion) | 0,1 / 0,9774 | 72 / 117 | 0,077 / 0,111 | – |
+
+Damit ist das Kriterium aus PLAN.md erfüllt (R0 ≤ 5 mm, Basisdrehung passt zu D15). Ohne Kenntnis von Filter und
+Rate Limiter verliert der Regler die Bahn. Die Kette verlangt also Vorausschau, die eine Policy lernen muss.
+
+**Front mit voller Kette und Inversion, J6 0,9774 rad/s** (Pareto-Punkte, Auswahl):
+
+| Einstellung | RMS [mm] | größter Fehler [mm] | Basisdrehung [rad] | Ruck [rad/s³] |
+|---|---|---|---|---|
+| R0, Kp 5 | 2,1 | 10 | 0,069 | 4,8 |
+| β 1, Kp 5, J6 − | 5,7 | 20 | 0,020 | 5,2 |
+| β 4,6, Kp 5, J6 − | 6,1 | 21 | 0,018 | 4,6 |
+| β 22, Kp 5, J6 − | 9,0 | 25 | 0,013 | 4,5 |
+| β 46, Kp 5, J6 − | 12,8 | 43 | 0,008 | 4,3 |
+| β 215, Kp 5, J6 − | 24 | 55 | 0,006 | 4,9 |
+| β 4642, Kp 5 | 39 | 137 | 0,0006 | 6,4 |
+
+- Mit J6 0,1 rad/s bleibt die Basisdrehung bei ≤ 3 mm RMS bei 0,061–0,064 rad. Weniger geht nur mit deutlich mehr
+  Bahnfehler (14 mm bei 0,058 rad, 48 mm bei 0,041 rad).
+- Der größte Fehler entsteht am Anfang, weil der Rate Limiter das Anfahren bremst. Das gilt für die Agenten genauso.
+- Der Ruck (zweite Differenz des Befehls nach der Kette, wie `jerk_rms` in X0.1) liegt mit invertierter Kette bei
+  4–7 rad/s³ wie bei den Agenten (2,5–16). Ohne Kette (`sat`) liegt er bei 70–1300, dieser Regler wäre auf der
+  Hardware nicht brauchbar.
+
+**Vergleich mit RL (nominal, J6 0,9774, 20 Agenten aus D16/D17, X0.1-Lauf 090946):**
+- Genaue Gruppe 8,3–18 mm bei 0,044–0,071 rad, ruhige Gruppe 16–27 mm bei 0,023–0,031 rad.
+- Der Regler erreicht 0,020 rad bei 5,7 mm und 0,013 rad bei 9 mm. Je Agent: kleinster RMS der Front bei
+  höchstens derselben Basisdrehung. Der Agent hat das 1,5- bis 4,7-fache davon (Median 2,4). Die ruhigen Agenten
+  liegen beim 2,8- bis 4,7-fachen, die genauen meist beim 1,5- bis 2,5-fachen. Jeder Agent liegt hinter der Front.
+- Grenzen: Der Regler kennt das Modell exakt (X2.3 prüft falsche Parameter), kennt die Befehlskette und bekommt
+  den Zweig von J6 vorgegeben. Die Front ist eine schrittweise Lösung, also eine obere Schranke.
+- Die genaue Kennzahl (Abstand jedes Agenten zur Front) folgt in X2.2 mit X1.3 und X4.1.
+
+**Kontrolle in Simscape** (`ext_x2_replay_check`): Die Rohbefehle von drei Reglerläufen gingen über
+From Workspace statt des Agenten in eine Kopie von SK_desktop (volle Kette). EE-Bahn bis 2,6e-7 m, Basisdrehung bis
+2,4e-7 rad gleich. Da der Regler nur von der Beobachtung abhängt, gilt das auch für den geschlossenen Kreis.
+
+**Zwei Zweige von J6 (Befund A73):** Die Lösung hängt stark davon ab, in welche Richtung J6 läuft. Läuft J6 nach
++2,01 rad, bleibt die Basis bei etwa 0,05 rad. Läuft J6 nach −2,01 rad, reichen 0,020 rad bei voller Bahn
+(Vorrang-Modus, `sat`: 1,2 mm RMS). D15 fand mit `min_rot` nur den ersten Zweig (0,0526 rad). Grund ist die
+Regularisierung 1e-3·|x| in D15: Mit derselben Regularisierung liefert `ext_x2_controller` genau 0,0526 rad, ohne
+sie 0,0204 rad. Die obere Schranke aus D15 für J6 ohne Grenze (0,053 rad bei voller Bahn, 0,021 rad nur mit 22 mm
+Fehler) war also zu hoch.
+
+Datenquelle: `X2_sweep_20261110_113752.csv`, `X2_replay_check_20261110_113958.csv`.
+
+Paper: neue Vergleichsbasis (Methode und Ergebnis), Sec. V-A (Aussage zum kinematischen Check, A73). Offen.
 
 ## X3 Kinematische Emulation
 
