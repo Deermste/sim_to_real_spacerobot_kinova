@@ -403,13 +403,13 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
 - **E4** X5 Go/No-Go nach dem Pilot.
 - **E5** Agenten für den Labortag X3.2.
 - **E6** Ratenpaar auf 10 Seeds ja oder nein.
-- **E8** ✅ 10.11.2026 (Befund A72): Beobachtungsgrenzen für neue Trainings (X1, X2.4, X4.1, X5) belassen (für X5 durch E9 ersetzt), damit
-  alle Agenten vergleichbar bleiben. Im Paper als Eigenschaft des Aufbaus nennen.
-- **E9** ✅ 10.11.2026: Für X5 die Beobachtungsgrenzen in der richtigen Reihenfolge setzen. Begründung (A72): Die reaktionsarmen 3D-Lösungen des Reglers liegen bei q7 in 43–63 %
-  der Schritte außerhalb von ±1,22 rad, dazu q4, q5 (±1,4) und q6 (±1,22) zeitweise. Mit E8 wäre die Policy dort
-  blind. X5 ist eine neue Aufgabe, der Vergleich läuft gegen den Regler, nicht gegen die ebenen Agenten. E8 gilt
-  damit für X1, X2.4 und X4.1, nicht für X5.
-- **E10** ✅ 10.11.2026: Kipprichtung der 3D-Bahn −30° (Nullraum senkt die Basisdrehung des Reglers von 124 auf 10 mrad bei
-  2 mm), nicht +30° (nur von 14 auf 11 mrad). Dort hat die Frage aus X5 Gewicht.
+- **E8** ✅ 10.11.2026 (Befund A72): Beobachtungsgrenzen für neue Trainings (X1, X2.4, X4.1) belassen, damit
+  alle Agenten vergleichbar bleiben. Im Paper als Eigenschaft des Aufbaus nennen. Für X5 durch E9 ersetzt.
+- **E9** ✅ 10.11.2026: Für X5 die Beobachtungsgrenzen in der richtigen Reihenfolge setzen. Begründung (A72):
+  Die reaktionsarmen 3D-Lösungen des Reglers liegen bei q7 in 43–63 % der Schritte außerhalb von ±1,22 rad,
+  dazu q4, q5 (±1,4) und q6 (±1,22) zeitweise. Mit E8 wäre die Policy dort blind. X5 ist eine neue Aufgabe,
+  der Vergleich läuft gegen den Regler, nicht gegen die ebenen Agenten.
+- **E10** ✅ 10.11.2026: Kipprichtung der 3D-Bahn −30°. Dort senkt der Nullraum die Basisdrehung des Reglers
+  von 124 auf 10 mrad bei 2 mm, bei +30° nur von 14 auf 11 mrad. Bei −30° hat die Frage aus X5 Gewicht.
 - **E7** Mit dem Betreuer: neue Geschichte, Zielkonferenz, was nach X4.4 aus dem Paper fliegt, ob die
   Schnittstellendiagnose ein Abschnitt bleibt oder ein eigenes kurzes Paper wird.
