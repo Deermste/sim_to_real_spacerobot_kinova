@@ -27,7 +27,9 @@ function ctrl = ext_x2_controller(varargin)
 %   j6_side 0 (frei), -1 oder +1: Der Regler haelt J6 auf einer Seite (q6 <= 0 oder >= 0). Die Loesung haengt
 %     stark davon ab, in welche Richtung J6 laeuft (zwei Zweige, 10.11.2026), das legt diese Option fest.
 %   Optionen: beta 0, mode 'weighted', Kp 5 1/s (wie D15), kOri 0 1/s, joints [2 4 6], task [1 3], mu 1e-8,
-%   j6_lim 0,9774, horizon 0,1 s, invert false, slew 0,5, Ts_agent 0,025, j6_side 0, K (ext_kin_model).
+%   j6_lim 0,9774, horizon 0,1 s, invert false, slew 0,5, Ts_agent 0,025, j6_side 0, K (ext_kin_model),
+%   lim 7x1 Geschwindigkeitsgrenzen (Standard [], dann wie oben aus j6_lim). Fuer X5 mit joints 1:7 und
+%   task [1 2 3] dieselben Grenzen wie in ext_kinsim 'lim' angeben.
 
 p = inputParser;
 p.addParameter('beta', 0);
@@ -44,11 +46,13 @@ p.addParameter('slew', 0.5);
 p.addParameter('Ts_agent', 0.025);
 p.addParameter('j6_side', 0);
 p.addParameter('K', []);
+p.addParameter('lim', []);
 p.parse(varargin{:});
 o = p.Results;
 assert(ismember(o.mode, {'weighted', 'priority'}), 'ext_x2_controller:mode', 'mode ist weighted oder priority');
 if isempty(o.K), o.K = ext_kin_model(); end
 lim7 = [0; 0.9774; 0; 0.9774; 0; o.j6_lim; 0];
+if ~isempty(o.lim), lim7 = o.lim(:); end
 qLim = [2*pi; 2.41; 2*pi; 2.66; 2.23; 2.01; 2*pi];
 qLo = -qLim; qHi = qLim;
 if o.j6_side < 0, qHi(6) = 0; end

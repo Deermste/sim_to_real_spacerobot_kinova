@@ -42,6 +42,9 @@ function res = ext_kinsim(policy, varargin)
 %     emu_ori_max aus der emulierten Beobachtung (Agententakt). rms_ee usw. sind dann die des festen Arms.
 %   chain 'full' (Standard, Befehlskette wie oben) oder 'sat' (nur Saettigung und Cmd Scale, ohne Filter und
 %     Rate Limiter, fuer einen idealen Regler in X2). Verzoegerung, Rate Transition und Gelenkfilter bleiben.
+%   lim 7x1 Geschwindigkeitsgrenzen der Saettigung [rad/s] (Standard [], dann J2, J4 0,9774, J6 j6_lim, sonst 0).
+%     Fuer alle sieben Gelenke (X5) etwa [0.98 0.98 0.98 0.98 0.58 0.58 0.58].
+%   path 'planar' (Standard) oder 'tilted', tilt [Grad, Standard 30]: Referenzbahn aus ext_ref_path (X5.1).
 %
 %   res.metrics  wie desktop_run_episode: mse_ee, rms_ee, max_ee, ep_q4, ori_mean, ori_max, w_mean, w_max, ret,
 %                early_stop, t_end, n_steps, stop_reason
@@ -79,6 +82,9 @@ p.addParameter('ctrl', []);
 p.addParameter('chain', 'full');
 p.addParameter('emulate', false);
 p.addParameter('emulK', []);
+p.addParameter('lim', []);
+p.addParameter('path', 'planar');
+p.addParameter('tilt', 30);
 p.parse(varargin{:});
 o = p.Results;
 
@@ -101,13 +107,13 @@ assert(abs(m * h - o.Ts_agent) < 1e-12, 'ext_kinsim:rate', 'Ts_agent muss ein Vi
 N = floor(o.T / o.Ts_agent + 1e-9);         % letzter Agentenschritt (t = T)
 nS = N * m;                                  % letzter Solverschritt
 lim = [0.0; 0.9774; 0.0; 0.9774; 0.0; o.j6_lim; 0.0];
+if ~isempty(o.lim), lim = o.lim(:); end
 qLim = [2*pi; 2.41; 2*pi; 2.66; 2.23; 2.01; 2*pi];
 dSlew = o.slew * o.Ts_agent;
 
-% --- Referenz wie desktop_run_episode (ref_timing 'wall', Halbkreis) ---
+% --- Referenz wie desktop_run_episode (ref_timing 'wall', Halbkreis, X5.1 auch gekippt) ---
 t = (0:nS).' * h;
-w = pi / o.T;
-traj = [o.center(1) + o.r * sin(w * t), o.center(2) + 0 * t, o.center(3) + o.r * cos(w * t)];
+traj = ext_ref_path(t, o);
 vref = [zeros(1, 3); diff(traj) / h];
 
 % --- Gelenkfilter 1/(tau s + 1)^2, exakt bei linear interpoliertem Eingang ---

@@ -23,6 +23,7 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 | K4 | Gelenkbahnen der Hardware ergeben dieselbe Basisdrehung wie die Fixed-Base-Simulation (≤ 2 mrad) | D19 | 8 Agenten, offene Rechnung |
 | K5 | Ein modellbasierter Regler (exaktes Modell, kennt die Befehlskette) dominiert alle RL-Agenten: 0,020 rad bei 5,7 mm, 0,013 rad bei 9 mm | X2.1 | Kinematischer Simulator, in Simscape auf 3e-7 bestätigt. Robustheit offen (X2.3) |
 | K6 | Auch mit Nominalmodell bleibt der Regler bei falscher Masse, Trägheit, Verzögerung, Verstärkung, Rauschen, Startstellung und Drift vor den Agenten. Am knappsten bei Kinematikfehlern (Montage) und Drift um x | X2.3 Teil 1 | 26 Szenarien, 20 Agenten ohne Randomisierung, nur kinematisch |
+| K7 | Auf einer gekippten 3D-Bahn mit allen sieben Gelenken senkt der Nullraum des Reglers die Basisdrehung je nach Kipprichtung stark (−30°: 124 auf 10 mrad bei 2 mm) oder kaum (+30°: 14 auf 11 mrad). In der Ebene bringen die zusätzlichen Gelenke wenig | X5.1 | Nur Regler, kinematisch, nominal. RL in 3D offen (X5.2) |
 
 X0.1 (Auswerteprotokoll) steht und reproduziert D17. Mit ±2° Startstörung folgen 19 von 20 D16/D17-Agenten in
 allen 21 Episoden der Bahn, der Ausreißer ist ein ruhiger Agent. X0.2 (kinematischer Simulator) trifft
@@ -35,6 +36,8 @@ X1 bis X5. X2.1: Ein modellbasierter Regler mit exaktem Modell erreicht bei
 gleicher Befehlskette 0,020 rad bei 5,7 mm RMS, alle RL-Agenten liegen deutlich hinter dieser Front (K5). D15
 unterschätzte den Spielraum ohne J6-Grenze (A73). X2.3 Teil 1: In 26 Szenarien mit Modell-, Aktor-, Sensor- und
 Anfangsfehlern fand sich kein Fall, in dem die Agenten robust besser sind als der Regler mit Nominalmodell (K6).
+X5.1: Die gekippte 3D-Bahn ist mit allen sieben Gelenken fahrbar. Bei −30° Kippung macht der Nullraum den
+Unterschied (K7). Die Beobachtungsgrenzen aus A72 würden die Policy dort für q7 oft blind machen (E9).
 
 ## Ausgangslage (aus dem alten Desktop-Plan und dem Paper, Stand 10.11.2026)
 
@@ -685,7 +688,65 @@ Kurztest vorher bestanden (2 × 16 Episoden, Auswertung der 20 vorhandenen Agent
 
 ## X5 3D
 
-Noch offen.
+### X5.1 Machbarkeit im kinematischen Simulator ✅ 10.11.2026 (SK_desktop offen)
+
+**Frage:** Lässt sich eine echte 3D-Bahn mit allen sieben Gelenken fahren, und wie viel Basisdrehung spart der
+Nullraum des Reglers?
+
+**Aufbau:**
+- Bahn `ext_ref_path` 'tilted': der Halbkreis (r = 0,2 m, 8,5 s), die Ebene um ±30° um die x-Achse durch den
+  Startpunkt gekippt. Start (gestreckte Stellung, q0 = 0) und Anfangsrichtung bleiben gleich. Bei +30° läuft die
+  Bahn nach +y aus (Ende 0,2 m neben und 0,346 m unter dem Start), bei −30° nach −y. Eine Drehung der Ebene um die
+  senkrechte Achse wurde verworfen, J1 allein könnte sie ausgleichen.
+- `ext_kinsim` und `ext_x2_controller` mit Option `lim` (sieben Geschwindigkeitsgrenzen). Alle sieben Gelenke
+  mit 0,98 rad/s J1–J4 und 0,58 rad/s J5–J7 wie beim Set-Point. Aufgabe x, y, z. Standardwerte unverändert
+  (Rβ 46 eben, J2/J4/J6: wieder 12,8 mm / 8,1 mrad wie X2.1).
+- `ext_x5_1_feasibility()`: Bahnen eben, +30°, −30°. Gelenksätze J2/J4/J6 (0,9774 rad/s) und alle sieben. Regler
+  R0, Rβ mit β 1 bis 1e4, Prioritätsform (Bahn zuerst, dann Basis im Nullraum), J6-Seite 0, −1, +1. Volle
+  Befehlskette mit Inversion, die Prioritätsform zusätzlich mit idealer Kette. 180 Läufe, 3 min. Nominal,
+  deterministisch.
+
+**Zahlen** (RMS EE-Fehler / größte Basisdrehung, volle Kette):
+
+| Bahn | Gelenke | R0 (ohne Nullraum) | Front, genau | Front, ruhig |
+|---|---|---|---|---|
+| eben | J2/J4/J6 | 2,1 mm / 69 mrad | 5,7 mm / 19,8 mrad (β 1) | 16,7 mm / 6,2 mrad (β 100) |
+| eben | alle 7 | 2,1 mm / 68 mrad | 4,9 mm / 20,6 mrad (β 1) | 15,7 mm / 8,0 mrad (β 100), 31 mm / 2,8 mrad (β 1000) |
+| +30° | J2/J4/J6 | 122 mm, folgt nicht | – | – |
+| +30° | alle 7 | 1,8 mm / 13,8 mrad | 2,1 mm / 11,3 mrad (β 4,6) | 6,1 mm / 9,3 mrad (β 46), 15,7 mm / 5,6 mrad (β 1000) |
+| −30° | J2/J4/J6 | 125 mm, folgt nicht | – | – |
+| −30° | alle 7 | 4,2 mm / 124 mrad | 2,1 mm / 9,7 mrad (β 4,6) | 5,4 mm / 8,7 mrad (β 46), 15,8 mm / 4,9 mrad (β 1000) |
+
+- Die gekippte Bahn ist mit allen sieben Gelenken in allen Reglerformen fahrbar. 27 von 30 (+30°) und 28 von 30
+  (−30°) Läufen folgen. Kein Lauf verletzt eine Gelenkwinkelgrenze, die Läufe mit großem β liegen zeitweise an der
+  Winkelgrenze von J5 oder J6 und bis zu 70 % der Schritte an einer Geschwindigkeitsgrenze.
+- J2/J4/J6 allein folgen der gekippten Bahn nicht (122–128 mm). Die Aufgabe ist also echt dreidimensional.
+- Die gestreckte Startstellung ist singulär (kleinster Singulärwert der EE-Jacobi-Matrix 1,7e-6, nach 0,25 s
+  etwa 1e-3). Weil die Bahn entlang x beginnt, macht das keinem Regler Probleme. Ein anderer Start ist nicht nötig.
+- In der Ebene bringen die zusätzlichen Gelenke kaum etwas: Die Front mit allen sieben liegt fast auf der von
+  J2/J4/J6 und reicht nur bei sehr großem β weiter (2,8 mrad bei 31 mm).
+- Die Kipprichtung entscheidet, wie viel der Nullraum bringt. Bei +30° dreht R0 die Basis schon nur um 13,8 mrad,
+  der Nullraum senkt das bei gleicher Genauigkeit auf etwa 11 mrad. Bei −30° dreht R0 die Basis um 92–124 mrad
+  (je nach J6-Seite), Rβ 4,6 bei gleicher Genauigkeit (2,1 mm) nur um 9,7 mrad. Das ist der Fall, in dem eine
+  reaktionsarme Bewegung den Unterschied macht.
+- Die gierigen Formen hängen stark vom Zweig ab (wie A73). Die Prioritätsform erreicht bei −30° mit idealer Kette
+  1,0 mm / 11 mrad, mit voller Kette 3,3–4,4 mm / 83–106 mrad. Für den Vergleich mit RL in X5.3 zählt deshalb die
+  Front über alle Formen und Seiten, nicht ein einzelner Regler.
+
+**Beobachtungsgrenzen (A72) in 3D** (Grenzen aus D16 r4 s2, Reglerbahnen alle sieben Gelenke): Bei den
+reaktionsarmen Lösungen liegt q7 in 43–63 % der Schritte außerhalb von ±1,22 rad (Rβ 4,6 und 46, beide
+Kipprichtungen), q4 in bis zu 41 % und q5 in bis zu 21 % außerhalb von ±1,4 rad, q6 in bis zu 24 % außerhalb
+von ±1,22 rad. Bei R0
+sind es 21–40 % (q6 oder q7). dq bleibt fast immer innerhalb. Mit E8 wäre die Policy also gerade für die
+Gelenkstellungen blind, die der Nullraum nutzt. Entscheidung E9 in PLAN.md.
+
+**Grenzen:** nur kinematisch und nominal, Regler mit exaktem Modell. Die Modellparameter `p_active` und
+`p_path_id` in `SK_desktop` und die Bitgleichheitsprüfung folgen nach der Nachtkette (sie baut `SK_desktop` neu).
+
+Datenquelle: `X5_1_feasibility_20261110_175620.csv`. Begrenzung: `ext_x5_1_obsclip()` (Ausgabe in der
+Konsole, Zahlen oben).
+
+Paper: neuer Abschnitt 3D (Aufgabe, Regler-Front). Offen, hängt an X5.2 und E4.
 
 ## Gliederung (für Phase P)
 

@@ -73,7 +73,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X4.2 | Alle Bestandsagenten mit dem Protokoll X0.1 neu auswerten | ½ Tag | 2 h | X0.1 | ⬜ |
 | X4.3 | Ratenpaar D10 auf 10 Seeds (optional) | ½ Tag | ≈ 3 h | E6 | ⏸ |
 | X4.4 | Entscheidung, was aus dem Paper fliegt oder in den Anhang geht | ½ Tag | – | Betreuer | ⏸ |
-| X5.1 | 3D-Bahn mit allen 7 Gelenken: Modell, Machbarkeit mit dem Regler aus X2 | 2–3 Tage | 1 h | X2.1 | ⬜ |
+| X5.1 | 3D-Bahn mit allen 7 Gelenken: Modell, Machbarkeit mit dem Regler aus X2 | 2–3 Tage | 1 h | X2.1 | 🔄 Machbarkeit ✅ 10.11., SK_desktop offen |
 | X5.2 | Pilot 3D: 2 Varianten × 2 Seeds, Go/No-Go | ½ Tag | ≈ 3 h | X5.1 | ⬜ |
 | X5.3 | Hauptlauf 3D: 10 Seeds, Vergleich mit Nullraum-Regler | 1 Tag | ≈ 6–8 h | E4 | ⏸ |
 | P | Paper neu aufbauen und Ergebnisse übertragen | 2–3 Wochen | – | alle | ⏸ |
@@ -368,6 +368,10 @@ Mit allen 7 Gelenken bleibt bei 3D-Position und Basisdrehung um drei Achsen ein 
 - Machbarkeit mit R0 und Rβ aus X2 im kinematischen Simulator: Bahn erreichbar, Gelenkgrenzen eingehalten,
   Basisdrehung mit und ohne Nullraum. Danach erst trainieren.
 - Mit Standardwerten der neuen Parameter liefert `SK_desktop` dieselben Returns wie vorher (Prüfung wie D16).
+- Stand 10.11.2026: Machbarkeit im kinematischen Simulator erledigt (`ext_x5_1_feasibility`, RESULTS.md X5.1).
+  Bahn `ext_ref_path` 'tilted', Gelenkgrenzen als Option `lim` in `ext_kinsim` und `ext_x2_controller`. Offen:
+  `p_active`/`p_path_id` in `desktop_build_model` mit Bitgleichheitsprüfung. Erst nach der Nachtkette vom
+  10./11.11., weil diese `SK_desktop` neu baut und prüft. Vorher E9 entscheiden.
 
 ### X5.2 Pilot und Go/No-Go
 
@@ -401,5 +405,11 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
 - **E6** Ratenpaar auf 10 Seeds ja oder nein.
 - **E8** ✅ 10.11.2026 (Befund A72): Beobachtungsgrenzen für neue Trainings (X1, X2.4, X4.1, X5) belassen, damit
   alle Agenten vergleichbar bleiben. Im Paper als Eigenschaft des Aufbaus nennen.
+- **E9** Beobachtungsgrenzen für X5 (A72): Die reaktionsarmen 3D-Lösungen des Reglers liegen bei q7 in 43–63 %
+  der Schritte außerhalb von ±1,22 rad, dazu q4, q5 (±1,4) und q6 (±1,22) zeitweise. Mit E8 wäre die Policy dort
+  blind. Vorschlag: Für X5 die Grenzen in der richtigen Reihenfolge setzen. X5 ist eine neue Aufgabe, der
+  Vergleich läuft gegen den Regler, nicht gegen die ebenen Agenten.
+- **E10** Kipprichtung der 3D-Bahn: −30° (Nullraum senkt die Basisdrehung des Reglers von 124 auf 10 mrad bei
+  2 mm) oder +30° (nur von 14 auf 11 mrad). Vorschlag: −30°, dort hat die Frage aus X5 Gewicht.
 - **E7** Mit dem Betreuer: neue Geschichte, Zielkonferenz, was nach X4.4 aus dem Paper fliegt, ob die
   Schnittstellendiagnose ein Abschnitt bleibt oder ein eigenes kurzes Paper wird.
