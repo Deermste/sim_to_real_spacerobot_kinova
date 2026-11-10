@@ -36,6 +36,10 @@ function res = ext_kinsim(policy, varargin)
 %   actionSeq (N+1)x7 Rohaktionen statt der Policy (offene Einspielung zur Validierung), policy darf dann [] sein.
 %   ctrl @(obs, R) -> 7x1 Rohbefehl statt der Policy (X2). R hat die Felder t, pref, vref (Referenz zum
 %     Agentenschritt, vref wie in der Beobachtung als Rueckwaertsdifferenz). Sonst nur die Beobachtung.
+%   emulate (Standard false, X3.1): Die Strecke ist der fest montierte Arm (Basis ruht), die Beobachtung kommt
+%     aus virtual_base_step mit q, dq zu jedem Agentenschritt, wie im Deploy-Skript v25. emulK ist das Modell
+%     der Emulation (Standard ext_kin_model nominal). Zusaetzliche Kennzahlen emu_rms_ee, emu_ep_q4,
+%     emu_ori_max aus der emulierten Beobachtung (Agententakt). rms_ee usw. sind dann die des festen Arms.
 %   chain 'full' (Standard, Befehlskette wie oben) oder 'sat' (nur Saettigung und Cmd Scale, ohne Filter und
 %     Rate Limiter, fuer einen idealen Regler in X2). Verzoegerung, Rate Transition und Gelenkfilter bleiben.
 %
@@ -73,6 +77,8 @@ p.addParameter('keepTs', true);
 p.addParameter('actionSeq', []);
 p.addParameter('ctrl', []);
 p.addParameter('chain', 'full');
+p.addParameter('emulate', false);
+p.addParameter('emulK', []);
 p.parse(varargin{:});
 o = p.Results;
 
@@ -134,6 +140,14 @@ q = Z(1, :).'; dq = Z(2, :).';
 Rb = q2r(quat);
 % Anfangsdrehimpuls aus w0_init (Arm in Ruhe, P = 0): M v0 + Hb(1:3,4:6) w0 = 0, L = Hb(4:6,:) [v0; w0]
 hasDrift = any(o.w0_init ~= 0);
+emu = o.emulate;
+if emu
+    assert(~hasDrift, 'ext_kinsim:emulate', 'emulate und w0_init zusammen sind nicht vorgesehen');
+    eK = o.emulK;
+    if isempty(eK), eK = ext_kin_model(); end
+    vbs = virtual_base_step('init', q, eK);
+    emuEp = nan(N + 1, 1); emuOri = nan(N + 1, 1);
+end
 Lw = zeros(3, 1);
 if hasDrift
     w0 = Rb.' * o.w0_init(:);
@@ -151,6 +165,13 @@ for k = 0:N
     ev = Rb * (Je * dq + Dd) - vref(n + 1, :).';
     vb = Rb * tw(1:3); wb = Rb * tw(4:6);
     eo = rotvec(quat);
+    if emu
+        [vbs, eo_] = virtual_base_step(vbs, q, dq);
+        ep = eo_.pe - traj(n + 1, :).';
+        ev = eo_.ve - vref(n + 1, :).';
+        vb = eo_.v_base; wb = eo_.w_base; eo = eo_.e_ori;
+        emuEp(k + 1) = norm(ep); emuOri(k + 1) = norm(eo);
+    end
     obs = [ep; ev; vb; wb; q; dq; eo];
     obs = obs + o.obsBias(:);
     if any(o.obsNoise > 0), obs = obs + o.obsNoise(:) .* randn(ns, 29, 1); end
@@ -227,6 +248,13 @@ mtr.ori_max = max(oriS(idx));
 mtr.w_mean = mean(wS(idx));
 mtr.w_max = max(wS(idx));
 mtr.ret = sum(rew(1:kEnd + 1));
+if emu
+    ka = 1:kEnd + 1;
+    ta = (ka - 1) * o.Ts_agent;
+    mtr.emu_rms_ee = sqrt(mean(emuEp(ka) .^ 2));
+    mtr.emu_ep_q4 = mean(emuEp(ka(ta >= 3 * o.T / 4 - 1e-9)));
+    mtr.emu_ori_max = max(emuOri(ka));
+end
 mtr.cost_mean = mean(cst(1:kEnd + 1));
 mtr.n_steps = kEnd + 1;
 mtr.t_end = kEnd * o.Ts_agent;
@@ -247,6 +275,7 @@ res.info = struct('wallTime', toc(tWall));
         % Basis-Twist [v0; w0] im Basissystem und Drift-Anteil der EE-Geschwindigkeit (null ohne Drehimpuls)
         t2 = Gm * dqv;
         D = zeros(3, 1);
+        if emu, t2 = zeros(6, 1); return; end   % fester Arm: Basis ruht
         if hasDrift
             dd = Hm \ [zeros(3, 1); Rm.' * Lw];
             t2 = t2 + dd;

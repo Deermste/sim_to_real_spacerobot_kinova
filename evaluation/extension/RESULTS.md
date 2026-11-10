@@ -627,7 +627,53 @@ Paper: Robustheitsvergleich (Methode, Fairness). Offen.
 
 ## X3 Kinematische Emulation
 
-Noch offen.
+### X3.1 Umsetzung und Validierung in Simulation ✅ 10.11.2026
+
+**Umsetzung:**
+- `hardware/campaign/virtual_base_step.m`: eine Datei für Simulator und Deploy-Skript. Je Schritt
+  dx = G(q_mid)·(q − q_prev) mit der verallgemeinerten Jacobi-Matrix am Mittelpunkt, Lage als Quaternion, Ort mit
+  der halben Drehung. Daraus EE-Lage und -Geschwindigkeit in der Welt, v_base, w_base und e_ori wie im Training.
+  Die Zeit geht nicht ein, nur der Weg im Gelenkraum.
+- `ext_kinsim` mit `emulate`: Strecke ist der fest montierte Arm, die Beobachtung kommt aus `virtual_base_step`
+  zu jedem Agentenschritt.
+- `hardware/campaign/deploy_tracking_v25.m` = v24 plus Schalter `emulateBase` (Standard aus, dann wie v24). Mit
+  Emulation: Prüfung beim Start, dass Emulationsmodell und URDF dieselbe EE-Lage liefern. Beobachtung aus der
+  virtuellen Basis. OOD-Stopp auf den virtuellen und zusätzlich auf den physischen EE-Fehler (`oodThresholdPhys`
+  0,4 m). Neue Log-Felder (virtuelle EE-Lage, Basis-Twist, e_ori, physischer Fehler, Rechenzeit). Dazu
+  `dryRunKinematic`: Im Trockenlauf folgt der Arm ideal dem gesendeten Befehl.
+
+**Validierung** (`ext_x3_validate()`):
+
+| Stufe | Prüfung | Ergebnis |
+|---|---|---|
+| 1 | Gelenkbahn aus `ext_kinsim` (frei schwebend) eingespielt, 40 Hz / 20 Hz / unregelmäßig (50 ± 8 ms, 5 % bis 120 ms) | Basisdrehung ≤ 6e-7 rad, EE ≤ 8e-7 m |
+| 1 | Gelenkbahn aus Simscape (`q_cmd`, vor dem Gelenkfilter) eingespielt | Basisdrehung ≤ 1,0 mrad, EE 3 mm RMS |
+| 2 | Geschlossener Kreis fest + Emulation gegen frei schwebend, 3 Agenten und Rβ 46, 40 und 20 Hz | EE ≤ 0,41 mm RMS (frühes PPO, 40 Hz), sonst ≤ 1e-5 m, Basis ≤ 0,2 mrad |
+| 3 | Rechenzeit `virtual_base_step` | 0,42 ms (Simulator), 0,6 ms im Deploy-Skript |
+
+- Ziel aus PLAN.md (≤ 2 mm, ≤ 2 mrad) erfüllt. Die 1 mrad und 3 mm beim Simscape-Einspielen kommen daher, dass
+  Simscape die Gelenkbahn vor dem Gelenkfilter loggt (τ = 20 ms, zweifach). D15 fand dieselbe Größe.
+- Unregelmäßige Schrittzeiten ändern das Ergebnis nicht messbar. Die Emulation hängt nur vom Weg ab.
+- Physisch weicht der feste Arm dabei von der Referenz ab (14–33 mm RMS), weil er die Bahn relativ zur virtuellen
+  Basis fährt. Das ist gewollt und muss im Labor so erklärt werden. Die zusätzliche OOD-Grenze sichert es ab.
+
+**Trockenlauf v25** (`dryRunKinematic`, D16 r4 s2, J6 0,9774, Kappe 0,85; nur Funktionstest, der ideale Arm hat
+weder Servoverzögerung noch Rate Transition, und die Schleife lief neben X4.1 mit 32 statt 40 Hz):
+
+| Rate | Emulation | Agent sieht RMS | Basis max | physisch RMS | frei schwebend (Simulator) |
+|---|---|---|---|---|---|
+| 40 Hz | aus (wie v24) | 24,2 mm | – | 24,2 mm | 11,9 mm / 26,3 mrad |
+| 40 Hz | an | 12,9 mm | 25,5 mrad | 19,9 mm | 11,9 mm / 26,3 mrad |
+| 20 Hz | aus | 14,3 mm | – | 14,3 mm | 8,8 mm / 25,0 mrad |
+| 20 Hz | an | 14,8 mm | 24,4 mrad | 16,1 mm | 8,8 mm / 25,0 mrad |
+
+Alle Läufe vollständig, `getAction` 2 ms, Emulation 0,6 ms.
+
+**Noch offen:** Vorhersage je Bedingung für X3.2 (`X3_prediction.csv`), sobald die Agenten feststehen (E5).
+
+Datenquelle: `X3_validate_20261110_131114_*`.
+
+Paper: neuer Abschnitt Emulation (Methode, Validierung, Grenzen). Offen.
 
 ## X4 Belastbarkeit
 
