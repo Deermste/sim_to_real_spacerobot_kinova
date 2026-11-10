@@ -3,6 +3,8 @@ function [E, S, outFile] = ext_x2_robust(varargin)
 %   [E, S] = ext_x2_robust()
 %   [E, S] = ext_x2_robust('agents', list)       eigene Agentenliste (struct mit file, label, group)
 %   [E, S] = ext_x2_robust('scenarios', {'nominal', 'mass_0.5'})   nur einzelne Szenarien
+%   [E, S] = ext_x2_robust('controllers', {'R0k2', {'beta', 0, 'kOri', 2}})   weitere Regler (Name, Optionen)
+%   [E, S] = ext_x2_robust('agents', 'none')     nur Regler
 %
 %   Alles im kinematischen Simulator (ext_kinsim, volle Befehlskette, J6 0,9774 rad/s, Halbkreis 8,5 s, 40 Hz).
 %   Die Regler (ext_x2_controller mit Inversion der Kette) rechnen immer mit dem Nominalmodell (65 kg) und kennen
@@ -25,6 +27,7 @@ function [E, S, outFile] = ext_x2_robust(varargin)
 p = inputParser;
 p.addParameter('agents', []);
 p.addParameter('scenarios', {});
+p.addParameter('controllers', {});
 p.addParameter('save', true);
 p.parse(varargin{:});
 o = p.Results;
@@ -35,12 +38,14 @@ Knom = ext_kin_model();
 subj = struct('label', {}, 'group', {}, 'make', {});
 ctl = {'R0', {'beta', 0}; 'Rb1', {'beta', 1, 'j6_side', -1}; 'Rb21', {'beta', 21.544, 'j6_side', -1}; ...
        'Rb46', {'beta', 46.416, 'j6_side', -1}};
+ctl = [ctl; o.controllers];
 for c = 1:size(ctl, 1)
     args = [{'j6_lim', 0.9774, 'invert', true, 'K', Knom}, ctl{c, 2}];
     subj(end + 1) = struct('label', ctl{c, 1}, 'group', 'ctrl', 'make', @() ctrlRunner(args)); %#ok<AGROW>
 end
 list = o.agents;
 if isempty(list), list = defaultAgents(); end
+if ischar(list) && strcmp(list, 'none'), list = struct('file', {}, 'label', {}, 'group', {}); end
 for k = 1:numel(list)
     pol = ext_policy(list(k).file);
     subj(end + 1) = struct('label', list(k).label, 'group', list(k).group, 'make', @() pol); %#ok<AGROW>

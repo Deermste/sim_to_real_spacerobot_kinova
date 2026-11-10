@@ -66,7 +66,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X2.1 | Modellbasierter Regler (GJM, Nullraum), Machbarkeit auf dem Halbkreis | 2 Tage | < 1 h | X0.2 | ✅ 10.11. |
 | X2.2 | Modellbasierte Pareto-Front, Vergleich mit RL | 1 Tag | < 1 h | X1.3, X4.1 | ⬜ |
 | X2.3 | Robustheit gegen falsche Trägheitsparameter, RL gegen Regler | 2 Tage | 3 h | X2.1, X1.3 | 🔄 Teil 1 ✅ 10.11. |
-| X2.4 | RL mit Basismassen-Randomisierung, 10 Seeds | 1 Tag | ≈ 5–6 h | X1.3 | ⬜ |
+| X2.4 | RL mit Domain Randomization (DR-M und DR-voll), je 10 Seeds | 1 Tag | ≈ 10 h | – | 🔄 Nacht 10./11.11. |
 | X3.1 | Kinematische Free-Floating-Emulation im Deploy-Skript, Validierung in Simulation | 3 Tage | 2 h | X0.2 | ⬜ |
 | X3.2 | Labortag: Emulation an gegen aus | 1 Tag Labor + 1 Tag Auswertung | – | Labor, E5 | ⏸ |
 | X4.1 | Gewichtsreihe aus D17 auf 10 Seeds auffüllen | ½ Tag | ≈ 13 h | E3 | 🔄 läuft seit 10.11. 10:51 |
@@ -261,11 +261,21 @@ modellbasierte Regelung an ungenauen Trägheitsparametern leidet.
 - Erwartung offen. Beides ist ein Befund: Der Regler dominiert auch mit Fehlern, oder RL mit Randomisierung
   verliert weniger.
 
-### X2.4 RL mit Basismassen-Randomisierung
+### X2.4 RL mit Domain Randomization
 
-- Bester Aufbau aus X1.3 (ein Budget, Vorschlag 0,04 rad) mit Basismasse × N(1; 0,35), begrenzt auf ≥ 0,25, neu
-  gezogen alle 75 Episoden. Falls `p_base_mass` nicht abstimmbar ist, wie bei CDR in Teilblöcken mit neuer
-  Kompilierung. Seeds 0–9, 3000 Episoden, etwa 5–6 h.
+Geändert am 10.11.2026 (Nutzer): beide Varianten, Reward r4 mit Gewicht 2 wie die 20 Bestandsagenten, damit die
+Randomisierung der einzige Unterschied ist. Nicht mehr auf X1.3 warten. Eine Variante mit Nebenbedingung kann folgen.
+- DR-M: Basismasse ×[0,25; 2] und Trägheitsfaktor ×[0,5; 2], beide log-gleichverteilt, je Episode.
+- DR-voll: dazu Verzögerung 0–2 Agentenschritte, Verstärkung [0,9; 1,1], Messrauschen 0–2-fach realistisch,
+  Startstellung J2/J4/J6 ±2°.
+- Seeds 0–9, 3000 Episoden, `ext_x2_4_train`, gestartet von `ext_x2_4_night` nach X4.1.
+- Vorher geprüft (`ext_x2_4_tunable`): Mit Fast Restart wurden Basismasse (compiletime) und Verzögerung
+  (Dialogwert) stillschweigend ignoriert. Jetzt Masse mit runtime, Verzögerung über einen Eingangsport. Modi 0, 2, 4
+  bleiben bitgleich. Kurztraining mit 16 Episoden: jede Episode passt zu genau einer gezogenen Kombination
+  (Abweichung ≤ 1e-6, nächste ≥ 0,017).
+- Fairness: Der Regler darf auf denselben Bereich eingestellt werden (β, Kp, kOri nach dem schlechtesten Fall über
+  die Trainingsverteilung). Test auf den 26 Szenarien aus X2.3, ein Teil liegt bewusst außerhalb des
+  Trainingsbereichs (Gliedmassen, Montage, Servo, Drift, feste Messfehler).
 - Ersetzt im Paper die nicht reproduzierbare CDR-Studie (ein Seed je Merkmal, Modell nicht archiviert), soweit
   die Basismasse betroffen ist.
 

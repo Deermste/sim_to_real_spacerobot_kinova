@@ -516,6 +516,36 @@ Rauschen ×1, EE-Fehler 5 mm) liegen dazwischen. Alle in `X2_robust_20261110_115
 **Noch offen in X2.3:** Agenten aus X4.1, X1.3 und X2.4 sowie der Sicherheitsfilter aus X1.4. Regler mit
 Rückführung der Basislage (kOri > 0) gegen die Drift.
 
+**Nachtrag 10.11.2026: Regler mit Rückführung der Basislage.** Gewünschte Basis-Winkelgeschwindigkeit
+w* = −kOri·e_ori statt 0 (`ext_x2_controller`, Option `kOri`).
+- Nominal (`ext_x2_sweep` mit kOri 0 / 0,5 / 1 / 2 / 5, volle Kette mit Inversion, J6 0,9774, Kp 5, 90 Läufe,
+  `X2_sweep_20261110_123011.csv`): Die Front verschiebt sich wenig. kOri 0,5 findet ohne Vorgabe der J6-Seite den
+  günstigen Zweig (5,3 mm / 21 mrad statt 7,0 mm / 59 mrad). kOri 5 mit großem β verbessert den ruhigen Rand
+  (22,6 mm / 4,6 mrad, 25,9 mm / 2,5 mrad gegen 24 mm / 6,0 mrad ohne Rückführung).
+- Robustheit (`ext_x2_robust` mit drei zusätzlichen Reglern, 1026 Episoden, `X2_robust_20261110_123757_*`):
+
+| Szenario | Rβ 1 | Rβ 1, kOri 0,5 | Rβ 46 | Rβ 46, kOri 0,5 | Rβ 46, kOri 5 |
+|---|---|---|---|---|---|
+| nominal | 5,7 / 20 | 5,4 / 20 | 12,8 / 8 | 11,9 / 9 | 22,6 / 5 |
+| Drift y −2 mrad/s | 5,3 / 27 | 3,1 / 17 | 11,0 / 23 | 10,9 / 10 | 36,2 / 5 ✗ |
+| Drift y +2 mrad/s | 6,2 / 44 | 7,4 / 43 | 14,9 / 31 | 20,8 / 25 | 56,6 / 10 ✗ |
+| Drift x 2 mrad/s | 13,1 / 26 | 13,1 / 26 | 17,4 / 19 | 16,8 / 19 | 18,7 / 18 |
+| Verzögerung +50 ms | 7,6 / 21 | 7,4 / 19 | 13,4 / 8 | 14,7 / 10 | 40,9 / 7 ✗ |
+| Servo τ 50 ms | 7,9 / 21 | 7,6 / 18 | 13,6 / 8 | 16,2 / 10 | 40,4 / 7 ✗ |
+| Rauschen ×1 | 5,7 / 20 | 6,6 / 18 | 12,4 / 9 | 12,1 / 10 | 41,3 / 7 ✗ |
+
+  RMS [mm] / größte Basisdrehung [mrad], ✗ = in mindestens einer Wiederholung nicht gefolgt.
+- Mit kOri 0,5 sind bei der Gegendrift alle 20 Agenten dominiert (vorher 5 nicht dominiert). Nur bei Montage
+  z +5 cm bleibt ein Agent nicht dominiert.
+- Mit kOri 5 folgt der Regler in 15 von 26 Szenarien nicht in jeder Wiederholung. Betroffen sind Verzögerung
+  50 ms, Servo τ 50 ms, beide Rauschstufen, beide Messfehler, Startstellung, Drift um y in beide Richtungen,
+  Basismasse ×1,5 und ×2, Trägheit ×2 und die drei Montagefehler. Ein scharf eingestellter Regler erreicht nominal die ruhigste Basis, ist aber brüchig. Die
+  Robustheit des modellbasierten Reglers hängt also an einer zurückhaltenden Einstellung. Das ist der Punkt, an dem
+  ein randomisiert trainierter Agent einen Vorteil haben könnte (X2.4).
+- Die Drift um x kann keiner der Regler ausgleichen, weil die drei Gelenke nur in der Ebene wirken.
+
+**Noch offen in X2.3:** Agenten aus X4.1, X1.3 und X2.4 sowie der Sicherheitsfilter aus X1.4.
+
 Datenquelle: `X2_robust_20261110_115447_episodes.csv`, `_summary.csv`, `.mat`.
 
 Paper: neue Vergleichsbasis (Robustheit), Einleitung (Aussage zu Trägheitsparametern). Offen.

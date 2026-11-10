@@ -12,7 +12,8 @@ function T = ext_x2_sweep(varargin)
 %   (betas) und der Vorrang-Modus. Die volle Kette ohne Inversion nur mit R0 und j6_side 0.
 %   Pareto-Markierung je Variante, J6-Grenze: kein anderer Punkt mit kleinerem RMS und kleinerer Basisdrehung.
 %   Optionen: betas [0 logspace(-1, 4, 16)], Kp [5 10], j6 [0.1 0.9774], variants {'sat', 'full_inv', 'full'},
-%   sides [0 -1 1], save true. Ergebnis: data/simulation/extension/X2_sweep_<Zeit>.csv
+%   sides [0 -1 1], kOri 0 (Rueckfuehrung der Basislage, Liste moeglich), save true.
+%   Ergebnis: data/simulation/extension/X2_sweep_<Zeit>.csv
 
 p = inputParser;
 p.addParameter('betas', [0 logspace(-1, 4, 16)]);
@@ -20,6 +21,7 @@ p.addParameter('Kp', [5 10]);
 p.addParameter('j6', [0.1 0.9774]);
 p.addParameter('variants', {'sat', 'full_inv', 'full'});
 p.addParameter('sides', [0 -1 1]);
+p.addParameter('kOri', 0);
 p.addParameter('save', true);
 p.parse(varargin{:});
 o = p.Results;
@@ -36,23 +38,27 @@ for v = o.variants
             sides = o.sides;
             if strcmp(v{1}, 'full'), sides = 0; end
             for side = sides
-                ctl = [num2cell(o.betas(:)), repmat({'weighted'}, numel(o.betas), 1)];
-                ctl(end + 1, :) = {NaN, 'priority'}; %#ok<AGROW>
-                if strcmp(v{1}, 'full'), ctl = {0, 'weighted'}; end
-                for c = 1:size(ctl, 1)
-                    beta = ctl{c, 1}; mode = ctl{c, 2};
-                    args = {'j6_lim', j6, 'Kp', kp, 'invert', inv, 'mode', mode, 'K', K, 'j6_side', side};
-                    if strcmp(mode, 'weighted'), args = [args, {'beta', beta}]; end %#ok<AGROW>
-                    ctrl = ext_x2_controller(args{:});
-                    r = ext_kinsim([], 'ctrl', ctrl, 'j6_lim', j6, 'chain', chain, 'K', K);
-                    m = r.metrics;
-                    jt = r.ts.a_scaled(:, [2 4 6]);
-                    jerk = sqrt(mean(sum((diff(jt, 2) / 0.025^2) .^ 2, 2)));
-                    rows{end + 1} = struct('variant', string(v{1}), 'j6_lim', j6, 'Kp', kp, 'j6_side', side, ...
-                        'mode', string(mode), 'beta', beta, 'rms_ee', m.rms_ee, 'ep_q4', m.ep_q4, ...
-                        'max_ee', m.max_ee, 'ori_max', m.ori_max, 'w_max', m.w_max, 'jerk_rms', jerk, ...
-                        'q6_min', min(r.ts.q(:, 6)), 'q6_max', max(r.ts.q(:, 6)), ...
-                        'early_stop', double(m.early_stop)); %#ok<AGROW>
+                for ko = o.kOri
+                    ctl = [num2cell(o.betas(:)), repmat({'weighted'}, numel(o.betas), 1)];
+                    ctl(end + 1, :) = {NaN, 'priority'}; %#ok<AGROW>
+                    if strcmp(v{1}, 'full'), ctl = {0, 'weighted'}; end
+                    for c = 1:size(ctl, 1)
+                        beta = ctl{c, 1}; mode = ctl{c, 2};
+                        args = {'j6_lim', j6, 'Kp', kp, 'invert', inv, 'mode', mode, 'K', K, 'j6_side', side, ...
+                                'kOri', ko};
+                        if strcmp(mode, 'weighted'), args = [args, {'beta', beta}]; end %#ok<AGROW>
+                        ctrl = ext_x2_controller(args{:});
+                        r = ext_kinsim([], 'ctrl', ctrl, 'j6_lim', j6, 'chain', chain, 'K', K);
+                        m = r.metrics;
+                        jt = r.ts.a_scaled(:, [2 4 6]);
+                        jerk = sqrt(mean(sum((diff(jt, 2) / 0.025^2) .^ 2, 2)));
+                        rows{end + 1} = struct('variant', string(v{1}), 'j6_lim', j6, 'Kp', kp, 'j6_side', side, ...
+                            'kOri', ko, ...
+                            'mode', string(mode), 'beta', beta, 'rms_ee', m.rms_ee, 'ep_q4', m.ep_q4, ...
+                            'max_ee', m.max_ee, 'ori_max', m.ori_max, 'w_max', m.w_max, 'jerk_rms', jerk, ...
+                            'q6_min', min(r.ts.q(:, 6)), 'q6_max', max(r.ts.q(:, 6)), ...
+                            'early_stop', double(m.early_stop)); %#ok<AGROW>
+                    end
                 end
             end
         end
