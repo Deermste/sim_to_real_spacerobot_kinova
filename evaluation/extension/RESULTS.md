@@ -329,7 +329,44 @@ Paper: Sec. I und II (verwandte Arbeiten), Sec. zu X1, X2, X3. Offen, Übertragu
 
 ## X1 Nebenbedingung
 
-Noch offen.
+### X1.1 Umsetzung ✅ 10.11.2026 (Neubau von SK_desktop offen)
+
+**Umsetzung:**
+- Reward-Modus 5 in `desktop_build_model` und `ext_reward`: Reward wie Modus 1 (nur Tracking, kein Abbruch bei
+  ori > 1 rad) minus λ·c_t. Parameter `p_lambda`, `p_theta`, `p_cost_type`. Kosten c_t in allen Modi berechnet und
+  als Signal `cost` geloggt, in Abbruchschritten 0. Kandidat A: c_t = 1 wenn |ori_t| > θ. Kandidat B:
+  c_t = max(0, |ori_t| − θ)/θ.
+- `ext_x1_train(theta, seed, ...)`: Aufbau wie D16/D17 (`base_sync`, J6 0,9774 rad/s), Training in Blöcken. Nach
+  jedem Block C = Mittel der Episodenkosten aus `SimulationInfo` (Explorations-Policy des Trainings), dann
+  λ ← min(max(λ + η(C − δ), 0), 20). Protokoll je Block `<Name>_dual.csv`, je Episode `<Name>_train.csv`.
+- `SimulationInfo` ist ein `rl.storage.SimulationStorage`: `numel` ergibt 1, die Anzahl steht in
+  `NumSimulations`, `si(i)` liefert die Episode i.
+- Standardwerte λ = 0, θ = 0,03, Kosten 1 in `desktop_config`, `desktop_run_episode` und allen Trainingsskripten.
+  `desktop_run_episode` akzeptiert jetzt jede Modellkopie mit Namen `SK_*`.
+- `ext_kinsim` reicht λ, θ und Kostentyp durch und gibt `cost_mean` und `ts.cost` aus.
+
+**Prüfung** (`ext_x1_check` auf der Kopie `SK_x1test`, weil X4.1 SK_desktop benutzt):
+
+| Stufe | Prüfung | Ergebnis |
+|---|---|---|
+| 1 | Modi 0, 2, 4 gegen die Basislinie aus X0.1 (5 Fälle) | bitgleich |
+| 2 | Modus 5 mit λ = 0 gegen Modus 1, D16 r4 s2 | bitgleich |
+| 2 | Modus 5, λ = 3, θ = 0,01: Return = Return(Modus 1) − λ·Σc, Kosten A und B | Abweichung 0 |
+| 2 | Reward und Kosten des Modells gegen `ext_reward` mit den geloggten Signalen | Abweichung 0 |
+| 3 | `ext_x1_train`, 2 Blöcke × 16 Episoden, λ0 = 5, 4 Worker: Kosten in allen 32 Episoden | ja |
+| 3 | Episodenreward gegen Nachrechnung mit dem λ des Blocks (λ wirkt bei den Workern) | ≤ 1,4e-12 |
+| – | `ext_kinsim` Modus 4 gegen die X0.2-Validierung | gleich |
+| – | `ext_kinsim` Modus 5 gegen Simscape (θ = 0,01): Kosten A, Kosten B | gleich, 5e-6 |
+
+Kurztest: Block 1 mit 16 Episoden dauert 1,1 min (mit Kompilieren), Block 2 0,4 min (4 Worker, neben X4.1).
+
+**Nebenbefund:** Die erste Simulation in einer frischen MATLAB-Sitzung weicht um etwa 2e-7 (Return 4e-7) von allen
+folgenden ab, auch im selben Modus. Das betrifft nur Bitvergleiche. Die Basislinie von X0.1 entstand genauso (erster
+Fall zuerst), deshalb bleibt sie bitgleich. Für eigene Bitvergleiche einen Aufwärmlauf voranstellen.
+
+Datenquelle: Kurztest unter `data/simulation/desktop/_test/X1_ppo_40hz_r5_c1_th30_eta2_seed0_ep32_test.*`.
+
+Paper: Sec. Methode (Nebenbedingung), offen.
 
 ## X2 Modellbasierte Vergleichsbasis
 
@@ -341,7 +378,11 @@ Noch offen.
 
 ## X4 Belastbarkeit
 
-Noch offen.
+### X4.1 Gewichtsreihe auf 10 Seeds (läuft)
+
+Gestartet am 10.11.2026 um 10:51 mit `ext_x4_1_run()` als eigener MATLAB-Prozess (Log `X4_1_matlab.log`). 30 Läufe,
+Gewichte 0, 2, 4, 8, 16, neue Seeds 3–9 (Gewicht 2: 8–9), je 3000 Episoden. Danach automatisch `ext_x4_1_eval`.
+Kurztest vorher bestanden (2 × 16 Episoden, Auswertung der 20 vorhandenen Agenten in 4,7 min).
 
 ## X5 3D
 

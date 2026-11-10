@@ -59,7 +59,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X0.1 | Einheitliches Auswerteprotokoll und Statistik-Skript | 1 Tag | 1 h | Entscheidung E1 | ✅ 10.11. |
 | X0.2 | Kinematischer Closed-Loop-Simulator (Policy, Befehlskette, GJM), gegen Simscape validiert | 2–3 Tage | 1 h | – | ✅ 10.11. |
 | X0.3 | Literaturprüfung für X2 und X3 (Neuheit, Zitate) | ½–1 Tag | – | – | ✅ 10.11. |
-| X1.1 | Lagrange-PPO umsetzen (Kostensignal, duale Aktualisierung, Logging) | 2 Tage | 1 h | – | ⬜ |
+| X1.1 | Lagrange-PPO umsetzen (Kostensignal, duale Aktualisierung, Logging) | 2 Tage | 1 h | – | 🔄 Code ✅ 10.11., Neubau SK_desktop offen |
 | X1.2 | Pilot: Kostenform und Schrittweite | ½ Tag | ≈ 4 h | E2 | ⬜ |
 | X1.3 | Hauptlauf: 5 Budgets × 10 Seeds, dazu r1 × 10 Seeds | 1 Tag | ≈ 25–30 h | E2 | ⬜ |
 | X1.4 | Sicherheitsfilter (CBF auf die Basisdrehung) auf r1-Agenten | 2 Tage | 2 h | X0.2 | ⬜ |
@@ -69,7 +69,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X2.4 | RL mit Basismassen-Randomisierung, 10 Seeds | 1 Tag | ≈ 5–6 h | X1.3 | ⬜ |
 | X3.1 | Kinematische Free-Floating-Emulation im Deploy-Skript, Validierung in Simulation | 3 Tage | 2 h | X0.2 | ⬜ |
 | X3.2 | Labortag: Emulation an gegen aus | 1 Tag Labor + 1 Tag Auswertung | – | Labor, E5 | ⏸ |
-| X4.1 | Gewichtsreihe aus D17 auf 10 Seeds auffüllen | ½ Tag | ≈ 10 h | E3 | ⬜ |
+| X4.1 | Gewichtsreihe aus D17 auf 10 Seeds auffüllen | ½ Tag | ≈ 13 h | E3 | 🔄 läuft seit 10.11. 10:51 |
 | X4.2 | Alle Bestandsagenten mit dem Protokoll X0.1 neu auswerten | ½ Tag | 2 h | X0.1 | ⬜ |
 | X4.3 | Ratenpaar D10 auf 10 Seeds (optional) | ½ Tag | ≈ 3 h | E6 | ⏸ |
 | X4.4 | Entscheidung, was aus dem Paper fliegt oder in den Anhang geht | ½ Tag | – | Betreuer | ⏸ |
@@ -166,6 +166,10 @@ das Reward-Gewicht es nicht tut (D17)?
   ≤ 22 mm Bahnfehler (obere Schranke).
 
 ### X1.1 Umsetzung
+
+Stand 10.11.: Code und Kurztest fertig (`ext_x1_train`, `ext_x1_check`, Ergebnis in `RESULTS.md`). Offen: nach dem
+Ende von X4.1 `desktop_build_model(true)`, dann `ext_x0_check_model('compare')` und `SK_x1test.slx` löschen.
+SK_desktop darf während eines Trainings nicht neu gebaut werden, jeder Lauf lädt es von der Platte.
 
 - **Reward:** neuer Modus 5 in `desktop_build_model.m`: r1 (nur Tracking, keine Basis-Terme) minus λ·c_t. Die Basis
   wirkt dann nur über die Nebenbedingung. Neue Modellparameter `p_lambda`, `p_theta`, `p_cost_type`.
@@ -313,9 +317,10 @@ ist kleiner als damals gedacht, weil die Rechnung schon existiert.
 ### X4.1 Gewichtsreihe auf 10 Seeds
 
 D17 hat Gewicht 0, 4, 8, 16 mit drei Seeds und Gewicht 2 mit acht. Für den Vergleich mit X1 auf 10 Seeds auffüllen.
-Vorschlag (E3): Gewichte 0, 2, 8, 16. Dann 7 + 2 + 7 + 7 = 23 Läufe, etwa 10 h. Gewicht 4 dazu wären 7 weitere,
-etwa 3 h. Aufruf über `desktop_d12_train(4, s, 3000, '', 'base_sync', 0.9774, w)` mit neuen Seeds. Gleicher Aufbau
-wie D17, deshalb mit den D17-Agenten zusammen auswertbar.
+Entscheidung E3 (10.11.): Gewichte 0, 2, 4, 8, 16, also 7 + 2 + 7 + 7 + 7 = 30 Läufe, etwa 13 h. Skripte
+`ext_x4_1_run` (überspringt vorhandene Agenten, Protokoll `X4_1_runlog.csv`) und `ext_x4_1_eval`. Aufruf über
+`desktop_d12_train(4, s, 3000, '', 'base_sync', 0.9774, w)` mit neuen Seeds. Gleicher Aufbau wie D17, deshalb mit
+den D17-Agenten zusammen auswertbar.
 
 ### X4.2 Bestandsagenten neu auswerten
 
@@ -380,7 +385,7 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
 - **E1** ✅ 10.11.2026: Protokoll wie in X0.1 vorgeschlagen, aber Startstörung ±2° statt ±1° (±1° trennte die
   Agenten kaum). Budget-Toleranz bleibt 0,005 rad. Umgesetzt in `ext_eval_agent` und `ext_stats`.
 - **E2** Kostenform, Schrittweite und Blockgröße der Lagrange-Variante (nach dem Pilot X1.2).
-- **E3** Gewichte der aufgefüllten Reihe (0, 2, 8, 16 oder zusätzlich 4).
+- **E3** ✅ 10.11.2026: Gewichte 0, 2, 4, 8, 16 (mit 4). 30 Läufe.
 - **E4** X5 Go/No-Go nach dem Pilot.
 - **E5** Agenten für den Labortag X3.2.
 - **E6** Ratenpaar auf 10 Seeds ja oder nein.

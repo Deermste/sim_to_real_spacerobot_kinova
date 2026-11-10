@@ -21,7 +21,8 @@ function res = ext_kinsim(policy, varargin)
 %     Reward wie rewardCode (ext_reward) mit Rohaktion und vorheriger Rohaktion, Abbruch bei isDone.
 %
 %   Optionen (Standard wie desktop_config): Ts 0,005, Ts_agent 0,025, T 8,5, r 0,2, center, j6_lim 0,1,
-%   slew 0,5, cmd_scale 1, delay_steps 0, reward_mode 0, base_w 2, q0 zeros(7,1), tau 0,02,
+%   slew 0,5, cmd_scale 1, delay_steps 0, reward_mode 0, base_w 2, lambda 0, theta 0,03, cost_type 1 (X1),
+%   q0 zeros(7,1), tau 0,02,
 %   K (ext_kin_model, Standard nominal mit base_mass), base_mass 65 (nur wenn K fehlt),
 %   cmdHook @(cmd, S) -> cmd: Eingriff nach der Befehlskette, vor der Verzoegerung (fuer den Filter in X1.4).
 %     S hat die Felder t, q, dq, G, Je, quat, ori (Drehvektor).
@@ -47,6 +48,9 @@ p.addParameter('cmd_scale', 1);
 p.addParameter('delay_steps', 0);
 p.addParameter('reward_mode', 0);
 p.addParameter('base_w', 2);
+p.addParameter('lambda', 0);
+p.addParameter('theta', 0.03);
+p.addParameter('cost_type', 1);
 p.addParameter('q0', zeros(7, 1));
 p.addParameter('tau', 0.02);
 p.addParameter('K', []);
@@ -107,7 +111,7 @@ keep = o.keepTs;
 if keep
     qS = nan(nS + 1, 7); dqS = nan(nS + 1, 7); qcS = nan(nS + 1, 7);
 end
-obsA = nan(N + 1, 29); aRaw = nan(N + 1, 7); aScl = nan(N + 1, 7); rew = nan(N + 1, 1);
+obsA = nan(N + 1, 29); aRaw = nan(N + 1, 7); aScl = nan(N + 1, 7); rew = nan(N + 1, 1); cst = nan(N + 1, 1);
 
 q = Z(1, :).'; dq = Z(2, :).';
 [G, pe, Je] = ext_kin_eval(K, q);
@@ -136,7 +140,8 @@ for k = 0:N
         a = dBuf(:, 1);
         dBuf(:, 1) = [];
     end
-    [r, isd] = ext_reward(obs(1:3), obs(4:6), a, aPrev, obs(10:12), obs(27:29), o.reward_mode, o.base_w);
+    [r, isd, c] = ext_reward(obs(1:3), obs(4:6), a, aPrev, obs(10:12), obs(27:29), o.reward_mode, o.base_w, ...
+                             o.lambda, o.theta, o.cost_type);
     aPrev = a;
     % --- Befehlskette (Agententakt) ---
     sat = min(max(a, -lim), lim);
@@ -147,7 +152,7 @@ for k = 0:N
         S = struct('t', k * o.Ts_agent, 'q', q, 'dq', dq, 'G', G, 'Je', Je, 'quat', quat, 'ori', eo);
         cmd = o.cmdHook(cmd, S);
     end
-    obsA(k + 1, :) = obs.'; aRaw(k + 1, :) = a.'; aScl(k + 1, :) = cmd.'; rew(k + 1) = r;
+    obsA(k + 1, :) = obs.'; aRaw(k + 1, :) = a.'; aScl(k + 1, :) = cmd.'; rew(k + 1) = r; cst(k + 1) = c;
     if isd
         done = true; kEnd = k; nEnd = n;
         stopReason = stopOf(obs);
@@ -189,6 +194,7 @@ mtr.ori_max = max(oriS(idx));
 mtr.w_mean = mean(wS(idx));
 mtr.w_max = max(wS(idx));
 mtr.ret = sum(rew(1:kEnd + 1));
+mtr.cost_mean = mean(cst(1:kEnd + 1));
 mtr.n_steps = kEnd + 1;
 mtr.t_end = kEnd * o.Ts_agent;
 mtr.early_stop = done || mtr.t_end < o.T - 0.1;
@@ -200,7 +206,7 @@ if keep
     ka = 1:kEnd + 1;
     res.ts = struct('t_ee', tt, 'ep', epS(idx, :), 'ori', oriS(idx), 'w', wS(idx), 'q', qS(idx, :), ...
         'dq', dqS(idx, :), 'q_cmd', qcS(idx, :), 't_agent', (ka(:) - 1) * o.Ts_agent, 'obs', obsA(ka, :), ...
-        'a_raw', aRaw(ka, :), 'a_scaled', aScl(ka, :), 'reward', rew(ka));
+        'a_raw', aRaw(ka, :), 'a_scaled', aScl(ka, :), 'reward', rew(ka), 'cost', cst(ka));
 end
 res.info = struct('wallTime', toc(tWall));
 

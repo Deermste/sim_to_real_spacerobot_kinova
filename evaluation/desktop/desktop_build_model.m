@@ -1,7 +1,9 @@
-function mdlFile = desktop_build_model(force)
+function mdlFile = desktop_build_model(force, dst)
 %DESKTOP_BUILD_MODEL  Erzeugt das parametrisierte Auswertemodell SK_desktop (Desktop-Plan D0).
 %   mdlFile = desktop_build_model()       baut das Modell nur, wenn es fehlt
 %   mdlFile = desktop_build_model(true)   baut es neu
+%   mdlFile = desktop_build_model(true, 'SK_x1test')   baut eine Kopie unter anderem Namen (Tests, waehrend
+%                                         SK_desktop von einem laufenden Training benutzt wird)
 %
 %   Quelle ist models/SpaceKinova_MotionProfile_CDR.slx. Es entspricht dem 40-Hz-Modell mit einem
 %   zusaetzlichen Delay-Block hinter dem Agenten (Befund A23). Die Quelle bleibt unveraendert.
@@ -23,14 +25,17 @@ function mdlFile = desktop_build_model(force)
 %     p_q0           7x1 Anfangswert des Gelenkwinkel-Integrators [rad] (Startstellung, X0.1). Standard
 %                    zeros(7,1) = gestreckte Nullstellung wie bisher. Die Gelenke folgen dem Integrator
 %                    (InputMotion), damit ist p_q0 die Startstellung des Arms
+%     p_lambda       Lagrange-Multiplikator der Nebenbedingung in Reward-Modus 5 (X1), Standard 0
+%     p_theta        Budget der Basisdrehung [rad] fuer das Kostensignal (X1), Standard 0,03
+%     p_cost_type    1 = Indikator (ori > theta), 2 = Scharnier max(0, ori - theta)/theta (X1), Standard 1
 %   Zusaetzlich geloggt: Rohaktion, gesaettigte, gefilterte, ratenbegrenzte und skalierte Aktion,
 %   Gelenkwinkel-Befehl hinter der Positionssaettigung, Beobachtung (obs) und Agenten-Eingang (obs_agent),
-%   isDone.
+%   isDone, Kostensignal der Nebenbedingung (cost, in allen Modi berechnet, wirkt nur in Modus 5).
 
 if nargin < 1, force = false; end
+if nargin < 2 || isempty(dst), dst = 'SK_desktop'; end
 
 src = 'SpaceKinova_MotionProfile_CDR';
-dst = 'SK_desktop';
 outDir = sk_path('evaluation', 'desktop', 'models');
 mdlFile = fullfile(outDir, [dst '.slx']);
 if ~isfolder(outDir), mkdir(outDir); end
@@ -69,8 +74,14 @@ rw = sfroot().find('-isa', 'Stateflow.EMChart', 'Path', rwBlk);
 rw.Script = rewardCode();
 pm = rw.find('-isa', 'Stateflow.Data', 'Name', 'p_reward_mode');
 pm.Scope = 'Parameter';
-pw = rw.find('-isa', 'Stateflow.Data', 'Name', 'p_base_w');
-pw.Scope = 'Parameter';
+for nm = {'p_base_w', 'p_lambda', 'p_theta', 'p_cost_type'}
+    pd = rw.find('-isa', 'Stateflow.Data', 'Name', nm{1});
+    pd.Scope = 'Parameter';
+end
+% Kostensignal (X1): dritter Ausgang, nur geloggt
+add_block('simulink/Sinks/Terminator', [dst '/Reward/Cost Term'], 'Position', blockPos(rwBlk, [120 60]));
+add_line([dst '/Reward'], 'MATLAB Function/3', 'Cost Term/1', 'autorouting', 'on');
+logPort(rwBlk, 3, 'cost');
 
 % --- Startstellung als Parameter (X0.1). Original: Anfangswert intern 0 ---
 set_param([dst '/Integrator'], 'InitialConditionSource', 'internal', 'InitialCondition', 'p_q0');
@@ -171,7 +182,8 @@ end
 function code = rewardCode()
 % Modus 0 ist Zeile fuer Zeile der Reward des Originalmodells (rewardFcn, gleich seit 09.04.2026).
 code = strjoin({
-'function [reward, isDone] = rewardFcn(ep, ev, dq_cmd, dq_cmd_prev, w_base, e_ori, p_reward_mode, p_base_w)'
+'function [reward, isDone, cost] = rewardFcn(ep, ev, dq_cmd, dq_cmd_prev, w_base, e_ori, p_reward_mode, ...'
+'                                            p_base_w, p_lambda, p_theta, p_cost_type)'
 '% Reward des Tracking-Trainings mit Varianten fuer D12 (Befund A51)'
 '%   p_reward_mode 0: wie im Training seit 09.04. (Basis-Strafen und Basis-Bonus)'
 '%                 1: ohne Basis-Terme, wie beim fruehen PPO (Modell im Commit 50ad2ce, ohne Abbruch bei ori > 1)'
@@ -181,7 +193,11 @@ code = strjoin({
 '%                    nicht billiger wird als Weiterfahren). Basis-Strafen wie 0'
 '%                 4: wie 2, dazu auf der Bahn (EE-Fehler < 5 cm) ein glatter Basis-Term'
 '%                    +p_base_w*exp(-(ori/0,05)^2), p_base_w = 2 in D16, variiert in D17'
+'%                 5: wie 1 (nur Tracking), dazu -p_lambda*cost (Nebenbedingung auf die Basisdrehung, X1)'
+'%   cost: Kosten der Nebenbedingung, in allen Modi berechnet. p_cost_type 1: 1 wenn ori > p_theta,'
+'%         2: max(0, ori - p_theta)/p_theta. In Abbruchschritten 0'
 'mode = p_reward_mode;'
+'cost = 0;'
 ''
 'if any(~isfinite([ep; ev; dq_cmd; dq_cmd_prev; w_base; e_ori]))'
 '    reward = -50;'
@@ -194,7 +210,7 @@ code = strjoin({
 'w_norm = norm(w_base);'
 'ori    = norm(e_ori);'
 ''
-'if dist > 0.5 || vel > 2.0 || (mode ~= 1 && ori > 1.0)'
+'if dist > 0.5 || vel > 2.0 || (mode ~= 1 && mode ~= 5 && ori > 1.0)'
 '    reward = -50;'
 '    isDone = true;'
 '    return;'
@@ -208,7 +224,13 @@ code = strjoin({
 'c_ori = min(e_ori.'' * e_ori, 0.5);'
 'c_w   = min(w_base.'' * w_base, 1.0);'
 ''
-'if mode == 1'
+'if p_cost_type == 2'
+'    cost = max(0, ori - p_theta) / p_theta;'
+'elseif ori > p_theta'
+'    cost = 1;'
+'end'
+''
+'if mode == 1 || mode == 5'
 '    reward = - 20.0 * c_pos - 2.0 * c_vel - 0.02 * c_u - 0.05 * c_du;'
 'else'
 '    reward = ...'
@@ -243,6 +265,9 @@ code = strjoin({
 '            reward = reward + 2;'
 '        end'
 '    end'
+'end'
+'if mode == 5'
+'    reward = reward - p_lambda * cost;'
 'end'
 ''
 'isDone = false;'

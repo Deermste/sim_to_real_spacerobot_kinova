@@ -18,12 +18,14 @@ function res = desktop_run_episode(cfg)
 %   res.ts       Zeitreihen (bei cfg.keepTs)
 %   res.info     Laufzeit, Versionen, Git-Stand, Pruefsummen
 
-if ~strcmp(cfg.model, 'SK_desktop') && ~bdIsLoaded(cfg.model)
+% Parametrisierte Modelle (SK_desktop und Kopien wie SK_x1test aus desktop_build_model) beginnen mit SK_
+param = startsWith(cfg.model, 'SK_');
+if ~param && ~bdIsLoaded(cfg.model)
     load_system(cfg.model);
 end
-if strcmp(cfg.model, 'SK_desktop')
-    desktop_build_model();
-    if ~bdIsLoaded('SK_desktop'), load_system('SK_desktop'); end
+if param
+    desktop_build_model(false, cfg.model);
+    if ~bdIsLoaded(cfg.model), load_system(cfg.model); end
 end
 
 % --- Agent ---
@@ -40,14 +42,15 @@ vars = struct('agent', agent, 'EE_ref', EE_ref, 'EE_vref', EE_vref, 'reward_init
     'p_Ts', cfg.Ts, 'p_Ts_agent', cfg.Ts_agent, 'p_T', cfg.T, 'p_base_mass', cfg.base_mass, ...
     'p_delay_steps', cfg.delay_steps, 'p_damp_scale', cfg.damp_scale, 'p_slew', cfg.slew, ...
     'p_cmd_scale', cfg.cmd_scale, 'p_obs_mode', cfg.obs_mode, 'p_obs_noise', obsNoise(cfg), ...
-    'p_reward_mode', cfg.reward_mode, 'p_j6_lim', cfg.j6_lim, 'p_base_w', cfg.base_w, 'p_q0', startPose(cfg));
+    'p_reward_mode', cfg.reward_mode, 'p_j6_lim', cfg.j6_lim, 'p_base_w', cfg.base_w, 'p_q0', startPose(cfg), ...
+    'p_lambda', cfg.lambda, 'p_theta', cfg.theta, 'p_cost_type', cfg.cost_type);
 fn = fieldnames(vars);
 for k = 1:numel(fn)
     assignin('base', fn{k}, vars.(fn{k}));
 end
 
 in = Simulink.SimulationInput(cfg.model);
-if ~strcmp(cfg.model, 'SK_desktop')
+if ~param
     in = in.setModelParameter('StopTime', num2str(cfg.T), 'FixedStep', num2str(cfg.Ts), ...
         'Solver', 'ode14x', 'SolverType', 'Fixed-step');
 end
@@ -244,7 +247,7 @@ ts.t_ee = ee.Time(:);
 ts.ep = ep;
 ts.t_agent = t_agent;
 ts.reward = rew.Data(:);
-names = {'a_raw', 'a_sat', 'a_filt', 'a_rl', 'a_scaled', 'obs', 'obs_agent'};
+names = {'a_raw', 'a_sat', 'a_filt', 'a_rl', 'a_scaled', 'obs', 'obs_agent', 'cost'};
 for k = 1:numel(names)
     s = getTs(logsout, names{k});
     if ~isempty(s)

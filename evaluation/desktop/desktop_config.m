@@ -33,6 +33,9 @@ function cfg = desktop_config(varargin)
 %                  Basis-Term auf der Bahn. Siehe desktop_build_model
 %     j6_lim       Saettigung von J6 [rad/s], Training 0,1 (D16 testet 0,9774 wie J2 und J4)
 %     base_w       Gewicht des glatten Basis-Terms in reward_mode 4, Standard 2 (D16), variiert in D17
+%     lambda       Lagrange-Multiplikator in reward_mode 5 (X1), Standard 0
+%     theta        Budget der Basisdrehung [rad] fuer das Kostensignal (X1), Standard 0,03
+%     cost_type    1 = Indikator, 2 = Scharnier (X1), Standard 1
 %     q0           7x1 Startstellung der Gelenke [rad], Standard zeros(7,1) (gestreckte Nullstellung).
 %                  Die Referenz beginnt weiter an der nominalen EE-Lage, eine Stoerung erzeugt also einen
 %                  Anfangsfehler (X0.1)
@@ -66,6 +69,9 @@ cfg.obs_noise   = zeros(29, 1);
 cfg.reward_mode = 0;
 cfg.j6_lim      = 0.1;
 cfg.base_w      = 2;
+cfg.lambda      = 0;
+cfg.theta       = 0.03;
+cfg.cost_type   = 1;
 cfg.q0          = zeros(7, 1);
 cfg.ref_timing  = 'wall';
 cfg.Ts_ref_step = 0.025;
