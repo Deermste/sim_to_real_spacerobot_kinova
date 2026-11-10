@@ -738,7 +738,8 @@ reaktionsarmen Lösungen liegt q7 in 43–63 % der Schritte außerhalb von ±1,2
 Kipprichtungen), q4 in bis zu 41 % und q5 in bis zu 21 % außerhalb von ±1,4 rad, q6 in bis zu 24 % außerhalb
 von ±1,22 rad. Bei R0
 sind es 21–40 % (q6 oder q7). dq bleibt fast immer innerhalb. Mit E8 wäre die Policy also gerade für die
-Gelenkstellungen blind, die der Nullraum nutzt. Entscheidung E9 in PLAN.md.
+Gelenkstellungen blind, die der Nullraum nutzt. Entscheidung E9 (10.11.): Für X5 werden die Grenzen in der
+richtigen Reihenfolge gesetzt. E10 (10.11.): Die 3D-Bahn wird um −30° gekippt.
 
 **Grenzen:** nur kinematisch und nominal, Regler mit exaktem Modell. Die Modellparameter `p_active` und
 `p_path_id` in `SK_desktop` und die Bitgleichheitsprüfung folgen nach der Nachtkette (sie baut `SK_desktop` neu).

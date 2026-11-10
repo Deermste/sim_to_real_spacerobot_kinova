@@ -371,7 +371,7 @@ Mit allen 7 Gelenken bleibt bei 3D-Position und Basisdrehung um drei Achsen ein 
 - Stand 10.11.2026: Machbarkeit im kinematischen Simulator erledigt (`ext_x5_1_feasibility`, RESULTS.md X5.1).
   Bahn `ext_ref_path` 'tilted', Gelenkgrenzen als Option `lim` in `ext_kinsim` und `ext_x2_controller`. Offen:
   `p_active`/`p_path_id` in `desktop_build_model` mit Bitgleichheitsprüfung. Erst nach der Nachtkette vom
-  10./11.11., weil diese `SK_desktop` neu baut und prüft. Vorher E9 entscheiden.
+  10./11.11., weil diese `SK_desktop` neu baut und prüft. E9 und E10 entschieden (−30°, Grenzen korrigiert).
 
 ### X5.2 Pilot und Go/No-Go
 
@@ -403,13 +403,13 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
 - **E4** X5 Go/No-Go nach dem Pilot.
 - **E5** Agenten für den Labortag X3.2.
 - **E6** Ratenpaar auf 10 Seeds ja oder nein.
-- **E8** ✅ 10.11.2026 (Befund A72): Beobachtungsgrenzen für neue Trainings (X1, X2.4, X4.1, X5) belassen, damit
+- **E8** ✅ 10.11.2026 (Befund A72): Beobachtungsgrenzen für neue Trainings (X1, X2.4, X4.1, X5) belassen (für X5 durch E9 ersetzt), damit
   alle Agenten vergleichbar bleiben. Im Paper als Eigenschaft des Aufbaus nennen.
-- **E9** Beobachtungsgrenzen für X5 (A72): Die reaktionsarmen 3D-Lösungen des Reglers liegen bei q7 in 43–63 %
+- **E9** ✅ 10.11.2026: Für X5 die Beobachtungsgrenzen in der richtigen Reihenfolge setzen. Begründung (A72): Die reaktionsarmen 3D-Lösungen des Reglers liegen bei q7 in 43–63 %
   der Schritte außerhalb von ±1,22 rad, dazu q4, q5 (±1,4) und q6 (±1,22) zeitweise. Mit E8 wäre die Policy dort
-  blind. Vorschlag: Für X5 die Grenzen in der richtigen Reihenfolge setzen. X5 ist eine neue Aufgabe, der
-  Vergleich läuft gegen den Regler, nicht gegen die ebenen Agenten.
-- **E10** Kipprichtung der 3D-Bahn: −30° (Nullraum senkt die Basisdrehung des Reglers von 124 auf 10 mrad bei
-  2 mm) oder +30° (nur von 14 auf 11 mrad). Vorschlag: −30°, dort hat die Frage aus X5 Gewicht.
+  blind. X5 ist eine neue Aufgabe, der Vergleich läuft gegen den Regler, nicht gegen die ebenen Agenten. E8 gilt
+  damit für X1, X2.4 und X4.1, nicht für X5.
+- **E10** ✅ 10.11.2026: Kipprichtung der 3D-Bahn −30° (Nullraum senkt die Basisdrehung des Reglers von 124 auf 10 mrad bei
+  2 mm), nicht +30° (nur von 14 auf 11 mrad). Dort hat die Frage aus X5 Gewicht.
 - **E7** Mit dem Betreuer: neue Geschichte, Zielkonferenz, was nach X4.4 aus dem Paper fliegt, ob die
   Schnittstellendiagnose ein Abschnitt bleibt oder ein eigenes kurzes Paper wird.
