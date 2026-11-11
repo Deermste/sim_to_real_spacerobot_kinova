@@ -43,7 +43,8 @@ X4.1: Mit 10 Seeds je Gewicht bleibt K2 bestehen, kein Gewicht verschiebt die Ba
 steigt mit dem Gewicht. X2.4: Randomisierte Agenten verlieren bei falscher Basismasse kaum noch Bahn, bleiben aber
 hinter den Reglern (K8). X1.2: Die Indikator-Kosten sind besser als das Scharnier. Zwei von acht Pilot-Agenten
 halten 0,03 rad bei etwa 14 mm, ruhiger und genauer als alle ruhigen r4-Agenten. λ schwingt aber in 3000 Episoden
-nicht ein (E2 offen).
+nicht ein (E2 offen). X4.2: Alle 95 Bestandsagenten sind nach X0.1 ausgewertet. K1 hält über Takt, J6-Grenze und
+Verfahren hinweg. D13 (NaN-Actoren) gehört nicht in die Zahlen des Papers.
 
 ## Ausgangslage (aus dem alten Desktop-Plan und dem Paper, Stand 10.11.2026)
 
@@ -877,7 +878,7 @@ Datenquelle: `X_eval_X4_1_20261110_233147_agents.csv`, `_episodes.csv`, `.mat`, 
 Paper: Abschnitt Zielkonflikt (bisher D17 mit drei Seeds), Abbildung RMS gegen Basisdrehung mit X1.3 und der
 Front aus X2.2. Offen.
 
-### X4.2 Bestandsagenten nach Protokoll X0.1 (vorbereitet, läuft in der Nacht 10./11.11.)
+### X4.2 Bestandsagenten nach Protokoll X0.1 ✅ 11.11.2026
 
 **Aufbau:** `ext_x4_2_run()` mit der Liste aus `ext_x4_2_list()`. 93 Agenten: frühes PPO und basisori,
 Optimized, ppo_10hz, CDR1-4 und CDR2-4, D10 (7, Ratenpaar), D11 (30, sechs Algorithmen × 5 Seeds), D12 (7),
@@ -889,8 +890,67 @@ enthalten `agent`.
 **Rauchtest** (3 Agenten, nur nominal, seriell): frühes PPO 1698,9196 und Optimized 1593,0836, gleich der
 Basislinie aus X0.1. Testdateien gelöscht.
 
-**Ablauf:** Schritt 5 der Nachtkette nach X1.2, 8 Worker, etwa 1953 Episoden, etwa 30 min. Nicht parallel zu
-X4.1 gestartet, weil X4.1 etwa 14 GB belegt und nur 6,5 GB frei waren.
+**Ablauf:** Schritt 5 der Nachtkette nach X1.2, 8 Worker. Nicht parallel zu X4.1 gestartet, weil X4.1 etwa
+14 GB belegt und nur 6,5 GB frei waren. Gelaufen am 11.11. ab 14:32: 95 Agenten (D16 inzwischen mit den Seeds 8
+und 9 aus X4.1), 1995 Episoden in 14,5 min. Zusammenfassung nach Untergruppen mit
+`ext_x4_2_report('20261111_144608')`.
+
+**Ergebnis** (Median über die Agenten einer Untergruppe, RMS [mm], ori_max [mrad], ep_q4 [mm] nur aus Episoden
+ohne Abbruch, „folgt“ wie X0.1, „Abbruch“ = Agenten, bei denen alle 21 Episoden abbrechen):
+
+| Untergruppe | Modus | J6 | n | folgt | Abbruch | RMS | ori_max | ep_q4 |
+|---|---|---|---|---|---|---|---|---|
+| frühes PPO | 0* | 0,1 | 1 | 1 | 0 | 13,5 | 56 | 9,6 |
+| frühes PPO basisori | 0 | 0,1 | 1 | 0 | 0 | 65,1 | 10 | 118 |
+| Optimized | 0 | 0,1 | 1 | 0 | 0 | 61,0 | 18 | 113 |
+| ppo_10hz | 0 | 0,1 | 1 | 0 | 0 | 67,3 | 15 | 124 |
+| CDR1-4, CDR2-4 | 0 | 0,1 | 2 | 0 | 0 | 81,3 | 13 | 149 |
+| D10 10 Hz | 0 | 0,1 | 4 | 0 | 0 | 67,3 | 18 | 118 |
+| D10 40 Hz | 0 | 0,1 | 3 | 0 | 0 | 62,2 | 24 | 117 |
+| D11 PPO | 0 | 0,1 | 5 | 0 | 1 | 70,5 | 24 | 117 |
+| D11 TRPO | 0 | 0,1 | 5 | 0 | 0 | 73,5 | 14 | 135 |
+| D11 SAC | 0 | 0,1 | 5 | 0 | 0 | 309 | 30 | 409 |
+| D11 DDPG, TD3, PG | 0 | 0,1 | 15 | 0 | 15 | 220–264 | 129–135 | – |
+| D12 r1 / r2 / r3 | 1 / 2 / 3 | 0,1 | 1 / 3 / 3 | 0 / 1 / 0 | 1 / 0 / 3 | 141 / 28,1 / 153 | 179 / 57 / 31 | – / 46 / – |
+| D13 (alle Modi) | 0–2 | 0,1 | 9 | 0 | 8 | – | – | – |
+| D14 r0 | 0 | 0,1 | 3 | 0 | 0 | 72,5 | 22 | 130 |
+| D14 r1 | 1 | 0,1 | 3 | 3 | 0 | 12,1 | 80 | 11,0 |
+| D14 r2 | 2 | 0,1 | 3 | 3 | 0 | 16,9 | 79 | 16,9 |
+| D16 r0 | 0 | 0,9774 | 3 | 0 | 0 | 76,7 | 17 | 141 |
+| D16 r2 | 2 | 0,9774 | 3 | 3 | 0 | 12,9 | 67 | 10,7 |
+| D16 r4, 1000 Episoden | 4 | 0,9774 | 3 | 2 | 0 | 14,6 | 27 | 15,1 |
+| D16 r4, 3000 Episoden | 4 | 0,9774 | 10 | 10 | 0 | 13,9 | 52 | 14,7 |
+| D20 (Endagenten) | 4 | 0,9774 | 8 | 8 | 0 | 13,5 | 53 | 10,3 |
+
+\* Das frühe PPO wurde ohne Basis-Terme trainiert (A62), ausgewertet unter Modus 0.
+
+**Deutung:**
+- K1 hält unter dem einheitlichen Protokoll. Alle 27 Agenten mit dem alten Basis-Bonus, die durchlaufen und in
+  der Nähe der Bahn bleiben (basisori, Optimized, ppo_10hz, CDR, D10, D11 PPO und TRPO, D14 r0, D16 r0), verlieren
+  die Bahn im letzten Viertel (Mediane der Untergruppen 113–149 mm) und drehen die Basis wenig (Mediane
+  10–24 mrad). Der Einbruch hängt nicht vom Takt (D10), von der J6-Grenze (D14 gegen D16) oder vom Verfahren (D11)
+  ab.
+- Ohne den Bonus neben der Bahn folgen alle 20 Agenten aus frühem PPO, D14 r1/r2, D16 r2 und D16 r4 mit 3000
+  Episoden, dazu alle 8 D20-Agenten. Mediane der Basisdrehung: 79–80 mrad mit J6 0,1 (D14), 52–67 mrad mit
+  J6 0,9774 (D16, D20). Das frühe PPO liegt trotz J6 0,1 bei 56 mrad. Keine Untergruppe liegt unter den etwa
+  55 mrad, die K3 für J6 0,1 nennt.
+- D11: Nur PPO und TRPO bleiben in der Nähe der Bahn (9 von 10 ohne Abbruch, PPO Seed 0 bricht ab), wie im Paper
+  (Table II). SAC bricht nicht ab, bleibt aber 0,3–0,4 m neben der Bahn. DDPG, TD3 und PG brechen in allen
+  Episoden ab (EE-Fehler > 0,5 m).
+- D13: Sechs Actoren bestehen nur aus NaN (bekannt aus D13). Diese Episoden enden im ersten Schritt, ihre
+  Kennzahlen (16,3 mm, 0 mrad) sind bedeutungslos. Zwei weitere brechen nach wenigen Sekunden ab, einer läuft
+  durch und verliert die Bahn (ep_q4 0,27 m). D13 gehört nicht in die Zahlen des Papers.
+- D12 (asynchron, ohne Gradient Clipping): r1 Seed 0 und alle r3 brechen ab, von r2 folgt einer (D12_r2 Seed 1,
+  24,2 mm / 83 mrad).
+- D16 r4 kurz (1000 Episoden): Seed 0 folgt nicht (64 mm / 21 mrad), Seed 2 ist der ruhige Agent des
+  Labortags (12,9 mm / 27 mrad).
+
+**Grenzen:** ep_q4 fehlt für abgebrochene Episoden. „Folgt“ ist dort 0, der Median steht dann als –. Die Zahlen
+ersetzen die Simulationswerte im Paper erst in Phase P. Der Abgleich Zahl für Zahl mit `paper_numbers.md` gehört
+dorthin.
+
+Datenquelle: `X_eval_X4_2_20261111_144608_agents.csv`, `_episodes.csv`, `.mat`, `X4_2_groups_20261111_144609.csv`,
+`X4_2_report_20261111_144608.csv`, `X4_2_inventory.csv`.
 
 Paper: alle Simulationszahlen der Bestandsagenten (Tabellen und Text zu D10 bis D16). Offen.
 

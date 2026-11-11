@@ -71,7 +71,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X3.1 | Kinematische Free-Floating-Emulation im Deploy-Skript, Validierung in Simulation | 3 Tage | 2 h | X0.2 | ✅ 10.11. (Vorhersage offen) |
 | X3.2 | Labortag: Emulation an gegen aus | 1 Tag Labor + 1 Tag Auswertung | – | Labor, E5 | ⏸ |
 | X4.1 | Gewichtsreihe aus D17 auf 10 Seeds auffüllen | ½ Tag | ≈ 13 h | E3 | ✅ 11.11. |
-| X4.2 | Alle Bestandsagenten mit dem Protokoll X0.1 neu auswerten | ½ Tag | 2 h | X0.1 | 🔄 Nachtkette Schritt 5 |
+| X4.2 | Alle Bestandsagenten mit dem Protokoll X0.1 neu auswerten | ½ Tag | 2 h | X0.1 | ✅ 11.11. |
 | X4.3 | Ratenpaar D10 auf 10 Seeds (optional) | ½ Tag | ≈ 3 h | E6 | ⏸ |
 | X4.4 | Entscheidung, was aus dem Paper fliegt oder in den Anhang geht | ½ Tag | – | Betreuer | ⏸ |
 | X4.5 | Sensitivität der eigenen Schwellen („folgt“, Budget-Toleranz, „ruhig“), ohne Training | ½ Tag | < 10 min | X4.1, X2.4 | ⬜ |
