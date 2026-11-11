@@ -61,8 +61,8 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X0.3 | Literaturprüfung für X2 und X3 (Neuheit, Zitate) | ½–1 Tag | – | – | ✅ 10.11. |
 | X1.1 | Lagrange-PPO umsetzen (Kostensignal, duale Aktualisierung, Logging) | 2 Tage | 1 h | – | 🔄 Code ✅ 10.11., Neubau SK_desktop offen |
 | X1.2 | Pilot: Kostenform und Schrittweite | ½ Tag | ≈ 4 h | E2 | ✅ 11.11. |
-| X1.2b | Zweiter Pilot: schnellere duale Anpassung (Blöcke 50, η 5 gegen PID-Lagrange), Kosten A, 2 Seeds | ½ Tag | ≈ 2 h | X1.2 | 🔄 läuft seit 11.11. 15:33 |
-| X1.3 | Hauptlauf: 5 Budgets × 10 Seeds, dazu r1 × 10 Seeds | 1 Tag | ≈ 25–30 h | E2 | ⬜ |
+| X1.2b | Zweiter Pilot: schnellere duale Anpassung (Blöcke 50, η 5 gegen PID-Lagrange), Kosten A, 2 Seeds | ½ Tag | ≈ 2 h | X1.2 | ✅ 11.11. |
+| X1.3 | Hauptlauf: 5 Budgets × 10 Seeds, dazu r1 × 10 Seeds | 1 Tag | ≈ 25–30 h | E2 | 🔄 läuft seit 11.11. 17:22 |
 | X1.4 | Sicherheitsfilter (CBF auf die Basisdrehung) auf r1-Agenten | 2 Tage | 2 h | X0.2 | 🔄 Teil 1 ✅ 10.11. |
 | X2.1 | Modellbasierter Regler (GJM, Nullraum), Machbarkeit auf dem Halbkreis | 2 Tage | < 1 h | X0.2 | ✅ 10.11. |
 | X2.2 | Modellbasierte Pareto-Front, Vergleich mit RL | 1 Tag | < 1 h | X1.3, X4.1 | ⬜ |
@@ -219,12 +219,20 @@ Aktualisierung:
   λ ≈ 1 ergibt. Neue Option `kp` in `ext_x1_train`.
 Auswahl wie in X1.2. Erfüllt keine Variante das Budget in den letzten 10 Blöcken, X1.3 mit 5000 Episoden planen.
 
+Stand 11.11.2026 (`RESULTS.md`, X1.2b): „schnell“ hält das Budget mit beiden Seeds (20,0 und 20,8 mm, 21 und
+25 mrad), PID mit einem (Seed 1 verliert die Bahn). Nach der Regel geht „schnell“ in X1.3 (E2).
+
 ### X1.3 Hauptlauf
 
 - θ ∈ {0,02; 0,03; 0,04; 0,05; 0,06} rad × Seeds 0–9 × 3000 Episoden: 50 Läufe.
 - Referenz: r1 ohne Nebenbedingung × Seeds 0–9 × 3000 Episoden: 10 Läufe. D14 hat r1 nur mit 1000 Episoden und
   drei Seeds.
 - Rechenzeit etwa 60 × 25–30 min ≈ 25–30 h.
+- Umsetzung 11.11.2026: `ext_x1_3_run()`, Einstellung „schnell“ aus X1.2b (Kosten A, δ 0,02, Blöcke zu 50,
+  η 5, λ0 = 1). r1 als `ext_x1_train` mit η 0 und λ0 = 0, ebenfalls in Blöcken zu 50. Modus 5 mit λ = 0 ist der
+  Reward von Modus 1, der einzige Unterschied ist also λ. Seeds außen, je Seed fünf Budgets und r1. θ = 0,03 mit
+  Seed 0 und 1 sind die X1.2b-Agenten (gleiche Einstellung), θ = 0,03 wird zusätzlich ohne sie angegeben.
+  Danach `ext_x1_2_eval` (Studie X1_3) mit D16 r4 als Bezug. Gestartet 11.11. 17:22, Ende etwa 12.11. abends.
 - Auswertung mit X0.1. Abbildung: Tracking-Fehler gegen Basisdrehung, je Budget eine Farbe, Gewichtsreihe aus
   X4.1 grau dahinter, modellbasierte Front aus X2.2 als Linie. Tabelle: je Budget Anteil „folgt der Bahn“, Anteil
   „hält das Budget“, Median und IQR beider Größen.
@@ -614,10 +622,12 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
 
 - **E1** ✅ 10.11.2026: Protokoll wie in X0.1 vorgeschlagen, aber Startstörung ±2° statt ±1° (±1° trennte die
   Agenten kaum). Budget-Toleranz bleibt 0,005 rad. Umgesetzt in `ext_eval_agent` und `ext_stats`.
-- **E2** 🔄 Kostenform, Schrittweite und Blockgröße der Lagrange-Variante. 11.11.2026 (Nutzer übernimmt den
+- **E2** ✅ Kostenform, Schrittweite und Blockgröße der Lagrange-Variante. 11.11.2026 (Nutzer übernimmt den
   Vorschlag): Kosten A (Indikator). Schrittweite und Blockgröße nach dem Pilot X1.2b (schneller integrierend
   gegen PID-Lagrange), weil λ in X1.2 mit keiner Einstellung einschwang. Die bessere der beiden Varianten geht in
-  X1.3. Hält keine das Budget, X1.3 mit 5000 Episoden.
+  X1.3. Hält keine das Budget, X1.3 mit 5000 Episoden. 11.11.2026 nach X1.2b: „schnell“ (Blöcke zu 50, η 5,
+  λ0 = 1, 3000 Episoden), zwei von zwei Seeds mit Budget, PID einer von zwei. λ bleibt vom Anfang her hoch, die
+  Agenten sind vorsichtiger als nötig (RESULTS, X1.2b).
 - **E3** ✅ 10.11.2026: Gewichte 0, 2, 4, 8, 16 (mit 4). 30 Läufe.
 - **E4** X5 Go/No-Go nach dem Pilot.
 - **E5** Agenten für den Labortag X3.2.

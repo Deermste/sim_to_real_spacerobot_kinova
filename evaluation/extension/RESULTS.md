@@ -43,7 +43,9 @@ X4.1: Mit 10 Seeds je Gewicht bleibt K2 bestehen, kein Gewicht verschiebt die Ba
 steigt mit dem Gewicht. X2.4: Randomisierte Agenten verlieren bei falscher Basismasse kaum noch Bahn, bleiben aber
 hinter den Reglern (K8). X1.2: Die Indikator-Kosten sind besser als das Scharnier. Zwei von acht Pilot-Agenten
 halten 0,03 rad bei etwa 14 mm, ruhiger und genauer als alle ruhigen r4-Agenten. λ schwingt aber in 3000 Episoden
-nicht ein (E2 offen). X4.2: Alle 95 Bestandsagenten sind nach X0.1 ausgewertet. K1 hält über Takt, J6-Grenze und
+nicht ein. X1.2b: Mit Blöcken zu 50 Episoden und η 5 halten beide Seeds das Budget (21 und 25 mrad), aber bei
+etwa 20 mm. λ bleibt vom Anfang her hoch, die Agenten sind vorsichtiger als nötig. Diese Einstellung geht in X1.3
+(E2). X4.2: Alle 95 Bestandsagenten sind nach X0.1 ausgewertet. K1 hält über Takt, J6-Grenze und
 Verfahren hinweg. D13 (NaN-Actoren) gehört nicht in die Zahlen des Papers.
 
 ## Ausgangslage (aus dem alten Desktop-Plan und dem Paper, Stand 10.11.2026)
@@ -383,7 +385,7 @@ Datenquelle: Kurztest unter `data/simulation/desktop/_test/X1_ppo_40hz_r5_c1_th3
 
 Paper: Sec. Methode (Nebenbedingung), offen.
 
-### X1.2 Pilot: Kostenform und Schrittweite ✅ 11.11.2026 (E2 offen)
+### X1.2 Pilot: Kostenform und Schrittweite ✅ 11.11.2026 (E2 nach X1.2b entschieden)
 
 **Frage:** Welche Kostenform (A Indikator, B Scharnier) und welche Schrittweite η der dualen Aktualisierung halten
 das Budget θ = 0,03 rad, ohne dass λ schwingt und ohne dass die Bahn verloren geht?
@@ -449,6 +451,66 @@ Datenquelle: `X_eval_X1_2_20261111_150856_*`, `X1_2_summary_*.csv`, `X1_ppo_40hz
 `SavedAgents/MotionProfile/X1/`.
 
 Paper: Methode der Nebenbedingung (Kostenform, Begründung). Offen.
+
+### X1.2b Zweiter Pilot: schnellere duale Anpassung ✅ 11.11.2026 (E2 entschieden)
+
+**Frage:** Hält eine schneller reagierende duale Aktualisierung das Budget θ = 0,03 rad zuverlässiger als X1.2, und
+schwingt λ dabei ein?
+
+**Aufbau:**
+- Training: `ext_x1_2b_run()`, Kosten A, θ = 0,03 rad, δ = 0,02, Seeds 0 und 1, 3000 Episoden. Zwei Varianten:
+  - schnell: Blöcke zu 50 Episoden (60 Aktualisierungen), η 5, λ0 = 1.
+  - PID: Blöcke zu 100 Episoden, η 2, Proportionalanteil kp 20 (PID-Lagrange ohne D-Anteil, Stooke et al. 2020).
+  Neue Option `kp` in `ext_x1_train`, mit kp = 0 unverändert wie X1.2.
+- 4 Läufe, alle erfolgreich. Schnell 26,5 und 28,2 min, PID 23,2 min (`X1_2b_runlog.csv`).
+- Auswertung: `ext_x1_2_eval('pattern', 'X1_ppo_40hz_r5_c1_th30_*_ep3000_*.mat', 'study', 'X1_2b', 'ref', false)`,
+  X0.1 mit 21 Episoden. Kennzahlen der dualen Kurven wie in X1.2, C und Blöcke über δ aber im letzten Drittel
+  des Trainings (schnell: 20 Blöcke zu 50, PID: 10 Blöcke zu 100, also jeweils 1000 Episoden).
+
+**Ergebnis** (RMS [mm], ori_max Mittel und schlechteste Episode [mrad], Kosten der deterministischen Policy, λ und
+C aus dem Training, letztes Drittel):
+
+| Variante | Seed | RMS | ep_q4 Median (max) | ori_max (worst) | Kosten | folgt | Budget | λ max | λ Ende | Δλ/Block | C (Blöcke > δ) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| schnell | 0 | 20,0 | 25 (33) | 18 (21) | 0 | ja | ja | 8,05 | 3,59 | −0,098 | 0,001 (0 von 20) |
+| schnell | 1 | 20,8 | 30 (34) | 20 (25) | 0 | ja | ja | 5,72 | 3,74 | −0,038 | 0,011 (3 von 20) |
+| PID | 0 | 21,1 | 34 (38) | 22 (26) | 0 | ja | ja | 11,72 | 1,09 | −0,035 | 0,007 (0 von 10) |
+| PID | 1 | 46,7 | 81 (92) | 25 (31) | 0,0003 | nein | nein | 11,46 | 3,25 | +0,099 | 0,049 (10 von 10) |
+
+Keine Episode bricht ab. „folgt“ und „Budget“ wie in X1.2.
+
+**Deutung:**
+- Schnell hält das Budget mit beiden Seeds, PID mit einem. Beim PID-Lauf mit Seed 1 steigt C in der zweiten
+  Hälfte über δ (Block 19 bis 30), λ läuft von etwa 2 auf 3,3 hinterher, und der Return fällt von etwa 870 auf
+  640. Die Policy verliert dabei die Bahn (ep_q4 81 mm). Die Basis bleibt mit 31 mrad knapp über der Grenze.
+- λ schwingt in keiner Variante im eigentlichen Sinn ein. Bei „schnell“ treiben die ersten zwei bis vier Blöcke
+  (C 0,34 bis 0,53, die Bahn ist noch nicht gelernt) λ auf 5,7 bzw. 8,1. Danach liegt C meist unter δ (Seed 0
+  in 55 von 56 Blöcken, Seed 1 in 43 von 56), und λ sinkt um höchstens η·δ = 0,1 je Block. Am Ende ist λ noch
+  3,6 bis 3,7. Die Nebenbedingung ist damit am Ende kaum aktiv, die Agenten bleiben mit 21 und 25 mrad unter θ.
+  Beim PID-Lauf fällt λ nach dem Anfang durch den P-Anteil sofort auf 1 bis 2 und folgt danach C. Das ist näher
+  am Ziel C ≈ δ, war aber mit Seed 1 zu schwach.
+- Preis: Die drei Agenten mit Budget liegen bei 20,0 bis 21,1 mm RMS. Die beiden Budget-Agenten aus X1.2 lagen
+  bei 13,6 und 13,7 mm, die sieben ruhigen r4-Agenten aus X4.1 bei 16,8 bis 29,5 mm. Der Hinweis aus X1.2, eine
+  Nebenbedingung finde eine ruhige Lösung mit weniger Bahnverlust, wird damit schwächer. Vermutlich hält das
+  hohe λ vom Anfang die Policy vorsichtiger als nötig. Das ist eine Vermutung, getestet ist sie nicht.
+- Ruck: 10 bis 17 rad/s³, wie in X1.2.
+
+**Entscheidung E2:** Nach der vorher festgelegten Regel („die bessere der beiden Varianten geht in X1.3“) geht
+„schnell“ in X1.3: zwei von zwei Seeds folgen und halten das Budget, C liegt im letzten Drittel unter δ. Die
+Regel wurde nicht nachträglich geändert, obwohl λ nicht einschwingt. Eine Aufwärmphase ohne duale Anpassung
+oder ein kleineres λ0 könnten die Vorsicht senken. Das bleibt eine mögliche spätere Variante und ist nicht Teil
+von X1.3.
+
+**Grenzen:** zwei Seeds je Variante, nur θ = 0,03. Die Unterschiede zwischen den Varianten können Seed-Effekte
+sein. Die Agenten mit θ = 0,03 und Seed 0 und 1 gehen unverändert in X1.3 ein, weil die Einstellung gleich ist.
+Weil die Wahl auf genau diesen zwei Agenten beruht, wird X1.3 für θ = 0,03 auch ohne sie (Seeds 2 bis 9)
+angegeben.
+
+Datenquelle: `X_eval_X1_2b_20261111_171748_*`, `X1_2b_summary_20261111_171748.csv`,
+`X1_ppo_40hz_r5_c1_th30_*_ep3000_{b50_l1,kp20}_dual.csv` und `_train.csv`, `X1_2b_runlog.csv`, Log
+`X1_2b_matlab.log`. Agenten `SavedAgents/MotionProfile/X1/`.
+
+Paper: Methode der Nebenbedingung (duale Einstellung, Begründung), Anhang oder Fußnote zum Pilot. Offen.
 
 ### X1.4 Sicherheitsfilter, Teil 1: vorhandene Agenten ✅ 10.11.2026
 
