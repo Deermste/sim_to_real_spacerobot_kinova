@@ -76,6 +76,13 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X5.1 | 3D-Bahn mit allen 7 Gelenken: Modell, Machbarkeit mit dem Regler aus X2 | 2–3 Tage | 1 h | X2.1 | 🔄 Machbarkeit ✅ 10.11., SK_desktop offen |
 | X5.2 | Pilot 3D: 2 Varianten × 2 Seeds, Go/No-Go | ½ Tag | ≈ 3 h | X5.1 | ⬜ |
 | X5.3 | Hauptlauf 3D: 10 Seeds, Vergleich mit Nullraum-Regler | 1 Tag | ≈ 6–8 h | E4 | ⏸ |
+| X6.0 | Set-Point: Ausgangslage des alten Agenten, Zielwerte und Bezugspunkt festlegen | ½ Tag | – | E11 | ⬜ |
+| X6.1 | Schritt-Umgebung auf dem kinematischen Simulator (7 Gelenke, frei schwebend), Start- und Zielgenerator | 2 Tage | < 1 h | X0.2 | ⬜ |
+| X6.2 | Vergleichsregler und Erreichbarkeit der Ziele | ½ Tag | < 1 h | X6.1 | ⬜ |
+| X6.3 | Pilot: drei Varianten × 1 Seed | 1 Tag | ≈ 4–6 h | X6.1, E12–E14 | ⬜ |
+| X6.4 | Hauptlauf 5 Seeds, Auswertung auf 500 Paaren, Gegenprobe in Simscape | 1 Tag | ≈ 8–12 h | X6.3 | ⬜ |
+| X6.5 | Deploy-Skript Set-Point v25 mit Emulation der Basis, Trockenläufe, Vorhersage | 2 Tage | 1 h | X3.1, X6.4 | ⬜ |
+| X6.6 | Labortag Set-Point (Tracking X3.2 am selben Tag, wenn Zeit bleibt) | 1 Tag Labor + 1 Tag Auswertung | – | Labor | ⏸ |
 | P | Paper neu aufbauen und Ergebnisse übertragen | 2–3 Wochen | – | alle | ⏸ |
 
 Summe Rechenzeit ohne X5.3 etwa 55–65 h. Das sind etwa eine bis eineinhalb Wochen, wenn nachts und am Wochenende
@@ -89,6 +96,8 @@ trainiert wird. Die Arbeit liegt bei etwa vier bis sechs Wochen, das Paper danac
 4. **Woche 4:** X5.1 und X5.2, dann Go/No-Go (E4). X4.2.
 5. **Zwischenstand mit dem Betreuer:** Geschichte festlegen (E7), X4.4 entscheiden, Labortermin für X3.2.
 6. **Danach:** X5.3, X3.2, dann Phase P.
+7. **X6 (Set-Point):** X6.0 bis X6.2 in freien Stunden. Pilot und Hauptlauf in Nächten, in denen keine Kette aus
+   X1 bis X5 läuft. Der Labortag X6.6 kann mit X3.2 zusammenfallen (E16).
 
 X1 und X2 entscheiden, ob die neue Geschichte trägt. Fallen beide Ergebnisse unerwartet aus (Nebenbedingung hilft
 nicht, Regler ist überall besser), ist das trotzdem ein Befund. Die Gewichtung im Paper ändert sich dann.
@@ -392,6 +401,135 @@ Rβ-Front in 3D. Etwa 6–8 h.
 
 ---
 
+## X6 Set-Point neu: frei schwebend, ganzer Arbeitsraum, Millimeter
+
+Ergänzt am 11.11.2026 auf Wunsch des Nutzers. Eigener Strang neben X1 bis X5, für ein späteres Paper oder einen
+Abschnitt (E7). Das Tracking bleibt wie geplant. X6 startet, wenn der Rechner frei ist, und blockiert X1 bis X5
+nicht.
+
+**Frage:** Kann ein RL-Agent auf dem frei schwebenden Modell jedes erreichbare Ziel von einer beliebigen
+Startstellung aus mit einer für reale Aufgaben brauchbaren Genauigkeit anfahren? Hält das auf dem festen Arm,
+wenn das Deploy-Skript die Basis emuliert (X3)? Wie weit liegt er von einem modellbasierten Regler entfernt?
+
+### Ausgangslage: der alte Agent `fixed1`
+
+Quellen: Paper Sec. VI-D, Desktop-Plan D4, Laborbücher vom 26.09. und 03.10.2026, `reviewer_comments.md`
+(A42, A43, A57, A61), `data/hardware/campaign/results/table_setpoint_targets.csv`.
+- Trainiert mit fester Basis und Schwerkraft, die Basis-Kanäle der Beobachtung sind null. Er ist also kein
+  Free-Floating-Agent, die Basis-Terme des Rewards wirken nicht.
+- Ziele nur in einer Gelenkstreuung von 24° um ein Nominalziel. Hardware: Nominalziel 30 von 30 Läufen unter
+  50 mm (4,9–22,7 mm, Median 14,8 mm). Von neun weiteren Zielen erreicht er vier von jedem Start (13–27 mm),
+  T04, T06 und die drei Randziele nicht (68–130 mm).
+- Erfolgskriterium im Training 2 cm und 3 cm/s. Ein Millimeter-Ziel gab es nie.
+- Gelenkgrenzen: im Modell hart geklemmt ohne Anti-Windup, im Training J2 ±138° statt ±128,9° laut Datenblatt.
+  J6 bleibt an der Trainingsgrenze hängen (A43), die Bremszone war in 14 von 30 Läufen aktiv (A61).
+- Befehlskette mit 10 Hz und Filter 0,95y + 0,05u im Agententakt, also etwa 2 s Zeitkonstante. Der Zustand der
+  Kette fehlt in der Beobachtung.
+- Training sequenziell mit 16 Neukompilierungen, 3000 Episoden zu 25 s.
+- Bezugspunkt: Trainiert auf den URDF-Punkt, die Kortex-Werkzeugpose liegt 0,121 m davor (A42). Seit v24
+  regelt das Deploy-Skript auf die FK.
+
+### X6.0 Zielwerte
+
+Vorschlag (E11):
+- Erfolg: EE-Fehler ≤ 5 mm und EE-Geschwindigkeit ≤ 5 mm/s, 1 s lang gehalten, innerhalb von 15 s. Ziel in
+  Simulation: ≥ 95 % der erreichbaren Paare, Median-Endfehler ≤ 2 mm. Hardware: ≥ 90 % der freigegebenen Paare.
+- Bezugspunkt ist die Greiferspitze (Werkzeugpunkt, 0,121 m vor dem URDF-Punkt), weil eine reale Aufgabe dort
+  greift. Die Annahme, dass einige Millimeter für eine Annäherung vor dem Greifen reichen, in X6.0 mit Literatur
+  zu Greifern und Fangmechanismen belegen, bevor sie ins Paper geht.
+- Basisdrehung: im ersten Schritt gemessen und als leichter Term im Reward, kein hartes Budget. Ein Budget mit der
+  Lagrange-Variante aus X1, falls E2 positiv ausfällt.
+- Orientierung des Werkzeugs (≤ 3°) als Stufe 2, nur wenn Stufe 1 die Zielwerte erreicht.
+
+### X6.1 Umgebung, Starts und Ziele
+
+- **Umgebung** (E12): Training im kinematischen Simulator statt in Simscape. `ext_kinsim` wird als
+  Schritt-Umgebung gebaut (`rlFunctionEnv` mit reset und step, 7 Gelenke, frei schwebend, Befehlskette aus
+  derselben Datei wie im Deploy-Skript). X0.2 zeigt ≤ 0,45 mm gegen Simscape bei etwa zwölffacher
+  Geschwindigkeit, X5.1 rechnet schon mit 7 Gelenken. Kein Neukompilieren, parallel auf 8 Workern. Die
+  Schrittzeit wird gemessen, daraus folgt das Episodenbudget.
+- **Starts:** q gleichverteilt in den Grenzen laut Datenblatt minus 5°. Verworfen werden Stellungen mit
+  Selbstkollision oder Kollision mit dem Basiswürfel (Meshes der URDF, `checkCollision` der Robotics System
+  Toolbox).
+- **Ziele:** eine zweite Stellung q_T aus derselben Verteilung. Der Zielpunkt ist die Lage des Werkzeugpunkts nach
+  einer Gelenkbahn von q0 nach q_T im kinematischen Simulator, im Inertialsystem. Die Zwischenstellungen werden
+  auf Kollision geprüft. Damit ist jedes Ziel unter frei schwebender Kinematik auf mindestens einem
+  kollisionsfreien Weg erreichbar.
+- **Auswertesatz:** 500 feste Paare (fester Seed), geschichtet nach Abstand d0 (0,05–1,2 m) und Bereich (nah am
+  Körper, Rand des Arbeitsraums, über und unter der Basis). Dazu die 15 Starts und neun Ziele der Labortage,
+  ins Inertialsystem umgerechnet, für den Vergleich mit `fixed1`.
+
+### X6.2 Vergleichsregler
+
+Entschieden (E15): ja. `ext_x2_controller` mit 7 Gelenken und Aufgabe x, y, z (wie X5.1). Referenz: Gerade zum
+Ziel mit Minimum-Jerk-Profil, Dauer aus d0 und den Geschwindigkeitsgrenzen. Gleiche Befehlskette mit Inversion,
+Nullraum für den Abstand zu den Gelenkgrenzen und die Basisdrehung (β). Keine Kollisionsvermeidung. Paare, bei
+denen die Gerade durch den Körper führt, werden markiert. Ergebnis je Paar: erreicht ja oder nein, Endfehler,
+Einschwingzeit, Basisdrehung. Ein vom Regler erreichtes Paar gilt zusätzlich als belegt erreichbar.
+
+### X6.3 Aufbau des Agenten und Pilot
+
+Vorschläge, die der Pilot prüft:
+1. **Takt 20 Hz** (E13). Die API begrenzt die Schleife ohnehin auf 20 Hz (Labortag 26.09.).
+2. **Befehlskette:** Aufbau bleibt (Sättigung, Filter, Rate Limiter, Sicherheitsschicht). Den Filter über die
+   Zeitkonstante festlegen, Vorschlag 0,3 s statt 2 s. Der Ausgang der Kette (letzter gesendeter Befehl) kommt in
+   die Beobachtung, damit der Zustand vollständig ist.
+3. **Beobachtung:** ep und ev im Basissystem und ein Feinkanal (ep auf ±5 cm begrenzt und mit 20 skaliert),
+   damit Millimeter im Netz sichtbar sind. Endlosgelenke J1, J3, J5, J7 als sin und cos. Dazu dq, Basislage und
+   -drehrate und der Abstand zu den Gelenkgrenzen. Grenzen in der richtigen Reihenfolge (A72, E9), Eingänge
+   etwa auf ±1 normiert.
+4. **Reward:** linearer Abstandsterm wie r_p2p, dazu ein Feinterm exp(−‖ep‖ / 5 mm) und ein Bremsterm nahe am
+   Ziel. Strafe auf Befehlsänderungen, eine Barriere 10° vor den Gelenkgrenzen statt harter Klemmung (A43) und
+   ein leichter Term auf die Basisdrehrate. Der Erfolgsbonus kommt erst nach 1 s Halten, danach endet die
+   Episode.
+5. **Gelenkgrenzen:** Datenblatt minus Rand. Dieselbe Bremslogik wie im Deploy-Skript läuft auch im Training
+   (A61).
+6. **Curriculum:** Der Abstand d0 wächst und die Toleranz schrumpft (5 cm bis 5 mm), sobald ein Block über 80 %
+   Erfolg liegt. Ein Teil der Episoden kommt immer aus der vollen Verteilung.
+7. **Randomisierung (gering):** Basismasse ×[0,5; 2], Verzögerung 0–1 Schritt, Rauschen realistisch (wie
+   X2.4, K8).
+8. **Verfahren** (E14): PPO wie bisher, Netz 2 × 256. SAC mit Hindsight Experience Replay
+   (`rlHindsightReplayMemory`) nur als Rückfall, wenn PPO die Genauigkeit nicht erreicht.
+
+Pilot: drei Varianten mit je einem Seed, Obergrenze 20 000 Episoden oder 2 h je Lauf. (a) alles wie oben, (b) ohne
+Feinkanal und Feinterm, (c) wie (a), aber mit 10 Hz und 2 s Filterzeitkonstante wie `fixed1`. Gemessen auf 100
+Paaren des Auswertesatzes. Die Varianten zeigen, welche Bausteine die Genauigkeit tragen. Sie gehören in die
+Ablation des Papers.
+
+### X6.4 Hauptlauf
+
+- Beste Variante mit 5 Seeds, je höchstens 3 h, eine Nacht. 5 Seeds reichen für eine Nebenaufgabe, die
+  Statistik läuft mit `ext_stats`.
+- Auswertung auf den 500 Paaren: Erfolgsrate, Endfehler (Median und 95-%-Quantil), Einschwingzeit, größte
+  Basisdrehung, Anteil der Bremszone, jeweils nach d0 und Bereich. Dasselbe für den Regler aus X6.2.
+- Robustheit mit einer Auswahl aus X2.3: Masse, Verzögerung, Rauschen, Startstellung.
+- Gegenprobe in Simscape: `SK_point` (frei schwebend) mit der neuen Kette und Beobachtung, 50 Paare. Abweichung
+  zum kinematischen Simulator ≤ 1 mm.
+- Vorher-Nachher auf den alten 15 Starts und neun Zielen gegen `fixed1`.
+
+### X6.5 Deploy-Skript und Vorhersage
+
+- `deploy_setpoint_v25.m`: v24 und der Schalter `emulateBase` (`virtual_base_step` aus X3.1, ist bereits auf 7
+  Gelenke ausgelegt). Neue Beobachtung, Befehlskette aus derselben Datei wie im Training, 20 Hz, neue
+  Gelenkgrenzen und Bremslogik, Werkzeugpunkt als Bezug.
+- Trockenlauf für jedes geplante Paar mit Emulation. Mit Emulation fährt der echte Arm eine andere Bahn als der
+  virtuelle, deshalb jedes Paar zusätzlich physisch prüfen: Höhenwächter, Tisch und freier Raum. Vorhersage
+  `X6_prediction.csv`.
+
+### X6.6 Labortag
+
+Reihenfolge nach Wunsch des Nutzers (E16): Set-Point zuerst. Bei wenig Zeit nur Set-Point.
+- Bester Seed aus X6.4. Etwa 20 freigegebene Paare × 2 Durchgänge mit Emulation, 5 Paare ohne Emulation als
+  Gegenprobe (der Agent sieht eine ruhende Basis), dazu die alten neun Ziele von drei Starts für den Vergleich
+  mit `fixed1`. Etwa 70 Läufe zu höchstens 20 s.
+- Danach Tracking wie X3.2, wenn Zeit bleibt.
+- Grenze bleibt: Der Arm ist fest montiert, die Basis ist emuliert und nicht gemessen (AE.2, R3.1).
+- Anleitung `hardware/campaign/ANLEITUNG_LABOR_TAG3.md` erst schreiben, wenn der Termin steht.
+
+**Aufwand:** Arbeit etwa acht bis neun Tage plus Labortag, Rechenzeit etwa ein bis zwei Nächte.
+
+---
+
 ## Phase P: Paper
 
 Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
@@ -419,4 +557,15 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
 - **E10** ✅ 10.11.2026: Kipprichtung der 3D-Bahn −30°. Dort senkt der Nullraum die Basisdrehung des Reglers
   von 124 auf 10 mrad bei 2 mm, bei +30° nur von 14 auf 11 mrad. Bei −30° hat die Frage aus X5 Gewicht.
 - **E7** Mit dem Betreuer: neue Geschichte, Zielkonferenz, was nach X4.4 aus dem Paper fliegt, ob die
-  Schnittstellendiagnose ein Abschnitt bleibt oder ein eigenes kurzes Paper wird.
+  Schnittstellendiagnose ein Abschnitt bleibt oder ein eigenes kurzes Paper wird. Neu: ob X6 (Set-Point) in
+  dieses Paper kommt oder in ein eigenes.
+- **E11** Zielwerte für X6: Vorschlag 5 mm und 5 mm/s, 1 s gehalten, innerhalb von 15 s, ≥ 95 % in Simulation,
+  Bezug Greiferspitze. Orientierung erst in Stufe 2.
+- **E12** X6 im kinematischen Simulator trainieren (Empfehlung, schneller, kein Neukompilieren) oder in Simscape.
+- **E13** Takt für X6: 20 Hz (Empfehlung, passt zur API) oder 10 Hz wie `fixed1`.
+- **E14** Verfahren für X6: PPO (Empfehlung, bewährte Kette). SAC mit Hindsight Experience Replay als Rückfall.
+- **E15** ✅ 11.11.2026 (vom Nutzer freigegeben): X6 bekommt einen Vergleichsregler. Gründe: Die Reviews
+  vermissten eine Vergleichsbasis, beim Tracking ist der Abstand groß (K5), ohne Regler wäre die Set-Point-Aussage
+  so angreifbar wie bisher. Der Regler belegt zugleich, welche Ziele erreichbar sind. Der Aufwand ist klein, weil
+  `ext_x2_controller` schon 7 Gelenke und 3D kann (X5.1).
+- **E16** ✅ 11.11.2026 (Nutzer): Auf dem nächsten Labortag Set-Point vor Tracking. Bei wenig Zeit nur Set-Point.
