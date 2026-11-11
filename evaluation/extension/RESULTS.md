@@ -41,7 +41,9 @@ X5.1: Die gekippte 3D-Bahn ist mit allen sieben Gelenken fahrbar. Bei −30° Ki
 Unterschied (K7). Die Beobachtungsgrenzen aus A72 würden die Policy dort für q7 oft blind machen (E9).
 X4.1: Mit 10 Seeds je Gewicht bleibt K2 bestehen, kein Gewicht verschiebt die Basisdrehung, nur der Befehlsruck
 steigt mit dem Gewicht. X2.4: Randomisierte Agenten verlieren bei falscher Basismasse kaum noch Bahn, bleiben aber
-hinter den Reglern (K8).
+hinter den Reglern (K8). X1.2: Die Indikator-Kosten sind besser als das Scharnier. Zwei von acht Pilot-Agenten
+halten 0,03 rad bei etwa 14 mm, ruhiger und genauer als alle ruhigen r4-Agenten. λ schwingt aber in 3000 Episoden
+nicht ein (E2 offen).
 
 ## Ausgangslage (aus dem alten Desktop-Plan und dem Paper, Stand 10.11.2026)
 
@@ -379,6 +381,73 @@ Fall zuerst), deshalb bleibt sie bitgleich. Für eigene Bitvergleiche einen Aufw
 Datenquelle: Kurztest unter `data/simulation/desktop/_test/X1_ppo_40hz_r5_c1_th30_eta2_seed0_ep32_test.*`.
 
 Paper: Sec. Methode (Nebenbedingung), offen.
+
+### X1.2 Pilot: Kostenform und Schrittweite ✅ 11.11.2026 (E2 offen)
+
+**Frage:** Welche Kostenform (A Indikator, B Scharnier) und welche Schrittweite η der dualen Aktualisierung halten
+das Budget θ = 0,03 rad, ohne dass λ schwingt und ohne dass die Bahn verloren geht?
+
+**Aufbau:**
+- Training: Schritt 4 der Nachtkette, `ext_x1_2_run()`. θ = 0,03 rad, δ = 0,02, Kosten A und B, η 0,5 und 2,
+  Seeds 0 und 1, 30 Blöcke zu 100 Episoden, λ0 = 0. 8 Läufe zu je etwa 23,5 min, alle erfolgreich
+  (`X1_2_runlog.csv`).
+- Auswertung: `ext_x1_2_eval()`, X0.1 mit 21 Episoden je Agent in `SK_desktop`, dazu D16 r4 Seeds 0–9 als Bezug.
+  `ext_eval_agent` gibt dafür neu `cost_mean` aus: das Mittel des Kostensignals je Agentenschritt mit θ und
+  Kostentyp aus dem `cfg` des Agenten, also dieselbe Größe wie C im Training, aber mit der deterministischen
+  Policy. Für Agenten ohne X1-Felder gilt θ = 0,03 mit Indikator. Die übrigen Kennzahlen bleiben bitgleich
+  (D16 wie in X4.1).
+- Kennzahlen der dualen Kurven aus `<Name>_dual.csv`: λ am Ende, mittlere Änderung von λ je Block in den letzten
+  10 Blöcken, Anzahl Vorzeichenwechsel der λ-Änderung in den letzten 15 Blöcken, C in den letzten 10 Blöcken.
+
+**Ergebnis** (RMS [mm], ori_max Mittel und schlechteste Episode [mrad], Kosten deterministisch, λ und C aus dem
+Training):
+
+| Kosten | η | Seed | RMS | ori_max (worst) | Kosten | folgt | Budget | λ Ende | Δλ/Block | C letzte 10 (> δ) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| A | 0,5 | 0 | 15,3 | 54 (61) | 0,100 | ja | nein | 1,43 | +0,037 | 0,095 (10) |
+| A | 0,5 | 1 | 13,6 | 24 (28) | 0 | ja | ja | 0,01 | −0,010 | 0,000 (0) |
+| A | 2 | 0 | 12,3 | 62 (71) | 0,114 | ja | nein | 3,72 | +0,129 | 0,085 (10) |
+| A | 2 | 1 | 13,7 | 20 (24) | 0 | ja | ja | 3,79 | +0,247 | 0,144 (10) |
+| B | 0,5 | 0 | 10,5 | 48 (54) | 0,037 | ja | nein | 0,82 | +0,015 | 0,050 (9) |
+| B | 0,5 | 1 | 41,2 | 57 (63) | 0,101 | nein | nein | 0,85 | +0,011 | 0,041 (10) |
+| B | 2 | 0 | 226 | 69 (75) | 0,448 | nein | nein | 3,53 | +0,081 | 0,060 (9) |
+| B | 2 | 1 | 11,3 | 62 (67) | 0,150 | ja | nein | 1,12 | +0,070 | 0,055 (5) |
+| r4 w 2 (D16, 10 Seeds) | – | – | 13,9 (11,6–29,5) | 52 (25–64) | 0–0,26 | 10 von 10 | 2 von 10 | – | – | – |
+
+„Budget“: schlechteste Episode ≤ θ + 5 mrad (wie X4.1). Kosten bei B als Scharnier-Mittel, sonst Anteil der
+Schritte über θ.
+
+**Deutung:**
+- Kostenform: A ist B in diesem Pilot überlegen. Mit A folgen alle vier Agenten der Bahn und zwei halten das
+  Budget. Mit B folgen zwei nicht (41 und 226 mm, B mit η 2 Seed 0 bricht im Training ein, Return am Ende −182)
+  und keiner hält das Budget.
+- Die zwei Agenten mit Budget (A, Seed 1, beide η) liegen bei 13,6 und 13,7 mm und 24 bzw. 20 mrad. Die sieben
+  ruhigen r4-Agenten aus X4.1 brauchen dafür 16,8–29,5 mm. Das spricht dafür, dass eine Nebenbedingung eine ruhige
+  Lösung mit weniger Bahnverlust findet. Bei zwei Agenten ist das aber nur ein Hinweis. Beide haben Seed 1, der
+  Seed entscheidet also weiter mit.
+- Die duale Aktualisierung ist in 3000 Episoden nicht eingeschwungen. In sieben von acht Läufen steigt λ am Ende
+  noch (+0,01 bis +0,25 je Block). In sechs Läufen liegt C in mindestens 9 der letzten 10 Blöcke über δ. λ
+  schwingt nicht (0 bis 3 Vorzeichenwechsel in 15 Blöcken), es ist zu langsam. Mit η 0,5 bleibt λ unter 1,5, mit
+  η 2 erreicht es in drei von vier Läufen 3,5–3,8.
+- Muster: Nach dem ersten Block (C 0,45–1,17) fällt C für mehrere Blöcke fast auf null, und λ sinkt wieder.
+  Vermutlich ist die Bahn in dieser Phase noch nicht gelernt. Später steigt C, und λ läuft hinterher. A mit
+  η 0,5 Seed 1 ist der einzige Lauf, in dem C dauerhaft unter δ bleibt (28 von 30 Blöcken). Dort ist λ am Ende
+  praktisch null, die Lösung blieb nach der frühen Phase von selbst ruhig.
+- Training gegen Auswertung: C gilt für die Explorations-Policy. Bei A, η 2, Seed 1 liegt C in den letzten
+  Blöcken bei 0,14, die deterministische Policy hat 0. Bei den übrigen Läufen passen beide ungefähr zusammen.
+- Ruck: Die X1-Agenten liegen bei 8–17 rad/s³, im Bereich von r4 (2,5–16).
+
+**Folgerung für E2 (Vorschlag):** Kosten A. Die Schrittweite allein reicht nicht. Vor X1.3 ein kurzer zweiter
+Pilot mit schnellerer dualer Anpassung, damit λ innerhalb des Trainings einschwingt. Siehe PLAN, E2.
+
+**Grenzen:** zwei Seeds je Zelle, nur θ = 0,03, eine Blockgröße. Die Unterschiede zwischen A und B können auch
+Seed-Effekte sein.
+
+Datenquelle: `X_eval_X1_2_20261111_150856_*`, `X1_2_summary_*.csv`, `X1_ppo_40hz_r5_*_dual.csv` und `_train.csv`,
+`X1_2_runlog.csv`, Log `X2_4_night2_matlab.log` (Schritt 4) und `X1_2_eval_matlab.log`. Agenten
+`SavedAgents/MotionProfile/X1/`.
+
+Paper: Methode der Nebenbedingung (Kostenform, Begründung). Offen.
 
 ### X1.4 Sicherheitsfilter, Teil 1: vorhandene Agenten ✅ 10.11.2026
 

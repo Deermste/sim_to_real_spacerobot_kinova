@@ -60,7 +60,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X0.2 | Kinematischer Closed-Loop-Simulator (Policy, Befehlskette, GJM), gegen Simscape validiert | 2–3 Tage | 1 h | – | ✅ 10.11. |
 | X0.3 | Literaturprüfung für X2 und X3 (Neuheit, Zitate) | ½–1 Tag | – | – | ✅ 10.11. |
 | X1.1 | Lagrange-PPO umsetzen (Kostensignal, duale Aktualisierung, Logging) | 2 Tage | 1 h | – | 🔄 Code ✅ 10.11., Neubau SK_desktop offen |
-| X1.2 | Pilot: Kostenform und Schrittweite | ½ Tag | ≈ 4 h | E2 | ⬜ |
+| X1.2 | Pilot: Kostenform und Schrittweite | ½ Tag | ≈ 4 h | E2 | ✅ 11.11. (E2 offen, Vorschlag X1.2b) |
 | X1.3 | Hauptlauf: 5 Budgets × 10 Seeds, dazu r1 × 10 Seeds | 1 Tag | ≈ 25–30 h | E2 | ⬜ |
 | X1.4 | Sicherheitsfilter (CBF auf die Basisdrehung) auf r1-Agenten | 2 Tage | 2 h | X0.2 | 🔄 Teil 1 ✅ 10.11. |
 | X2.1 | Modellbasierter Regler (GJM, Nullraum), Machbarkeit auf dem Halbkreis | 2 Tage | < 1 h | X0.2 | ✅ 10.11. |
@@ -205,6 +205,18 @@ SK_desktop darf während eines Trainings nicht neu gebaut werden, jeder Lauf lä
 θ = 0,03 rad, Kandidat A und B, η ∈ {0,5; 2}, zwei Seeds, 3000 Episoden: 8 Läufe, etwa 4 h.
 Auswahl nach: λ konvergiert ohne Dauerschwingung, Budget gehalten, Bahn gefolgt. Entscheidung E2 mit diesen
 Kurven. Fällt der Overhead der wiederholten `train`-Aufrufe zu groß aus, Blöcke auf 200 Episoden.
+
+Stand 11.11.2026 (`RESULTS.md`, X1.2): Kosten A besser als B (4 von 4 folgen, 2 halten das Budget, B: 2 von 4
+folgen, keiner hält es). λ schwingt nicht, ist aber zu langsam und steigt am Ende noch. Der Overhead der Blöcke ist
+klein (etwa 0,8 min je 100 Episoden mit allem).
+
+**Vorschlag X1.2b** (vor X1.3, etwa 2 h): Kosten A, θ = 0,03, zwei Seeds, 3000 Episoden, zwei Varianten der dualen
+Aktualisierung:
+- schneller integrierend: Blöcke zu 50 Episoden (60 Aktualisierungen statt 30), η 5, λ0 = 1.
+- PID-Lagrange (Stooke et al. 2020) mit Proportionalanteil: λ = max(0, λ_I + Kp·(C − δ)), λ_I wie bisher mit η 2.
+  Der P-Anteil reagiert sofort auf C, der I-Anteil hält das Budget auf Dauer. Kp etwa 20, damit C = δ + 0,05 schon
+  λ ≈ 1 ergibt. Neue Option `kp` in `ext_x1_train`.
+Auswahl wie in X1.2. Erfüllt keine Variante das Budget in den letzten 10 Blöcken, X1.3 mit 5000 Episoden planen.
 
 ### X1.3 Hauptlauf
 
@@ -601,7 +613,9 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
 
 - **E1** ✅ 10.11.2026: Protokoll wie in X0.1 vorgeschlagen, aber Startstörung ±2° statt ±1° (±1° trennte die
   Agenten kaum). Budget-Toleranz bleibt 0,005 rad. Umgesetzt in `ext_eval_agent` und `ext_stats`.
-- **E2** Kostenform, Schrittweite und Blockgröße der Lagrange-Variante (nach dem Pilot X1.2).
+- **E2** Kostenform, Schrittweite und Blockgröße der Lagrange-Variante (nach dem Pilot X1.2). Vorschlag
+  11.11.2026: Kosten A. Schrittweite und Blockgröße erst nach dem kurzen Pilot X1.2b (schneller integrierend
+  gegen PID-Lagrange), weil λ in X1.2 mit keiner Einstellung einschwang.
 - **E3** ✅ 10.11.2026: Gewichte 0, 2, 4, 8, 16 (mit 4). 30 Läufe.
 - **E4** X5 Go/No-Go nach dem Pilot.
 - **E5** Agenten für den Labortag X3.2.
