@@ -1,0 +1,31 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1.2: 18 Agenten
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+18 Agenten in 5.0 min. Ergebnis: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X_eval_X1_2_20261111_150856_*.csv
+                       agent                           group        rms_ee     ori_max     ori_max_worst    cost_mean    cost_mean_worst    follows    jerk_rms    lambda_end    lambda_max    lambda_slope10    lambda_rev15     C_last10     n_over_last10    ret_last10
+    ____________________________________________    ___________    ________    ________    _____________    _________    _______________    _______    ________    __________    __________    ______________    ____________    __________    _____________    __________
+
+    "X1_ppo_40hz_r5_c1_th30_eta0.5_seed0_ep3000"    "c1_eta0.5"    0.015347    0.054353      0.061415        0.099707        0.13196           1        10.718        1.4315       1.4315          0.037465            0            0.09493          10           1102.9  
+    "X1_ppo_40hz_r5_c1_th30_eta0.5_seed1_ep3000"    "c1_eta0.5"    0.013626    0.024131      0.028158               0              0           1        11.941      0.012286      0.28585        -0.0098842            0         0.00023167           0             1142  
+    "X1_ppo_40hz_r5_c1_th30_eta2_seed0_ep3000"      "c1_eta2"      0.012323    0.062452       0.07064         0.11409        0.13783           1        8.3461        3.7203       3.7203           0.12943            0           0.084716          10           1062.7  
+    "X1_ppo_40hz_r5_c1_th30_eta2_seed1_ep3000"      "c1_eta2"       0.01374    0.019584      0.023997               0              0           1        16.644        3.7888       3.7888           0.24737            0            0.14369          10           892.61  
+    "X1_ppo_40hz_r5_c2_th30_eta0.5_seed0_ep3000"    "c2_eta0.5"    0.010477    0.048434      0.053776        0.037408       0.060939           1        11.726       0.81629      0.81629          0.014951            1           0.049902           9           1111.8  
+    "X1_ppo_40hz_r5_c2_th30_eta0.5_seed1_ep3000"    "c2_eta0.5"    0.041174    0.056976       0.06262         0.10067        0.15656           0        16.481       0.84722      0.84722          0.010589            0           0.041177          10           399.51  
+    "X1_ppo_40hz_r5_c2_th30_eta2_seed0_ep3000"      "c2_eta2"        0.2261    0.069428      0.074514         0.44789        0.55295           0        8.5646        3.5268       3.5268          0.080958            3           0.060479           9          -307.86  
+    "X1_ppo_40hz_r5_c2_th30_eta2_seed1_ep3000"      "c2_eta2"      0.011268    0.062429       0.06691         0.15017        0.19504           1        12.024        1.1209        1.139          0.070143            1           0.055072           5           1136.1  
+    "D16_ppo_40hz_r4_seed0_ep3000"                  "r4_w2"         0.02947    0.030472      0.033481       0.0061444       0.020528           1        2.5355           NaN          NaN               NaN          NaN                NaN         NaN              NaN  
+    "D16_ppo_40hz_r4_seed1_ep3000"                  "r4_w2"         0.02301    0.024641      0.028255               0              0           1        14.711           NaN          NaN               NaN          NaN                NaN         NaN              NaN  
+    "D16_ppo_40hz_r4_seed2_ep3000"                  "r4_w2"        0.012157    0.052587      0.057963         0.10473         0.1261           1        16.029           NaN          NaN               NaN          NaN                NaN         NaN              NaN  
+    "D16_ppo_40hz_r4_seed3_ep3000"                  "r4_w2"        0.011602    0.052377      0.058334        0.084206         0.1085           1        4.3599           NaN          NaN               NaN          NaN                NaN         NaN              NaN  
+    "D16_ppo_40hz_r4_seed4_ep3000"                  "r4_w2"        0.014874    0.048796      0.053504         0.10124         0.1261           1        6.3467           NaN          NaN               NaN          NaN                NaN         NaN              NaN  
+    "D16_ppo_40hz_r4_seed5_ep3000"                  "r4_w2"        0.016593    0.050931      0.056303         0.10404         0.1261           1        5.2535           NaN          NaN               NaN          NaN                NaN         NaN              NaN  
+    "D16_ppo_40hz_r4_seed6_ep3000"                  "r4_w2"        0.012059     0.05381      0.059418        0.090351        0.11144           1        7.2502           NaN          NaN               NaN          NaN                NaN         NaN              NaN  
+    "D16_ppo_40hz_r4_seed7_ep3000"                  "r4_w2"        0.012625    0.061918      0.068461         0.12107        0.16129           1        8.3883           NaN          NaN               NaN          NaN                NaN         NaN              NaN  
+    "D16_ppo_40hz_r4_seed8_ep3000"                  "r4_w2"        0.015051    0.064243      0.069176         0.26449        0.29912           1        10.855           NaN          NaN               NaN          NaN                NaN         NaN              NaN  
+    "D16_ppo_40hz_r4_seed9_ep3000"                  "r4_w2"        0.012945    0.064227      0.084227         0.10138         0.1261           1        7.2073           NaN          NaN               NaN          NaN                NaN         NaN              NaN  
+
