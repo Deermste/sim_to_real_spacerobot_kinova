@@ -73,6 +73,8 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X4.2 | Alle Bestandsagenten mit dem Protokoll X0.1 neu auswerten | ½ Tag | 2 h | X0.1 | 🔄 Nachtkette Schritt 5 |
 | X4.3 | Ratenpaar D10 auf 10 Seeds (optional) | ½ Tag | ≈ 3 h | E6 | ⏸ |
 | X4.4 | Entscheidung, was aus dem Paper fliegt oder in den Anhang geht | ½ Tag | – | Betreuer | ⏸ |
+| X4.5 | Sensitivität der eigenen Schwellen („folgt“, Budget-Toleranz, „ruhig“), ohne Training | ½ Tag | < 10 min | X4.1, X2.4 | ⬜ |
+| X4.6 | Ablation: Woher kommt der Abstand von RL zum Regler (Beobachtung, Kette)? 3 Varianten × 5 Seeds | 2 Tage | ≈ 7 h | E17 | ⬜ |
 | X5.1 | 3D-Bahn mit allen 7 Gelenken: Modell, Machbarkeit mit dem Regler aus X2 | 2–3 Tage | 1 h | X2.1 | 🔄 Machbarkeit ✅ 10.11., SK_desktop offen |
 | X5.2 | Pilot 3D: 2 Varianten × 2 Seeds, Go/No-Go | ½ Tag | ≈ 3 h | X5.1 | ⬜ |
 | X5.3 | Hauptlauf 3D: 10 Seeds, Vergleich mit Nullraum-Regler | 1 Tag | ≈ 6–8 h | E4 | ⏸ |
@@ -96,7 +98,9 @@ trainiert wird. Die Arbeit liegt bei etwa vier bis sechs Wochen, das Paper danac
 4. **Woche 4:** X5.1 und X5.2, dann Go/No-Go (E4). X4.2.
 5. **Zwischenstand mit dem Betreuer:** Geschichte festlegen (E7), X4.4 entscheiden, Labortermin für X3.2.
 6. **Danach:** X5.3, X3.2, dann Phase P.
-7. **X6 (Set-Point):** X6.0 bis X6.2 in freien Stunden. Pilot und Hauptlauf in Nächten, in denen keine Kette aus
+7. **X4.5 und X4.6:** X4.5 erste Runde sofort (nur Daten), zweite nach X1.3. X4.6 in der Nacht nach X1.3, vorher
+   Modus und Bitgleichheit prüfen.
+8. **X6 (Set-Point):** X6.0 bis X6.2 in freien Stunden. Pilot und Hauptlauf in Nächten, in denen keine Kette aus
    X1 bis X5 läuft. Der Labortag X6.6 kann mit X3.2 zusammenfallen (E16).
 
 X1 und X2 entscheiden, ob die neue Geschichte trägt. Fallen beide Ergebnisse unerwartet aus (Nebenbedingung hilft
@@ -368,6 +372,60 @@ Vorschlag zur Entscheidung mit dem Betreuer (E7):
 - Schnittstellendiagnose: als kompakter Abschnitt „Lessons for deployment“ mit dem Check (Fig. 13b) behalten.
 - Set-Point-Teil: behalten, aber kürzer. Er stützt den Pipeline-Teil, nicht die Kernfrage.
 
+### X4.5 Sensitivität der eigenen Schwellen
+
+Ergänzt am 11.11.2026 (Nutzer). **Frage:** Hängen die Kernaussagen an den Schwellen, die wir selbst gesetzt haben?
+
+- Schwellen: „folgt“ (ep_q4 < 3 / 5 / 8 cm in jeder Episode), Budget-Toleranz (0 / 5 / 10 mrad über θ), „ruhig“
+  (mittleres ori_max < 30 / 40 / 50 mrad). Dazu „folgt“ als RMS-Schwelle (< 3 / 5 cm) statt ep_q4.
+- Nur vorhandene Daten, kein Training. Skript `ext_x4_5_thresholds`, liest die Episoden-Dateien und rechnet die
+  Kennzahlen auf dem Gitter neu: `X_eval_X4_1_*` (K2), `X2_robust_20261111_112342_*` (K6, K8),
+  `X1_4_eval_*` (Filter), später X4.2 und X1.3.
+- Ergebnis: eine Tabelle je Kernaussage. Spalten sind die Schwellen, Einträge die Kennzahl, die die Aussage trägt
+  (Anzahl ruhig je Gewicht, Fisher-p; nicht dominiert; Anzahl folgt; Budget-Anteile). Dazu je Aussage „hält“ oder
+  „hält nicht“ auf dem ganzen Gitter.
+- Erste Runde jetzt mit X4.1 und X2.4, zweite Runde nach X1.3. Das Gitter vor der Rechnung festlegen (wie oben)
+  und nicht nachträglich ändern.
+
+### X4.6 Ablation: Woher kommt der Abstand zum Regler?
+
+Ergänzt am 11.11.2026 (Nutzer). **Frage:** RL liegt beim Tracking etwa beim doppelten Bahnfehler des Reglers bei
+gleicher Basisdrehung (K5, Faktor 2,0 bis 2,4). Liegt das an fehlender Information in der Beobachtung, an der
+trägen Befehlskette oder am Lernverfahren selbst? Auf der Reglerseite ist das schon getrennt: 1,2 mm mit idealer
+Kette, 5,7 mm mit der echten Kette (X2.1, A73). Auf der RL-Seite fehlt das Gegenstück.
+
+**Varianten** (aufbauend, r4 mit Gewicht 2, J6 0,9774, 3000 Episoden, je 5 Seeds, sonst wie D16):
+- **V0** Referenz: D16 r4 Seeds 0–9 (vorhanden).
+- **V1** Beobachtungsgrenzen in der richtigen Reihenfolge (A72, wie E9). Heute übernimmt `desktop_d12_train` die
+  `ObservationInfo` des alten Referenzagenten. Für V1 eigene Grenzen setzen.
+- **V2** V1 und mehr Information: Ausgang der Befehlskette für J2, J4, J6 (der Filterzustand, den der Regler
+  kennt) und eine Vorschau der Bahn (Sollpunkt relativ zum EE in 0,25 s und 0,5 s). 29 auf 38 Kanäle.
+- **V3** V2 mit kürzerer Filterzeitkonstante. Heute 0,95y + 0,05u bei 40 Hz, das sind etwa 0,49 s. Vorschlag
+  0,15 s (Koeffizient exp(−0,025 / 0,15) ≈ 0,85, E17).
+
+**Umsetzung:**
+- `desktop_build_model`: neuer Modus mit den zusätzlichen Kanälen und dem Filterkoeffizienten als Parameter
+  (`p_filt_a`). Vorher prüfen, ob der Koeffizient unter Fast Restart wirkt (Lehre aus X2.4,
+  `ext_x2_4_tunable`). Die alten Modi bleiben bitgleich (`ext_x0_check_model('compare')`).
+- `ext_kinsim`: dieselben Kanäle und derselbe Koeffizient, damit Front und Faktor mit derselben Kette gerechnet
+  werden. Für V3 die Regler-Front aus X2.1 mit dem kürzeren Filter neu rechnen (wenige Minuten). Sonst wäre der
+  Vergleich unfair, weil auch der Regler von der schnelleren Kette profitiert.
+- Training mit `desktop_d12_train` und einer Option für Modus und Grenzen. 15 Läufe zu etwa 25 min, eine Nacht.
+
+**Auswertung:** X0.1 in `SK_desktop` und Faktor gegen die Front mit derselben Kette (wie X2.3). Statistik
+`ext_stats`, jede Variante gegen die vorige (Holm über die drei Vergleiche). Kennzahlen: RMS, ori_max, Faktor,
+Anteil folgt, Ruck.
+
+**Erwartung** (vor dem Lauf festgehalten): V1 klein oder null, V2 deutlich (die Vorschau ersetzt die
+Vorsteuerung des Reglers), V3 für RL und Regler ähnlich, der Faktor ändert sich also wenig.
+
+**Grenzen:** Die Varianten bauen aufeinander auf. Der Anteil einer Änderung hängt deshalb von der Reihenfolge ab.
+Ein vollständiger Faktorversuch (8 Zellen × 5 Seeds, etwa 17 h) nur, wenn die Ergebnisse das verlangen. V2 und
+V3 verändern die Beobachtung bzw. die Sicherheitskette. Agenten daraus laufen nicht mit `deploy_tracking_v24/v25`
+und sind für den Labortag nicht vorgesehen. Die Ablation ist eine Aussage über die Simulation.
+
+**Paper:** Abschnitt Vergleich mit dem Regler (Erklärung von K5), eventuell Ausblick für das Interface-Design.
+
 ---
 
 ## X5 3D-Bahn mit Redundanz
@@ -569,3 +627,4 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
   so angreifbar wie bisher. Der Regler belegt zugleich, welche Ziele erreichbar sind. Der Aufwand ist klein, weil
   `ext_x2_controller` schon 7 Gelenke und 3D kann (X5.1).
 - **E16** ✅ 11.11.2026 (Nutzer): Auf dem nächsten Labortag Set-Point vor Tracking. Bei wenig Zeit nur Set-Point.
+- **E17** Filterzeitkonstante für X4.6 V3: Vorschlag 0,15 s (Koeffizient 0,85 bei 40 Hz) statt 0,49 s.
