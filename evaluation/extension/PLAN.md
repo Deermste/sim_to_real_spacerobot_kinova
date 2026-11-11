@@ -65,11 +65,11 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X1.4 | Sicherheitsfilter (CBF auf die Basisdrehung) auf r1-Agenten | 2 Tage | 2 h | X0.2 | 🔄 Teil 1 ✅ 10.11. |
 | X2.1 | Modellbasierter Regler (GJM, Nullraum), Machbarkeit auf dem Halbkreis | 2 Tage | < 1 h | X0.2 | ✅ 10.11. |
 | X2.2 | Modellbasierte Pareto-Front, Vergleich mit RL | 1 Tag | < 1 h | X1.3, X4.1 | ⬜ |
-| X2.3 | Robustheit gegen falsche Trägheitsparameter, RL gegen Regler | 2 Tage | 3 h | X2.1, X1.3 | 🔄 Teil 1 ✅ 10.11. |
-| X2.4 | RL mit Domain Randomization (DR-M und DR-voll), je 10 Seeds | 1 Tag | ≈ 10 h | – | 🔄 Nacht 10./11.11. |
+| X2.3 | Robustheit gegen falsche Trägheitsparameter, RL gegen Regler | 2 Tage | 3 h | X2.1, X1.3 | 🔄 Teil 1 ✅ 10.11., X4.1 und X2.4 ✅ 11.11. |
+| X2.4 | RL mit Domain Randomization (DR-M und DR-voll), je 10 Seeds | 1 Tag | ≈ 10 h | – | ✅ 11.11. (X0.1 in SK_desktop offen) |
 | X3.1 | Kinematische Free-Floating-Emulation im Deploy-Skript, Validierung in Simulation | 3 Tage | 2 h | X0.2 | ✅ 10.11. (Vorhersage offen) |
 | X3.2 | Labortag: Emulation an gegen aus | 1 Tag Labor + 1 Tag Auswertung | – | Labor, E5 | ⏸ |
-| X4.1 | Gewichtsreihe aus D17 auf 10 Seeds auffüllen | ½ Tag | ≈ 13 h | E3 | 🔄 läuft seit 10.11. 10:51 |
+| X4.1 | Gewichtsreihe aus D17 auf 10 Seeds auffüllen | ½ Tag | ≈ 13 h | E3 | ✅ 11.11. |
 | X4.2 | Alle Bestandsagenten mit dem Protokoll X0.1 neu auswerten | ½ Tag | 2 h | X0.1 | 🔄 Nachtkette Schritt 5 |
 | X4.3 | Ratenpaar D10 auf 10 Seeds (optional) | ½ Tag | ≈ 3 h | E6 | ⏸ |
 | X4.4 | Entscheidung, was aus dem Paper fliegt oder in den Anhang geht | ½ Tag | – | Betreuer | ⏸ |
@@ -278,6 +278,9 @@ Randomisierung der einzige Unterschied ist. Nicht mehr auf X1.3 warten. Eine Var
   Trainingsbereichs (Gliedmassen, Montage, Servo, Drift, feste Messfehler).
 - Ersetzt im Paper die nicht reproduzierbare CDR-Studie (ein Seed je Merkmal, Modell nicht archiviert), soweit
   die Basismasse betroffen ist.
+- Stand 11.11.2026: 20 Agenten trainiert, Robustheit auf den 26 Szenarien ausgewertet (`RESULTS.md`, K8). Offen:
+  X0.1 in `SK_desktop` für die 20 DR-Agenten (etwa 5 min) und ein Test auf Ziehungen aus der DR-voll-Verteilung,
+  dieselben 40 wie bei der Einstellung der Rt-Regler (kinematisch, wenige Minuten).
 
 ---
 

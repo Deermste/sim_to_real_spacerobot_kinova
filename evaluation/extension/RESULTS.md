@@ -13,17 +13,18 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 - Jeder Eintrag endet mit „Paper:“ und dem Ziel (Abschnitt, Tabelle, Abbildung) sowie „offen“ oder „übertragen“.
 - Kernaussagen nach jedem Eintrag aktualisieren.
 
-## Kernaussagen (Stand 10.11.2026)
+## Kernaussagen (Stand 11.11.2026)
 
 | # | Aussage | Beleg | Sicherheit |
 |---|---|---|---|
 | K1 | Der Basis-Bonus des alten Rewards (auch neben der Bahn gezahlt) erzeugt den späten Tracking-Verlust | D14, D16, Ausgangslage | 3 Seeds je Variante, Hardware bestätigt |
-| K2 | Ein Gewicht des glatten Basis-Terms steuert die Basisdrehung nicht, der Seed entscheidet zwischen ruhiger und genauer Lösung | D17, D20 | 3 bzw. 8 Seeds je Gewicht, wird in X4.1 auf 10 aufgefüllt |
+| K2 | Ein Gewicht des glatten Basis-Terms steuert die Basisdrehung nicht (Median 50–54 mrad bei w 0 bis 16). Der Seed entscheidet zwischen ruhiger und genauer Lösung, ruhige Agenten zahlen mit Bahnfehler. Ein größeres Gewicht erhöht vor allem den Befehlsruck | D17, D20, X4.1 | 10 Seeds je Gewicht, 21 Episoden je Agent, alle Holm p ≥ 0,74 |
 | K3 | Mit den Trainingsgrenzen braucht die Bahn etwa 0,055 rad Basisdrehung, ohne J6-Grenze reichen etwa 0,021 rad | D15 | obere Schranken, kein bewiesenes Minimum. Korrektur 10.11. (A73): ohne J6-Grenze 0,020 rad schon bei voller Bahn (1,2 mm, ideale Kette) bzw. 5,7 mm mit der Befehlskette |
 | K4 | Gelenkbahnen der Hardware ergeben dieselbe Basisdrehung wie die Fixed-Base-Simulation (≤ 2 mrad) | D19 | 8 Agenten, offene Rechnung |
 | K5 | Ein modellbasierter Regler (exaktes Modell, kennt die Befehlskette) dominiert alle RL-Agenten: 0,020 rad bei 5,7 mm, 0,013 rad bei 9 mm | X2.1 | Kinematischer Simulator, in Simscape auf 3e-7 bestätigt. Robustheit offen (X2.3) |
 | K6 | Auch mit Nominalmodell bleibt der Regler bei falscher Masse, Trägheit, Verzögerung, Verstärkung, Rauschen, Startstellung und Drift vor den Agenten. Am knappsten bei Kinematikfehlern (Montage) und Drift um x | X2.3 Teil 1 | 26 Szenarien, 20 Agenten ohne Randomisierung, nur kinematisch |
 | K7 | Auf einer gekippten 3D-Bahn mit allen sieben Gelenken senkt der Nullraum des Reglers die Basisdrehung je nach Kipprichtung stark (−30°: 124 auf 10 mrad bei 2 mm) oder kaum (+30°: 14 auf 11 mrad). In der Ebene bringen die zusätzlichen Gelenke wenig | X5.1 | Nur Regler, kinematisch, nominal. RL in 3D offen (X5.2) |
+| K8 | Domain Randomization macht den Bahnfehler der Agenten fast unempfindlich gegen falsche Basismasse (+0,1 bis +0,4 statt +1,7 mm), DR-voll folgt auch bei den meisten Fehlern außerhalb des Trainingsbereichs. Die Regler mit Nominalmodell bleiben trotzdem vorn (Faktor 2,0 bis 2,4) | X2.4 | 10 Seeds je Variante, 26 Szenarien, nur kinematisch. X0.1 in SK_desktop offen |
 
 X0.1 (Auswerteprotokoll) steht und reproduziert D17. Mit ±2° Startstörung folgen 19 von 20 D16/D17-Agenten in
 allen 21 Episoden der Bahn, der Ausreißer ist ein ruhiger Agent. X0.2 (kinematischer Simulator) trifft
@@ -38,6 +39,9 @@ unterschätzte den Spielraum ohne J6-Grenze (A73). X2.3 Teil 1: In 26 Szenarien 
 Anfangsfehlern fand sich kein Fall, in dem die Agenten robust besser sind als der Regler mit Nominalmodell (K6).
 X5.1: Die gekippte 3D-Bahn ist mit allen sieben Gelenken fahrbar. Bei −30° Kippung macht der Nullraum den
 Unterschied (K7). Die Beobachtungsgrenzen aus A72 würden die Policy dort für q7 oft blind machen (E9).
+X4.1: Mit 10 Seeds je Gewicht bleibt K2 bestehen, kein Gewicht verschiebt die Basisdrehung, nur der Befehlsruck
+steigt mit dem Gewicht. X2.4: Randomisierte Agenten verlieren bei falscher Basismasse kaum noch Bahn, bleiben aber
+hinter den Reglern (K8).
 
 ## Ausgangslage (aus dem alten Desktop-Plan und dem Paper, Stand 10.11.2026)
 
@@ -594,13 +598,18 @@ w* = −kOri·e_ori statt 0 (`ext_x2_controller`, Option `kOri`).
   Einstellung. Das ist der Punkt, an dem ein randomisiert trainierter Agent einen Vorteil haben könnte (X2.4).
 - Die Drift um x kann keiner der Regler ausgleichen, weil die drei Gelenke nur in der Ebene wirken.
 
-**Noch offen in X2.3:** Agenten aus X4.1, X1.3 und X2.4 sowie der Sicherheitsfilter aus X1.4.
+**Nachtrag 11.11.2026: alle 50 r4-Agenten aus X4.1 und die 20 DR-Agenten** (`X2_robust_20261111_112342_*`,
+Auswertung `ext_x2_robust_report`, Einzelheiten unter X2.4). Ohne Randomisierung sind von 1300
+Agent-Szenario-Paaren 10 nicht dominiert (gegen die vier Regler aus X2.1), wieder bei Gegendrift und
+Montagefehlern. Mit 50 statt 20 Agenten ändert sich das Bild aus Teil 1 nicht.
+
+**Noch offen in X2.3:** Agenten aus X1.3 und der Sicherheitsfilter aus X1.4.
 
 Datenquelle: `X2_robust_20261110_115447_episodes.csv`, `_summary.csv`, `.mat`.
 
 Paper: neue Vergleichsbasis (Robustheit), Einleitung (Aussage zu Trägheitsparametern). Offen.
 
-### X2.4 Domain Randomization: Vorbereitung und Einstellung des Reglers ✅ 10.11.2026 (Training läuft)
+### X2.4 Domain Randomization ✅ 11.11.2026 (X0.1 in SK_desktop für die DR-Agenten offen)
 
 **Abstimmbarkeit** (`ext_x2_4_tunable`): Unter Fast Restart (wie im RL-Training) wurden Basismasse (Simscape,
 compiletime) und Verzögerung (Dialogwert des Delay-Blocks) stillschweigend ignoriert. Verstärkung, Startstellung
@@ -626,7 +635,77 @@ Kp, J6-Seite) auf 40 Ziehungen aus der DR-voll-Verteilung, Nominalmodell, Invers
 
 Datenquelle: `X2_4_tune_ctrl_20261110_125630.csv`, `X2_4_ctrl_tuned.mat`.
 
-Paper: Robustheitsvergleich (Methode, Fairness). Offen.
+**Training** (Nachtkette `ext_x2_4_night`, `X2_4_runlog.csv`): 20 Läufe (DR-M und DR-voll, Seeds 0–9), alle
+erfolgreich, je 21–26 min. Ein Neustart durch Windows Update um 03:52 brach DR-M Seed 5 ab. Die Kette lief ab
+07:32 weiter und übersprang die fertigen Agenten. Letzter gleitender Return: DR-M 2101–2419, DR-voll 1628–2283
+(andere Bedingungen, nicht direkt vergleichbar). Je Episode gezogene Werte in `X2_4_*_dr.csv`.
+
+**Robustheit** (Schritt 3 der Nachtkette, `ext_x2_robust('agents', ...)`, 26 Szenarien wie X2.3, kinematischer
+Simulator): 70 Agenten (50 r4 aus X4.1, 10 DR-M, 10 DR-voll) und 7 Regler (vier aus X2.1, die drei auf die
+DR-voll-Verteilung eingestellten Rt). 2926 Episoden in 11 min. Auswertung
+`ext_x2_robust_report('20261111_112342')`. Referenz ist w 2 aus D16: gleicher Reward, Seeds 0–9, ohne
+Randomisierung. Rt_mid ist mit Rβ 46 identisch (gleiche Einstellung).
+
+RMS [mm] / größte Basisdrehung [mrad], Agenten als Median über 10 Seeds, in Klammern Anzahl „folgt“:
+
+| Szenario | w 2 | DR-M | DR-voll | Rβ 46 | Rt_acc | Rt_calm |
+|---|---|---|---|---|---|---|
+| nominal | 10,9 / 52 (10) | 12,4 / 54 (9) | 15,6 / 39 (10) | 12,8 / 8 | 6,1 / 18 | 16,7 / 6 |
+| Masse ×0,25 | 18,3 / 101 (9) | 12,7 / 138 (9) | 15,5 / 70 (10) | 15,6 / 17 | 9,3 / 41 | 20,3 / 12 |
+| Masse ×0,5 | 13,8 / 75 (10) | 11,8 / 90 (9) | 14,5 / 57 (10) | 14,1 / 12 | 7,4 / 28 | 18,5 / 9 |
+| Masse ×2 | 12,0 / 32 (10) | 12,0 / 31 (9) | 16,6 / 20 (10) | 11,6 / 5 | 4,8 / 10 | 15,0 / 3 |
+| Trägheit ×0,5 | 13,5 / 78 (10) | 12,6 / 90 (9) | 14,8 / 50 (10) | 13,7 / 12 | 7,3 / 28 | 18,5 / 10 |
+| Verzögerung +50 ms | 13,7 / 52 (10) | 12,6 / 56 (9) | 14,3 / 36 (10) | 13,4 / 8 | 7,4 / 18 | 18,3 / 6 |
+| Startstellung ±2° | 12,9 / 54 (10) | 13,6 / 56 (9) | 15,7 / 36 (10) | 13,5 / 11 | 6,6 / 20 | 17,7 / 7 |
+| Montage x +5 cm | 26,9 / 64 (9) | 32,8 / 67 (9) | 22,0 / 53 (10) | 20,6 / 19 | 11,0 / 30 | 26,3 / 11 |
+| Montage x −5 cm | 38,3 / 39 (9) | 42,4 / 40 (10) | 31,6 / 19 (10) | 21,0 / 20 | 14,6 / 26 | 34,9 / 17 |
+| Montage z +5 cm | 36,1 / 60 (8) | 33,0 / 60 (8) | 36,1 / 43 (9) | 27,7 / 14 | 28,1 / 23 | 30,6 / 9 |
+| Drift y −2 mrad/s | 15,0 / 30 (10) | 15,2 / 30 (10) | 19,3 / 21 (10) | 11,0 / 23 | 5,3 / 24 | 14,9 / 18 |
+
+Je Gruppe über alle 26 Szenarien. „Δ Masse“: je Agent das Mittel des Zuwachses gegen nominal über die sieben
+Szenarien mit Basismasse und Trägheit (der Bereich der Randomisierung), dann Median über die Seeds. p:
+Mann-Whitney-U gegen w 2, zweiseitig, unkorrigiert. Faktor und „nicht dominiert“ gegen alle 7 Regler (in
+Klammern gegen die 4 aus X2.1):
+
+| Gruppe | nominal p RMS / ori | Δ Masse RMS [mm] (p) | Δ Masse ori [mrad] (p) | alle folgen | Faktor | nicht dominiert |
+|---|---|---|---|---|---|---|
+| w 2 | Referenz | +1,7 | +7,9 | 20 von 26 | 2,0 | 2 (2) |
+| DR-M | 0,85 / 0,57 | +0,4 (0,011) | +14,7 (0,021) | 2 von 26 | 2,0 | 4 (4) |
+| DR-voll | 0,10 / 0,43 | +0,1 (0,0028) | +5,1 (0,31) | 25 von 26 | 2,4 | 9 (11) |
+
+Die übrigen Gewichte ohne Randomisierung (w 0, 4, 8, 16) liegen bei Δ Masse RMS +1,1 bis +1,8 mm (p ≥ 0,16)
+und nicht dominiert 0 bis 4.
+
+**Deutung:**
+- Randomisierung macht den Bahnfehler unempfindlich gegen falsche Basismasse und Trägheit. Über die sieben
+  Szenarien im Trainingsbereich wächst der RMS je Agent um +0,4 mm (DR-M) und +0,1 mm (DR-voll) statt +1,7 mm.
+  Nach Holm über die zwei DR-Gruppen bleiben beide unter 0,05 (0,0057 und 0,011). Am deutlichsten ist es bei Masse
+  ×0,25 (DR-voll 15,5 mm, nominal 15,6 mm, w 2 von 10,9 auf 18,3 mm).
+- DR-M hält die Bahn bei leichter Basis, indem es mehr Basisdrehung zulässt (138 statt 101 mrad bei ×0,25,
+  Δ Masse ori +14,7 statt +7,9 mrad). DR-voll bleibt in beiden Größen ruhiger (70 mrad bei ×0,25).
+- DR-voll ist nominal ungenauer (15,6 statt 10,9 mm, p 0,10) und dreht im Median weniger (39 statt 52 mrad,
+  p 0,43). Die Verteilung ist zweigeteilt: 5 von 10 Seeds liegen bei 23–28 mrad mit 14,0–22,3 mm, die anderen bei
+  50–67 mrad. Ohne Randomisierung sind es 2 von 10. Der Unterschied ist bei 10 Seeds nicht belastbar.
+- DR-voll folgt in 25 von 26 Szenarien mit allen Seeds (w 2: 20). Auch außerhalb des Trainingsbereichs verliert es
+  weniger: Montage x +5 cm +6,1 statt +16,9 mm, x −5 cm +16,7 statt +25,3 mm (p 0,004 und 0,002, unkorrigiert).
+- DR-M Seed 1 folgt in 24 von 26 Szenarien nicht, auch nominal nicht (31,9 mm / 29 mrad, ep_q4 55 mm). Er hat den
+  niedrigsten Trainingsreturn der Reihe. Wie w0_s1 in X4.1 ist er ruhig, gibt aber die Bahn auf. Ohne ihn fällt
+  DR-M nur in einem weiteren Agent-Szenario-Paar aus (w 2: 7 von 260).
+- Die Regler mit Nominalmodell bleiben vorn. Der Faktor liegt im Median bei 2,0 (DR-M) und 2,4 (DR-voll). DR-voll
+  ist in 9 von 260 Agent-Szenario-Paaren nicht dominiert, alle bei Gegendrift y −2 mrad/s (4) und Montage x −5 cm
+  (5). Dort drehen die ruhigen DR-voll-Agenten weniger als jeder folgende Regler. Diese Regler haben keine
+  Rückführung der Basislage. Mit kOri 0,5 war bei der Gegendrift in X2.3 kein Agent mehr frei.
+- Auch die Regler verlieren bei Masse ×0,25 nur wenig Bahn (Rβ 46 +2,8 mm, Rt_acc +3,2 mm). Die Randomisierung
+  schließt also den Abstand in der Empfindlichkeit, nicht im Niveau. Ein Fall, in dem RL robust besser ist als
+  ein zurückhaltend eingestellter Regler, wurde auch mit Randomisierung nicht gefunden.
+- Grenzen: Training in Simscape, Test im kinematischen Simulator (X0.2: ≤ 0,45 mm). Das Protokoll X0.1 in
+  `SK_desktop` für die 20 DR-Agenten fehlt noch. Ein Test auf Ziehungen aus der Trainingsverteilung selbst (wie
+  bei der Einstellung der Rt-Regler) fehlt ebenfalls. Der Regler kennt die Befehlskette und den Zweig von J6.
+
+Datenquelle: `X2_robust_20261111_112342_summary.csv`, `_episodes.csv`, `.mat`, `X2_4_runlog.csv`,
+`X2_4_*_train.csv`, `X2_4_*_dr.csv`. Agenten `SavedAgents/MotionProfile/X2_4/`.
+
+Paper: Robustheitsvergleich (Methode, Fairness), ersetzt die CDR-Studie für die Basismasse. Offen.
 
 ## X3 Kinematische Emulation
 
@@ -680,11 +759,54 @@ Paper: neuer Abschnitt Emulation (Methode, Validierung, Grenzen). Offen.
 
 ## X4 Belastbarkeit
 
-### X4.1 Gewichtsreihe auf 10 Seeds (läuft)
+### X4.1 Gewichtsreihe auf 10 Seeds ✅ 11.11.2026
 
-Gestartet am 10.11.2026 um 10:51 mit `ext_x4_1_run()` als eigener MATLAB-Prozess (Log `X4_1_matlab.log`). 30 Läufe,
-Gewichte 0, 2, 4, 8, 16, neue Seeds 3–9 (Gewicht 2: 8–9), je 3000 Episoden. Danach automatisch `ext_x4_1_eval`.
-Kurztest vorher bestanden (2 × 16 Episoden, Auswertung der 20 vorhandenen Agenten in 4,7 min).
+**Frage:** Steuert das Gewicht w des glatten Basis-Terms (r4) die Basisdrehung, wenn je Gewicht 10 Seeds vorliegen?
+
+**Aufbau:**
+- `ext_x4_1_run()` vom 10.11. 10:51 bis 23:20 als eigener MATLAB-Prozess (Log `X4_1_matlab.log`). 30 Läufe mit
+  Gewicht 0, 4, 8, 16 (neue Seeds 3–9) und Gewicht 2 (Seeds 8, 9), je 3000 Episoden. Alle erfolgreich
+  (`X4_1_runlog.csv`).
+- Danach `ext_x4_1_eval()`: 50 Agenten (w 2 aus D16, die übrigen aus D17), je 21 Episoden nach X0.1 in
+  `SK_desktop`, zusammen 1050 Episoden. Statistik `ext_stats` gegen w 2: Mann-Whitney-U, Holm über die vier
+  Gewichte, Fisher für die Anteile.
+- Zusatz ohne neues Rechnen: `ext_x4_1_report('20261110_233147')` (Spannweiten, Ruck, Spearman).
+
+**Ergebnis** (Mittel je Agent über 21 Episoden, dann Median und Spannweite über die 10 Seeds):
+
+| w | ori_max [mrad] | RMS [mm] | Ruck [rad/s³] | p Holm ori / RMS / Ruck | folgt | Budget 0,03 / 0,05 | ruhig |
+|---|---|---|---|---|---|---|---|
+| 0 | 53,9 (25,4–81,4) | 13,7 (11,3–26,9) | 5,1 | 1 / 1 / 0,49 | 9 | 1 / 1 | 1 |
+| 2 | 52,5 (24,6–64,2) | 13,9 (11,6–29,5) | 7,2 | Referenz | 10 | 2 / 3 | 2 |
+| 4 | 52,9 (30,8–72,1) | 16,0 (10,4–27,9) | 10,5 | 1 / 1 / 0,49 | 10 | 0 / 2 | 1 |
+| 8 | 52,8 (20,3–78,8) | 14,5 (11,4–18,4) | 10,6 | 1 / 1 / 0,49 | 10 | 1 / 2 | 1 |
+| 16 | 49,7 (26,8–58,7) | 15,5 (14,0–21,3) | 15,3 | 1 / 0,74 / 0,085 | 10 | 1 / 4 | 2 |
+
+„Budget θ“: schlechteste der 21 Episoden mit ori_max ≤ θ + 5 mrad (wie X1.3, unabhängig von „folgt“). „Ruhig“:
+mittleres ori_max < 40 mrad. Fisher gegen w 2 für „folgt“ und beide Budgets überall p ≥ 0,47, nach Holm 1.
+
+**Deutung:**
+- Kein Gewicht unterscheidet sich von w 2, weder im Median der Basisdrehung (49,7–53,9 mrad) noch im Bahnfehler
+  noch in den Anteilen. Spearman über alle 50 Agenten: w gegen ori_max −0,18 (p 0,21). K2 hält mit 10 Seeds.
+- Die Streuung innerhalb eines Gewichts ist größer als der Unterschied zwischen den Gewichten (20–81 mrad). Jedes
+  Gewicht hat ein bis zwei ruhige Agenten, zusammen 7 von 50 (w0_s1, w2_s0, w2_s1, w4_s2, w8_s9, w16_s0,
+  w16_s8). Welcher Seed ruhig wird, sagt w nicht voraus.
+- Ruhige Agenten zahlen mit Bahnfehler: ori_max gegen RMS −0,47 (Spearman, p 6e-4). Die sieben ruhigen Agenten
+  liegen bei 16,8–29,5 mm, die Gruppenmediane bei 13,7–16,0 mm. Am günstigsten sind w8_s9 (18,4 mm / 20 mrad)
+  und w16_s0 (17,5 mm / 27 mrad). w0_s1 folgt nicht (ep_q4 bis 55 mm), ein ruhiger Agent, der die Bahn aufgibt.
+- Was w verändert, ist der Befehlsruck: Median 5,1 bei w 0 bis 15,3 rad/s³ bei w 16, Spearman 0,58 (p 8e-6).
+  Die Einzeltests gegen w 2 sind nach Holm nicht signifikant (w 16: p 0,085). In diesen Läufen macht ein größeres
+  Gewicht also eher den Befehl unruhiger als die Basis ruhiger.
+- Budget: 0,03 rad halten 5 von 50 Agenten, 0,05 rad 12 von 50, ohne Zusammenhang mit w. Das ist die
+  Vergleichsgröße für H1a und H1b (X1.3).
+- Grenzen: nur r4, 3000 Episoden, ebene Bahn, nominale Masse. Die Ruck-Kennzahl ist der Ruck des Befehls hinter
+  der Kette, nicht der gemessene Ruck der Gelenke.
+
+Datenquelle: `X_eval_X4_1_20261110_233147_agents.csv`, `_episodes.csv`, `.mat`, `X4_1_stats_20261110_233147.mat`,
+`X4_1_runlog.csv`. Agenten `SavedAgents/MotionProfile/D17/` (neu Seeds 3–9) und `D16/` (neu Seeds 8, 9).
+
+Paper: Abschnitt Zielkonflikt (bisher D17 mit drei Seeds), Abbildung RMS gegen Basisdrehung mit X1.3 und der
+Front aus X2.2. Offen.
 
 ### X4.2 Bestandsagenten nach Protokoll X0.1 (vorbereitet, läuft in der Nacht 10./11.11.)
 
