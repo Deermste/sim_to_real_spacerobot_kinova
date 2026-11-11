@@ -24,7 +24,7 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 | K5 | Ein modellbasierter Regler (exaktes Modell, kennt die Befehlskette) dominiert alle RL-Agenten: 0,020 rad bei 5,7 mm, 0,013 rad bei 9 mm | X2.1 | Kinematischer Simulator, in Simscape auf 3e-7 bestätigt. Robustheit offen (X2.3) |
 | K6 | Auch mit Nominalmodell bleibt der Regler bei falscher Masse, Trägheit, Verzögerung, Verstärkung, Rauschen, Startstellung und Drift vor den Agenten. Am knappsten bei Kinematikfehlern (Montage) und Drift um x | X2.3 Teil 1 | 26 Szenarien, 20 Agenten ohne Randomisierung, nur kinematisch |
 | K7 | Auf einer gekippten 3D-Bahn mit allen sieben Gelenken senkt der Nullraum des Reglers die Basisdrehung je nach Kipprichtung stark (−30°: 124 auf 10 mrad bei 2 mm) oder kaum (+30°: 14 auf 11 mrad). In der Ebene bringen die zusätzlichen Gelenke wenig | X5.1 | Nur Regler, kinematisch, nominal. RL in 3D offen (X5.2) |
-| K8 | Domain Randomization macht den Bahnfehler der Agenten fast unempfindlich gegen falsche Basismasse (+0,1 bis +0,4 statt +1,7 mm), DR-voll folgt auch bei den meisten Fehlern außerhalb des Trainingsbereichs. Die Regler mit Nominalmodell bleiben trotzdem vorn (Faktor 2,0 bis 2,4) | X2.4 | 10 Seeds je Variante, 26 Szenarien, nur kinematisch. X0.1 in SK_desktop offen |
+| K8 | Domain Randomization macht den Bahnfehler der Agenten fast unempfindlich gegen falsche Basismasse (+0,1 bis +0,4 statt +1,7 mm). Die Regler mit Nominalmodell bleiben trotzdem vorn (Faktor 2,0 bis 2,4) | X2.4, X4.5 | 10 Seeds je Variante, 26 Szenarien, nur kinematisch. X0.1 in SK_desktop offen. „DR-voll folgt öfter“ hängt an der Schwelle (X4.5), nicht Teil der Aussage |
 
 X0.1 (Auswerteprotokoll) steht und reproduziert D17. Mit ±2° Startstörung folgen 19 von 20 D16/D17-Agenten in
 allen 21 Episoden der Bahn, der Ausreißer ist ein ruhiger Agent. X0.2 (kinematischer Simulator) trifft
@@ -758,6 +758,8 @@ und nicht dominiert 0 bis 4.
   50–67 mrad. Ohne Randomisierung sind es 2 von 10. Der Unterschied ist bei 10 Seeds nicht belastbar.
 - DR-voll folgt in 25 von 26 Szenarien mit allen Seeds (w 2: 20). Auch außerhalb des Trainingsbereichs verliert es
   weniger: Montage x +5 cm +6,1 statt +16,9 mm, x −5 cm +16,7 statt +25,3 mm (p 0,004 und 0,002, unkorrigiert).
+  Korrektur 11.11.2026 (X4.5): Der Vergleich 25 gegen 20 Szenarien gilt nur mit der Schwelle 5 cm aus X0.1. Mit
+  8 cm oder RMS < 5 cm folgen beide Gruppen gleich oft.
 - DR-M Seed 1 folgt in 24 von 26 Szenarien nicht, auch nominal nicht (31,9 mm / 29 mrad, ep_q4 55 mm). Er hat den
   niedrigsten Trainingsreturn der Reihe. Wie w0_s1 in X4.1 ist er ruhig, gibt aber die Bahn auf. Ohne ihn fällt
   DR-M nur in einem weiteren Agent-Szenario-Paar aus (w 2: 7 von 260).
@@ -953,6 +955,50 @@ Datenquelle: `X_eval_X4_2_20261111_144608_agents.csv`, `_episodes.csv`, `.mat`, 
 `X4_2_report_20261111_144608.csv`, `X4_2_inventory.csv`.
 
 Paper: alle Simulationszahlen der Bestandsagenten (Tabellen und Text zu D10 bis D16). Offen.
+
+### X4.5 Sensitivität der eigenen Schwellen, Runde 1 ✅ 11.11.2026
+
+**Frage:** Hängen die Kernaussagen an den Schwellen, die wir gesetzt haben („folgt“, Budget-Toleranz, „ruhig“)?
+
+**Aufbau:** `ext_x4_5_thresholds()`, nur vorhandene Episoden-Dateien, kein Training. Gitter und Kriterium „hält“
+standen vorher fest (PLAN X4.5, Kopf des Skripts):
+- folgt: ep_q4 < 3 / 5 / 8 cm in jeder Episode ohne Abbruch, oder RMS < 3 / 5 cm in jeder Episode
+- Budget: schlechteste Episode ≤ θ + 0 / 5 / 10 mrad
+- ruhig: mittleres ori_max < 30 / 40 / 50 mrad
+- K2 hält, wenn kein Gewicht in einem Anteil (folgt, Budget 0,03, Budget 0,05, ruhig) von w 2 abweicht (Fisher,
+  Holm, alle p ≥ 0,05). K6 hält, wenn gegen die vier Regler aus X2.1 der Median des Faktors in jeder Gruppe ohne
+  Randomisierung ≥ 1,5 ist und höchstens 5 % der Paare nicht dominiert sind. K8 hält, wenn DR-voll in mehr
+  Szenarien mit allen Seeds folgt als w 2 und der Faktor gegen alle sieben Regler im Median ≥ 1,5 ist. Filter
+  (X1.4, nach der Kette, α 5) hält, wenn jeder folgende Agent das Budget hält. X1.2 hält, wenn mit Kosten A
+  mindestens so viele Agenten das Budget halten wie mit B.
+- Selbstprüfung: Mit „ep_q4 < 5 cm“ kommen dieselben Zahlen heraus wie in `ext_x2_robust_report` (w 2: 2 nicht
+  dominiert gegen vier Regler, DR-voll: 9 gegen sieben).
+
+**Ergebnis:**
+
+| Aussage | Gitterpunkte | hält | Bemerkung |
+|---|---|---|---|
+| K2 (Gewicht steuert die Basis nicht) | 45 | 45 | kleinstes p nach Holm 0,84. Ruhige Agenten je Gewicht (w 0/2/4/8/16): 1/1/0/1/1 bei 30 mrad, 2/3/2/2/5 bei 50 mrad |
+| K6 (Regler vorn, ohne Randomisierung) | 5 | 5 | Faktor-Median mindestens 1,98, nicht dominiert 10 von 1300 Paaren (0,8 %) auf allen Punkten |
+| K8 (DR-voll, Regler trotzdem vorn) | 5 | 2 | Faktor 2,37–2,38 überall. „Folgt in mehr Szenarien als w 2“ nur bei ep_q4 < 5 cm (25 gegen 20) und RMS < 3 cm (22 gegen 16). Bei 8 cm und RMS < 5 cm beide gleich (26/26, 24/24), bei 3 cm folgt in keinem Szenario jede Gruppe vollständig |
+| Filter X1.4 (nach der Kette) | 9 | 6 | hält mit 5 und 10 mrad Toleranz. Ohne Toleranz liegen 14 der 77 folgenden Läufe knapp über θ, höchstens 0,27 mrad |
+| X1.2 (Kosten A ≥ B) | 15 | 15 | A: 2 von 4 mit Budget, B: 0 auf allen Punkten |
+
+**Deutung:**
+- K2, K6 und die Wahl der Kostenform hängen nicht an den Schwellen.
+- Bei K8 trägt nur ein Teil. Robust sind: Die Regler bleiben vorn (Faktor ≥ 2,37), und die Randomisierung macht den
+  Bahnfehler unempfindlich gegen die Masse (Δ RMS, ohne Schwelle). Nicht robust ist die Aussage, DR-voll folge in
+  mehr Szenarien als w 2. Sie gilt nur für die Schwelle von 5 cm aus X0.1 (und RMS < 3 cm). Im Paper nur mit
+  Schwelle nennen oder weglassen.
+- Filter: „hält das Budget praktisch exakt“ heißt genauer höchstens 0,27 mrad über θ. Das ist die Formulierung
+  für das Paper.
+- Runde 2 nach X1.3 (Budget-Reihe, H1a/H1b) mit demselben Gitter.
+
+Datenquelle: `X4_5_K2_20261111_154036.csv`, `_K6_`, `_K8_`, `_F_`, `_X12_` (gleicher Zeitstempel), Eingänge
+`X_eval_X4_1_20261110_233147_*`, `X2_robust_20261111_112342_episodes.csv`, `X1_4_eval_20261110_130405.csv`,
+`X_eval_X1_2_20261111_150856_*`.
+
+Paper: Anhang oder Fußnote zur Wahl der Schwellen, Formulierung von K8 und Filter. Offen.
 
 ## X5 3D
 

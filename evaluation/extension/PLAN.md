@@ -74,7 +74,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X4.2 | Alle Bestandsagenten mit dem Protokoll X0.1 neu auswerten | ½ Tag | 2 h | X0.1 | ✅ 11.11. |
 | X4.3 | Ratenpaar D10 auf 10 Seeds (optional) | ½ Tag | ≈ 3 h | E6 | ⏸ |
 | X4.4 | Entscheidung, was aus dem Paper fliegt oder in den Anhang geht | ½ Tag | – | Betreuer | ⏸ |
-| X4.5 | Sensitivität der eigenen Schwellen („folgt“, Budget-Toleranz, „ruhig“), ohne Training | ½ Tag | < 10 min | X4.1, X2.4 | ⬜ |
+| X4.5 | Sensitivität der eigenen Schwellen („folgt“, Budget-Toleranz, „ruhig“), ohne Training | ½ Tag | < 10 min | X4.1, X2.4 | 🔄 Runde 1 ✅ 11.11., Runde 2 nach X1.3 |
 | X4.6 | Ablation: Woher kommt der Abstand von RL zum Regler (Beobachtung, Kette)? 3 Varianten × 5 Seeds | 2 Tage | ≈ 7 h | E17 | ⬜ |
 | X5.1 | 3D-Bahn mit allen 7 Gelenken: Modell, Machbarkeit mit dem Regler aus X2 | 2–3 Tage | 1 h | X2.1 | 🔄 Machbarkeit ✅ 10.11., SK_desktop offen |
 | X5.2 | Pilot 3D: 2 Varianten × 2 Seeds, Go/No-Go | ½ Tag | ≈ 3 h | X5.1 | ⬜ |
