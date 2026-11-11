@@ -60,7 +60,8 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X0.2 | Kinematischer Closed-Loop-Simulator (Policy, Befehlskette, GJM), gegen Simscape validiert | 2–3 Tage | 1 h | – | ✅ 10.11. |
 | X0.3 | Literaturprüfung für X2 und X3 (Neuheit, Zitate) | ½–1 Tag | – | – | ✅ 10.11. |
 | X1.1 | Lagrange-PPO umsetzen (Kostensignal, duale Aktualisierung, Logging) | 2 Tage | 1 h | – | 🔄 Code ✅ 10.11., Neubau SK_desktop offen |
-| X1.2 | Pilot: Kostenform und Schrittweite | ½ Tag | ≈ 4 h | E2 | ✅ 11.11. (E2 offen, Vorschlag X1.2b) |
+| X1.2 | Pilot: Kostenform und Schrittweite | ½ Tag | ≈ 4 h | E2 | ✅ 11.11. |
+| X1.2b | Zweiter Pilot: schnellere duale Anpassung (Blöcke 50, η 5 gegen PID-Lagrange), Kosten A, 2 Seeds | ½ Tag | ≈ 2 h | X1.2 | 🔄 läuft seit 11.11. 15:33 |
 | X1.3 | Hauptlauf: 5 Budgets × 10 Seeds, dazu r1 × 10 Seeds | 1 Tag | ≈ 25–30 h | E2 | ⬜ |
 | X1.4 | Sicherheitsfilter (CBF auf die Basisdrehung) auf r1-Agenten | 2 Tage | 2 h | X0.2 | 🔄 Teil 1 ✅ 10.11. |
 | X2.1 | Modellbasierter Regler (GJM, Nullraum), Machbarkeit auf dem Halbkreis | 2 Tage | < 1 h | X0.2 | ✅ 10.11. |
@@ -613,9 +614,10 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
 
 - **E1** ✅ 10.11.2026: Protokoll wie in X0.1 vorgeschlagen, aber Startstörung ±2° statt ±1° (±1° trennte die
   Agenten kaum). Budget-Toleranz bleibt 0,005 rad. Umgesetzt in `ext_eval_agent` und `ext_stats`.
-- **E2** Kostenform, Schrittweite und Blockgröße der Lagrange-Variante (nach dem Pilot X1.2). Vorschlag
-  11.11.2026: Kosten A. Schrittweite und Blockgröße erst nach dem kurzen Pilot X1.2b (schneller integrierend
-  gegen PID-Lagrange), weil λ in X1.2 mit keiner Einstellung einschwang.
+- **E2** 🔄 Kostenform, Schrittweite und Blockgröße der Lagrange-Variante. 11.11.2026 (Nutzer übernimmt den
+  Vorschlag): Kosten A (Indikator). Schrittweite und Blockgröße nach dem Pilot X1.2b (schneller integrierend
+  gegen PID-Lagrange), weil λ in X1.2 mit keiner Einstellung einschwang. Die bessere der beiden Varianten geht in
+  X1.3. Hält keine das Budget, X1.3 mit 5000 Episoden.
 - **E3** ✅ 10.11.2026: Gewichte 0, 2, 4, 8, 16 (mit 4). 30 Läufe.
 - **E4** X5 Go/No-Go nach dem Pilot.
 - **E5** Agenten für den Labortag X3.2.
@@ -631,14 +633,16 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
 - **E7** Mit dem Betreuer: neue Geschichte, Zielkonferenz, was nach X4.4 aus dem Paper fliegt, ob die
   Schnittstellendiagnose ein Abschnitt bleibt oder ein eigenes kurzes Paper wird. Neu: ob X6 (Set-Point) in
   dieses Paper kommt oder in ein eigenes.
-- **E11** Zielwerte für X6: Vorschlag 5 mm und 5 mm/s, 1 s gehalten, innerhalb von 15 s, ≥ 95 % in Simulation,
-  Bezug Greiferspitze. Orientierung erst in Stufe 2.
-- **E12** X6 im kinematischen Simulator trainieren (Empfehlung, schneller, kein Neukompilieren) oder in Simscape.
-- **E13** Takt für X6: 20 Hz (Empfehlung, passt zur API) oder 10 Hz wie `fixed1`.
-- **E14** Verfahren für X6: PPO (Empfehlung, bewährte Kette). SAC mit Hindsight Experience Replay als Rückfall.
+- **E11** ✅ 11.11.2026 (Vorschlag übernommen): Zielwerte für X6 5 mm und 5 mm/s, 1 s gehalten, innerhalb von
+  15 s, ≥ 95 % in Simulation, ≥ 90 % auf der Hardware, Bezug Greiferspitze. Orientierung erst in Stufe 2.
+- **E12** ✅ 11.11.2026 (Vorschlag übernommen): X6 im kinematischen Simulator trainieren, Gegenprobe in Simscape.
+- **E13** ✅ 11.11.2026 (Vorschlag übernommen): Takt für X6 20 Hz, passend zur API.
+- **E14** ✅ 11.11.2026 (Vorschlag übernommen): Verfahren für X6 PPO. SAC mit Hindsight Experience Replay nur als
+  Rückfall.
 - **E15** ✅ 11.11.2026 (vom Nutzer freigegeben): X6 bekommt einen Vergleichsregler. Gründe: Die Reviews
   vermissten eine Vergleichsbasis, beim Tracking ist der Abstand groß (K5), ohne Regler wäre die Set-Point-Aussage
   so angreifbar wie bisher. Der Regler belegt zugleich, welche Ziele erreichbar sind. Der Aufwand ist klein, weil
   `ext_x2_controller` schon 7 Gelenke und 3D kann (X5.1).
 - **E16** ✅ 11.11.2026 (Nutzer): Auf dem nächsten Labortag Set-Point vor Tracking. Bei wenig Zeit nur Set-Point.
-- **E17** Filterzeitkonstante für X4.6 V3: Vorschlag 0,15 s (Koeffizient 0,85 bei 40 Hz) statt 0,49 s.
+- **E17** ✅ 11.11.2026 (Vorschlag übernommen): Filterzeitkonstante für X4.6 V3 0,15 s (Koeffizient 0,85 bei
+  40 Hz) statt 0,49 s.

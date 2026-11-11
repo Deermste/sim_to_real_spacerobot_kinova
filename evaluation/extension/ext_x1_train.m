@@ -11,20 +11,24 @@ function out = ext_x1_train(theta, seed, varargin)
 %     cost_type 2 (Kandidat B): c_t = max(0, |ori_t| - theta)/theta. Nebenbedingung wie A
 %   Training in Bloecken zu 'block' Episoden. Agent und Optimiererzustand bleiben zwischen den Bloecken erhalten.
 %   Nach jedem Block: C = Mittel der Episodenkosten des Blocks (aus dem geloggten Signal 'cost' in
-%   SimulationInfo, also mit der Explorations-Policy), lambda <- min(max(lambda + eta*(C - delta), 0), lambdaMax).
+%   SimulationInfo, also mit der Explorations-Policy), lambda_I <- min(max(lambda_I + eta*(C - delta), 0),
+%   lambdaMax) und lambda = min(max(lambda_I + kp*(C - delta), 0), lambdaMax) fuer den naechsten Block
+%   (PID-Lagrange nach Stooke et al. 2020 ohne D-Anteil). Mit kp = 0 (Standard) ist lambda = lambda_I wie in X1.2.
 %
-%   Optionen: nEpisodes 3000, block 100, eta 2, delta 0,02, cost_type 1, lambda0 0, lambdaMax 20,
+%   Optionen: nEpisodes 3000, block 100, eta 2, kp 0, delta 0,02, cost_type 1, lambda0 0, lambdaMax 20,
 %   model 'SK_desktop', tag '' (nicht leer: Ablage unter data/simulation/desktop/_test).
 %   Ergebnis:
 %     SavedAgents/MotionProfile/X1/<Name>.mat   agent, cfg, info, curve, dual
 %     data/simulation/extension/<Name>_dual.csv  je Block: lambda vorher, C, Return, lambda nachher, Minuten
 %     data/simulation/extension/<Name>_train.csv je Episode: Return, Kosten (Mittel und Summe), lambda
-%   <Name> = X1_ppo_40hz_r5_c<Typ>_th<theta in mrad>_eta<eta>_seed<Seed>_ep<Episoden>
+%   <Name> = X1_ppo_40hz_r5_c<Typ>_th<theta in mrad>_eta<eta>_seed<Seed>_ep<Episoden>, dazu am Ende _b<block>,
+%   wenn block ~= 100, _l<lambda0>, wenn lambda0 ~= 0, und _kp<kp>, wenn kp > 0 (X1.2b)
 
 p = inputParser;
 p.addParameter('nEpisodes', 3000);
 p.addParameter('block', 100);
 p.addParameter('eta', 2);
+p.addParameter('kp', 0);
 p.addParameter('delta', 0.02);
 p.addParameter('cost_type', 1);
 p.addParameter('lambda0', 0);
@@ -44,7 +48,7 @@ if ~bdIsLoaded(mdl), load_system(mdl); end
 set_param(mdl, 'SimMechanicsOpenEditorOnUpdate', 'off');
 
 cfg = struct('rewardMode', 5, 'optsSet', 'base_sync', 'j6Lim', j6Lim, 'baseW', 2, 'theta', theta, ...
-    'costType', o.cost_type, 'eta', o.eta, 'delta', o.delta, 'block', o.block, 'lambda0', o.lambda0, ...
+    'costType', o.cost_type, 'eta', o.eta, 'kp', o.kp, 'delta', o.delta, 'block', o.block, 'lambda0', o.lambda0, ...
     'lambdaMax', o.lambdaMax, 'model', mdl, 'rateHz', 40, 'seed', seed, 'nEpisodes', o.nEpisodes, ...
     'Ts_agent', 0.025, 'Ts', 0.005, 'T', 8.5, 'base_mass', 65, 'hidden', 128, 'parMode', 'sync', ...
     'gradThreshold', 1);
@@ -98,6 +102,9 @@ if isempty(pool), pool = parpool('Processes'); end
 
 name = sprintf('X1_ppo_40hz_r5_c%d_th%g_eta%g_seed%d_ep%d', o.cost_type, round(1000 * theta), o.eta, seed, ...
                o.nEpisodes);
+if o.block ~= 100, name = sprintf('%s_b%d', name, o.block); end
+if o.lambda0 ~= 0, name = sprintf('%s_l%g', name, o.lambda0); end
+if o.kp > 0, name = sprintf('%s_kp%g', name, o.kp); end
 if ~isempty(o.tag), name = [name '_' o.tag]; end
 if isempty(o.tag)
     agentDir = sk_path('SavedAgents', 'MotionProfile', 'X1');
@@ -107,14 +114,15 @@ else
     csvDir = agentDir;
 end
 if ~isfolder(agentDir), mkdir(agentDir); end
-fprintf('X1: theta %.3f rad, Kosten %d, eta %g, delta %g, Seed %d, %d x %d Episoden, %d Worker\n', theta, ...
-        o.cost_type, o.eta, o.delta, seed, o.nEpisodes / o.block, o.block, pool.NumWorkers);
+fprintf('X1: theta %.3f rad, Kosten %d, eta %g, kp %g, delta %g, Seed %d, %d x %d Episoden, %d Worker\n', ...
+        theta, o.cost_type, o.eta, o.kp, o.delta, seed, o.nEpisodes / o.block, o.block, pool.NumWorkers);
 
 % --- Bloecke ---
 nB = o.nEpisodes / o.block;
 lambda = o.lambda0;
-dual = table('Size', [nB 7], 'VariableTypes', repmat({'double'}, 1, 7), 'VariableNames', ...
-    {'block', 'lambda', 'C', 'C_valid', 'ret_mean', 'lambda_next', 'minutes'});
+lambdaI = o.lambda0;
+dual = table('Size', [nB 8], 'VariableTypes', repmat({'double'}, 1, 8), 'VariableNames', ...
+    {'block', 'lambda', 'C', 'C_valid', 'ret_mean', 'lambda_next', 'minutes', 'lambda_I'});
 curve = table();
 tStart = tic;
 for b = 1:nB
@@ -127,13 +135,14 @@ for b = 1:nB
     C = mean(cMean, 'omitnan');
     nValid = sum(~isnan(cMean));
     assert(nValid > 0, 'ext_x1_train:cost', 'Block %d: kein Kostensignal in SimulationInfo', b);
-    lambdaNext = min(max(lambda + o.eta * (C - o.delta), 0), o.lambdaMax);
+    lambdaI = min(max(lambdaI + o.eta * (C - o.delta), 0), o.lambdaMax);
+    lambdaNext = min(max(lambdaI + o.kp * (C - o.delta), 0), o.lambdaMax);
     ep0 = (b - 1) * o.block;
     nE = numel(stats.EpisodeReward);
     curve = [curve; table(ep0 + (1:nE).', stats.EpisodeReward(:), stats.EpisodeSteps(:), ...
         cMean(1:nE), cSum(1:nE), repmat(lam, nE, 1), 'VariableNames', ...
         {'episode', 'reward', 'steps', 'cost_mean', 'cost_sum', 'lambda'})]; %#ok<AGROW>
-    dual(b, :) = {b, lam, C, nValid, mean(stats.EpisodeReward), lambdaNext, toc(tB) / 60};
+    dual(b, :) = {b, lam, C, nValid, mean(stats.EpisodeReward), lambdaNext, toc(tB) / 60, lambdaI};
     fprintf('X1 Block %2d/%d: lambda %.3f, C %.4f (%d Ep.), Return %.1f -> lambda %.3f (%.1f min)\n', b, nB, ...
             lam, C, nValid, mean(stats.EpisodeReward), lambdaNext, toc(tB) / 60);
     lambda = lambdaNext;
