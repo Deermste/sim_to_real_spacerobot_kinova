@@ -13,7 +13,7 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 - Jeder Eintrag endet mit „Paper:“ und dem Ziel (Abschnitt, Tabelle, Abbildung) sowie „offen“ oder „übertragen“.
 - Kernaussagen nach jedem Eintrag aktualisieren.
 
-## Kernaussagen (Stand 11.11.2026)
+## Kernaussagen (Stand 13.11.2026)
 
 | # | Aussage | Beleg | Sicherheit |
 |---|---|---|---|
@@ -25,6 +25,7 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 | K6 | Auch mit Nominalmodell bleibt der Regler bei falscher Masse, Trägheit, Verzögerung, Verstärkung, Rauschen, Startstellung und Drift vor den Agenten. Am knappsten bei Kinematikfehlern (Montage) und Drift um x | X2.3 Teil 1 | 26 Szenarien, 20 Agenten ohne Randomisierung, nur kinematisch |
 | K7 | Auf einer gekippten 3D-Bahn mit allen sieben Gelenken senkt der Nullraum des Reglers die Basisdrehung je nach Kipprichtung stark (−30°: 124 auf 10 mrad bei 2 mm) oder kaum (+30°: 14 auf 11 mrad). In der Ebene bringen die zusätzlichen Gelenke wenig | X5.1 | Nur Regler, kinematisch, nominal. RL in 3D offen (X5.2) |
 | K8 | Domain Randomization macht den Bahnfehler der Agenten fast unempfindlich gegen falsche Basismasse (+0,1 bis +0,4 statt +1,7 mm). Die Regler mit Nominalmodell bleiben trotzdem vorn (Faktor 2,0 bis 2,4) | X2.4, X4.5 | 10 Seeds je Variante, 26 Szenarien, nur kinematisch. X0.1 in SK_desktop offen. „DR-voll folgt öfter“ hängt an der Schwelle (X4.5), nicht Teil der Aussage |
+| K9 | Ein Budget als Nebenbedingung steuert die Basisdrehung (θ gegen ori_max ρ 0,70, bei den folgenden 0,77, Gewicht in K2 −0,18). Der Preis ist die Bahn: nur 27 von 50 Agenten folgen (r1 7 von 10, r4 10 von 10). Wer folgt, ist kaum ungenauer. Bei θ 0,02 und 0,03 halten mehr Agenten Bahn und Basis zugleich als in der Gewichtsreihe (Holm p 0,018). Bei θ 0,02 kollabieren 3 von 10 (A74) | X1.3 | 10 Seeds je Budget, 21 Episoden je Agent, nur Simulation. Gegen r1 nicht gesichert (n 10). Budget als Anteil der Schritte, nicht als Maximum |
 
 X0.1 (Auswerteprotokoll) steht und reproduziert D17. Mit ±2° Startstörung folgen 19 von 20 D16/D17-Agenten in
 allen 21 Episoden der Bahn, der Ausreißer ist ein ruhiger Agent. X0.2 (kinematischer Simulator) trifft
@@ -46,7 +47,9 @@ halten 0,03 rad bei etwa 14 mm, ruhiger und genauer als alle ruhigen r4-Agenten.
 nicht ein. X1.2b: Mit Blöcken zu 50 Episoden und η 5 halten beide Seeds das Budget (21 und 25 mrad), aber bei
 etwa 20 mm. λ bleibt vom Anfang her hoch, die Agenten sind vorsichtiger als nötig. Diese Einstellung geht in X1.3
 (E2). X4.2: Alle 95 Bestandsagenten sind nach X0.1 ausgewertet. K1 hält über Takt, J6-Grenze und
-Verfahren hinweg. D13 (NaN-Actoren) gehört nicht in die Zahlen des Papers.
+Verfahren hinweg. D13 (NaN-Actoren) gehört nicht in die Zahlen des Papers. X1.3: Mit fünf Budgets und 10 Seeds
+folgt die Basisdrehung dem Budget (K9). Viele Agenten verlieren dafür die Bahn, bei θ 0,02 brechen drei Agenten
+jede Episode ab (A74). Der Abstand zum Regler bleibt.
 
 ## Ausgangslage (aus dem alten Desktop-Plan und dem Paper, Stand 10.11.2026)
 
@@ -511,6 +514,104 @@ Datenquelle: `X_eval_X1_2b_20261111_171748_*`, `X1_2b_summary_20261111_171748.cs
 `X1_2b_matlab.log`. Agenten `SavedAgents/MotionProfile/X1/`.
 
 Paper: Methode der Nebenbedingung (duale Einstellung, Begründung), Anhang oder Fußnote zum Pilot. Offen.
+
+### X1.3 Hauptlauf: fünf Budgets und r1 ✅ 13.11.2026
+
+**Frage:** Lässt sich die Basisdrehung über ein vorgegebenes Budget θ steuern, anders als über das Gewicht (K2)?
+Wie zuverlässig halten die Agenten das Budget, und was kostet es an Bahn?
+
+**Aufbau:**
+- Training: `ext_x1_3_run()`, 11.11. 17:22 bis 12.11. 19:54. Einstellung „schnell“ aus X1.2b (Kosten A, δ 0,02,
+  Blöcke zu 50 Episoden, η 5, λ0 = 1, 3000 Episoden). θ ∈ {0,02; 0,03; 0,04; 0,05; 0,06} rad × Seeds 0–9.
+  θ 0,03 mit Seed 0 und 1 sind die Agenten aus X1.2b.
+- Bezug r1: derselbe Aufbau mit λ fest 0 (η 0, λ0 0, Blöcke zu 50), Seeds 0–9. Bezug r4 w 2: D16 Seeds 0–9.
+- 58 neue Läufe, alle erfolgreich, 15 bis 34 min, im Mittel etwa 27 min (`X1_3_runlog.csv`).
+- Auswertung: X0.1 mit 21 Episoden je Agent in `SK_desktop` (`ext_x1_2_eval`, Studie X1_3, 70 Agenten in
+  13,5 min). Zusammenfassung `ext_x1_3_report()`, ohne neues Rechnen.
+- Definitionen wie X1.2 und X4.5: „folgt“ = keine Episode bricht ab und ep_q4 < 5 cm in allen 21 Episoden.
+  „Budget“ = folgt und schlechteste Episode ori_max ≤ θ + 5 mrad. „Basis im Budget“ = schlechteste Episode
+  ≤ θ + 5 mrad, auch ohne folgt.
+
+**Ergebnis** (10 Agenten je Zeile, Median und IQR über die Agenten, RMS [mm], ori_max [mrad]):
+
+| Gruppe | folgt | Budget | Basis im Budget | alle Episoden abgebrochen | RMS | ori_max | schlechteste Episode (Median) | λ Ende (Median) |
+|---|---|---|---|---|---|---|---|---|
+| θ 0,02 | 3 | 3 | 6 | 3 | 89,8 (36,1–194,4) | 19,0 (13,4–22,1) | 22,1 | 12,4 |
+| θ 0,03 | 5 | 5 | 9 | 0 | 24,3 (20,0–66,3) | 23,4 (20,2–24,9) | 29,1 | 3,7 |
+| θ 0,03 ohne Seed 0, 1 (8) | 3 | 3 | 7 | 0 | 29,7 (20,8–78,4) | 24,3 (22,0–25,2) | 29,5 | 3,8 |
+| θ 0,04 | 4 | 1 | 6 | 0 | 42,0 (16,1–50,4) | 36,2 (24,6–41,8) | 41,9 | 4,9 |
+| θ 0,05 | 7 | 5 | 6 | 0 | 21,9 (17,5–28,5) | 45,4 (36,3–50,2) | 51,3 | 2,3 |
+| θ 0,06 | 8 | 7 | 8 | 0 | 15,3 (14,3–36,4) | 52,1 (43,0–57,7) | 58,8 | 0,5 |
+| r1 (λ = 0) | 7 | – | – | 0 | 19,6 (14,7–28,7) | 59,5 (49,8–73,2) | 67,0 | 0 |
+| r4 w 2 (D16) | 10 | – | – | 0 | 13,9 (12,2–16,6) | 52,5 (48,8–61,9) | 58,1 | – |
+
+Budget-Anteil gegen die Bezüge bei demselben θ (Fisher exakt, Holm über die fünf Budgets):
+
+| θ | X1.3 | r1 | X4.1 (alle 50) | p Holm gegen r1 | p Holm gegen X4.1 |
+|---|---|---|---|---|---|
+| 0,02 | 3/10 | 0/10 | 0/50 | 0,56 | 0,018 |
+| 0,03 | 5/10 | 1/10 | 4/50 | 0,56 | 0,018 |
+| 0,04 | 1/10 | 1/10 | 6/50 | 1 | 1 |
+| 0,05 | 5/10 | 1/10 | 11/50 | 0,56 | 0,34 |
+| 0,06 | 7/10 | 2/10 | 38/50 | 0,35 | 1 |
+
+Spearman über die 50 Budget-Agenten:
+- θ gegen ori_max: ρ = 0,70 (p 1e-8). Nur die 27 folgenden Agenten: ρ = 0,77 (p 3e-6). Zum Vergleich K2:
+  Gewicht gegen ori_max ρ = −0,18.
+- θ gegen RMS: ρ = −0,40 (p 0,004). Nur die folgenden: ρ = −0,21 (p 0,30).
+
+λ am Ende ist bei den nicht folgenden Agenten höher (Median 6,0 gegen 2,2, Mann-Whitney p 8e-5), ebenso C im
+letzten Drittel (0,020 gegen 0,006, p 2e-4). Die Kosten der deterministischen Policy liegen bei 5, 9, 6, 7 und 8
+von 10 Agenten (θ 0,02 bis 0,06) unter δ.
+
+**Deutung:**
+- **Das Budget steuert die Basisdrehung.** Die Basisdrehung folgt θ eng (ρ 0,70, bei den folgenden 0,77). Der
+  Median von ori_max steigt von 19 auf 52 mrad, die schlechteste Episode liegt im Median knapp unter θ (22,1 bei
+  θ 0,02, 29,1 bei θ 0,03). Mit dem Gewicht ging das in X4.1 nicht (ρ −0,18). Das ist der Unterschied, den X1
+  zeigen sollte.
+- **Der Preis ist die Bahn, nicht die Genauigkeit.** Nur 27 von 50 Agenten folgen der Bahn. Bei r1 sind es 7 von
+  10, bei r4 10 von 10. Wer folgt, ist kaum ungenauer als ohne Budget. Der Median des RMS der folgenden Agenten
+  liegt je Budget bei 14,8 bis 20,0 mm, bei r1 bei 15,9 und bei r4 bei 13,9 mm. Unter den folgenden hängt der RMS
+  kaum von θ ab (ρ −0,21, p 0,30). Die strengen Budgets erhöhen also vor allem den Anteil der Agenten, die die
+  Bahn in der zweiten Hälfte verlieren (ep_q4 bis 177 mm), während die Basis ruhig bleibt. Basis im Budget sind
+  35 von 50,
+  Budget mit Bahn nur 21 von 50.
+- **Gegen die Gewichtsreihe:** Bei θ 0,02 und 0,03 halten mit Budget deutlich mehr Agenten Bahn und Basis
+  zugleich (3/10 und 5/10 gegen 0/50 und 4/50, Holm p 0,018). Ab 0,04 gibt es keinen Unterschied, dort reicht
+  auch die Gewichtsreihe oft. Gegen r1 ist kein Unterschied gesichert, mit 10 Agenten je Seite ist der Test
+  schwach (0 bis 2 von 10 bei r1).
+- **θ 0,04 fällt aus der Reihe.** Vier Agenten folgen, aber drei davon liegen mit 47 bis 52 mrad über θ + 5 mrad.
+  Die Nebenbedingung begrenzt den Anteil der Schritte über θ auf 2 %, nicht das Maximum. Kurze Spitzen über θ
+  sind damit erlaubt, die Auswertung misst aber das Maximum. Bei θ 0,05 und 0,06 betrifft das zwei bzw. einen
+  der folgenden Agenten, jeweils knapp (55,1 und 55,4 bei Grenze 55, 67,8 bei Grenze 65). Mit 10 Agenten kann
+  θ 0,04 auch Zufall sein.
+- **Kollaps bei θ 0,02 (A74).** Bei Seed 2, 8 und 9 bricht jede der 21 Episoden ab (EE mehr als 0,5 m von der
+  Bahn), im Training auch 100 % der letzten 1000 Episoden. Seed 3 bricht im Training in 29 % ab. λ steigt dort
+  auf 11 bis 20. Vermutete Ursache: Der Abbruch kostet einmalig −50, jeder Schritt über θ aber λ. Bei λ ≈ 16
+  ist ein früher Abbruch für den Agenten billiger als der Rest der Episode. Geprüft ist das nicht. Die Kostenrate
+  C verdeckt das, weil abgebrochene Episoden kurz sind.
+- **Hohes λ geht mit Bahnverlust einher** (Median 6,0 gegen 2,2). Die Richtung ist offen. Ein Agent, der das
+  Budget schwer erreicht, treibt λ hoch, und ein hohes λ kann die Bahn verdrängen.
+- **Abstand zum Regler bleibt.** Die besten Agenten mit Budget liegen bei 14,6 mm und 23,8 mrad (θ 0,02,
+  Seed 1) und 13,3 mm und 29,7 mrad (θ 0,03, Seed 6). Der Regler mit exaktem Modell erreicht 5,7 mm bei 20 mrad
+  (K5). Die Front aus X2.2 steht noch aus.
+- **Streuung der Basisdrehung:** Der IQR von ori_max bei θ 0,03 ist 4,7 mrad (Bootstrap 95 % 0,8–27,9), bei r1
+  23,4 (9,4–93,2) und bei r4 13,1 (1,7–37,3). Die Intervalle sind breit, ein Unterschied in der Streuung ist mit
+  10 Agenten nicht gesichert.
+- **Pilot-Agenten:** Ohne Seed 0 und 1 halten bei θ 0,03 drei von acht das Budget statt fünf von zehn. Die
+  Auswahl aus X1.2b hat das Ergebnis bei θ 0,03 also etwas geschönt, die Aussage ändert sich nicht.
+- Ruck: Median 14,9 bis 16,3 rad/s³ mit Budget, 13,9 bei r1, 7,2 bei r4 w 2.
+
+**Grenzen:** 10 Seeds je Budget, ein Pfad, nur Simulation. Das Budget ist als Anteil der Schritte formuliert,
+nicht als Maximum. Der Kollaps bei θ 0,02 ist nur vermutet erklärt. Die duale Einstellung stammt aus einem Pilot
+mit zwei Seeds.
+
+Datenquelle: `X_eval_X1_3_20261112_195325_*`, `X1_3_summary_20261112_195328.csv`,
+`X1_3_report_{groups,fisher,spearman,lambda,agents}_20261113_001140.csv`, `X1_ppo_40hz_r5_c1_th*_*_b50*_dual.csv`
+und `_train.csv`, `X1_3_runlog.csv`, Log `X1_3_matlab.log`. Agenten `SavedAgents/MotionProfile/X1/`.
+
+Paper: neuer Hauptabschnitt zur Nebenbedingung (Abbildung Bahnfehler gegen Basisdrehung, Tabelle je Budget),
+Vergleich mit K2. Offen.
 
 ### X1.4 Sicherheitsfilter, Teil 1: vorhandene Agenten ✅ 10.11.2026
 
