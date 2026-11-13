@@ -1387,6 +1387,35 @@ Datenquelle: `X4_5_{K9a,K9b,K9c,K1}_20261113_084521.csv` (dazu Runde 1 neu mit d
 
 Paper: Formulierung von K9 und K1. Offen.
 
+### X4.6 Ablation: Woher kommt der Abstand zum Regler? 🔄 Training seit 13.11.2026 09:55
+
+**Umsetzung** (13.11.2026):
+- `SK_desktop` bleibt unverändert. V1 trainiert auf `SK_desktop`, nur mit eigenen Beobachtungsgrenzen in der
+  Reihenfolge der Beobachtung (A72). V2 und V3 bekommen eigene Modellkopien (`ext_x4_6_build_model`):
+  `SK_x46` (Filter 0,95) und `SK_x46f` (Filter 0,85, als feste Zahl, damit er unter Fast Restart sicher wirkt).
+- Erweiterte Beobachtung (38 Kanäle): die 29 bisherigen, der Ausgang des Rate Limiters im vorigen Schritt für
+  J2, J4, J6 (Unit Delay) und der Sollpunkt in 0,25 s und 0,5 s relativ zum EE (`ext_ref_preview`, From
+  Workspace im Agententakt). Grenzen der neuen Kanäle ±1.
+- `ext_x4_6_train(variant, seed)`: genau der D16-Aufbau (`desktop_d12_train(4, seed, 3000, '', 'base_sync',
+  0.9774)`), Unterschiede nur Grenzen, Modell und Kanalzahl. `ext_x4_6_run()`: V1, V2, V3 × Seeds 0–4, danach
+  X0.1 (Studie X4_6).
+- Mitgezogen: `ext_kinsim` (Optionen `obs_ext`, `filt_a`), `ext_x2_controller` und `ext_x2_sweep` (Option
+  `filt_a`, für die Front mit dem schnelleren Filter), `desktop_run_episode` (Variablen EE_d25, EE_d50, Ausgabe
+  `obs_ext`), `ext_eval_agent` (Modell aus dem cfg, nur für `SK_x46*`). Mit den Standardwerten laufen alle
+  bisherigen Pfade wie vorher.
+
+**Prüfung** (`ext_x4_6_check()`):
+- `SK_desktop` vor und nach dem Bau der Kopien mit derselben Prüfsumme.
+- Kurztraining je Variante (16 Episoden): läuft, 29 / 38 / 38 Kanäle, richtiges Modell.
+- V2 und V3, Agent aus dem Kurztraining, nominal: Simscape gegen `ext_kinsim` RMS ≤ 3e-9 m, ori_max ≤ 7e-9 rad,
+  Beobachtung ≤ 2,4e-8 (auch die neuen Kanäle).
+- Bitgleichheit alter Agenten: D16 r4 s2 nominal über `ext_eval_batch` (parallel, wie alle X0.1-Zahlen) exakt
+  gleich zu X1.3 (Abweichung 0). Ein serieller Lauf in der Hauptsitzung weicht um 2,4e-5 m und 1,8e-4 rad ab,
+  auch mehrfach hintereinander. Das betrifft nur Läufe außerhalb des Pools und liegt nicht an X4.6. Für Zahlen
+  gilt weiter der parallele Weg.
+
+Datenquelle: `X4_6_check_*.csv`, Log `X4_6_check_matlab.log`, `X_eval_X46bitcheck_20261113_095516_*`.
+
 ## X5 3D
 
 ### X5.1 Machbarkeit im kinematischen Simulator ✅ 10.11.2026 (SK_desktop offen)

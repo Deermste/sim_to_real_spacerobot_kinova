@@ -1,0 +1,10 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+
+=== X4.6: X4_6_ppo_40hz_r4_V1_seed0_ep3000 (0 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+X4.6 V1: Modell SK_desktop, 29 Kanaele, Filter 0.95, Seed 0, 3000 Episoden, 8 Worker

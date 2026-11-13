@@ -59,7 +59,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X0.1 | Einheitliches Auswerteprotokoll und Statistik-Skript | 1 Tag | 1 h | Entscheidung E1 | ✅ 10.11. |
 | X0.2 | Kinematischer Closed-Loop-Simulator (Policy, Befehlskette, GJM), gegen Simscape validiert | 2–3 Tage | 1 h | – | ✅ 10.11. |
 | X0.3 | Literaturprüfung für X2 und X3 (Neuheit, Zitate) | ½–1 Tag | – | – | ✅ 10.11. |
-| X1.1 | Lagrange-PPO umsetzen (Kostensignal, duale Aktualisierung, Logging) | 2 Tage | 1 h | – | 🔄 Code ✅ 10.11., Neubau SK_desktop offen |
+| X1.1 | Lagrange-PPO umsetzen (Kostensignal, duale Aktualisierung, Logging) | 2 Tage | 1 h | – | ✅ 10.11. (SK_desktop enthält Modus 5, X1.2 und X1.3 liefen darauf) |
 | X1.2 | Pilot: Kostenform und Schrittweite | ½ Tag | ≈ 4 h | E2 | ✅ 11.11. |
 | X1.2b | Zweiter Pilot: schnellere duale Anpassung (Blöcke 50, η 5 gegen PID-Lagrange), Kosten A, 2 Seeds | ½ Tag | ≈ 2 h | X1.2 | ✅ 11.11. |
 | X1.3 | Hauptlauf: 5 Budgets × 10 Seeds, dazu r1 × 10 Seeds | 1 Tag | ≈ 25–30 h | E2 | ✅ 13.11. |
@@ -75,7 +75,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X4.3 | Ratenpaar D10 auf 10 Seeds (optional) | ½ Tag | ≈ 3 h | E6 | ⏸ |
 | X4.4 | Entscheidung, was aus dem Paper fliegt oder in den Anhang geht | ½ Tag | – | Betreuer | ⏸ |
 | X4.5 | Sensitivität der eigenen Schwellen („folgt“, Budget-Toleranz, „ruhig“), ohne Training | ½ Tag | < 10 min | X4.1, X2.4 | ✅ Runde 1 11.11., Runde 2 13.11. |
-| X4.6 | Ablation: Woher kommt der Abstand von RL zum Regler (Beobachtung, Kette)? 3 Varianten × 5 Seeds | 2 Tage | ≈ 7 h | E17 | ⬜ |
+| X4.6 | Ablation: Woher kommt der Abstand von RL zum Regler (Beobachtung, Kette)? 3 Varianten × 5 Seeds | 2 Tage | ≈ 7 h | E17 | 🔄 Training seit 13.11. 09:55 (V2/V3 auf eigenen Modellkopien, SK_desktop unverändert) |
 | X5.1 | 3D-Bahn mit allen 7 Gelenken: Modell, Machbarkeit mit dem Regler aus X2 | 2–3 Tage | 1 h | X2.1 | 🔄 Machbarkeit ✅ 10.11., SK_desktop offen |
 | X5.2 | Pilot 3D: 2 Varianten × 2 Seeds, Go/No-Go | ½ Tag | ≈ 3 h | X5.1 | ⬜ |
 | X5.3 | Hauptlauf 3D: 10 Seeds, Vergleich mit Nullraum-Regler | 1 Tag | ≈ 6–8 h | E4 | ⏸ |

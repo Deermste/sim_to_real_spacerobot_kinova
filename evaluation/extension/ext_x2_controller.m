@@ -30,6 +30,8 @@ function ctrl = ext_x2_controller(varargin)
 %   j6_lim 0,9774, horizon 0,1 s, invert false, slew 0,5, Ts_agent 0,025, j6_side 0, K (ext_kin_model),
 %   lim 7x1 Geschwindigkeitsgrenzen (Standard [], dann wie oben aus j6_lim). Fuer X5 mit joints 1:7 und
 %   task [1 2 3] dieselben Grenzen wie in ext_kinsim 'lim' angeben.
+%   filt_a (Standard 0,95): Koeffizient des Befehlsfilters, den der Regler mit invert kennt (X4.6 V3: 0,85, dann
+%   in ext_kinsim dasselbe filt_a angeben).
 
 p = inputParser;
 p.addParameter('beta', 0);
@@ -47,6 +49,7 @@ p.addParameter('Ts_agent', 0.025);
 p.addParameter('j6_side', 0);
 p.addParameter('K', []);
 p.addParameter('lim', []);
+p.addParameter('filt_a', 0.95);
 p.parse(varargin{:});
 o = p.Results;
 assert(ismember(o.mode, {'weighted', 'priority'}), 'ext_x2_controller:mode', 'mode ist weighted oder priority');
@@ -80,9 +83,15 @@ ctrl = @step;
         u(a) = x;
         if ~o.invert, return; end
         target = yr + min(max(u - yr, -d), d);  % was der Rate Limiter im naechsten Schritt erlaubt
-        u = (target - 0.95 * yf) / 0.05;        % Filter invertieren
-        u = min(max(u, -lim7), lim7);
-        yf = 0.95 * yf + 0.05 * u;              % Kette mitfuehren wie in ext_kinsim
+        if o.filt_a == 0.95
+            u = (target - 0.95 * yf) / 0.05;    % Filter invertieren (wie bisher, bitgleich)
+            u = min(max(u, -lim7), lim7);
+            yf = 0.95 * yf + 0.05 * u;          % Kette mitfuehren wie in ext_kinsim
+        else
+            u = (target - o.filt_a * yf) / (1 - o.filt_a);
+            u = min(max(u, -lim7), lim7);
+            yf = o.filt_a * yf + (1 - o.filt_a) * u;
+        end
         yr = yr + min(max(yf - yr, -d), d);
     end
 end

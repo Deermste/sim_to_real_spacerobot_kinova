@@ -61,7 +61,7 @@ rows = cell(size(Q0, 1), 1);
 for k = 1:size(Q0, 1)
     c = desktop_config('agentFile', agentFile, 'reward_mode', setup.reward_mode, 'j6_lim', setup.j6_lim, ...
                        'base_w', setup.base_w, 'Ts_agent', setup.Ts_agent, 'base_mass', o.base_mass, ...
-                       'theta', setup.theta, 'cost_type', setup.cost_type, ...
+                       'theta', setup.theta, 'cost_type', setup.cost_type, 'model', setup.model, ...
                        'q0', Q0(k, :).', 'explore', false, 'keepTs', true, 'T', T);
     r = desktop_run_episode(c);
     m = r.metrics;
@@ -95,7 +95,8 @@ end
 % =====================================================================
 function s = agentSetup(file)
 % Trainingsbedingungen aus dem gespeicherten cfg (desktop_d12_train und Nachfolger)
-s = struct('reward_mode', 0, 'j6_lim', 0.1, 'base_w', 2, 'Ts_agent', [], 'theta', 0.03, 'cost_type', 1);
+s = struct('reward_mode', 0, 'j6_lim', 0.1, 'base_w', 2, 'Ts_agent', [], 'theta', 0.03, 'cost_type', 1, ...
+           'model', 'SK_desktop');
 vars = {whos('-file', file).name};
 if ismember('cfg', vars)
     S = load(file, 'cfg');
@@ -106,6 +107,7 @@ if ismember('cfg', vars)
     if isfield(c, 'Ts_agent'), s.Ts_agent = c.Ts_agent; end
     if isfield(c, 'theta'), s.theta = c.theta; end
     if isfield(c, 'costType'), s.cost_type = c.costType; end
+    if isfield(c, 'model') && startsWith(c.model, 'SK_x46'), s.model = c.model; end   % X4.6 V2, V3
 end
 if isempty(s.Ts_agent)
     S = load(file, 'agent');

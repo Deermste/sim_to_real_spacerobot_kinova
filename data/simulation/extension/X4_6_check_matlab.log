@@ -1,0 +1,47 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Modell erzeugt: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\evaluation\desktop\models\SK_x46.slx
+X4.6-Modell erzeugt: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\evaluation\desktop\models\SK_x46.slx (Filter 0.95)
+Modell erzeugt: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\evaluation\desktop\models\SK_x46f.slx
+X4.6-Modell erzeugt: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\evaluation\desktop\models\SK_x46f.slx (Filter 0.85)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+X4.6 V1: Modell SK_desktop, 29 Kanaele, Filter 0.95, Seed 0, 16 Episoden, 8 Worker
+X4.6 V1: Training fertig nach 1.0 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\desktop\_test\X4_6_ppo_40hz_r4_V1_seed0_ep16_test.mat
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V2: Modell SK_x46, 38 Kanaele, Filter 0.95, Seed 0, 16 Episoden, 8 Worker
+X4.6 V2: Training fertig nach 0.3 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\desktop\_test\X4_6_ppo_40hz_r4_V2_seed0_ep16_test.mat
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V3: Modell SK_x46f, 38 Kanaele, Filter 0.85, Seed 0, 16 Episoden, 8 Worker
+X4.6 V3: Training fertig nach 0.2 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\desktop\_test\X4_6_ppo_40hz_r4_V3_seed0_ep16_test.mat
+                           check                              value                      note               
+    ____________________________________________________    __________    __________________________________
+
+    "SK_desktop MD5"                                                 1    "897024e9e94468f6f074396c4523c6ec"
+    "D16 r4 s2 nominal RMS gegen X1.3"                      2.3895e-05    ""                                
+    "D16 r4 s2 nominal ori_max gegen X1.3"                  0.00018282    ""                                
+    "SK_desktop MD5 nach dem Lauf"                                   1    ""                                
+    "SK_desktop MD5 nach dem Bau der Kopien"                         1    ""                                
+    "V1 Kurztraining Kanaele"                                       29    "SK_desktop"                      
+    "V1 Episoden"                                                   16    ""                                
+    "V2 Kurztraining Kanaele"                                       38    "SK_x46"                          
+    "V2 Episoden"                                                   16    ""                                
+    "V2 RMS Simscape gegen kinematisch"                     8.7821e-10    "0.299077 m"                      
+    "V2 ori_max Simscape gegen kinematisch"                 2.9203e-09    ""                                
+    "V2 obs 1-29 Simscape gegen kinematisch"                1.5158e-08    ""                                
+    "V2 obs 30-32 (Kette) Simscape gegen kinematisch"       8.8705e-09    ""                                
+    "V2 obs 33-38 (Vorschau) Simscape gegen kinematisch"    1.5158e-08    "max |Vorschau| 0.361 m"          
+    "V3 Kurztraining Kanaele"                                       38    "SK_x46f"                         
+    "V3 Episoden"                                                   16    ""                                
+    "V3 RMS Simscape gegen kinematisch"                     3.2166e-09    "0.292928 m"                      
+    "V3 ori_max Simscape gegen kinematisch"                 7.4518e-09    ""                                
+    "V3 obs 1-29 Simscape gegen kinematisch"                 2.419e-08    ""                                
+    "V3 obs 30-32 (Kette) Simscape gegen kinematisch"       1.1545e-08    ""                                
+    "V3 obs 33-38 (Vorschau) Simscape gegen kinematisch"     2.419e-08    "max |Vorschau| 0.369 m"          
+

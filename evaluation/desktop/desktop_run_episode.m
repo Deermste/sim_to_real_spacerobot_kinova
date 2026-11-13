@@ -36,9 +36,13 @@ agent.UseExplorationPolicy = cfg.explore;
 
 % --- Referenz ---
 [EE_ref, EE_vref] = makeReference(cfg);
+% Vorschau der Referenz fuer die erweiterte Beobachtung der X4.6-Modelle (SK_x46*), in anderen Modellen unbenutzt
+EE_d25 = timeseries(ext_ref_preview(EE_ref.Time, EE_ref.Data, 0.25), EE_ref.Time);
+EE_d50 = timeseries(ext_ref_preview(EE_ref.Time, EE_ref.Data, 0.5), EE_ref.Time);
 
 % --- Workspace ---
-vars = struct('agent', agent, 'EE_ref', EE_ref, 'EE_vref', EE_vref, 'reward_init', 0, 'isdone_init', 0, ...
+vars = struct('agent', agent, 'EE_ref', EE_ref, 'EE_vref', EE_vref, 'EE_d25', EE_d25, 'EE_d50', EE_d50, ...
+    'reward_init', 0, 'isdone_init', 0, ...
     'p_Ts', cfg.Ts, 'p_Ts_agent', cfg.Ts_agent, 'p_T', cfg.T, 'p_base_mass', cfg.base_mass, ...
     'p_delay_steps', cfg.delay_steps, 'p_damp_scale', cfg.damp_scale, 'p_slew', cfg.slew, ...
     'p_cmd_scale', cfg.cmd_scale, 'p_obs_mode', cfg.obs_mode, 'p_obs_noise', obsNoise(cfg), ...
@@ -248,7 +252,7 @@ ts.t_ee = ee.Time(:);
 ts.ep = ep;
 ts.t_agent = t_agent;
 ts.reward = rew.Data(:);
-names = {'a_raw', 'a_sat', 'a_filt', 'a_rl', 'a_scaled', 'obs', 'obs_agent', 'cost'};
+names = {'a_raw', 'a_sat', 'a_filt', 'a_rl', 'a_scaled', 'obs', 'obs_agent', 'obs_ext', 'cost'};
 for k = 1:numel(names)
     s = getTs(logsout, names{k});
     if ~isempty(s)

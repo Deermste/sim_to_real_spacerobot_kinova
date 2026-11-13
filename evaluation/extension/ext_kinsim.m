@@ -45,6 +45,10 @@ function res = ext_kinsim(policy, varargin)
 %   lim 7x1 Geschwindigkeitsgrenzen der Saettigung [rad/s] (Standard [], dann J2, J4 0,9774, J6 j6_lim, sonst 0).
 %     Fuer alle sieben Gelenke (X5) etwa [0.98 0.98 0.98 0.98 0.58 0.58 0.58].
 %   path 'planar' (Standard) oder 'tilted', tilt [Grad, Standard 30]: Referenzbahn aus ext_ref_path (X5.1).
+%   obs_ext (Standard false, X4.6 V2/V3): Beobachtung mit 38 Kanaelen wie die Modelle SK_x46*:
+%     [obs; Ausgang des Rate Limiters im vorigen Schritt fuer J2, J4, J6; Sollpunkt in 0,25 s und 0,5 s relativ
+%     zum EE (ext_ref_preview minus ep, nach Rauschen und Messfehler)]
+%   filt_a (Standard 0,95): Koeffizient des Befehlsfilters y = filt_a y + (1 - filt_a) u (X4.6 V3: 0,85).
 %
 %   res.metrics  wie desktop_run_episode: mse_ee, rms_ee, max_ee, ep_q4, ori_mean, ori_max, w_mean, w_max, ret,
 %                early_stop, t_end, n_steps, stop_reason
@@ -85,6 +89,8 @@ p.addParameter('emulK', []);
 p.addParameter('lim', []);
 p.addParameter('path', 'planar');
 p.addParameter('tilt', 30);
+p.addParameter('obs_ext', false);
+p.addParameter('filt_a', 0.95);
 p.parse(varargin{:});
 o = p.Results;
 
@@ -115,6 +121,12 @@ dSlew = o.slew * o.Ts_agent;
 t = (0:nS).' * h;
 traj = ext_ref_path(t, o);
 vref = [zeros(1, 3); diff(traj) / h];
+nObs = 29;
+if o.obs_ext
+    nObs = 38;
+    d25 = ext_ref_preview(t, traj, 0.25);
+    d50 = ext_ref_preview(t, traj, 0.5);
+end
 
 % --- Gelenkfilter 1/(tau s + 1)^2, exakt bei linear interpoliertem Eingang ---
 tau = o.tau;
@@ -139,7 +151,7 @@ keep = o.keepTs;
 if keep
     qS = nan(nS + 1, 7); dqS = nan(nS + 1, 7); qcS = nan(nS + 1, 7);
 end
-obsA = nan(N + 1, 29); aRaw = nan(N + 1, 7); aScl = nan(N + 1, 7); rew = nan(N + 1, 1); cst = nan(N + 1, 1);
+obsA = nan(N + 1, nObs); aRaw = nan(N + 1, 7); aScl = nan(N + 1, 7); rew = nan(N + 1, 1); cst = nan(N + 1, 1);
 
 q = Z(1, :).'; dq = Z(2, :).';
 [G, pe, Je, ~, Hb] = ext_kin_eval(K, q);
@@ -181,6 +193,9 @@ for k = 0:N
     obs = [ep; ev; vb; wb; q; dq; eo];
     obs = obs + o.obsBias(:);
     if any(o.obsNoise > 0), obs = obs + o.obsNoise(:) .* randn(ns, 29, 1); end
+    if o.obs_ext
+        obs = [obs; yr([2 4 6]); d25(n + 1, :).' - obs(1:3); d50(n + 1, :).' - obs(1:3)]; %#ok<AGROW>
+    end
     if isempty(o.actionSeq)
         if isempty(o.ctrl)
             a = pol(obs);
@@ -202,7 +217,11 @@ for k = 0:N
     % --- Befehlskette (Agententakt) ---
     sat = min(max(a, -lim), lim);
     if fullChain
-        yf = 0.95 * yf + 0.05 * sat;
+        if o.filt_a == 0.95
+            yf = 0.95 * yf + 0.05 * sat;          % wie bisher, bitgleich
+        else
+            yf = o.filt_a * yf + (1 - o.filt_a) * sat;
+        end
         yr = yr + min(max(yf - yr, -dSlew), dSlew);
         cmd = yr * o.cmd_scale;
     else

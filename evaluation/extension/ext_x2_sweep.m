@@ -12,7 +12,8 @@ function T = ext_x2_sweep(varargin)
 %   (betas) und der Vorrang-Modus. Die volle Kette ohne Inversion nur mit R0 und j6_side 0.
 %   Pareto-Markierung je Variante, J6-Grenze: kein anderer Punkt mit kleinerem RMS und kleinerer Basisdrehung.
 %   Optionen: betas [0 logspace(-1, 4, 16)], Kp [5 10], j6 [0.1 0.9774], variants {'sat', 'full_inv', 'full'},
-%   sides [0 -1 1], kOri 0 (Rueckfuehrung der Basislage, Liste moeglich), save true.
+%   sides [0 -1 1], kOri 0 (Rueckfuehrung der Basislage, Liste moeglich), save true, filt_a 0,95 (Befehlsfilter
+%   fuer Strecke und Regler, X4.6 V3: 0,85).
 %   Ergebnis: data/simulation/extension/X2_sweep_<Zeit>.csv
 
 p = inputParser;
@@ -23,6 +24,7 @@ p.addParameter('variants', {'sat', 'full_inv', 'full'});
 p.addParameter('sides', [0 -1 1]);
 p.addParameter('kOri', 0);
 p.addParameter('save', true);
+p.addParameter('filt_a', 0.95);
 p.parse(varargin{:});
 o = p.Results;
 setup_project;
@@ -45,10 +47,10 @@ for v = o.variants
                     for c = 1:size(ctl, 1)
                         beta = ctl{c, 1}; mode = ctl{c, 2};
                         args = {'j6_lim', j6, 'Kp', kp, 'invert', inv, 'mode', mode, 'K', K, 'j6_side', side, ...
-                                'kOri', ko};
+                                'kOri', ko, 'filt_a', o.filt_a};
                         if strcmp(mode, 'weighted'), args = [args, {'beta', beta}]; end %#ok<AGROW>
                         ctrl = ext_x2_controller(args{:});
-                        r = ext_kinsim([], 'ctrl', ctrl, 'j6_lim', j6, 'chain', chain, 'K', K);
+                        r = ext_kinsim([], 'ctrl', ctrl, 'j6_lim', j6, 'chain', chain, 'K', K, 'filt_a', o.filt_a);
                         m = r.metrics;
                         jt = r.ts.a_scaled(:, [2 4 6]);
                         jerk = sqrt(mean(sum((diff(jt, 2) / 0.025^2) .^ 2, 2)));

@@ -1,0 +1,22 @@
+check,value,note
+SK_desktop MD5,1,897024e9e94468f6f074396c4523c6ec
+D16 r4 s2 nominal RMS gegen X1.3,2.38952698978692e-05,
+D16 r4 s2 nominal ori_max gegen X1.3,0.000182815736732914,
+SK_desktop MD5 nach dem Lauf,1,
+SK_desktop MD5 nach dem Bau der Kopien,1,
+V1 Kurztraining Kanaele,29,SK_desktop
+V1 Episoden,16,
+V2 Kurztraining Kanaele,38,SK_x46
+V2 Episoden,16,
+V2 RMS Simscape gegen kinematisch,8.78212724764182e-10,0.299077 m
+V2 ori_max Simscape gegen kinematisch,2.92028054516003e-09,
+V2 obs 1-29 Simscape gegen kinematisch,1.51575680895633e-08,
+V2 obs 30-32 (Kette) Simscape gegen kinematisch,8.87049772524406e-09,
+V2 obs 33-38 (Vorschau) Simscape gegen kinematisch,1.51575680895633e-08,max |Vorschau| 0.361 m
+V3 Kurztraining Kanaele,38,SK_x46f
+V3 Episoden,16,
+V3 RMS Simscape gegen kinematisch,3.21660059698914e-09,0.292928 m
+V3 ori_max Simscape gegen kinematisch,7.45181254896421e-09,
+V3 obs 1-29 Simscape gegen kinematisch,2.41902597970106e-08,
+V3 obs 30-32 (Kette) Simscape gegen kinematisch,1.15449171056436e-08,
+V3 obs 33-38 (Vorschau) Simscape gegen kinematisch,2.41902598022148e-08,max |Vorschau| 0.369 m
