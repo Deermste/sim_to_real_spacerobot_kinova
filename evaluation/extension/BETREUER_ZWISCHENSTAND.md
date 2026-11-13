@@ -1,4 +1,4 @@
-# Zwischenstand Ausbau des Papers (13.11.2026)
+# Zwischenstand Ausbau des Papers (13.11.2026, ergänzt am Abend)
 
 Unterlage für das Gespräch mit dem Betreuer. Paper „From Free-Floating Simulation to Fixed-Base Hardware“,
 nach der Ablehnung bei iSpaRo 2026. Alle Zahlen mit Datenquelle stehen in `RESULTS.md`, der Plan in `PLAN.md`.
@@ -32,7 +32,15 @@ von 13.
 Agenten brauchen bei gleicher Basisdrehung etwa den 2- bis 2,7-fachen Bahnfehler. Kein Budget und kein Gewicht
 ändert diesen Faktor. Auch mit Nominalmodell bleibt der Regler in 26 Störszenarien vorn (Masse, Trägheit,
 Verzögerung, Rauschen, Startstellung, Drift). Domain Randomization macht die Agenten robuster gegen falsche
-Basismasse, aber nicht besser als den Regler.
+Basismasse, aber nicht besser als den Regler. Das bestätigt sich auch in Simscape nach dem vollen Protokoll.
+
+**Filter statt Training (X1.4).** Ein modellbasierter Sicherheitsfilter auf Agenten ohne Budget-Training hält
+das Budget etwa so oft wie das Training (nominal 32 gegen 28 von 50, unter Störungen 73 bis 91 % gegen 74 bis
+90 %). Die beiden
+scheitern aber verschieden. Der Filter hält das Maximum fast immer (höchstens 4 mrad darüber, 9,5 mrad bei einem
+Lagefehler der Messung), der Agent verliert dafür die Bahn. Das Training hält die Bahn und überschreitet das
+Budget bei Modellfehlern deutlich (bis 65 mrad). Trainierte Agenten sind genauer, wenn sie folgen (15 bis 21 mm
+gegen 18 bis 23 mm). In Simscape rechnet der Filter wie im kinematischen Simulator (≤ 0,2 mm).
 
 **Woher der Abstand kommt (K10, A75, neu vom 13.11.).** Ablation mit 3 Varianten zu je 5 Seeds. Richtige
 Beobachtungsgrenzen, neun Kanäle mehr (Zustand der Befehlskette, Vorschau der Bahn) und ein schnellerer Filter
@@ -44,7 +52,10 @@ Beim Regler kostet der Filter nichts, er invertiert ihn. Die Kette kostet ihn nu
 Gelenkwinkeln mit und gibt der Policy die Beobachtung wie im frei schwebenden Training. In Simulation trifft das
 die frei schwebende Rechnung auf ≤ 0,41 mm und ≤ 0,2 mrad, Rechenzeit 0,6 ms je Schritt. Der Arm fährt dabei
 physisch nicht die Referenzbahn, sondern die Bahn relativ zur virtuellen Basis (14 bis 33 mm Abweichung). Das ist
-gewollt und durch eine zweite Abbruchgrenze abgesichert. Hardware-Test steht aus.
+gewollt und durch eine zweite Abbruchgrenze abgesichert. Hardware-Test steht aus. Eine Vorhersage je Kandidat
+liegt vor. Mit Emulation sieht der Agent fast dasselbe wie frei schwebend. Ohne Emulation weicht er je nach Agent
+um −10,5 bis +4 mm ab. Messbar ist der Unterschied nur bei Agenten mit mehr als etwa 4 mm, weil die Hardware am
+Labortag 2 schon 2 bis 3 mm über der Vorhersage lag.
 
 **Weitere Befunde.** Der alte Basis-Bonus im Reward erzeugt den späten Bahnverlust (K1, auch auf der Hardware
 gesehen). Gelenkbahnen der Hardware ergeben dieselbe Basisdrehung wie die Simulation mit fester Basis (≤ 2 mrad,
@@ -73,7 +84,7 @@ unter Störungen. Das Paper wird damit eher eine Bewertung als eine Methode. Vor
 | E7d | Set-Point neu (X6, frei schwebend, Millimeter-Ziel) in dieses Paper oder in ein eigenes | eigenes Paper, sonst wird dieses zu breit |
 | X4.4 | Was fliegt aus dem Paper oder geht in den Anhang | nach E7a, z. B. Ratenpaar D10 und Teile des Algorithmenvergleichs |
 | E4 | 3D-Bahn mit RL (X5) machen | ja, kleiner Pilot (2 × 2 Seeds, etwa 3 h), dann Go/No-Go |
-| E5 | Agenten für den Labortag mit Emulation (X3.2) | ein r4-Agent (positiver Zweig, etwa 50 mrad) und ein Budget-Agent θ = 0,03 mit negativem Zweig, beide in X0.1 sicher folgend |
+| E5 | Agenten für den Labortag mit Emulation (X3.2) | D16 r4 s7 (Labortag 2, 6,6 mm Unterschied an gegen aus), Budget-Agent θ = 0,03 s6 (bester Budget-Agent, negativer Zweig, 4,7 mm Unterschied), r0 s0 als Gegenprobe |
 | Labor | Termin für X3.2 | früh anfragen. Set-Point vor Tracking (E16) geht nur, wenn X6 bis dahin fertig ist |
 | E6 | Ratenpaar D10 auf 10 Seeds | nein, wenn die Diagnose ohnehin gekürzt wird |
 
@@ -81,6 +92,7 @@ unter Störungen. Das Paper wird damit eher eine Bewertung als eine Methode. Vor
 
 - Alle Vergleiche mit dem Regler laufen im kinematischen Simulator, gegengeprüft in Simscape (≤ 0,45 mm).
 - Der Regler kennt das exakte Modell bzw. das Nominalmodell. Die Störszenarien decken nicht alles ab.
+- Filter und Training unter Störungen nur mit 3 bis 8 Agenten je Budget verglichen.
 - Das Budget ist als Anteil der Schritte über θ formuliert, nicht als Maximum.
 - Die Ablation hat 5 Seeds je Variante und findet nur große Effekte. Der Rate Limiter wurde nicht variiert.
 - Hardware bleibt der fest montierte Arm. Auch mit Emulation ist die Basisdynamik gerechnet, nicht gemessen.
@@ -89,9 +101,8 @@ unter Störungen. Das Paper wird damit eher eine Bewertung als eine Methode. Vor
 
 | Schritt | Inhalt | Rechenzeit (geschätzt) |
 |---|---|---|
-| X2.4 Rest | randomisierte Agenten nach Protokoll X0.1 in Simscape | etwa 1 h |
 | X5.1 Rest, X5.2 | 3D-Modell in Simscape, Pilot | etwa 4 h |
 | X5.3 | Hauptlauf 3D mit 10 Seeds (nur bei Go) | 6 bis 8 h |
-| X3.2 | Labortag mit Emulation an und aus, vorher Vorhersage je Bedingung | Labor |
+| X3.2 | Trockenläufe der gewählten Agenten, dann Labortag mit Emulation an und aus | Labor |
 | X6 | Set-Point neu (nur wenn E7d dafür) | 15 bis 20 h |
 | P | Paper neu aufbauen | 2 bis 3 Wochen |

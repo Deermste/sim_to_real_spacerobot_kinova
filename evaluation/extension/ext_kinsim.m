@@ -26,7 +26,7 @@ function res = ext_kinsim(policy, varargin)
 %   q0 zeros(7,1), tau 0,02,
 %   K (ext_kin_model, Standard nominal mit base_mass), base_mass 65 (nur wenn K fehlt),
 %   cmdHook @(cmd, S) -> cmd: Eingriff nach der Befehlskette, vor der Verzoegerung (fuer den Filter in X1.4).
-%     S hat die Felder t, q, dq, G, Je, quat, ori (Drehvektor).
+%     S hat die Felder t, q, dq, G, Je, quat, ori (Drehvektor), obs (Beobachtung mit Rauschen und Messfehler).
 %   obsNoise 29x1 Standardabweichungen (Standard 0), rngSeed fuer das Rauschen,
 %   obsBias 29x1 fester Messfehler auf der Beobachtung (Standard 0, X2.3),
 %   w0_init 3x1 Anfangs-Drehrate der Basis im Weltsystem [rad/s] bei ruhendem Arm (Standard 0, X2.3). Daraus
@@ -228,7 +228,7 @@ for k = 0:N
         cmd = sat * o.cmd_scale;
     end
     if ~isempty(o.cmdHook)
-        S = struct('t', k * o.Ts_agent, 'q', q, 'dq', dq, 'G', G, 'Je', Je, 'quat', quat, 'ori', eo);
+        S = struct('t', k * o.Ts_agent, 'q', q, 'dq', dq, 'G', G, 'Je', Je, 'quat', quat, 'ori', eo, 'obs', obs);
         cmd = o.cmdHook(cmd, S);
     end
     obsA(k + 1, :) = obs.'; aRaw(k + 1, :) = a.'; aScl(k + 1, :) = cmd.'; rew(k + 1) = r; cst(k + 1) = c;

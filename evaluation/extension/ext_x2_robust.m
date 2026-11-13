@@ -7,6 +7,10 @@ function [E, S, outFile] = ext_x2_robust(varargin)
 %   [E, S] = ext_x2_robust('agents', 'none')     nur Regler
 %   Liegt X2_4_ctrl_tuned.mat vor (ext_x2_4_tune_ctrl), kommen die dort eingestellten Regler dazu
 %   ('useTuned', false schaltet das ab).
+%   [E, S] = ext_x2_robust('agents', list, 'shield', struct('thetas', [0.02 0.03], 'alpha', 5))   X1.4 Teil 3:
+%     jeder Agent zusaetzlich mit dem Sicherheitsfilter ext_x1_shield nach der Kette (Nominalmodell, gemessene
+%     Lage und Gelenkwinkel), je theta ein Teilnehmer <label>_f<theta in mrad>, Gruppe <group>_f<theta in mrad>.
+%     Feld 'measured' (Standard true) wie in ext_x1_shield.
 %
 %   Alles im kinematischen Simulator (ext_kinsim, volle Befehlskette, J6 0,9774 rad/s, Halbkreis 8,5 s, 40 Hz).
 %   Die Regler (ext_x2_controller mit Inversion der Kette) rechnen immer mit dem Nominalmodell (65 kg) und kennen
@@ -32,13 +36,14 @@ p.addParameter('scenarios', {});
 p.addParameter('controllers', {});
 p.addParameter('useTuned', true);
 p.addParameter('save', true);
+p.addParameter('shield', []);
 p.parse(varargin{:});
 o = p.Results;
 setup_project;
 Knom = ext_kin_model();
 
 % --- Teilnehmer ---
-subj = struct('label', {}, 'group', {}, 'make', {});
+subj = struct('label', {}, 'group', {}, 'make', {}, 'hook', {});
 ctl = {'R0', {'beta', 0}; 'Rb1', {'beta', 1, 'j6_side', -1}; 'Rb21', {'beta', 21.544, 'j6_side', -1}; ...
        'Rb46', {'beta', 46.416, 'j6_side', -1}};
 ctl = [ctl; o.controllers];
@@ -50,14 +55,23 @@ if o.useTuned && isfile(tf)
 end
 for c = 1:size(ctl, 1)
     args = [{'j6_lim', 0.9774, 'invert', true, 'K', Knom}, ctl{c, 2}];
-    subj(end + 1) = struct('label', ctl{c, 1}, 'group', 'ctrl', 'make', @() ctrlRunner(args)); %#ok<AGROW>
+    subj(end + 1) = struct('label', ctl{c, 1}, 'group', 'ctrl', 'make', @() ctrlRunner(args), 'hook', []); %#ok<AGROW>
 end
 list = o.agents;
 if isempty(list), list = defaultAgents(); end
 if ischar(list) && strcmp(list, 'none'), list = struct('file', {}, 'label', {}, 'group', {}); end
 for k = 1:numel(list)
     pol = ext_policy(list(k).file);
-    subj(end + 1) = struct('label', list(k).label, 'group', list(k).group, 'make', @() pol); %#ok<AGROW>
+    subj(end + 1) = struct('label', list(k).label, 'group', list(k).group, 'make', @() pol, 'hook', []); %#ok<AGROW>
+    if isempty(o.shield), continue; end
+    meas = true;
+    if isfield(o.shield, 'measured'), meas = o.shield.measured; end
+    for th = o.shield.thetas
+        sh = {'theta', th, 'alpha', o.shield.alpha, 'K', Knom, 'lim', [0.9774 0.9774 0.9774], 'measured', meas};
+        tag = sprintf('_f%d', round(th * 1000));
+        subj(end + 1) = struct('label', [list(k).label tag], 'group', [list(k).group tag], 'make', @() pol, ...
+                               'hook', @() ext_x1_shield(sh{:})); %#ok<AGROW>
+    end
 end
 
 % --- Szenarien ---
@@ -83,7 +97,9 @@ for s = 1:numel(sc)
             if strcmp(subj(j).group, 'ctrl')
                 res = ext_kinsim([], 'ctrl', h, 'j6_lim', 0.9774, 'reward_mode', 4, 'K', K, extra{:});
             else
-                res = ext_kinsim(h, 'j6_lim', 0.9774, 'reward_mode', 4, 'K', K, extra{:});
+                hk = {};
+                if ~isempty(subj(j).hook), hk = {'cmdHook', subj(j).hook()}; end
+                res = ext_kinsim(h, 'j6_lim', 0.9774, 'reward_mode', 4, 'K', K, extra{:}, hk{:});
             end
             m = res.metrics;
             rows{end + 1} = struct('scenario', string(sc(s).name), 'sgroup', string(sc(s).group), 'rep', r, ...

@@ -63,13 +63,13 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X1.2 | Pilot: Kostenform und Schrittweite | ½ Tag | ≈ 4 h | E2 | ✅ 11.11. |
 | X1.2b | Zweiter Pilot: schnellere duale Anpassung (Blöcke 50, η 5 gegen PID-Lagrange), Kosten A, 2 Seeds | ½ Tag | ≈ 2 h | X1.2 | ✅ 11.11. |
 | X1.3 | Hauptlauf: 5 Budgets × 10 Seeds, dazu r1 × 10 Seeds | 1 Tag | ≈ 25–30 h | E2 | ✅ 13.11. |
-| X1.4 | Sicherheitsfilter (CBF auf die Basisdrehung) auf r1-Agenten | 2 Tage | 2 h | X0.2 | 🔄 Teil 1 ✅ 10.11., Teil 2 (r1 aus X1.3) ✅ 13.11., Simscape offen |
+| X1.4 | Sicherheitsfilter (CBF auf die Basisdrehung) auf r1-Agenten | 2 Tage | 2 h | X0.2 | ✅ Teil 1 10.11., Teil 2 und 3 (Störungen, Simscape) 13.11. |
 | X2.1 | Modellbasierter Regler (GJM, Nullraum), Machbarkeit auf dem Halbkreis | 2 Tage | < 1 h | X0.2 | ✅ 10.11. |
 | X2.2 | Modellbasierte Pareto-Front, Vergleich mit RL | 1 Tag | < 1 h | X1.3, X4.1 | ✅ 13.11. |
 | X2.3 | Robustheit gegen falsche Trägheitsparameter, RL gegen Regler | 2 Tage | 3 h | X2.1, X1.3 | 🔄 Teil 1 ✅ 10.11., X4.1 und X2.4 ✅ 11.11., X1.3 ✅ 13.11., Filter offen |
-| X2.4 | RL mit Domain Randomization (DR-M und DR-voll), je 10 Seeds | 1 Tag | ≈ 10 h | – | ✅ 11.11. (X0.1 in SK_desktop offen) |
-| X3.1 | Kinematische Free-Floating-Emulation im Deploy-Skript, Validierung in Simulation | 3 Tage | 2 h | X0.2 | ✅ 10.11. (Vorhersage offen) |
-| X3.2 | Labortag: Emulation an gegen aus | 1 Tag Labor + 1 Tag Auswertung | – | Labor, E5 | ⏸ |
+| X2.4 | RL mit Domain Randomization (DR-M und DR-voll), je 10 Seeds | 1 Tag | ≈ 10 h | – | ✅ 11.11., X0.1 in SK_desktop 13.11. |
+| X3.1 | Kinematische Free-Floating-Emulation im Deploy-Skript, Validierung in Simulation | 3 Tage | 2 h | X0.2 | ✅ 10.11., Vorhersage 13.11. (Trockenläufe nach E5) |
+| X3.2 | Labortag: Emulation an gegen aus | 1 Tag Labor + 1 Tag Auswertung | – | Labor, E5 | ⏸ Vorhersage und Vorschlag für E5 in RESULTS X3.2 |
 | X4.1 | Gewichtsreihe aus D17 auf 10 Seeds auffüllen | ½ Tag | ≈ 13 h | E3 | ✅ 11.11. |
 | X4.2 | Alle Bestandsagenten mit dem Protokoll X0.1 neu auswerten | ½ Tag | 2 h | X0.1 | ✅ 11.11. |
 | X4.3 | Ratenpaar D10 auf 10 Seeds (optional) | ½ Tag | ≈ 3 h | E6 | ⏸ |

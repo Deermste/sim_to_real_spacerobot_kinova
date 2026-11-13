@@ -16,6 +16,8 @@ function hook = ext_x1_shield(varargin)
 %   eingehalten, der Filter wirkt aber nur ueber Filter und Rate Limiter, also verzoegert.
 %   Optionen: theta 0,03 rad, alpha 1 1/s, joints [2 4 6], axis 2 (y), K (ext_kin_model), lim (Saettigung der
 %   aktiven Gelenke nach der Korrektur, Standard [0,9774 0,9774 0,9774]).
+%   measured (Standard false): Der Hook nach der Kette nimmt q und e_ori aus der Beobachtung (mit Rauschen und
+%   Messfehler) statt aus dem wahren Zustand. Vor der Kette ist das immer so.
 %   Der Hook zaehlt die Eingriffe: hook('count') liefert [Anzahl Schritte, davon korrigiert].
 
 p = inputParser;
@@ -26,6 +28,7 @@ p.addParameter('axis', 2);
 p.addParameter('K', []);
 p.addParameter('lim', [0.9774 0.9774 0.9774]);
 p.addParameter('policy', []);
+p.addParameter('measured', false);
 p.parse(varargin{:});
 o = p.Results;
 if isempty(o.K), o.K = ext_kin_model(); end
@@ -51,7 +54,12 @@ if ~isempty(o.policy), hook = @wrapped; end
             return
         end
         nStep = nStep + 1;
-        out = shieldStep(cmd, S.q, rotvecToRotm(S.ori), S.ori, o);
+        if o.measured
+            eo = S.obs(27:29);                              % gemessene Lage und Gelenkwinkel (X1.4 Teil 3)
+            out = shieldStep(cmd, S.obs(13:19), rotvecToRotm(eo), eo, o);
+        else
+            out = shieldStep(cmd, S.q, rotvecToRotm(S.ori), S.ori, o);
+        end
         if any(out ~= cmd), nAct = nAct + 1; end
     end
 end

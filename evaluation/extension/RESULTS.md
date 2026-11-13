@@ -24,8 +24,8 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 | K5 | Ein modellbasierter Regler (exaktes Modell, kennt die Befehlskette) dominiert alle RL-Agenten: 0,020 rad bei 5,7 mm, 0,013 rad bei 9 mm | X2.1 | Kinematischer Simulator, in Simscape auf 3e-7 bestätigt. Robustheit offen (X2.3) |
 | K6 | Auch mit Nominalmodell bleibt der Regler bei falscher Masse, Trägheit, Verzögerung, Verstärkung, Rauschen, Startstellung und Drift vor den Agenten. Am knappsten bei Kinematikfehlern (Montage) und Drift um x | X2.3 Teil 1 | 26 Szenarien, 20 Agenten ohne Randomisierung, nur kinematisch |
 | K7 | Auf einer gekippten 3D-Bahn mit allen sieben Gelenken senkt der Nullraum des Reglers die Basisdrehung je nach Kipprichtung stark (−30°: 124 auf 10 mrad bei 2 mm) oder kaum (+30°: 14 auf 11 mrad). In der Ebene bringen die zusätzlichen Gelenke wenig | X5.1 | Nur Regler, kinematisch, nominal. RL in 3D offen (X5.2) |
-| K8 | Domain Randomization macht den Bahnfehler der Agenten fast unempfindlich gegen falsche Basismasse (+0,1 bis +0,4 statt +1,7 mm). Die Regler mit Nominalmodell bleiben trotzdem vorn (Faktor 2,0 bis 2,4) | X2.4, X4.5 | 10 Seeds je Variante, 26 Szenarien, nur kinematisch. X0.1 in SK_desktop offen. „DR-voll folgt öfter“ hängt an der Schwelle (X4.5), nicht Teil der Aussage |
-| K9 | Ein Budget als Nebenbedingung steuert die Basisdrehung (θ gegen ori_max ρ 0,70, bei den folgenden 0,77, Gewicht in K2 −0,18). Der Preis ist die Bahn: nur 27 von 50 Agenten folgen (r1 7 von 10, r4 10 von 10). Für θ ≤ 0,03 muss die Policy den Zweig von J6 finden, den auch der Regler nutzt, ohne ihn folgt keiner (0 von 7). Bei θ 0,03 halten mehr Agenten Bahn und Basis zugleich als in der Gewichtsreihe. Der Abstand zur Front bleibt (Faktor um 2 bis 3 wie ohne Budget), ein Filter auf r1 hält das Budget etwa gleich oft, aber mit mehr Bahnfehler | X1.3, X2.2, X1.4 Teil 2, X4.5 Runde 2 | 10 Seeds je Budget, 21 Episoden je Agent, nur Simulation. „Folgt seltener als r4“ nur mit Schwelle (X4.5), der Vorteil bei θ 0,02 nicht robust. Budget als Anteil der Schritte, nicht als Maximum. Kollaps bei θ 0,02 (A74) |
+| K8 | Domain Randomization macht den Bahnfehler der Agenten fast unempfindlich gegen falsche Basismasse (+0,1 bis +0,4 statt +1,7 mm). Die Regler mit Nominalmodell bleiben trotzdem vorn (Faktor 2,0 bis 2,4) | X2.4, X4.5 | 10 Seeds je Variante, 26 Szenarien, nur kinematisch, X0.1 in SK_desktop bestätigt (13.11.). „DR-voll folgt öfter“ hängt an der Schwelle (X4.5), nicht Teil der Aussage |
+| K9 | Ein Budget als Nebenbedingung steuert die Basisdrehung (θ gegen ori_max ρ 0,70, bei den folgenden 0,77, Gewicht in K2 −0,18). Der Preis ist die Bahn: nur 27 von 50 Agenten folgen (r1 7 von 10, r4 10 von 10). Für θ ≤ 0,03 muss die Policy den Zweig von J6 finden, den auch der Regler nutzt, ohne ihn folgt keiner (0 von 7). Bei θ 0,03 halten mehr Agenten Bahn und Basis zugleich als in der Gewichtsreihe. Der Abstand zur Front bleibt (Faktor um 2 bis 3 wie ohne Budget), ein Filter auf r1 hält das Budget etwa gleich oft, aber mit mehr Bahnfehler. Unter Störungen scheitern beide verschieden: Der Filter hält das Maximum und verliert eher die Bahn, das Training hält die Bahn und überschreitet das Budget bei Modellfehlern | X1.3, X2.2, X1.4 Teil 2 und 3, X4.5 Runde 2 | 10 Seeds je Budget, 21 Episoden je Agent, nur Simulation. „Folgt seltener als r4“ nur mit Schwelle (X4.5), der Vorteil bei θ 0,02 nicht robust. Budget als Anteil der Schritte, nicht als Maximum. Kollaps bei θ 0,02 (A74) |
 | K10 | Weder richtige Beobachtungsgrenzen noch mehr Information (Zustand der Befehlskette, Vorschau der Bahn) noch ein schnellerer Filter verkleinern den Abstand zum Regler messbar (Faktor-Median 2,25 bis 2,69, alle Holm p ≥ 0,93). Der schnellere Filter erhöht nur den Befehlsruck (etwa neunfach). Beim Regler kostet der Filter nichts, die Kette kostet ihn über den Rate Limiter (1,2 auf 5,7 mm). Die Agenten mit dem kleinsten Abstand nutzen den negativen Zweig von J6 | X4.6 | 5 Seeds je Variante, aufbauend, nur Simulation. Nur große Effekte nachweisbar (kleinstes p nach Holm 0,024), etwa 10 % blieben unentdeckt. Rate Limiter nicht variiert |
 
 X0.1 (Auswerteprotokoll) steht und reproduziert D17. Mit ±2° Startstörung folgen 19 von 20 D16/D17-Agenten in
@@ -56,6 +56,10 @@ Abstand nicht. X1.4 Teil 2: Ein Filter auf r1 hält das Budget ähnlich oft, die
 wenn sie folgen. X4.5 Runde 2: K9a und K1 hängen nicht an den Schwellen, K9b und K9c nur teilweise. X4.6:
 Richtige Grenzen, neun Kanäle mehr und ein schnellerer Filter ändern den Abstand zum Regler nicht messbar (K10).
 Der Regler verliert durch die Kette nur am Rate Limiter, nicht am Filter (A75).
+Nachträge 13.11.: X0.1 in `SK_desktop` bestätigt K8 für die DR-Agenten. Unter Störungen hält der Filter das
+Maximum, die gefilterten Agenten verlieren aber eher die Bahn, die trainierten überschreiten bei Modellfehlern das
+Budget (X1.4 Teil 3). In Simscape rechnet der Filter wie kinematisch. Für den Labortag liegt eine Vorhersage je
+Kandidat vor (X3.2).
 
 ## Ausgangslage (aus dem alten Desktop-Plan und dem Paper, Stand 10.11.2026)
 
@@ -755,6 +759,73 @@ Datenquelle: `X1_4_eval_20261113_084820.csv`, `X1_4_report_20261113_084820.csv`,
 
 Paper: Abschnitt Nebenbedingung (Filter gegen Training). Offen.
 
+### X1.4 Sicherheitsfilter, Teil 3: Störungen und Simscape ✅ 13.11.2026
+
+**Frage:** Hält der Filter das Budget auch, wenn Modell, Aktor, Sensor oder Anfangszustand nicht stimmen? Und
+rechnet der kinematische Simulator den Filter so wie Simscape?
+
+**Aufbau Störungen:** `ext_x1_4_robust()`. Die zehn r1-Agenten aus X1.3 mit `ext_x1_shield` nach der Kette (α 5,
+θ 0,02 bis 0,06, Nominalmodell). Neu: Der Filter nimmt q und e_ori aus der Beobachtung, also mit Rauschen und
+Messfehler der Szenarien (Option `measured` in `ext_x1_shield`, Feld `obs` im Hook von `ext_kinsim`, sonst
+unverändert). Die 26 Szenarien aus X2.3 (`ext_x2_robust`, neue Option `shield`), 2546 Episoden in 10,9 min,
+kinematisch. Vergleich mit den trainierten Budget-Agenten aus X2.3 Teil 2 (`X2_robust_20261113_090316`).
+Definitionen wie dort: Budget-Agenten sind die, die nominal folgen und ori_max ≤ θ + 5 mrad halten. Budget gehalten
+heißt in einem Störszenario weiter folgen und das Budget halten (25 Störszenarien je Agent). Gegenprobe: Der
+Hook mit dem wahren Zustand trifft X1.4 Teil 2 exakt (r1 Seed 0, θ 0,03: 21,918 mm, 30,064 mrad).
+
+| θ | Filter: Agenten | Filter: Budget gehalten | Filter: folgt | Filter: größte Überschreitung [mrad] | Filter: RMS [mm] | Training: Agenten | Training: Budget gehalten | Training: folgt | Training: größte Überschreitung [mrad] | Training: RMS [mm] |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 0,02 | 4 | 73 % | 77 % | 9,5 | 23,2 | 3 | 88 % | 100 % | 19,2 | 17,6 |
+| 0,03 | 5 | 76 % | 76 % | 4,1 | 21,9 | 6 | 90 % | 98 % | 18,5 | 20,5 |
+| 0,04 | 7 | 78 % | 78 % | 3,5 | 22,6 | 4 | 74 % | 98 % | 39,8 | 14,8 |
+| 0,05 | 8 | 86 % | 86 % | 2,9 | 21,9 | 7 | 84 % | 97 % | 50,5 | 18,8 |
+| 0,06 | 8 | 91 % | 91 % | 2,4 | 18,5 | 8 | 85 % | 100 % | 65,5 | 14,6 |
+
+„folgt“ über alle nominal folgenden Agenten der Gruppe, RMS als Median der Paare mit gehaltenem Budget.
+
+- Beide halten das Budget etwa gleich oft (Filter 73 bis 91 %, Training 74 bis 90 %), sie scheitern aber
+  verschieden. Der gefilterte Agent hält das Maximum fast immer und verliert dafür die Bahn. Ab θ 0,03 ist
+  „Budget gehalten“ gleich „folgt“, wer folgt, hält also auch das Budget. Die größte Überschreitung liegt bei
+  2,4 bis 4,1 mrad. Der trainierte Agent folgt fast immer (97 bis 100 %), überschreitet das Budget aber bei
+  Modellfehlern deutlich (bis 65 mrad bei θ 0,06).
+- Schwächste Szenarien des Filters: Drift um x bei θ 0,02 (0 von 4), fester Lagefehler 10 mrad bei θ 0,02
+  (1 von 4, daher die 9,5 mrad, der Filter hält die gemessene Lage ein), leichte Basis (Masse ×0,25,
+  Trägheit ×0,5) und 50 ms Verzögerung (θ 0,03: 2 von 5). Schwächste des Trainings: Masse ×0,25 und ×0,5,
+  Trägheit ×0,5, Drift y +2 mrad/s (meist 0 bis 33 %). Je Szenariogruppe hält das Training bei Sensor- und
+  Aktorfehlern das Budget in 95 bis 100 %, der Filter in 69 bis 100 %. Bei Modellfehlern ist es umgekehrt
+  (Training 58 bis 86 %, Filter 71 bis 88 %).
+- Wer mit Filter das Budget hält, fährt 18 bis 23 mm, die trainierten Agenten 15 bis 21 mm (wie nominal, X1.4
+  Teil 2).
+
+**Aufbau Simscape:** `ext_x1_4_simscape()`. Modellkopie `SK_x14` (`ext_x1_4_build_model`, `SK_desktop` mit
+MATLAB-Function-Block `Shield` zwischen Cmd Scale und Rate Transition). Der Block ruft extrinsisch
+`ext_x1_4_sim_shield` auf, also denselben Filter. q und e_ori aus dem Ausgang von Obs Transform im selben
+Agentenschritt. Sechs Fälle, nominal, α 5. Gegen `ext_kinsim` mit dem Hook. `SK_desktop` vorher und nachher mit
+derselben Prüfsumme.
+
+| Fall | Eingriff Simscape / kinematisch | RMS Simscape / kinematisch [mm] | ori_max Simscape / kinematisch [mrad] | folgt |
+|---|---|---|---|---|
+| r1 s3, θ 0,03 | 13,8 % / 13,8 % | 13,70 / 13,86 | 29,45 / 29,41 | ja / ja |
+| r1 s5, θ 0,02 | 28,7 % / 28,4 % | 23,97 / 24,00 | 20,04 / 20,04 | ja / ja |
+| r1 s0, θ 0,04 | 24,0 % / 24,0 % | 14,06 / 14,07 | 40,06 / 40,06 | ja / ja |
+| r1 s0, θ 0,02 | 39,6 % / 39,6 % | 41,76 / 41,52 | 20,07 / 20,07 | nein / nein |
+| r1 s1, θ 0,03 | 19,6 % / 19,4 % | 46,56 / 42,81 | 30,07 / 30,07 | nein / nein |
+| r1 s2, θ 0,05 | 0 / 0 | 25,23 / 29,43 | 29,48 / 28,90 | ja / ja |
+
+- In den ersten drei Fällen (Agent folgt, Filter greift oft ein, ohne Filter stimmen beide Simulatoren überein)
+  liegen RMS höchstens 0,16 mm und ori_max höchstens 0,04 mrad auseinander. Das Maximum hält der Filter in
+  Simscape genauso wie kinematisch.
+- s1 und s2 weichen schon ohne Filter um 1,8 und 4,2 mm ab (stark gesättigte Agenten, X1.3), s2 hier ganz ohne
+  Eingriff. Die Abweichung kommt also vom Agenten, nicht vom Filter.
+
+**Grenzen:** 3 bis 8 Agenten je Zelle, kinematisch. Der Filter kennt nur das Nominalmodell, sieht aber die
+gemessene Lage. Rauschen auf q und e_ori geht ungefiltert in die Barriere ein. In Simscape nur nominal.
+
+Datenquelle: `X2_robust_20261113_175514_*`, `X1_4_robust_{groups,sgroups,scen}_20261113_175514.csv`, Log
+`X1_4_robust_matlab.log`, `X1_4_simscape_*.csv`, Modell `evaluation/desktop/models/SK_x14.slx`.
+
+Paper: Abschnitt Nebenbedingung (Filter gegen Training, Robustheit beider). Offen.
+
 ## X2 Modellbasierte Vergleichsbasis
 
 ### X2.1 Regler und Machbarkeit ✅ 10.11.2026
@@ -1044,7 +1115,7 @@ Datenquelle: `X2_robust_20261113_090316_{episodes,summary}.csv` und `.mat`,
 
 Paper: Robustheitsabschnitt, Ergänzung zu K6. Offen.
 
-### X2.4 Domain Randomization ✅ 11.11.2026 (X0.1 in SK_desktop für die DR-Agenten offen)
+### X2.4 Domain Randomization ✅ 11.11.2026 (X0.1 in SK_desktop 13.11.)
 
 **Abstimmbarkeit** (`ext_x2_4_tunable`): Unter Fast Restart (wie im RL-Training) wurden Basismasse (Simscape,
 compiletime) und Verzögerung (Dialogwert des Delay-Blocks) stillschweigend ignoriert. Verstärkung, Startstellung
@@ -1144,6 +1215,29 @@ Datenquelle: `X2_robust_20261111_112342_summary.csv`, `_episodes.csv`, `.mat`, `
 
 Paper: Robustheitsvergleich (Methode, Fairness), ersetzt die CDR-Studie für die Basismasse. Offen.
 
+**Nachtrag 13.11.2026: X0.1 in `SK_desktop`** (`ext_x2_4_eval()`, 20 Agenten in 5,2 min, Auswertung
+`ext_x2_4_eval_report()`). Aufbau aus dem cfg (r4, w 2, J6 0,9774, 40 Hz), nominales Modell ohne Randomisierung,
+21 Episoden je Agent. Bezug w 2 = D16 r4 Seeds 0–9 (X0.1 aus X1.3). Mann-Whitney gegen w 2, Holm über die zwei
+DR-Gruppen. Faktor gegen die Front F aus X2.2 (nur folgende Agenten, Mittel der 21 Episoden).
+
+| Gruppe | folgt | RMS Median Mittel (nominal) [mm] | ori_max Median [mrad] | schlechteste ori [mrad] | Ruck | ruhig (≤ 30 mrad, folgt) | Faktor |
+|---|---|---|---|---|---|---|---|
+| w 2 (D16) | 10/10 | 13,9 (10,9) | 52,5 | 58,1 | 7,2 | 1 | 2,69 |
+| DR-M | 9/10 | 14,6 (12,4) | 54,6 | 61,0 | 10,2 | 0 | 2,80 |
+| DR-voll | 10/10 | 16,5 (15,7) | 36,6 | 47,8 | 13,1 | 5 | 3,19 |
+
+- Keine Gruppe unterscheidet sich von w 2 in RMS, ori_max, folgt oder Faktor (Holm p ≥ 0,20). Einzige
+  Ausnahme ist der Ruck von DR-voll (13,1 gegen 7,2, p 0,014, Holm 0,028).
+- Die kinematischen Zahlen bestätigen sich. DR-M Seed 1 folgt auch hier nicht (34,3 mm, 29 mrad). DR-voll ist
+  wieder zweigeteilt: 5 Seeds bei 23–29 mrad mit 14,5–21,8 mm (Mittel), die anderen bei 44–67 mrad.
+- Gegenprobe nominale Episode `SK_desktop` gegen den kinematischen Simulator (Szenario nominal aus
+  `X2_robust_20261111_112342`): Das Urteil „folgt“ stimmt bei allen 20 überein. RMS höchstens 1,8 mm auseinander
+  (DR-voll Seed 5, 27,7 gegen 29,5 mm), sonst ≤ 0,3 mm. ori_max ≤ 1,1 mrad. Die 1,8 mm liegen über den 0,45 mm aus
+  X0.2. Der Agent hat den größten RMS der Reihe, die Aussagen von K8 ändern sich dadurch nicht.
+- Damit ist die Grenze „X0.1 in SK_desktop offen“ von K8 erledigt.
+
+Datenquelle: `X_eval_X2_4_20261113_174009_*`, `X2_4_eval_report_{agents,groups,tests}_20261113_174009.csv`.
+
 ## X3 Kinematische Emulation
 
 ### X3.1 Umsetzung und Validierung in Simulation ✅ 10.11.2026
@@ -1189,10 +1283,76 @@ weder Servoverzögerung noch Rate Transition, und die Schleife lief neben X4.1 m
 Alle Läufe vollständig, `getAction` 2 ms, Emulation 0,6 ms.
 
 **Noch offen:** Vorhersage je Bedingung für X3.2 (`X3_prediction.csv`), sobald die Agenten feststehen (E5).
+Nachtrag 13.11.2026: Vorhersage für alle Kandidaten gerechnet (X3.2 Vorhersage unten). Trockenläufe mit
+`deploy_tracking_v25` folgen, wenn E5 steht.
 
 Datenquelle: `X3_validate_20261110_131114_*`.
 
 Paper: neuer Abschnitt Emulation (Methode, Validierung, Grenzen). Offen.
+
+### X3.2 Vorhersage für den Labortag ✅ 13.11.2026 (Labortag ⏸)
+
+**Frage:** Was sollte die Hardware je Kandidat mit und ohne Emulation zeigen? Und bei welchen Agenten ist der
+Unterschied groß genug, um ihn auf der Hardware zu sehen?
+
+**Aufbau:** `ext_x3_2_predict()`, kinematischer Simulator, nominal, Startstellung null, J6 0,9774 rad/s, 20 Hz
+(Rate der API) und 40 Hz. Kandidaten aus PLAN X3.2: D16 r0 s0, D16 r4 s2 nach 1000 Episoden, D16 r4 s7, s4 und
+s1 (alle schon am Labortag 2 gefahren), alle Budget-Agenten aus X1.3 mit θ 0,03 und 0,05, die in X0.1 folgen und
+das Budget halten (je 5), und DR-voll s6. Je Agent drei Läufe:
+- frei schwebend wie im Training (ff),
+- Emulation aus wie V2.4 (fester Arm, Basis-Kanäle null),
+- Emulation an wie V2.5. Dabei zählen, was der Agent sieht (virtuell) und was der Arm physisch fährt.
+
+Ohne die Schutzschicht des Deploy-Skripts und mit idealem Servo.
+
+20 Hz (RMS [mm] / ori_max [mrad], „Median“ = Budget-Agent mit mittlerem RMS in X0.1):
+
+| Kandidat | frei schwebend | Emulation aus | Emulation an, virtuell | Emulation an, physisch RMS / max [mm] | an minus aus [mm] |
+|---|---|---|---|---|---|
+| r0 s0 (Einbruch) | 73,7 / 19,9, folgt nicht | 87,4, folgt nicht | 74,3 / 19,9, folgt nicht | 83,4 / 217 | −13,1 |
+| r4 s2 1000 Ep. | 8,8 / 25,0 | 13,5 | 8,8 / 25,0 | 18,1 / 56 | −4,7 |
+| r4 s7 | 9,9 / 61,1 | 16,5 | 9,9 / 61,1 | 32,6 / 110 | −6,6 |
+| r4 s4 | 12,4 / 47,5 | 13,5 | 12,4 / 47,5 | 19,0 / 52 | −1,1 |
+| r4 s1 | 23,3 / 25,5 | 28,8 | 23,5 / 26,0 | 34,3 / 74 | −5,3 |
+| θ 0,03 s6 | 9,2 / 25,9 | 14,0 | 9,3 / 25,8 | 19,4 / 61 | −4,7 |
+| θ 0,03 s9 | 15,7 / 21,8 | 11,7 | 15,7 / 21,8 | 29,0 / 46 | +4,0 |
+| θ 0,03 s0 (Median) | 18,4 / 15,1 | 18,9 | 15,9 / 15,1 | 21,6 / 68 | −3,0 |
+| θ 0,03 s1 | 16,5 / 20,4 | 27,1 | 16,6 / 20,4 | 34,7 / 69 | −10,5 |
+| θ 0,03 s2 | 18,4 / 24,8 | 23,2 | 18,6 / 25,6 | 27,9 / 69 | −4,6 |
+| θ 0,05 s4 | 13,5 / 47,1 | 17,3 | 13,6 / 47,0 | 29,8 / 55 | −3,7 |
+| θ 0,05 s2 | 16,1 / 20,8 | 17,2 | 16,2 / 20,8 | 33,9 / 57 | −1,0 |
+| θ 0,05 s3 (Median) | 19,8 / 37,2 | 19,5 | 19,6 / 36,2 | 33,8 / 102 | +0,1 |
+| θ 0,05 s9 | 22,8 / 21,3 | 21,5 | 23,9 / 21,3 | 28,2 / 56 | +2,4 |
+| θ 0,05 s5 | 23,2 / 42,8 | 20,5 | 23,6 / 42,8 | 27,9 / 47 | +3,1 |
+| DR-voll s6 | 12,9 / 23,8 | 14,9 | 12,9 / 23,8 | 19,6 / 51 | −2,0 |
+
+„an minus aus“ ist der RMS, den der Agent mit Emulation sieht, minus den RMS ohne Emulation. Werte für 40 Hz in
+der CSV, sie liegen ähnlich.
+
+- Mit Emulation sieht der Agent fast dasselbe wie frei schwebend: höchstens 0,4 mm Unterschied, außer bei drei
+  Budget-Agenten (θ 0,03 s0 2,5 mm bei 20 Hz und 1,4 mm bei 40 Hz, θ 0,03 s2 1,1 mm bei 40 Hz, θ 0,05 s9 1,1 mm
+  bei 20 Hz). In X3.1 waren es höchstens 0,41 mm. Ungeprüfte Vermutung: Die Emulation rechnet je Agentenschritt,
+  bei Agenten mit vielen gesättigten Schritten wirkt das stärker. Alle, die frei schwebend folgen, folgen auch
+  mit Emulation.
+- Physisch fährt der Arm bei den folgenden Agenten 18 bis 35 mm RMS neben der Referenz, im größten Fall 110 mm
+  (r4 s7). Die zusätzliche OOD-Grenze von 0,4 m wird in keinem Fall erreicht (r0 s0 höchstens 217 mm).
+- Der Unterschied zwischen Emulation an und aus beträgt −10,5 bis +4,0 mm. Am Labortag 2 lag die Hardware 2 bis
+  3 mm über der Vorhersage mit fester Basis (r4 s7, s4, s1: Vorhersage 16 / 14 / 28 mm, Hardware 18 / 17 / 30 mm,
+  `hardware/campaign/ANLEITUNG_LABOR_TAG2.md`). Gut unterscheidbar sind also
+  Agenten mit mehr als etwa 4 mm Unterschied: θ 0,03 s1 (−10,5), r4 s7 (−6,6), r4 s1 (−5,3), r4 s2 1000 Ep. und
+  θ 0,03 s6 (je −4,7). Bei den beiden Median-Agenten (−3,0 und +0,1) ist der Unterschied kaum messbar.
+- Vorschlag für E5 (mit dem Betreuer): r4 s7 (Labortag 2, großer Unterschied, positiver Zweig) und θ 0,03 s6
+  (bester Budget-Agent in X0.1 mit 13,3 mm und höchstens 29,7 mrad, negativer Zweig, wenig Sättigung J6 9 %).
+  Dazu r0 s0 als Gegenprobe (Einbruch in beiden Modi). θ 0,03 s1 zeigt den größten Unterschied, sättigt J6 aber
+  in 34 % der Schritte.
+
+**Grenzen:** kinematisch, ideales Servo, ohne Schutzschicht und Timing der Hardware. Eine nominale Episode je
+Bedingung. Die Trockenläufe mit `deploy_tracking_v25` stehen aus.
+
+Datenquelle: `X3_prediction_20261113_180218.csv`, `X_eval_X1_3_20261112_195325_agents.csv`,
+`X1_3_diag_agents_20261113_084339.csv`.
+
+Paper: Abschnitt Emulation (Vorhersage gegen Hardware). Offen.
 
 ## X4 Belastbarkeit
 
