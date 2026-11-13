@@ -14,3 +14,29 @@ Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgent
 === X4.6: X4_6_ppo_40hz_r4_V4_seed1_ep3000 (23 min seit Start) ===
 SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
 X4.6 V4: Modell SK_x46s, 29 Kanaele, Filter 0.95, Seed 1, 3000 Episoden, 8 Worker
+X4.6 V4: Training fertig nach 21.2 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V4_seed1_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V4_seed2_ep3000 (45 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V4: Modell SK_x46s, 29 Kanaele, Filter 0.95, Seed 2, 3000 Episoden, 8 Worker
+X4.6 V4: Training fertig nach 20.3 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V4_seed2_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V4_seed3_ep3000 (65 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V4: Modell SK_x46s, 29 Kanaele, Filter 0.95, Seed 3, 3000 Episoden, 8 Worker
+X4.6 V4: Training fertig nach 20.6 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V4_seed3_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V4_seed4_ep3000 (85 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V4: Modell SK_x46s, 29 Kanaele, Filter 0.95, Seed 4, 3000 Episoden, 8 Worker
+X4.6 V4: Training fertig nach 20.3 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V4_seed4_ep3000.mat
+
+X4.6: Training fertig nach 106 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+20 Agenten in 3.9 min. Ergebnis: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X_eval_X4_6_20261113_210932_*.csv
+
+X4.6: fertig nach 110 min

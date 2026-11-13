@@ -75,7 +75,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X4.3 | Ratenpaar D10 auf 10 Seeds (optional) | ½ Tag | ≈ 3 h | E6 | ⏸ |
 | X4.4 | Entscheidung, was aus dem Paper fliegt oder in den Anhang geht | ½ Tag | – | Betreuer | ⏸ |
 | X4.5 | Sensitivität der eigenen Schwellen („folgt“, Budget-Toleranz, „ruhig“), ohne Training | ½ Tag | < 10 min | X4.1, X2.4 | ✅ Runde 1 11.11., Runde 2 13.11. |
-| X4.6 | Ablation: Woher kommt der Abstand von RL zum Regler (Beobachtung, Kette)? 3 Varianten × 5 Seeds | 2 Tage | ≈ 7 h | E17 | ✅ 13.11. (K10, A75. Rate Limiter als mögliche V4 offen) |
+| X4.6 | Ablation: Woher kommt der Abstand von RL zum Regler (Beobachtung, Kette)? 3 Varianten × 5 Seeds | 2 Tage | ≈ 7 h | E17 | ✅ 13.11. (K10, A75, V4 abends: Rate Limiter bremst nur den Regler) |
 | X5.1 | 3D-Bahn mit allen 7 Gelenken: Modell, Machbarkeit mit dem Regler aus X2 | 2–3 Tage | 1 h | X2.1 | 🔄 Machbarkeit ✅ 10.11., SK_desktop offen |
 | X5.2 | Pilot 3D: 2 Varianten × 2 Seeds, Go/No-Go | ½ Tag | ≈ 3 h | X5.1 | ⬜ |
 | X5.3 | Hauptlauf 3D: 10 Seeds, Vergleich mit Nullraum-Regler | 1 Tag | ≈ 6–8 h | E4 | ⏸ |
@@ -466,6 +466,8 @@ und sind für den Labortag nicht vorgesehen. Die Ablation ist eine Aussage über
 ebenfalls ohne (Faktor-Median 2,45 auf 2,25, Holm p 1). Für den Regler kostet der Filter nichts, die Kette
 kostet ihn am Rate Limiter (A75). Ein vollständiger Faktorversuch ist damit nicht nötig. Mögliche Fortsetzung:
 V4 mit größerem Rate Limiter (für Regler und RL), nur wenn die Erklärung von K5 im Paper das braucht.
+Nachtrag 13.11. abends: V4 gerechnet (RESULTS X4.6). Die Agenten bleiben bei etwa 13 mm, der Regler kommt auf
+1,4 mm. Der Abstand liegt am Lernverfahren.
 Ergebnisse in RESULTS.md X4.6.
 
 ---
