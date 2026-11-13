@@ -1,0 +1,64 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+  400 Ziehungen,  259 in Zellen,    0 Ueberlauf, 0.7 min
+  800 Ziehungen,  519 in Zellen,    0 Ueberlauf, 1.0 min
+ 1200 Ziehungen,  694 in Zellen,   88 Ueberlauf, 1.3 min
+ 1600 Ziehungen,  785 in Zellen,  269 Ueberlauf, 1.6 min
+ 2000 Ziehungen,  861 in Zellen,  458 Ueberlauf, 1.9 min
+ 2400 Ziehungen,  935 in Zellen,  646 Ueberlauf, 2.2 min
+ 2800 Ziehungen,  984 in Zellen,  853 Ueberlauf, 2.5 min
+ 3200 Ziehungen, 1019 in Zellen, 1071 Ueberlauf, 2.8 min
+ 3600 Ziehungen, 1048 in Zellen, 1304 Ueberlauf, 3.1 min
+ 4000 Ziehungen, 1063 in Zellen, 1552 Ueberlauf, 3.4 min
+ 4400 Ziehungen, 1084 in Zellen, 1787 Ueberlauf, 3.7 min
+ 4800 Ziehungen, 1111 in Zellen, 2026 Ueberlauf, 4.0 min
+ 5200 Ziehungen, 1132 in Zellen, 2251 Ueberlauf, 4.3 min
+ 5600 Ziehungen, 1151 in Zellen, 2501 Ueberlauf, 4.6 min
+ 6000 Ziehungen, 1164 in Zellen, 2736 Ueberlauf, 4.8 min
+ 6400 Ziehungen, 1178 in Zellen, 3009 Ueberlauf, 5.2 min
+ 6800 Ziehungen, 1182 in Zellen, 3252 Ueberlauf, 5.4 min
+ 7200 Ziehungen, 1185 in Zellen, 3522 Ueberlauf, 5.8 min
+ 7600 Ziehungen, 1197 in Zellen, 3768 Ueberlauf, 6.1 min
+ 8000 Ziehungen, 1206 in Zellen, 4018 Ueberlauf, 6.4 min
+ 8400 Ziehungen, 1215 in Zellen, 4259 Ueberlauf, 6.7 min
+ 8800 Ziehungen, 1228 in Zellen, 4506 Ueberlauf, 7.0 min
+ 9200 Ziehungen, 1238 in Zellen, 4733 Ueberlauf, 7.2 min
+ 9600 Ziehungen, 1248 in Zellen, 4989 Ueberlauf, 7.6 min
+10000 Ziehungen, 1256 in Zellen, 5229 Ueberlauf, 7.8 min
+10400 Ziehungen, 1265 in Zellen, 5477 Ueberlauf, 8.1 min
+10800 Ziehungen, 1276 in Zellen, 5733 Ueberlauf, 8.4 min
+11200 Ziehungen, 1292 in Zellen, 5984 Ueberlauf, 8.8 min
+11600 Ziehungen, 1308 in Zellen, 6226 Ueberlauf, 9.1 min
+12000 Ziehungen, 1314 in Zellen, 6459 Ueberlauf, 9.3 min
+12400 Ziehungen, 1325 in Zellen, 6712 Ueberlauf, 9.7 min
+12800 Ziehungen, 1333 in Zellen, 6967 Ueberlauf, 10.0 min
+13200 Ziehungen, 1342 in Zellen, 7227 Ueberlauf, 10.3 min
+13600 Ziehungen, 1357 in Zellen, 7463 Ueberlauf, 10.6 min
+14000 Ziehungen, 1367 in Zellen, 7717 Ueberlauf, 10.9 min
+14400 Ziehungen, 1378 in Zellen, 7970 Ueberlauf, 11.2 min
+14800 Ziehungen, 1387 in Zellen, 8220 Ueberlauf, 11.5 min
+15200 Ziehungen, 1394 in Zellen, 8483 Ueberlauf, 11.8 min
+15600 Ziehungen, 1399 in Zellen, 8740 Ueberlauf, 12.1 min
+16000 Ziehungen, 1410 in Zellen, 8984 Ueberlauf, 12.4 min
+Satz train: 2000 Paare aus 16000 Ziehungen (4863 mit Kollision), 12.4 min
+Ergebnis: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X6_train_20261113_231852.mat / .csv
+    d0bin    region     GroupCount
+    _____    _______    __________
+
+      1      "nah"          35    
+      1      "unten"         3    
+      1      "weit"        152    
+      2      "nah"         183    
+      2      "unten"        41    
+      2      "weit"        267    
+      3      "nah"         217    
+      3      "unten"        84    
+      3      "weit"        343    
+      4      "nah"         223    
+      4      "unten"        93    
+      4      "weit"        359    
+

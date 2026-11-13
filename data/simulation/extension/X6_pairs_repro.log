@@ -1,0 +1,36 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+  400 Ziehungen,  178 in Zellen,   84 Ueberlauf, 0.6 min
+  800 Ziehungen,  239 in Zellen,  268 Ueberlauf, 0.9 min
+ 1200 Ziehungen,  256 in Zellen,  513 Ueberlauf, 1.2 min
+ 1600 Ziehungen,  274 in Zellen,  752 Ueberlauf, 1.5 min
+ 2000 Ziehungen,  286 in Zellen, 1004 Ueberlauf, 1.9 min
+ 2400 Ziehungen,  298 in Zellen, 1254 Ueberlauf, 2.2 min
+ 2800 Ziehungen,  308 in Zellen, 1517 Ueberlauf, 2.5 min
+ 3200 Ziehungen,  317 in Zellen, 1756 Ueberlauf, 2.8 min
+ 3600 Ziehungen,  329 in Zellen, 1998 Ueberlauf, 3.0 min
+ 4000 Ziehungen,  334 in Zellen, 2244 Ueberlauf, 3.3 min
+Satz eval: 500 Paare aus 4000 Ziehungen (1217 mit Kollision), 3.3 min
+    d0bin    region     GroupCount
+    _____    _______    __________
+
+      1      "nah"           8    
+      1      "unten"         1    
+      1      "weit"         38    
+      2      "nah"          50    
+      2      "unten"         6    
+      2      "weit"         79    
+      3      "nah"          58    
+      3      "unten"        11    
+      3      "weit"         92    
+      4      "nah"          50    
+      4      "unten"        18    
+      4      "weit"         89    
+
+Ergebnis: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X6_pairs_20261113_225915.mat / .csv
+isequal P: 0
+numel 635 / 635

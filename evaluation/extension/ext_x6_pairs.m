@@ -22,12 +22,21 @@ function [P, outFile] = ext_x6_pairs(varargin)
 %   Je Paar: q0, qT, p0, pT, d0, Zelle, ori_path (Basisdrehung entlang der offenen Bahn), minz_path (tiefster
 %   Punkt der Greiferspitze entlang der Bahn, kinematisch frei schwebend), hw_ok (minz_path > 0,55 m, fuer den
 %   Labortag auf dem Tisch; im Simulator gilt keine Hoehengrenze).
+%   Trainingssatz: ext_x6_pairs('set', "train", 'seed', 1, 'nEval', 2000, 'lab', false), gleiches Verfahren mit
+%     anderem Seed, ohne Laborpaare, Datei X6_train_<Zeit>.
+%   Optionen: 'parallel' (Standard true, Kollisionspruefung und offene Bahn im parfor, Ziehungen seriell und damit
+%     bitgleich zur seriellen Fassung), 'save' (Standard true).
 %   Ergebnis: data/simulation/extension/X6_pairs_<Zeit>.mat (P) und .csv
 
 p = inputParser;
 p.addParameter('nEval', 500);
 p.addParameter('maxTries', 20000);
 p.addParameter('seed', 0);
+p.addParameter('set', "eval");
+p.addParameter('lab', true);
+p.addParameter('parallel', true);
+p.addParameter('save', true);
+p.addParameter('batch', 400);
 p.parse(varargin{:});
 o = p.Results;
 setup_project;
@@ -44,22 +53,45 @@ quota = ceil(o.nEval / 12);
 cells = cell(4, 3); over = {};
 rs = RandStream('mt19937ar', 'Seed', o.seed);
 t0 = tic; tries = 0; nColl = 0;
-while tries < o.maxTries && sum(cellfun(@numel, cells), 'all') < 12 * quota
-    tries = tries + 1;
-    q0 = (2 * rand(rs, 7, 1) - 1) .* qS;
-    qT = (2 * rand(rs, 7, 1) - 1) .* qS;
-    if ~pathFree(rb, q0, qT), nColl = nColl + 1; continue; end
-    pr = openPath(q0, qT, K, qHw);
-    if pr.d0 < bins(1) || pr.d0 > bins(end), continue; end
-    b = find(pr.d0 >= bins(1:end - 1), 1, 'last');
-    g = find(regs == region(pr.pT));
-    pr.d0bin = b; pr.region = regs(g); pr.set = "eval";
-    if numel(cells{b, g}) < quota, cells{b, g}{end + 1} = pr; else, over{end + 1} = pr; end %#ok<AGROW>
-    if mod(tries, 200) == 0
-        fprintf('%5d Ziehungen, %3d in Zellen, %3d Ueberlauf, %.1f min\n', tries, ...
-                sum(cellfun(@numel, cells), 'all'), numel(over), toc(t0) / 60);
-    end
+if o.parallel
+    rbC = parallel.pool.Constant(@collisionRobot);
 end
+full = @() sum(cellfun(@numel, cells), 'all') >= 12 * quota;
+while tries < o.maxTries && ~full()
+    % Ziehungen seriell (gleiche Folge wie frueher), Pruefung im Block
+    nb = min(o.batch, o.maxTries - tries);
+    Q0 = zeros(7, nb); QT = zeros(7, nb);
+    for j = 1:nb
+        Q0(:, j) = (2 * rand(rs, 7, 1) - 1) .* qS;
+        QT(:, j) = (2 * rand(rs, 7, 1) - 1) .* qS;
+    end
+    res = cell(nb, 1);
+    if o.parallel
+        parfor j = 1:nb
+            if pathFree(rbC.Value, Q0(:, j), QT(:, j)), res{j} = openPath(Q0(:, j), QT(:, j), K, qHw); end
+        end
+    else
+        for j = 1:nb
+            if pathFree(rb, Q0(:, j), QT(:, j)), res{j} = openPath(Q0(:, j), QT(:, j), K, qHw); end
+        end
+    end
+    for j = 1:nb
+        if full(), break; end
+        tries = tries + 1;
+        pr = res{j};
+        if isempty(pr), nColl = nColl + 1; continue; end
+        if pr.d0 < bins(1) || pr.d0 > bins(end), continue; end
+        b = find(pr.d0 >= bins(1:end - 1), 1, 'last');
+        g = find(regs == region(pr.pT));
+        pr.d0bin = b; pr.region = regs(g); pr.set = string(o.set);
+        if numel(cells{b, g}) < quota, cells{b, g}{end + 1} = pr; else, over{end + 1} = pr; end %#ok<AGROW>
+    end
+    fprintf('%5d Ziehungen, %4d in Zellen, %4d Ueberlauf, %.1f min\n', tries, ...
+            sum(cellfun(@numel, cells), 'all'), numel(over), toc(t0) / 60);
+end
+% Zustand des Zufallsstroms wie nach genau 'tries' seriellen Ziehungen (fuer randperm unten)
+rs = RandStream('mt19937ar', 'Seed', o.seed);
+rand(rs, 14 * tries, 1);
 E = [cells{:}];
 nMiss = o.nEval - numel(E);
 if nMiss > 0 && ~isempty(over)
@@ -67,14 +99,15 @@ if nMiss > 0 && ~isempty(over)
     E = [E, over(idx)];
 end
 E = E(1:min(o.nEval, numel(E)));
-fprintf('Auswertesatz: %d Paare aus %d Ziehungen (%d mit Kollision), %.1f min\n', numel(E), tries, nColl, ...
+fprintf('Satz %s: %d Paare aus %d Ziehungen (%d mit Kollision), %.1f min\n', o.set, numel(E), tries, nColl, ...
         toc(t0) / 60);
 
 % --- Labortage ---
+L = {};
+if o.lab
 S = load(sk_path('hardware', 'campaign', 'setpoint_starts.mat'));
 Tg = load(sk_path('hardware', 'campaign', 'setpoint_targets.mat'));
 st = S.S.starts; tg = Tg.T.targets;
-L = {};
 for i = 1:numel(st)
     for j = 1:numel(tg)
         q0 = deg2rad(st(i).q_deg(:)); qT = deg2rad(tg(j).q_check_deg(:));
@@ -86,6 +119,7 @@ for i = 1:numel(st)
         L{end + 1} = pr; %#ok<AGROW>
     end
 end
+end
 for k = 1:numel(E)
     E{k}.reach_known = 1; E{k}.lab_start = ""; E{k}.lab_target = "";
 end
@@ -94,15 +128,21 @@ for k = 1:numel(all), all{k}.id = k; all{k} = orderfields(all{k}); end
 P = [all{:}];
 
 stamp = char(datetime('now', 'Format', 'yyyyMMdd_HHmmss'));
-outFile = sk_path('data', 'simulation', 'extension', ['X6_pairs_' stamp]);
-meta = struct('seed', o.seed, 'nEval', o.nEval, 'tries', tries, 'nColl', nColl, 'quota', quota, ...
+pre = 'X6_pairs_';
+if o.set ~= "eval", pre = sprintf('X6_%s_', o.set); end
+outFile = sk_path('data', 'simulation', 'extension', [pre stamp]);
+meta = struct('seed', o.seed, 'set', string(o.set), 'nEval', o.nEval, 'tries', tries, 'nColl', nColl, 'quota', quota, ...
               'tool_offset', K.tool, 'q_lim', C.q_lim, 'date', stamp);
-save([outFile '.mat'], 'P', 'meta');
 T = struct2table(arrayfun(@flat, P));
-writetable(T, [outFile '.csv']);
-G = groupsummary(T(T.set == "eval", :), {'d0bin', 'region'});
+if o.save
+    save([outFile '.mat'], 'P', 'meta');
+    writetable(T, [outFile '.csv']);
+    fprintf('Ergebnis: %s.mat / .csv\n', outFile);
+else
+    outFile = '';
+end
+G = groupsummary(T(T.set == string(o.set), :), {'d0bin', 'region'});
 disp(G);
-fprintf('Ergebnis: %s.mat / .csv\n', outFile);
 end
 
 % =====================================================================

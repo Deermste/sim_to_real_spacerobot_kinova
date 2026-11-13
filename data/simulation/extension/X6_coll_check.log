@@ -1,0 +1,61 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+Mesh 24.2 s (parallel), Kapsel 0.082 ms je Aufruf, 563 von 4000 Stellungen mit Mesh-Kollision
+       check       false_alarm    hit_share    only_hit    d_min_free
+    ___________    ___________    _________    ________    __________
+
+    "seg1-seg3"      0.025895       0.25577        0       -0.0076002
+    "seg1-seg4"             0             0        0         0.066402
+    "seg2-seg4"             0             0        0         0.065926
+    "seg1-seg5"             0             0        0           0.1059
+    "seg2-seg5"             0             0        0          0.11328
+    "seg3-seg5"             0             0        0         0.022758
+    "seg1-seg6"             0       0.01421        0         0.051103
+    "seg2-seg6"             0             0        0         0.067512
+    "seg3-seg6"             0             0        0         0.034255
+    "seg4-seg6"             0             0        0         0.031574
+    "seg1-seg7"             0      0.021314        0         0.028405
+    "seg2-seg7"             0     0.0017762        0         0.030357
+    "seg3-seg7"             0     0.0017762        0         0.044189
+    "seg4-seg7"             0             0        0          0.07996
+    "seg5-seg7"             0             0        0       0.00077031
+    "seg1-seg8"             0      0.021314        0         0.008831
+    "seg2-seg8"             0     0.0035524        0         0.011574
+    "seg3-seg8"             0      0.015986        0          0.02391
+    "seg4-seg8"             0     0.0017762        0         0.064149
+    "seg5-seg8"             0             0        0         0.018366
+    "seg6-seg8"             0             0        0        0.0057703
+    "seg1-seg9"     0.0005819      0.031972        0       -0.0032407
+    "seg2-seg9"     0.0011638      0.046181        0         -0.01496
+    "seg3-seg9"     0.0005819      0.047957        0       -0.0042055
+    "seg4-seg9"             0     0.0017762        0         0.060103
+    "seg5-seg9"             0             0        0         0.076432
+    "seg6-seg9"             0             0        0         0.079476
+    "seg7-seg9"             1             1       10        -0.008475
+    "seg3-box"              0             0        0           0.1139
+    "seg4-box"              0      0.015986        0        0.0031086
+    "seg5-box"      0.0014548        0.4849        0        -0.016513
+    "seg6-box"      0.0017457       0.62345        0       -0.0095301
+    "seg7-box"     0.00029095       0.62345        0       -0.0078789
+    "seg8-box"              0       0.59147        0         0.010017
+    "seg9-box"      0.0029095        0.6643        0        -0.023453
+
+    delta    missed    false_alarm    false_alarm_share    hit_share
+    _____    ______    ___________    _________________    _________
+
+        0      0          3437                1                1    
+    0.005      0          3437                1                1    
+     0.01      0          3437                1                1    
+    0.015      0          3437                1                1    
+     0.02      0          3437                1                1    
+    0.025      0          3437                1                1    
+     0.03      0          3437                1                1    
+    0.035      0          3437                1                1    
+     0.04      0          3437                1                1    
+    0.045      0          3437                1                1    
+     0.05      0          3437                1                1    
+

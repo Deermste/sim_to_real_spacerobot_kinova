@@ -1,0 +1,59 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+Mesh 24.1 s (parallel), Kapsel 0.077 ms je Aufruf, 550 von 4000 Stellungen mit Mesh-Kollision
+       check       false_alarm    hit_share    only_hit    d_min_free
+    ___________    ___________    _________    ________    __________
+
+    "seg1-seg3"      0.025217       0.29091       15        -0.007705
+    "seg1-seg4"             0             0        0         0.066212
+    "seg2-seg4"             0             0        0         0.065754
+    "seg1-seg5"             0             0        0          0.12241
+    "seg2-seg5"             0             0        0          0.13945
+    "seg3-seg5"             0             0        0         0.022734
+    "seg1-seg6"             0     0.0054545        0          0.11613
+    "seg2-seg6"             0             0        0          0.12775
+    "seg3-seg6"             0             0        0         0.034227
+    "seg4-seg6"             0             0        0         0.031551
+    "seg1-seg7"             0      0.012727        0         0.042477
+    "seg2-seg7"             0             0        0          0.04481
+    "seg3-seg7"             0             0        0         0.030017
+    "seg4-seg7"             0             0        0         0.050475
+    "seg1-seg8"             0          0.02        0         0.011254
+    "seg2-seg8"             0     0.0072727        0         0.011115
+    "seg3-seg8"             0     0.0090909        0        0.0028649
+    "seg4-seg8"             0             0        0         0.042247
+    "seg5-seg8"             0             0        0         0.018375
+    "seg1-seg9"             0      0.029091        1        0.0034825
+    "seg2-seg9"    0.00086957      0.036364        0        -0.010945
+    "seg3-seg9"    0.00086957      0.029091        0        -0.012214
+    "seg4-seg9"             0             0        0         0.043749
+    "seg5-seg9"             0             0        0         0.076443
+    "seg6-seg9"             0             0        0         0.079484
+    "seg3-box"              0             0        0          0.11364
+    "seg4-box"              0      0.010909        0        0.0026035
+    "seg5-box"      0.0014493          0.48        4        -0.013139
+    "seg6-box"     0.00057971       0.60909        2       -0.0045321
+    "seg7-box"     0.00028986       0.63091        1       -0.0013524
+    "seg8-box"     0.00028986       0.60909        0       -0.0052556
+    "seg9-box"       0.004058       0.65091       60        -0.028165
+
+    delta    missed    false_alarm    false_alarm_share    hit_share
+    _____    ______    ___________    _________________    _________
+
+        0      12          109            0.031594          0.97818 
+    0.005       4          226            0.065507          0.99273 
+     0.01       3          395             0.11449          0.99455 
+    0.015       0         3450                   1                1 
+     0.02       0         3450                   1                1 
+    0.025       0         3450                   1                1 
+     0.03       0         3450                   1                1 
+    0.035       0         3450                   1                1 
+     0.04       0         3450                   1                1 
+    0.045       0         3450                   1                1 
+     0.05       0         3450                   1                1 
+
+Vorfilter + Mesh: verpasst 0 von 550, Fehlalarme 0, Mesh noetig in 24.3 % (12.3 % der freien), 2.69 ms je Aufruf

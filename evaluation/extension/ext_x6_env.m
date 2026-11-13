@@ -23,9 +23,12 @@ function [env, info] = ext_x6_env(pool, varargin)
 %     -w_lin d + w_fine exp(-d / 5 mm) - w_da |a - a_prev|^2 - w_brk any(brake) - w_base |w_base|
 %     - w_stop |v| / 0,05 nahe am Ziel (d < 2 cm)
 %     d = |pT - p|. Erfolg: d <= 5 mm und |v| <= 5 mm/s 20 Schritte lang (1 s), +r_succ, Ende.
-%     Abbruch: d > d0 + 0,4 m (wie oodMargin im Deploy-Skript) oder ein Gelenk an der Klemme der Strecke,
-%     r_fail, Ende. Sonst Ende nach T = 15 s.
-%   info: obsInfo, actInfo, opts. Logged Signals der Umgebung: Zustand, Paar, Zaehler (fuer Tests lesbar).
+%     Abbruch: d > d0 + 0,4 m (wie oodMargin im Deploy-Skript), ein Gelenk an der Klemme der Strecke oder
+%     Kollision (Option 'coll', Standard true: ext_x6_coll mit Kapseln als Vorfilter und Mesh-Pruefung, Arm gegen
+%     sich selbst, Greifer und Basiswuerfel, je Agentenschritt), r_fail, Ende. Sonst Ende nach T = 15 s.
+%     Die Kollisionspruefung haengt nur von q ab, nicht von der Lage der Basis.
+%   info: obsInfo, actInfo, opts. Logged Signals der Umgebung: Zustand, Paar, Zaehler, coll (Kollision im letzten
+%   Schritt), nMesh (Mesh-Pruefungen in der Episode), fuer Tests lesbar.
 
 p = inputParser;
 p.addParameter('chainP', []);
@@ -39,6 +42,7 @@ p.addParameter('w_base', 0.1);
 p.addParameter('w_stop', 0.2);
 p.addParameter('r_succ', 50);
 p.addParameter('r_fail', -50);
+p.addParameter('coll', true);
 p.parse(varargin{:});
 o = p.Results;
 P = o.chainP;
@@ -49,6 +53,12 @@ qHw = min(P.q_lim, 2 * pi);
 plantOpt = struct('Ts', 0.005, 'Ts_agent', P.Ts, 'tau', 0.02, 'qLim', qHw);
 fin = [2 4 6];
 qL = P.q_lim(fin);
+if o.coll
+    CC = ext_x6_coll('params', K);
+    rb = ext_x6_coll('robot');
+else
+    CC = []; rb = [];
+end
 nObs = 50;
 obsInfo = rlNumericSpec([nObs 1], 'LowerLimit', -inf(nObs, 1), 'UpperLimit', inf(nObs, 1));   % keine Kappung (A72)
 obsInfo.Name = 'x6_obs';
@@ -58,7 +68,7 @@ rs = RandStream('mt19937ar', 'Seed', o.seed);
 nMax = round(o.T / P.Ts);
 nHold = round(1 / P.Ts);
 env = rlFunctionEnv(obsInfo, actInfo, @stepFcn, @resetFcn);
-info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o, 'K', K, 'plantOpt', plantOpt);
+info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o, 'K', K, 'plantOpt', plantOpt, 'coll', CC);
 
     function [obs, L] = resetFcn()
         pr = pool(randi(rs, numel(pool)));
@@ -69,7 +79,7 @@ info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o, 'K', K, 'plantO
         L.d0 = norm(L.pT - y.p);
         L.aPrev = zeros(7, 1);
         L.brake = false(7, 1);
-        L.hold = 0; L.n = 0;
+        L.hold = 0; L.n = 0; L.coll = false; L.nMesh = 0;
         obs = observe(y, L);
     end
 
@@ -81,6 +91,10 @@ info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o, 'K', K, 'plantO
         L.n = L.n + 1;
         y = ext_x6_plant('meas', L.S);
         L.brake = ci.brake;
+        if o.coll
+            [L.coll, ~, ~, nd] = ext_x6_coll(K, y.q, CC, rb);
+            L.nMesh = L.nMesh + nd;
+        end
         e = L.pT - y.p;
         d = norm(e);
         sp = norm(y.v);
@@ -91,7 +105,7 @@ info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o, 'K', K, 'plantO
         done = false;
         if L.hold >= nHold
             r = r + o.r_succ; done = true;
-        elseif d > L.d0 + 0.4 || any(y.clamp)
+        elseif d > L.d0 + 0.4 || any(y.clamp) || L.coll
             r = r + o.r_fail; done = true;
         elseif L.n >= nMax
             done = true;

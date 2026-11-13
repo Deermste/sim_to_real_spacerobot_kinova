@@ -80,7 +80,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X5.2 | Pilot 3D: 2 Varianten × 2 Seeds, Go/No-Go | ½ Tag | ≈ 3 h | X5.1 | ⬜ |
 | X5.3 | Hauptlauf 3D: 10 Seeds, Vergleich mit Nullraum-Regler | 1 Tag | ≈ 6–8 h | E4 | ⏸ |
 | X6.0 | Set-Point: Ausgangslage des alten Agenten, Zielwerte und Bezugspunkt festlegen | ½ Tag | – | E11 | ⬜ |
-| X6.1 | Schritt-Umgebung auf dem kinematischen Simulator (7 Gelenke, frei schwebend), Start- und Zielgenerator | 2 Tage | < 1 h | X0.2 | 🔄 Paarsatz, Strecke und Umgebung ✅ 13.11., Trainingssatz und Kollision im Training offen |
+| X6.1 | Schritt-Umgebung auf dem kinematischen Simulator (7 Gelenke, frei schwebend), Start- und Zielgenerator | 2 Tage | < 1 h | X0.2 | ✅ 13.11. (Paarsatz, Strecke, Umgebung, Trainingssatz 2000 Paare, Kollision je Schritt mit Kapsel-Vorfilter) |
 | X6.2 | Vergleichsregler und Erreichbarkeit der Ziele | ½ Tag | < 1 h | X6.1 | ✅ 13.11. (R0 498/500 mit neuer Kette, 455 mit alter; Nullraum-Mittelzug offen) |
 | X6.3 | Pilot: drei Varianten × 1 Seed | 1 Tag | ≈ 4–6 h | X6.1, E12–E14 | ⬜ |
 | X6.4 | Hauptlauf 5 Seeds, Auswertung auf 500 Paaren, Gegenprobe in Simscape | 1 Tag | ≈ 8–12 h | X6.3 | ⬜ |
@@ -560,6 +560,13 @@ Vorschlag (E11):
 - **Auswertesatz:** 500 feste Paare (fester Seed), geschichtet nach Abstand d0 (0,05–1,2 m) und Bereich (nah am
   Körper, Rand des Arbeitsraums, über und unter der Basis). Dazu die 15 Starts und neun Ziele der Labortage,
   ins Inertialsystem umgerechnet, für den Vergleich mit `fixed1`.
+- **Trainingssatz** (13.11.): gleiches Verfahren mit Seed 1, 2000 Paare, ohne Laborpaare (`X6_train_*`). Der
+  Auswertesatz wird im Training nicht benutzt.
+- **Kollision im Training** (13.11.): Die Umgebung prüft jeden Agentenschritt und bricht bei Kollision mit
+  r_fail ab. Kapseln als Vorfilter, die Mesh-Prüfung nur nahe an einer Kollision (`ext_x6_coll`). An zwei
+  frischen Stichproben gleich der reinen Mesh-Prüfung bis auf einen verpassten Fall, der zur breiteren
+  Würfelgrenze führte. Danach an einer dritten Stichprobe ohne Abweichung. Die Abbruchregel ist ein Vorschlag
+  für den Pilot (Alternative: Strafe ohne Abbruch).
 
 ### X6.2 Vergleichsregler
 

@@ -9,6 +9,8 @@ function C = ext_x6_env_check()
 %      keine Grenzverletzung der Kette
 %   5  Zeit je Schritt ueber env.step (200 Schritte zufaellig)
 %   6  Beobachtung endlich, groesster Betrag
+%   7  Kollision: Arm gestreckt nach oben (q = 0), nur J2 mit +1: Ende mit Kollision, bevor J2 die Grenze erreicht
+%   8  Zeit je env.step ohne Kollisionspruefung (Option 'coll' false)
 
 setup_project;
 d = dir(sk_path('data', 'simulation', 'extension', 'X6_pairs_*.mat'));
@@ -57,6 +59,34 @@ while k < 200
 end
 rows{end + 1} = row('5 Zeit je env.step [ms]', 1000 * toc / k, '');
 rows{end + 1} = row('6 groesster Betrag der Beobachtung', mo, '');
+
+prc = struct('q0', zeros(7, 1), 'pT', [0.5; 0; 1]);
+env3 = ext_x6_env(prc);
+reset(env3);
+n = 0; done = false; a2 = [0; 1; 0; 0; 0; 0; 0];
+while ~done && n < 400
+    [o, r, done] = step(env3, a2); n = n + 1;
+end
+Ls = env3.LoggedSignals;
+q2 = rad2deg(Ls.S.q(2));
+rows{end + 1} = row('7 Kollision bei J2 +1: Kollision erkannt', double(Ls.coll), ...
+                    sprintf('nach %d Schritten, J2 %.1f Grad (Grenze 128,9), letzter Reward %.1f', n, q2, r));
+
+env4 = ext_x6_env(E(1), 'coll', false);
+reset(env4); reset(env);
+rs = RandStream('mt19937ar', 'Seed', 2);
+A = 2 * rand(rs, 7, 200) - 1;
+tt = zeros(1, 2);
+for e = 1:2
+    ev = env; if e == 2, ev = env4; end
+    reset(ev); tic;
+    for k = 1:200
+        [~, ~, done] = step(ev, A(:, k));
+        if done, reset(ev); end
+    end
+    tt(e) = 1000 * toc / 200;
+end
+rows{end + 1} = row('8 Zeit je env.step mit / ohne Kollision [ms]', tt(1), sprintf('ohne %.2f ms', tt(2)));
 C = struct2table([rows{:}]);
 disp(C);
 stamp = char(datetime('now', 'Format', 'yyyyMMdd_HHmmss'));

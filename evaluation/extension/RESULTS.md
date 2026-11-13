@@ -1886,11 +1886,72 @@ Gelenkwinkel und Basisdrehung bitgleich (Abweichung 0). 2 ms je Agentenschritt.
   - Volle Aktion ergibt Abbruch nach 1 s (−50). Die Kette bleibt in ihren Grenzen.
   - 2,0 ms je `step`, größter Betrag der Beobachtung 1,2.
 
-**Offen:** Trainings-Paarsatz getrennt vom Auswertesatz (anderer Seed). Kollision im Training (heute nur in den
-Paaren geprüft, die Policy kann durch sich selbst fahren). Gewichte des Rewards und Curriculum im Pilot.
+**Nachtrag 13.11.2026 abends: Trainingssatz und Kollision im Training**
 
-Datenquelle: `X6_pairs_20261113_195451.mat` / `.csv`, Log `X6_pairs_matlab.log`,
-`X6_plant_check_20261113_193228.csv`, `X6_env_check_20261113_195519.csv`.
+*Schnellerer Generator:* Die Kollisionsprüfung und die offene Bahn laufen jetzt blockweise im `parfor`. Die
+Ziehungen bleiben seriell. Der Auswertesatz lässt sich damit bitgleich nachbauen (`isequaln` = 1 gegen
+`X6_pairs_20261113_195451.mat`), in 4 statt 23,7 min.
+
+*Trainingssatz* (`ext_x6_pairs('set', 'train', 'seed', 1, 'nEval', 2000, 'lab', false, 'maxTries', 16000)`,
+12,4 min):
+- 2000 Paare aus 16 000 Ziehungen, davon 4863 mit Kollision verworfen (30 %, wie im Auswertesatz).
+- 1811 Paare mit `hw_ok`. d0 im Median 0,66 m. Basisdrehung entlang der offenen Bahn im Median 153 mrad,
+  höchstens 503 mrad.
+- Gleiche Schichtung wie der Auswertesatz, gleich unvollständig:
+
+| d0 | unten | nah | weit |
+|---|---|---|---|
+| 0,05–0,2 | 3 | 35 | 152 |
+| 0,2–0,5 | 41 | 183 | 267 |
+| 0,5–0,8 | 84 | 217 | 343 |
+| 0,8–1,2 | 93 | 223 | 359 |
+
+  Kurze Paare sind selten (190 von 2000 unter 0,2 m). Für ein Curriculum über d0 reicht das am Anfang nicht.
+  Das Curriculum kann kurze Ziele aus Zwischenpunkten der Paare bilden. Das ist eine Frage für den Pilot.
+
+*Kollisionsprüfung für das Training* (`ext_x6_coll`, `ext_x6_coll_check`):
+- Die Mesh-Prüfung kostet 14 ms je Stellung, die Strecke 2 ms je Schritt. Deshalb ein Vorfilter: der Arm als
+  neun Kapseln zwischen den Gelenkorten (Radien 4,5 bis 6 cm, Greifer wie in `ext_x6_pairs`), Abstände der
+  Kapselpaare und der Kapseln zum Basiswürfel. 0,08 ms je Aufruf.
+- Kapseln allein trennen nicht scharf (4000 Zufallsstellungen, Seed 7, 563 mit Mesh-Kollision). Bei Schwelle 0
+  verpassen sie 10 Kollisionen und melden 110 freie Stellungen (3,2 %) als Kollision. Die Fehlalarme liegen laut
+  Mesh 15 bis 17 mm vor einer Berührung, fast alle an der Paarung Montage gegen Oberarm.
+  - Paare mit einem Glied dazwischen haben am gemeinsamen Gelenk einen festen Grundabstand (Montage gegen
+    Oberarm fast immer 13,5 mm). Drei Handgelenkpaare überlappen immer und fallen weg.
+  - Schulter und Bracelet mit Kamera sind dicker als ihre Kapseln.
+- Deshalb Kapseln als Vorfilter und Meshes als Entscheidung. Eine Stellung gilt ohne Mesh-Prüfung als frei, wenn
+  jede Kapselprüfung über ihrem Band liegt. Das Band ist min(2 cm, Grundabstand − 5 mm), gegen den Würfel 4 cm.
+- Prüfung an frischen Stellungen gegen die reine Mesh-Prüfung:
+
+| Stichprobe | Mesh-Kollisionen | verpasst | Fehlalarme | Mesh nötig (alle / freie) | Zeit je Aufruf |
+|---|---|---|---|---|---|
+| Seed 8, Würfelband 2 cm | 568 | 1 | 0 | 23,2 % / 10,5 % | 2,56 ms |
+| Seed 9, Würfelband 4 cm | 550 | 0 | 0 | 24,3 % / 12,3 % | 2,69 ms |
+
+  Der verpasste Fall bei Seed 8 war das Bracelet gegen den Würfel. Kapsel 9 lag dort 27 mm vor dem Würfel.
+  Daraufhin wurde das Würfelband auf 4 cm gesetzt (bei Seed 7 und 8 dann 0 verpasst, Mesh-Anteil +0,8
+  Prozentpunkte). Seed 9 ist die Prüfung danach. Das Ergebnis ist damit in drei Stichproben mit zusammen 1681
+  Kollisionen bis auf diesen einen Fall gleich der Mesh-Prüfung. Die Mesh-Prüfung selbst ist nur so genau wie
+  die URDF-Meshes und der Greiferzylinder.
+
+*Umgebung:* `ext_x6_env` prüft jetzt jeden Agentenschritt (Option `coll`, Standard an) und bricht bei
+Kollision mit r_fail ab. `ext_x6_env_check()`:
+- Prüfungen 1 bis 6 wie oben. Volle Aktion endet jetzt nach 10 statt 20 Schritten. Der Arm stößt bei J2 113° an
+  den Würfel, vorher lief er bis zum OOD-Abbruch durch ihn hindurch.
+- Arm gestreckt nach oben, nur J2 mit +1: Kollision nach 48 Schritten bei J2 118,3° (Grenze 128,9°).
+- Zufallsaktionen: 5,4 ms je `step` mit, 1,9 ms ohne Kollisionsprüfung. Zufallsaktionen halten den Arm oft nahe
+  an einer Kollision. Im Training dürfte der Anteil kleiner sein, gemessen wird das im Pilot.
+
+**Offen:** Gewichte des Rewards und Curriculum im Pilot. Abbruch oder Strafe bei Kollision (heute Abbruch).
+Kollisionsfreiheit zwischen zwei Schritten wird nicht geprüft (bei 20 Hz bewegt sich der Greifer höchstens
+wenige Zentimeter je Schritt, die Bänder decken das nur teilweise).
+
+Datenquelle: `X6_pairs_20261113_195451.mat` / `.csv`, Log `X6_pairs_matlab.log`, Nachbau `X6_pairs_repro.log`,
+`X6_plant_check_20261113_193228.csv`, `X6_env_check_20261113_195519.csv` (ohne Kollision) und
+`X6_env_check_20261113_230641.csv` (mit Kollision), `X6_train_20261113_231852.mat` / `.csv`, Log
+`X6_train_matlab.log`, `X6_coll_check_*_20261113_230028` (Seed 7, alle Paare, ohne Bänder),
+`X6_coll_check_*_20261113_230358` (Seed 8), `X6_coll_check_*_20261113_230536` (Seed 9), Logs
+`X6_coll_check*.log`.
 
 Paper: X6 (Methode, Auswertesatz). Offen.
 

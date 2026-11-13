@@ -1,0 +1,9 @@
+check,value,note
+1 validateEnvironment,1,""
+2 Ziel am Start: Schritte bis Ende,20,"letzter Reward 50.50"
+3 Aktion null: Schritte bis Ende,300,"|e| am Ende 0.0826 m, d0 0.0826 m"
+4 Aktion +1: Schritte bis Ende,10,"letzter Reward -50.3, max |v_prev/v_max| 1.000"
+5 Zeit je env.step [ms],5.0100735,""
+6 groesster Betrag der Beobachtung,1.24492333070397,""
+7 Kollision bei J2 +1: Kollision erkannt,1,"nach 48 Schritten, J2 118.3 Grad (Grenze 128,9), letzter Reward -50.6"
+8 Zeit je env.step mit / ohne Kollision [ms],5.3781555,"ohne 1.91 ms"
