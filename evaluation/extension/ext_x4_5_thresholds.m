@@ -17,6 +17,11 @@ function R = ext_x4_5_thresholds(varargin)
 %          die sieben Regler ist >= 1,5
 %     F    X1.4: hinter der Kette (Ort "nach", alpha 5) haelt jeder Agent, der folgt, das Budget
 %     X12  X1.2: mit Kosten A halten mindestens so viele Agenten das Budget wie mit Kosten B
+%   Runde 2 (13.11.2026, nach X1.3, Optionen 'x13', 'x42'):
+%     K9a  unter den folgenden Budget-Agenten Spearman theta gegen ori_max rho >= 0,5 und p < 0,05
+%     K9b  Budget-Agenten folgen seltener als r4 w 2 (D16 Seeds 0-9), Fisher p < 0,05
+%     K9c  theta 0,02 und 0,03: mehr Budget-Agenten mit Bahn und Budget als in X4.1, Fisher, Holm p < 0,05
+%     K1   D14 und D16: r0 folgt seltener als r1 und r2, Fisher p < 0,05
 %   R.(Aussage) Tabelle je Gitterpunkt mit den tragenden Kennzahlen und der Spalte holds. Dazu CSV-Dateien
 %   data/simulation/extension/X4_5_<Aussage>_<Zeit>.csv und eine Uebersicht R.summary.
 
@@ -25,6 +30,8 @@ p.addParameter('x41', '20261110_233147');
 p.addParameter('robust', '20261111_112342');
 p.addParameter('x14', '20261110_130405');
 p.addParameter('x12', '20261111_150856');
+p.addParameter('x13', '20261112_195325');
+p.addParameter('x42', '20261111_144608');
 p.parse(varargin{:});
 o = p.Results;
 setup_project;
@@ -118,6 +125,63 @@ for kf = 1:size(fol, 1)
 end
 R.X12 = struct2table([rows{:}]);
 
+% --- Runde 2: K9 (X1.3) und K1 (X4.2), Kriterien in PLAN X4.5 vor der Rechnung festgelegt ---
+E3 = readtable(fullfile(d, ['X_eval_X1_3_' o.x13 '_episodes.csv']), 'TextType', 'string');
+A3 = readtable(fullfile(d, ['X_eval_X1_3_' o.x13 '_agents.csv']), 'TextType', 'string');
+isB = startsWith(A3.agent, "X1_") & ~contains(A3.agent, "_eta0_");
+isR4 = startsWith(A3.agent, "D16_");
+th = nan(height(A3), 1);
+th(isB) = double(extract(A3.agent(isB), regexpPattern('(?<=_th)\d+'))) / 1000;
+thetas = [0.02 0.03 0.04 0.05 0.06];
+rowsA = {}; rowsB = {}; rowsC = {};
+for kf = 1:size(fol, 1)
+    fo3 = agentFollows(E3, A3.agent, fol{kf, :});
+    foW = agentFollows(E, A.agent, fol{kf, :});
+    X = isB & fo3;
+    [rho, pv] = corr(th(X), A3.ori_max(X), 'Type', 'Spearman');
+    rowsA{end + 1} = struct('follow', string(folName(kf)), 'n', sum(X), 'rho', rho, 'p', pv, ...
+        'holds', rho >= 0.5 && pv < 0.05); %#ok<AGROW>
+    t = [sum(fo3 & isB), sum(~fo3 & isB); sum(fo3 & isR4), sum(~fo3 & isR4)];
+    [~, pb] = fishertest(t);
+    rowsB{end + 1} = struct('follow', string(folName(kf)), 'budget_follows', t(1, 1), 'budget_n', sum(isB), ...
+        'r4_follows', t(2, 1), 'r4_n', sum(isR4), 'p', pb, ...
+        'holds', pb < 0.05 && t(1, 1) / sum(isB) < t(2, 1) / sum(isR4)); %#ok<AGROW>
+    for tol = tols
+        nb = zeros(1, 5); nw = zeros(1, 5); pc = ones(1, 5);
+        for k = 1:5
+            s = isB & abs(th - thetas(k)) < 1e-9;
+            hb = s & fo3 & A3.ori_max_worst <= thetas(k) + tol;
+            hw = foW & A.ori_max_worst <= thetas(k) + tol;
+            nb(k) = sum(hb); nw(k) = sum(hw);
+            [~, pc(k)] = fishertest([nb(k), sum(s) - nb(k); nw(k), height(A) - nw(k)]);
+        end
+        ph = holmAdj(pc);
+        rowsC{end + 1} = struct('follow', string(folName(kf)), 'tol', tol, 'n_budget', strjoin(string(nb), '/'), ...
+            'n_x41', strjoin(string(nw), '/'), 'p_holm_th20', ph(1), 'p_holm_th30', ph(2), ...
+            'holds', all(ph(1:2) < 0.05) && all(nb(1:2) / 10 > nw(1:2) / height(A))); %#ok<AGROW>
+    end
+end
+R.K9a = struct2table([rowsA{:}]);
+R.K9b = struct2table([rowsB{:}]);
+R.K9c = struct2table([rowsC{:}]);
+
+E4 = readtable(fullfile(d, ['X_eval_X4_2_' o.x42 '_episodes.csv']), 'TextType', 'string');
+A4 = readtable(fullfile(d, ['X_eval_X4_2_' o.x42 '_agents.csv']), 'TextType', 'string');
+I = readtable(fullfile(d, 'X4_2_inventory.csv'), 'TextType', 'string');
+[~, ia] = ismember(A4.agent, I.label);
+A4 = A4(ismember(I.group(ia), ["D14", "D16"]) & ismember(A4.reward_mode, [0 1 2]), :);
+r0 = A4.reward_mode == 0;
+rows = {};
+for kf = 1:size(fol, 1)
+    fo = agentFollows(E4, A4.agent, fol{kf, :});
+    t = [sum(fo & r0), sum(~fo & r0); sum(fo & ~r0), sum(~fo & ~r0)];
+    [~, p1] = fishertest(t);
+    rows{end + 1} = struct('follow', string(folName(kf)), 'r0_follows', t(1, 1), 'r0_n', sum(r0), ...
+        'r12_follows', t(2, 1), 'r12_n', sum(~r0), 'p', p1, ...
+        'holds', p1 < 0.05 && t(1, 1) / sum(r0) < t(2, 1) / sum(~r0)); %#ok<AGROW>
+end
+R.K1 = struct2table([rows{:}]);
+
 names = fieldnames(R);
 stamp = char(datetime('now', 'Format', 'yyyyMMdd_HHmmss'));
 sm = table(string(names), cellfun(@(n) height(R.(n)), names), cellfun(@(n) sum(R.(n).holds), names), ...
@@ -155,6 +219,13 @@ end
 m = numel(p);
 adj = min(1, cummax((m - (0:m - 1)) .* ps));
 p(ix) = adj;
+end
+
+function q = holmAdj(p)
+[ps, ix] = sort(p);
+m = numel(p);
+q = p;
+q(ix) = min(1, cummax((m - (0:m - 1)) .* ps));
 end
 
 function S = robustSummary(E, kind, thr)

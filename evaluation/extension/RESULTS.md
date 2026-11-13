@@ -25,7 +25,7 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 | K6 | Auch mit Nominalmodell bleibt der Regler bei falscher Masse, Trägheit, Verzögerung, Verstärkung, Rauschen, Startstellung und Drift vor den Agenten. Am knappsten bei Kinematikfehlern (Montage) und Drift um x | X2.3 Teil 1 | 26 Szenarien, 20 Agenten ohne Randomisierung, nur kinematisch |
 | K7 | Auf einer gekippten 3D-Bahn mit allen sieben Gelenken senkt der Nullraum des Reglers die Basisdrehung je nach Kipprichtung stark (−30°: 124 auf 10 mrad bei 2 mm) oder kaum (+30°: 14 auf 11 mrad). In der Ebene bringen die zusätzlichen Gelenke wenig | X5.1 | Nur Regler, kinematisch, nominal. RL in 3D offen (X5.2) |
 | K8 | Domain Randomization macht den Bahnfehler der Agenten fast unempfindlich gegen falsche Basismasse (+0,1 bis +0,4 statt +1,7 mm). Die Regler mit Nominalmodell bleiben trotzdem vorn (Faktor 2,0 bis 2,4) | X2.4, X4.5 | 10 Seeds je Variante, 26 Szenarien, nur kinematisch. X0.1 in SK_desktop offen. „DR-voll folgt öfter“ hängt an der Schwelle (X4.5), nicht Teil der Aussage |
-| K9 | Ein Budget als Nebenbedingung steuert die Basisdrehung (θ gegen ori_max ρ 0,70, bei den folgenden 0,77, Gewicht in K2 −0,18). Der Preis ist die Bahn: nur 27 von 50 Agenten folgen (r1 7 von 10, r4 10 von 10). Wer folgt, ist kaum ungenauer. Bei θ 0,02 und 0,03 halten mehr Agenten Bahn und Basis zugleich als in der Gewichtsreihe (Holm p 0,018). Bei θ 0,02 kollabieren 3 von 10 (A74) | X1.3 | 10 Seeds je Budget, 21 Episoden je Agent, nur Simulation. Gegen r1 nicht gesichert (n 10). Budget als Anteil der Schritte, nicht als Maximum |
+| K9 | Ein Budget als Nebenbedingung steuert die Basisdrehung (θ gegen ori_max ρ 0,70, bei den folgenden 0,77, Gewicht in K2 −0,18). Der Preis ist die Bahn: nur 27 von 50 Agenten folgen (r1 7 von 10, r4 10 von 10). Für θ ≤ 0,03 muss die Policy den Zweig von J6 finden, den auch der Regler nutzt, ohne ihn folgt keiner (0 von 7). Bei θ 0,03 halten mehr Agenten Bahn und Basis zugleich als in der Gewichtsreihe. Der Abstand zur Front bleibt (Faktor um 2 bis 3 wie ohne Budget), ein Filter auf r1 hält das Budget etwa gleich oft, aber mit mehr Bahnfehler | X1.3, X2.2, X1.4 Teil 2, X4.5 Runde 2 | 10 Seeds je Budget, 21 Episoden je Agent, nur Simulation. „Folgt seltener als r4“ nur mit Schwelle (X4.5), der Vorteil bei θ 0,02 nicht robust. Budget als Anteil der Schritte, nicht als Maximum. Kollaps bei θ 0,02 (A74) |
 
 X0.1 (Auswerteprotokoll) steht und reproduziert D17. Mit ±2° Startstörung folgen 19 von 20 D16/D17-Agenten in
 allen 21 Episoden der Bahn, der Ausreißer ist ein ruhiger Agent. X0.2 (kinematischer Simulator) trifft
@@ -49,7 +49,10 @@ etwa 20 mm. λ bleibt vom Anfang her hoch, die Agenten sind vorsichtiger als nö
 (E2). X4.2: Alle 95 Bestandsagenten sind nach X0.1 ausgewertet. K1 hält über Takt, J6-Grenze und
 Verfahren hinweg. D13 (NaN-Actoren) gehört nicht in die Zahlen des Papers. X1.3: Mit fünf Budgets und 10 Seeds
 folgt die Basisdrehung dem Budget (K9). Viele Agenten verlieren dafür die Bahn, bei θ 0,02 brechen drei Agenten
-jede Episode ab (A74). Der Abstand zum Regler bleibt.
+jede Episode ab (A74). Der Abstand zum Regler bleibt. Diagnose: Für ein strenges Budget muss die Policy den
+Zweig von J6 finden, den auch der Regler nutzt. X2.2: Kein Agent liegt vor der Front, das Budget ändert den
+Abstand nicht. X1.4 Teil 2: Ein Filter auf r1 hält das Budget ähnlich oft, die trainierten Agenten sind genauer,
+wenn sie folgen. X4.5 Runde 2: K9a und K1 hängen nicht an den Schwellen, K9b und K9c nur teilweise.
 
 ## Ausgangslage (aus dem alten Desktop-Plan und dem Paper, Stand 10.11.2026)
 
@@ -613,6 +616,49 @@ und `_train.csv`, `X1_3_runlog.csv`, Log `X1_3_matlab.log`. Agenten `SavedAgents
 Paper: neuer Hauptabschnitt zur Nebenbedingung (Abbildung Bahnfehler gegen Basisdrehung, Tabelle je Budget),
 Vergleich mit K2. Offen.
 
+**Nachtrag 13.11.2026: Diagnose des Bahnverlusts.** Frage: Warum verlieren 23 von 50 Budget-Agenten die Bahn?
+- Aufbau: `ext_x1_3_diag()`. Je Agent (60 aus X1.3, D16 r4 Seeds 0–9 als Bezug) eine nominale Episode in
+  `ext_kinsim` (J6 0,9774 rad/s, Start q0 = 0). Gemessen: Zeitpunkt, ab dem der EE-Fehler 5 cm übersteigt, Anteil
+  gesättigter Befehle (J2, J4, J6), Anteil der Zeit an der Winkelgrenze, Verlauf von q6, Begrenzung der
+  Beobachtung (A72). „folgt“ kommt aus X0.1 in `SK_desktop` (21 Episoden).
+- Gegenprobe Simulator: Der nominale RMS stimmt bei 52 von 70 Agenten auf 1 mm mit `SK_desktop` überein, bei
+  sechs Agenten weicht er 3,8 bis 10,1 mm ab. Das ist mehr als bei der Validierung in X0.2 (≤ 0,45 mm).
+  Vermutlich verstärken die vielen gesättigten Befehle kleine Unterschiede. Geprüft ist das nicht.
+- **Zweig von J6.** Läuft J6 in Richtung −2,01 rad („neg“, q6 erreicht ≤ −1,5 rad), braucht die Bahn wenig
+  Basisdrehung. Diesen Zweig nutzt auch der Regler (X2.1, A73). Läuft J6 in Richtung +2,01 rad („pos“), liegt
+  die Basis bei etwa 50 mrad. „mid“ heißt, q6 bleibt zwischen −1,5 und +1,5 rad.
+
+| Gruppe | neg (folgt) | mid (folgt) | pos (folgt) |
+|---|---|---|---|
+| θ 0,02 | 5 (3) | 4 (0) | 1 (0) |
+| θ 0,03 | 8 (5) | 1 (0) | 1 (0) |
+| θ 0,04 | 4 (2) | 4 (0) | 2 (2) |
+| θ 0,05 | 4 (3) | 4 (2) | 2 (2) |
+| θ 0,06 | 3 (2) | 3 (2) | 4 (4) |
+| r1 | 4 (2) | 3 (2) | 3 (3) |
+| r4 w 2 | 1 (1) | 1 (1) | 8 (8) |
+
+- Deutung Zweig: Die r4-Agenten nehmen fast alle den positiven Zweig (8 von 10). Mit Budget nehmen nur 10 von 50
+  diesen Zweig, und die folgenden darunter liegen alle bei θ ≥ 0,04 (Basis 40 bis 52 mrad). Bei θ 0,02 und 0,03
+  folgt kein Agent ohne den negativen Zweig (0 von 7), mit ihm 8 von 13 (Fisher p 0,015). Für ein strenges
+  Budget muss die Policy also den Zweig finden, den der Regler nutzt. Von den 20 Agenten bei θ 0,02 und 0,03
+  finden ihn 7 nicht und verlieren alle die Bahn, 5 finden ihn und verlieren sie trotzdem, 8 folgen.
+- Sättigung: Die Budget-Agenten und r1 geben je Gruppe im Median in 11 bis 74 % der Schritte Befehle an der
+  Geschwindigkeitsgrenze, die r4-Agenten in etwa 1 % (einzelne bis 32 %). Folgende und nicht folgende
+  Budget-Agenten unterscheiden sich darin kaum (J6 0,21 gegen 0,36, p 0,04, J2 und J4 p ≥ 0,8). Nach dem Verlust
+  der Bahn stehen die Befehle im Mittel bei 88 % der Grenze, die Policy gibt also nicht auf, sie kommt nicht
+  hinterher.
+- Zeitpunkt: Die nicht folgenden verlassen die 5-cm-Grenze im Median bei 5,9 s (von 8,5 s), die drei
+  kollabierten Agenten bei θ 0,02 schon bei 1,0 bis 1,8 s (A74). Auch die folgenden überschreiten 5 cm oft kurz
+  vor dem Ende (Median 7,6 s, Fehler am Ende 26 mm gegen 168 mm).
+- Beobachtungsgrenzen (A72): Auf dem negativen Zweig liegt q6 jenseits der Grenze ±1,22 rad. Die folgenden
+  Budget-Agenten sehen q6 deshalb in 35 % der Schritte begrenzt, die nicht folgenden in 3 % (p 0,008). Die
+  Policy ist auf dem günstigen Zweig für q6 also teilweise blind. Ob das den Bahnverlust mit verursacht, prüft
+  die Ablation X4.6 (Variante V1 mit korrigierten Grenzen).
+- Grenzen: eine nominale Episode je Agent, Zweig aus dem Simulator, „folgt“ aus 21 Episoden in `SK_desktop`.
+
+Datenquelle: `X1_3_diag_{agents,groups,tests,branch,fisher}_20261113_084339.csv`.
+
 ### X1.4 Sicherheitsfilter, Teil 1: vorhandene Agenten ✅ 10.11.2026
 
 **Frage:** Hält ein modellbasierter Filter das Budget auch für eine Policy ohne passendes Training, und was kostet
@@ -659,6 +705,52 @@ drei Fälle in Simscape.
 Datenquelle: `X1_4_eval_20261110_130405.csv`.
 
 Paper: Abschnitt Nebenbedingung (Vergleich Filter gegen Training). Offen.
+
+### X1.4 Sicherheitsfilter, Teil 2: r1-Agenten aus X1.3 ✅ 13.11.2026
+
+**Frage:** Hält der Filter auf den r1-Agenten (gleicher Aufbau wie X1.3, nur λ = 0) das Budget ähnlich oft wie die
+Nebenbedingung im Training, und was kostet es an Bahn?
+
+**Aufbau:**
+- `ext_x1_4_eval('set', 'x13_r1', 'thetas', [0.02 0.03 0.04 0.05 0.06])`: die zehn r1-Agenten aus X1.3,
+  θ wie in X1.3, α ∈ {1; 5} 1/s, Filter nach und vor der Kette. 210 Episoden in 2,3 min, nominal, kinematisch.
+- Zusammenfassung `ext_x1_4_report('20261113_084820', 'x13', '20261112_195325', 'diag', '20261113_084339')`.
+- Vergleich im selben Protokoll: die Budget-Agenten aus X1.3 in derselben nominalen Episode im Simulator (aus
+  `ext_x1_3_diag`). Dazu die X0.1-Zahlen aus `SK_desktop` (21 Episoden mit Startstörung).
+- r1 ohne Filter, nominal: 9 von 10 folgen, RMS Median 16,3 mm, Basis 60 mrad. In X0.1 folgen 7 von 10.
+
+**Ergebnis** (Filter nach der Kette, α 5; „Budget“ = folgt und größte Basisdrehung ≤ θ + 5 mrad; RMS der folgenden
+als Median [mm]):
+
+| θ | Filter: Budget | Filter: RMS der folgenden | Filter: größte Basis [mrad] | Eingriff | Training: Budget nominal | Training: RMS der folgenden nominal | Training: Budget X0.1 |
+|---|---|---|---|---|---|---|---|
+| 0,02 | 4/10 | 22,3 | 21,6 | 36 % | 3/10 | 13,4 | 3/10 |
+| 0,03 | 5/10 | 21,9 | 31,4 | 24 % | 6/10 | 19,7 | 5/10 |
+| 0,04 | 7/10 | 23,5 | 41,3 | 17 % | 4/10 | 12,5 | 1/10 |
+| 0,05 | 8/10 | 21,2 | 50,3 | 11 % | 7/10 | 18,2 | 5/10 |
+| 0,06 | 8/10 | 14,8 | 60,5 | 3 % | 8/10 | 12,4 | 7/10 |
+
+**Deutung:**
+- Filter und Training halten das Budget etwa gleich oft (Filter 32 von 50, Training nominal 28 von 50). Ein
+  Test lohnt mit 10 Agenten je Zelle nicht.
+- Nach der Kette hält der Filter das Maximum fast exakt (höchstens 1,6 mrad über θ). Die trainierten Agenten
+  halten nur einen Anteil der Schritte, nicht das Maximum (siehe X1.3, θ 0,04).
+- Wer mit Filter folgt, hat im Median 21 bis 24 mm (θ ≤ 0,05). Die trainierten Agenten, die folgen, liegen bei
+  12 bis 20 mm. Das Training findet also eine genauere Lösung, wenn es eine findet. Vermutlich, weil der Filter
+  nur den Befehl korrigiert und die Strategie der Policy (etwa den Zweig von J6) nicht ändert. Geprüft ist das
+  nicht.
+- Vor der Kette hält der Filter das Maximum schlechter (bis 52,6 mrad bei θ 0,04), wie in Teil 1.
+- Ruck: 11,6 bis 13,9 rad/s³ mit Filter, r1 in X0.1 13,9.
+- Der Filter braucht das Modell zur Laufzeit, die Nebenbedingung nur im Training. Damit gilt für den Filter
+  auch die Frage der Robustheit (X2.3, offen).
+
+**Grenzen:** eine nominale Episode je Agent, nur kinematisch, 10 Agenten. Die Startstörungen aus X0.1 fehlen
+für den Filter.
+
+Datenquelle: `X1_4_eval_20261113_084820.csv`, `X1_4_report_20261113_084820.csv`,
+`X1_3_diag_agents_20261113_084339.csv`.
+
+Paper: Abschnitt Nebenbedingung (Filter gegen Training). Offen.
 
 ## X2 Modellbasierte Vergleichsbasis
 
@@ -736,6 +828,55 @@ Fehler) war also zu hoch.
 Datenquelle: `X2_sweep_20261110_113752.csv`, `X2_replay_check_20261110_113958.csv`.
 
 Paper: neue Vergleichsbasis (Methode und Ergebnis), Sec. V-A (Aussage zum kinematischen Check, A73). Offen.
+
+### X2.2 Abstand der Agenten zur Front ✅ 13.11.2026
+
+**Frage:** Wie weit liegt jeder RL-Agent aus X1.3 und X4.1 hinter der modellbasierten Front, und bringt das Budget
+die Agenten näher an die Front?
+
+**Aufbau:**
+- `ext_x2_2_front()`, kein neues Rechnen. Front aus den Sweeps von X2.1: volle Kette mit Inversion, J6
+  0,9774 rad/s, Läufe, die folgen (wie X0.1). F0 nur der Sweep aus X2.1 (14 Pareto-Punkte, Grundlage von K5),
+  F mit der Rückführung der Basislage dazu (20 Punkte).
+- Agenten: 50 Budget-Agenten und 10 r1 aus X1.3, 50 Agenten der Gewichtsreihe X4.1. Zwei Lesarten: die nominale
+  Episode aus X0.1 (gleicher Start wie die Front) und das Mittel über 21 Episoden.
+- Faktor wie in X2.3: RMS des Agenten geteilt durch den kleinsten RMS der Front bei höchstens derselben
+  Basisdrehung. Dazu das Verhältnis der Basisdrehung bei höchstens demselben RMS.
+
+**Ergebnis** (nur folgende Agenten, nominale Episode, Front F0; Median und Bereich):
+
+| Gruppe | folgen | Faktor | zusätzlicher RMS [mm] | Basis / Basis der Front bei gleichem RMS |
+|---|---|---|---|---|
+| θ 0,02 | 3 | 2,1 (2,0–3,8) | 6,6 | 2,1 |
+| θ 0,03 | 5 | 3,0 (1,8–4,5) | 11,3 | 3,2 |
+| θ 0,04 | 4 | 2,2 (1,9–2,6) | 7,0 | 4,1 |
+| θ 0,05 | 7 | 2,8 (2,1–4,1) | 10,0 | 5,8 |
+| θ 0,06 | 8 | 2,0 (1,5–6,2) | 5,9 | 4,7 |
+| r1 | 7 | 2,6 (1,5–8,4) | 8,9 | 5,8 |
+| X4.1 w 0 bis w 16 | 9–10 je Gewicht | 1,9–2,6 (1,4–5,8) | 5,1–7,4 | 4,2–5,9 |
+
+- Kein folgender Agent (83) liegt vor der Front, der kleinste Faktor ist 1,37 (F0) bzw. 1,50 (F). Im Mittel
+  über 21 Episoden sind die Faktoren größer (Median je Gruppe 2,5 bis 4,3).
+- Budget gegen Gewichtsreihe (Mann-Whitney, folgende Agenten): Faktor 2,39 gegen 2,20, p 0,34 (nominal), 3,02
+  gegen 2,63, p 0,16 (Mittel). Gegen r1: p 0,61 bzw. 0,14.
+- Die Front F mit Rückführung der Basislage macht die Faktoren um etwa 0,1 bis 0,3 größer, an der Aussage ändert
+  sich nichts.
+
+**Deutung:**
+- Das Budget verschiebt die Agenten entlang der Front, nicht auf sie zu. Sie werden ruhiger, ihr Abstand zur
+  Front bleibt etwa gleich (Faktor um 2 bis 3). Bei gleichem Bahnfehler dreht der Regler die Basis zwei- bis
+  sechsmal weniger.
+- Der Abstand zum Regler ist damit keine Frage der Gewichtung oder der Nebenbedingung. X4.6 prüft, ob er an der
+  Beobachtung (A72) oder an der Befehlskette liegt.
+
+**Grenzen:** Die Front ist eine schrittweise Lösung mit exaktem Modell und vorgegebenem Zweig von J6, also
+eine obere Schranke für den Regler. Die Agenten laufen in `SK_desktop`, die Front im kinematischen Simulator
+(X0.2, ≤ 0,45 mm).
+
+Datenquelle: `X2_2_{front,agents,groups,tests}_20261113_083657.csv`, Sweeps `X2_sweep_20261110_113752.csv` und
+`X2_sweep_20261110_123011.csv`.
+
+Paper: Abbildung Bahnfehler gegen Basisdrehung (Front, Budgets, Gewichtsreihe), Ergebnisabschnitt. Offen.
 
 ### X2.3 Robustheit, Teil 1: Bestandsagenten ✅ 10.11.2026
 
@@ -841,6 +982,64 @@ Montagefehlern. Mit 50 statt 20 Agenten ändert sich das Bild aus Teil 1 nicht.
 Datenquelle: `X2_robust_20261110_115447_episodes.csv`, `_summary.csv`, `.mat`.
 
 Paper: neue Vergleichsbasis (Robustheit), Einleitung (Aussage zu Trägheitsparametern). Offen.
+
+### X2.3 Robustheit, Teil 2: Agenten aus X1.3 ✅ 13.11.2026
+
+**Frage:** Halten die Budget-Agenten Bahn und Budget auch unter Modell-, Aktor-, Sensor- und Anfangsfehlern, und
+wie oft gelingt das den Reglern mit Nominalmodell?
+
+**Aufbau:**
+- `ext_x2_3_x13()`: `ext_x2_robust` mit allen Reglern wie in X2.4 (R0, Rβ 1 / 21,5 / 46,4, dazu Rt_acc, Rt_mid,
+  Rt_calm), den 50 Budget-Agenten und 10 r1 aus X1.3 und D16 r4 Seeds 0–9 (w 2). 26 Szenarien wie Teil 1, 2926
+  Episoden in 12,8 min, kinematisch.
+- Auswertung `ext_x2_3_x13_report('20261113_090316')`. Nur Agenten, die nominal folgen. „Budget“ = folgt in allen
+  Wiederholungen und mittlere größte Basisdrehung ≤ θ + 5 mrad. Faktor wie Teil 1, gegen alle sieben Regler, nur
+  über folgende Paare. Dazu `ext_x2_robust_report` (jetzt mit CSV-Ausgabe).
+
+**Ergebnis Agenten** (25 Störszenarien je Agent):
+
+| Gruppe | folgen nominal | folgen weiter (Anteil der Paare) | Faktor Median | nicht dominiert | Bahn und Budget nominal | davon gehalten (Anteil der Paare) |
+|---|---|---|---|---|---|---|
+| θ 0,02 | 3 | 100 % | 2,06 | 4 von 75 | 3 | 88 % |
+| θ 0,03 | 6 | 98 % | 2,39 | 6 von 147 | 6 | 90 % |
+| θ 0,04 | 4 | 98 % | 2,27 | 0 von 98 | 4 | 74 % |
+| θ 0,05 | 8 | 97 % | 2,90 | 1 von 193 | 7 | 84 % |
+| θ 0,06 | 8 | 100 % | 2,10 | 1 von 200 | 8 | 85 % |
+| r1 | 9 | 93 % | 3,13 | 0 von 210 | – | – |
+| r4 w 2 | 10 | 97 % | 2,00 | 2 von 243 | – | – |
+
+**Ergebnis Regler** (Regler mit nominal Bahn und Budget, Anteil der Störszenarien mit Bahn und Budget):
+
+| Regler (nominal RMS / Basis) | θ 0,02 | θ 0,03 | θ ≥ 0,04 |
+|---|---|---|---|
+| Rβ 1 (5,7 mm / 19,8 mrad) | 60 % | 88 % | 100 % |
+| Rt_acc (6,1 mm / 18,0 mrad) | 76 % | 92 % | 100 % |
+| Rβ 21,5 (9,0 mm / 13,0 mrad) | 88 % | 96 % | 100 % |
+| Rβ 46,4, Rt_mid (12,8 mm / 8,1 mrad) | 96 % | 100 % | 100 % |
+| Rt_calm (16,7 mm / 6,2 mrad) | 96 % | 100 % | 100 % |
+
+Alle Regler folgen in allen Szenarien.
+
+**Deutung:**
+- Wer nominal folgt, folgt auch unter den Störungen fast immer (93 bis 100 %), mit Budget nicht seltener als
+  ohne. Die Nebenbedingung macht die Agenten also nicht empfindlicher.
+- Das Budget halten die Agenten unter Störungen in 74 bis 90 % der Fälle. Die Regler mit etwas Abstand zur Grenze
+  halten es in 88 bis 100 %, und das bei kleinerem Bahnfehler (Rβ 21,5 mit 9 mm bei θ 0,02 gegen 12,5 bis 36 mm
+  bei den drei Agenten). Nur der Regler direkt an der Grenze (Rβ 1, 19,8 mrad bei θ 0,02) hält seltener (60 %).
+- Der Faktor bleibt bei etwa 2 bis 3, wie in Teil 1 und X2.2. Nicht dominiert sind 14 von 1166 folgenden Paaren
+  (1,2 %), fast alle unter Drift der Basis (y ±2 mrad/s, x 2 mrad/s) oder falscher Montage (x ±5 cm), wie in
+  Teil 1.
+- Damit gilt K6 auch für die Agenten mit Budget: In keinem der 26 Szenarien ist eine Gruppe robust besser als
+  die Regler mit Nominalmodell.
+
+**Grenzen:** nur kinematisch, Agenten mit nominal Budget sind wenige (3 bis 8 je θ). Der Filter aus X1.4 ist unter
+den Störungen noch nicht geprüft.
+
+Datenquelle: `X2_robust_20261113_090316_{episodes,summary}.csv` und `.mat`,
+`X2_3_x13_report_{groups,ctrl,nondom}_20261113_090316.csv`, `X2_robust_20261113_090316_report_{T,D}.csv`, Log
+`X2_3_x13_matlab.log`.
+
+Paper: Robustheitsabschnitt, Ergänzung zu K6. Offen.
 
 ### X2.4 Domain Randomization ✅ 11.11.2026 (X0.1 in SK_desktop für die DR-Agenten offen)
 
@@ -1162,6 +1361,31 @@ Datenquelle: `X4_5_K2_20261111_154036.csv`, `_K6_`, `_K8_`, `_F_`, `_X12_` (glei
 `X_eval_X1_2_20261111_150856_*`.
 
 Paper: Anhang oder Fußnote zur Wahl der Schwellen, Formulierung von K8 und Filter. Offen.
+
+### X4.5 Sensitivität der eigenen Schwellen, Runde 2 ✅ 13.11.2026
+
+**Aufbau:** `ext_x4_5_thresholds()` mit den neuen Optionen `x13` und `x42`. Kriterien vor der Rechnung in PLAN
+X4.5 festgelegt (13.11.2026). Gitter wie Runde 1. Die Aussagen aus Runde 1 kommen unverändert heraus (K2 45/45,
+K6 5/5, K8 2/5, Filter 6/9, X1.2 15/15).
+
+**Ergebnis:**
+
+| Aussage | Gitterpunkte | hält | Bemerkung |
+|---|---|---|---|
+| K9a (Budget steuert die Basis) | 5 | 5 | ρ 0,77 bis 0,79 bei 17 bis 33 folgenden Agenten, p ≤ 1,5e-4 |
+| K9b (Budget-Agenten folgen seltener als r4) | 5 | 3 | hält bei ep_q4 < 5 und 8 cm und RMS < 5 cm. Bei den strengen Schwellen (ep_q4 < 3 cm, RMS < 3 cm) fallen auch r4-Agenten heraus (7 und 8 von 10), dann p 0,07 und 0,08 bei gleicher Richtung (34 und 46 % gegen 70 und 80 %) |
+| K9c (θ 0,02 und 0,03 besser als die Gewichtsreihe) | 15 | 5 | Der Teil θ 0,03 hält auf 12 von 15 Punkten, der Teil θ 0,02 nur auf 5. Ohne Toleranz liegt bei θ 0,02 kaum ein Agent unter θ, weil das Budget als Anteil der Schritte formuliert ist |
+| K1 (Basis-Bonus erzeugt den Bahnverlust) | 5 | 5 | D14 und D16: r0 folgt in keinem Fall (0 von 6), r1 und r2 in 8 oder 9 von 9, p ≤ 0,0014 |
+
+**Deutung:**
+- K9a und K1 hängen nicht an den Schwellen.
+- K9b nur mit Schwelle nennen. Die Richtung ist überall gleich, die Signifikanz nicht.
+- K9c auf θ 0,03 einschränken. Für θ 0,02 ist der Vorteil gegen die Gewichtsreihe nicht robust.
+
+Datenquelle: `X4_5_{K9a,K9b,K9c,K1}_20261113_084521.csv` (dazu Runde 1 neu mit demselben Zeitstempel), Eingänge
+`X_eval_X1_3_20261112_195325_*`, `X_eval_X4_1_20261110_233147_*`, `X_eval_X4_2_20261111_144608_*`.
+
+Paper: Formulierung von K9 und K1. Offen.
 
 ## X5 3D
 

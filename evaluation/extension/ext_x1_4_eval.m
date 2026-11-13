@@ -2,6 +2,7 @@ function [T, outFile] = ext_x1_4_eval(varargin)
 %EXT_X1_4_EVAL  Sicherheitsfilter auf die Basisdrehung an vorhandenen Agenten (Ausbau X1.4, erster Teil).
 %   [T, outFile] = ext_x1_4_eval()
 %   [T, outFile] = ext_x1_4_eval('agents', list)    eigene Liste (file, label, group, j6)
+%   [T, outFile] = ext_x1_4_eval('set', 'x13_r1', 'thetas', [0.02 0.03 0.04 0.05 0.06])   Teil 2: r1 aus X1.3
 %
 %   Kinematischer Simulator, volle Befehlskette, nominal, deterministisch. Filter ext_x1_shield mit
 %   Nominalmodell. Je Agent ohne Filter und mit Filter fuer theta x alpha x Ort (nach der Kette / vor der Kette).
@@ -14,6 +15,7 @@ function [T, outFile] = ext_x1_4_eval(varargin)
 
 p = inputParser;
 p.addParameter('agents', []);
+p.addParameter('set', 'default');
 p.addParameter('thetas', [0.02 0.03 0.04 0.05]);
 p.addParameter('alphas', [1 5]);
 p.addParameter('where', {'after', 'before'});
@@ -23,6 +25,7 @@ o = p.Results;
 setup_project;
 Knom = ext_kin_model();
 list = o.agents;
+if isempty(list) && strcmp(o.set, 'x13_r1'), list = x13r1Agents(); end
 if isempty(list), list = defaultAgents(); end
 
 rows = {};
@@ -73,6 +76,15 @@ r = struct('agent', string(item.label), 'group', string(item.group), 'j6_lim', j
     'theta', th, 'alpha', al, 'rms_ee', m.rms_ee, 'ep_q4', m.ep_q4, 'max_ee', m.max_ee, 'ori_max', m.ori_max, ...
     'follows', double(follows), 'budget', double(follows && m.ori_max <= th + 0.005), 'jerk_rms', jerk, ...
     'frac_active', act, 'early_stop', double(m.early_stop));
+end
+
+function list = x13r1Agents()
+% die zehn r1-Agenten aus X1.3 (lambda fest 0, J6 0,9774 rad/s, Seeds 0-9)
+list = struct('file', {}, 'label', {}, 'group', {}, 'j6', {});
+for s = 0:9
+    f = sk_path('SavedAgents', 'MotionProfile', 'X1', sprintf('X1_ppo_40hz_r5_c1_th30_eta0_seed%d_ep3000_b50.mat', s));
+    list(end + 1) = struct('file', f, 'label', sprintf('r1x_s%d', s), 'group', 'r1_x13', 'j6', 0.9774); %#ok<AGROW>
+end
 end
 
 function list = defaultAgents()

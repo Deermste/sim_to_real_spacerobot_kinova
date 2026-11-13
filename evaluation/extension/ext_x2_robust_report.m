@@ -16,6 +16,7 @@ function [T, D] = ext_x2_robust_report(stamp, varargin)
 %      Summe nicht dominiert. Dazu nominal Median RMS und ori_max mit p gegen 'ref', und je Agent der mittlere
 %      Delta-RMS und Delta-ori ueber die Szenarien in 'family' (ein Wert je Seed), Median und p gegen 'ref'
 %      (Mann-Whitney-U zweiseitig, unkorrigiert)
+%   CSV: data/simulation/extension/X2_robust_<stamp>_report_T.csv und _D.csv
 %   Optionen: ctrl (alle Regler im Lauf), ref ('w2'), groups (alle ausser ctrl), family (Masse und Traegheit,
 %   also der Bereich der Randomisierung DR-M)
 
@@ -96,4 +97,7 @@ fprintf('Regler: %s\n', strjoin(ctrl, ', '));
 fprintf('Familie fuer d_*_fam: %s\n', strjoin(fam, ', '));
 disp(T);
 disp(D);
+out = sk_path('data', 'simulation', 'extension', ['X2_robust_' stamp '_report']);
+writetable(T, [out '_T.csv']);
+writetable(D, [out '_D.csv']);
 end
