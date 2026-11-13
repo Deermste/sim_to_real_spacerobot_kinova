@@ -568,9 +568,8 @@ Einschwingzeit, Basisdrehung. Ein vom Regler erreichtes Paar gilt zusätzlich al
 
 Vorschläge, die der Pilot prüft:
 1. **Takt 20 Hz** (E13). Die API begrenzt die Schleife ohnehin auf 20 Hz (Labortag 26.09.).
-2. **Befehlskette:** Aufbau bleibt (Sättigung, Filter, Rate Limiter, Sicherheitsschicht). Den Filter über die
-   Zeitkonstante festlegen, Vorschlag 0,3 s statt 2 s. Der Ausgang der Kette (letzter gesendeter Befehl) kommt in
-   die Beobachtung, damit der Zustand vollständig ist.
+2. **Befehlskette:** neu entworfen, siehe „Neue Befehlskette für X6“ unten (E18). Ersetzt den früheren
+   Vorschlag (Aufbau behalten, Filter 0,3 s).
 3. **Beobachtung:** ep und ev im Basissystem und ein Feinkanal (ep auf ±5 cm begrenzt und mit 20 skaliert),
    damit Millimeter im Netz sichtbar sind. Endlosgelenke J1, J3, J5, J7 als sin und cos. Dazu dq, Basislage und
    -drehrate und der Abstand zu den Gelenkgrenzen. Grenzen in der richtigen Reihenfolge (A72, E9), Eingänge
@@ -592,6 +591,71 @@ Pilot: drei Varianten mit je einem Seed, Obergrenze 20 000 Episoden oder 2 h je 
 Feinkanal und Feinterm, (c) wie (a), aber mit 10 Hz und 2 s Filterzeitkonstante wie `fixed1`. Gemessen auf 100
 Paaren des Auswertesatzes. Die Varianten zeigen, welche Bausteine die Genauigkeit tragen. Sie gehören in die
 Ablation des Papers.
+
+### Neue Befehlskette für X6 (Entwurf 13.11.2026, E18)
+
+**Warum neu:** Die bisherige Kette (Sättigung, Filter 0,95/0,05, Rate Limiter 0,5 rad/s², Cmd Scale) stammt aus
+dem Originalmodell und ist nicht aus der Hardware hergeleitet. Befunde dazu:
+- Filter und Rate Limiter glätten doppelt. Der Rate Limiter allein kostet den Regler 1,2 auf 5,7 mm (A75).
+- Filter und Rate Limiter rechnen pro Agentenschritt. Die Zeitkonstante hängt damit von der Rate ab: etwa 0,5 s
+  bei 40 Hz, 1 s bei 20 Hz, 2 s bei 10 Hz (`fixed1`). Wer die Rate ändert, ändert die Dynamik. Das gilt auch
+  im Deploy-Skript (`filt_num`/`filt_den` fest, `pipelineTs` = Takt des Agenten).
+- Die Policy gibt [−1, 1] aus, die Sättigung schneidet bei 0,9774 bzw. 0,5774 rad/s ab. Gesättigte Schritte
+  geben PPO kein Lernsignal (Budget-Agenten 11 bis 74 %, X1.3). Dort weichen auch Simscape und der kinematische
+  Simulator voneinander ab.
+- Der Zustand der Kette fehlt in der Beobachtung. Die Winkelgrenzen sind im Modell hart geklemmt, im Deploy-Skript
+  gibt es eine Bremszone, die im Training nie vorkam (A43, A61).
+
+**Grundsätze:**
+1. Eine Stufe Glättung, in Sekunden definiert, aus den Hardwaregrenzen abgeleitet. Ruhe kommt aus dem Reward
+   (Strafe auf Befehlsänderungen), nicht aus einem nachgeschalteten Filter.
+2. Die Aktion nutzt den ganzen Bereich. Keine harte Sättigung im normalen Betrieb.
+3. Der Zustand der Kette ist Teil der Beobachtung (Markov).
+4. Sicherheitslogik ist eine eigene Schicht. Sie läuft im Training und auf der Hardware gleich.
+5. Eine Datei für Training, Regler und Deploy-Skript. Alles, was von der Rate abhängt, wird aus Ts berechnet.
+
+**Aufbau** (je Agentenschritt, Ts = 0,05 s bei 20 Hz, alle 7 Gelenke):
+
+| Stufe | Rechnung | Parameter |
+|---|---|---|
+| 1 Skalierung | v* = a ⊙ v_max, a ∈ [−1, 1] (tanh der Policy) | v_max = Trainingsgrenze je Gelenk, unter dem HW-Cap |
+| 2 Beschleunigungsgrenze | v = v_prev + clip(v* − v_prev, ±a_max·Ts) | a_max in rad/s² aus der Hardware (siehe unten) |
+| 3 Schutzschicht | Bremszone vor den Winkelgrenzen (linear über 10°), HW-Cap | wie Deploy v24, aber auch im Training |
+| 4 Senden | v als Gelenkgeschwindigkeit an die API | Verzögerung 0 bis 1 Schritt (gemessen, A60) |
+
+- Optional für den Pilot: ein Filter erster Ordnung zwischen 1 und 2 mit α = exp(−Ts/τ), τ = 0,1 s. Variante, nicht
+  Standard.
+- Beobachtung zusätzlich: v_prev / v_max (Ausgang der Kette im vorigen Schritt, 7 Kanäle) und ob die Schutzschicht
+  eingreift (7 Kanäle 0/1).
+- Winkelgrenzen in Simulation ohne harte Klemme: Die Bremszone hält das Gelenk vor der Grenze. Wird sie trotzdem
+  erreicht, endet die Episode mit Strafe (wie auf der Hardware ein Fault).
+- Reward: Strafe auf ‖a_k − a_{k−1}‖² (Ruck), damit ruhige Befehle gelernt und nicht erzwungen werden.
+
+**Parameter aus der Hardware:**
+- v_max: Datenblatt 1,3963 / 1,2218 rad/s, HW-Cap heute 0,75-fach (1,047 / 0,916 rad/s). Vorschlag v_max = HW-Cap
+  minus 5 %, dann greift der Cap im Normalbetrieb nie.
+- a_max: aus der Kortex-API auslesen (Grenzen für Gelenkbeschleunigung im Geschwindigkeitsmodus), sonst am
+  Labortag messen (Sprung auf 0,3 rad/s, Antwort aus den Feedback-Daten). Vorschlag 50 % des Hardwarewerts. Bis
+  der Wert feststeht, Platzhalter 2 rad/s² (viermal die heutigen 0,5).
+- Servo: Das Modell nimmt heute 2 × 20 ms Gelenkfilter an. Am Labortag mit denselben Sprüngen prüfen und den Wert
+  im kinematischen Simulator anpassen. Das schließt die Lücke von 2 bis 3 mm zwischen Vorhersage und Hardware
+  (Labortag 2) vielleicht teilweise.
+
+**Umsetzung:**
+- `hardware/campaign/chain_step.m`: Zustand (v_prev, optional Filter) und Parameter als Struct, eine Funktion für
+  den Schritt. Aufgerufen von der X6-Umgebung (`ext_kinsim`, neue Option `chain` 'x6'), vom Regler mit Inversion
+  (X6.2, die Inversion ist bei einer reinen Beschleunigungsgrenze trivial) und von `deploy_setpoint_v25`.
+- Die alte Kette bleibt unverändert für alle bisherigen Agenten und Ergebnisse. Die neue gilt nur für X6.
+
+**Prüfung:**
+1. Einheitentests: Sprungantwort bei 10, 20 und 40 Hz in Sekunden gleich (bis auf die Abtastung). Ausgang nie über
+   v_max und a_max. Mit a ≡ 0 bleibt der Arm stehen.
+2. Regler aus X6.2 mit alter und neuer Kette auf den 100 Pilot-Paaren: zeigt, was die Kette allein ausmacht.
+3. Gegenprobe Simscape (`SK_point` mit der neuen Kette) gegen den kinematischen Simulator, ≤ 1 mm (wie X6.4).
+4. Am Labortag: Sprungtests der Gelenke vor den Set-Point-Läufen (5 min).
+
+**Was das für den Vergleich mit `fixed1` heißt:** Die Pilotvariante (c) (10 Hz, 2 s Filter wie `fixed1`) bleibt.
+Damit ist sichtbar, wie viel die neue Kette allein bringt.
 
 ### X6.4 Hauptlauf
 
@@ -674,3 +738,6 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
 - **E16** ✅ 11.11.2026 (Nutzer): Auf dem nächsten Labortag Set-Point vor Tracking. Bei wenig Zeit nur Set-Point.
 - **E17** ✅ 11.11.2026 (Vorschlag übernommen): Filterzeitkonstante für X4.6 V3 0,15 s (Koeffizient 0,85 bei
   40 Hz) statt 0,49 s.
+- **E18** 13.11.2026 (Nutzer: Kette für X6 neu entwerfen): Entwurf in „Neue Befehlskette für X6“. Offen sind
+  a_max (Hardwarewert oder Messung) und ob der optionale Filter (τ 0,1 s) in den Pilot kommt. Vorschlag: nur
+  Beschleunigungsgrenze, Filter als Pilotvariante.
