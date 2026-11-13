@@ -30,6 +30,9 @@ function ctrl = ext_x2_controller(varargin)
 %   j6_lim 0,9774, horizon 0,1 s, invert false, slew 0,5, Ts_agent 0,025, j6_side 0, K (ext_kin_model),
 %   lim 7x1 Geschwindigkeitsgrenzen (Standard [], dann wie oben aus j6_lim). Fuer X5 mit joints 1:7 und
 %   task [1 2 3] dieselben Grenzen wie in ext_kinsim 'lim' angeben.
+%   chainP (Standard []): Parameter der neuen Kette chain_step (X6, E18), nur mit invert. Der Regler haelt
+%     dann die Beschleunigungsgrenze und die Bremskurve ein und gibt die Aktion x ./ v_max aus. lim auf
+%     chainP.v_max setzen.
 %   filt_a (Standard 0,95): Koeffizient des Befehlsfilters, den der Regler mit invert kennt (X4.6 V3: 0,85, dann
 %   in ext_kinsim dasselbe filt_a angeben).
 
@@ -50,6 +53,7 @@ p.addParameter('j6_side', 0);
 p.addParameter('K', []);
 p.addParameter('lim', []);
 p.addParameter('filt_a', 0.95);
+p.addParameter('chainP', []);
 p.parse(varargin{:});
 o = p.Results;
 assert(ismember(o.mode, {'weighted', 'priority'}), 'ext_x2_controller:mode', 'mode ist weighted oder priority');
@@ -65,6 +69,11 @@ P = eye(3);
 o.P = P(o.task, :);
 o.qp = optimoptions('lsqlin', 'Display', 'off', 'Algorithm', 'interior-point');
 d = o.slew * o.Ts_agent;
+x6 = ~isempty(o.chainP);                     % neue Kette chain_step (X6, E18): nur Beschleunigungsgrenze invertieren
+if x6
+    assert(o.invert, 'ext_x2_controller:x6', 'chainP nur mit invert');
+    d = o.chainP.a_max * o.chainP.Ts;
+end
 yf = zeros(7, 1); yr = zeros(7, 1);           % interne Kopie der Befehlskette (invert)
 ctrl = @step;
 
@@ -77,11 +86,25 @@ ctrl = @step;
             lo = max(lo, yr(a) - d);
             hi = min(hi, yr(a) + d);
         end
+        if x6                                   % Bremskurve der Kette als Schranke (wie chain_step Stufe 2)
+            cp = o.chainP;
+            fin = isfinite(cp.q_lim(a));
+            vUp = sqrt(2 * cp.a_brake * max(cp.q_lim(a) - cp.q_margin - q(a), 0));
+            vLo = sqrt(2 * cp.a_brake * max(q(a) + cp.q_lim(a) - cp.q_margin, 0));
+            hi(fin) = min(hi(fin), vUp(fin));
+            lo(fin) = max(lo(fin), -vLo(fin));
+        end
         hi = max(hi, lo);
         x = law(obs, R, o, lo, hi);
         u = zeros(7, 1);
         u(a) = x;
         if ~o.invert, return; end
+        if x6
+            yr(a) = x;                          % Ausgang der Kette, wenn die Bremskurve nicht eingreift
+            u = zeros(7, 1);
+            u(a) = x ./ o.chainP.v_max(a);      % Aktion in [-1, 1], chain_step skaliert mit v_max
+            return
+        end
         target = yr + min(max(u - yr, -d), d);  % was der Rate Limiter im naechsten Schritt erlaubt
         if o.filt_a == 0.95
             u = (target - 0.95 * yf) / 0.05;    % Filter invertieren (wie bisher, bitgleich)

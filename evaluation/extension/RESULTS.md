@@ -1712,6 +1712,80 @@ Konsole, Zahlen oben).
 
 Paper: neuer Abschnitt 3D (Aufgabe, Regler-Front). Offen, hängt an X5.2 und E4.
 
+## X6 Set-Point
+
+### E18 Neue Befehlskette: Tests und Reglervergleich ✅ 13.11.2026
+
+**Frage:** Funktioniert die neue Kette (PLAN „Neue Befehlskette für X6“)? Und was macht die Kette allein aus,
+bevor ein Agent trainiert wird? Gemessen mit demselben Regler auf alter und neuer Kette.
+
+**Umsetzung:**
+- `hardware/campaign/chain_step.m`, eine Datei für Simulator, Regler und später das Deploy-Skript:
+  1. Skalierung der Aktion auf v_max, optional mit Filter erster Ordnung (α = exp(−Ts/τ)).
+  2. Bremskurve vor den Winkelgrenzen: Geschwindigkeit zur Grenze höchstens √(2·a_brake·d), d = Abstand bis
+     Grenze minus 5°, a_brake = 0,8·a_max.
+  3. Beschleunigungsgrenze a_max·Ts.
+  4. HW-Cap.
+
+  Abweichung vom Entwurf: Die lineare Bremszone über 10° aus dem Deploy-Skript bremst bei voller Fahrt härter als
+  die Beschleunigungsgrenze. Deshalb die Bremskurve aus dem Bremsweg.
+- `ext_kinsim`: Option `chain` 'x6' mit `chainP`, Kennzahlen `x6_brake`, `x6_accel`, `x6_cap`. Dazu `refFcn`
+  (eigene Referenz) und `noStop` (Abbruch aus `ext_reward` ignorieren). `ext_x2_controller`: Option `chainP`.
+  Der Regler hält dann Beschleunigungsgrenze und Bremskurve als Schranken ein und gibt x ./ v_max aus.
+
+**Tests** (`ext_x6_chain_test()`):
+- Rate: Der Sprung auf J2 ergibt bei 10, 20 und 40 Hz zu gleichen Zeiten denselben Befehl (Abweichung ≤ 1e-16),
+  ohne und mit Filter. 95 % nach 0,25 s (10 Hz 0,3 s wegen der Abtastung).
+- Grenzen: 20 000 Zufallsschritte, |v| höchstens 0,95·v_cap, |Δv| höchstens a_max·Ts. Mit a = 0 bleibt v = 0.
+- Bremskurve im Simulator (volle Aktion gegen die Grenze, 20 Hz): J2, J4, J6 stehen 1,3 bis 1,5° vor der
+  Grenze. Von den 5° Rand verbrauchen Verzögerung und Gelenkfilter also etwa 3,5°.
+- Alte Pfade bitgleich: Sweep full_inv gegen die gespeicherte Datei 5e-17, D16 r4 s2 kinematisch 3e-18.
+
+**Reglervergleich** (`ext_x6_chain_compare()`, 600 Läufe in 1,1 min):
+- 100 Paare, vorläufig ohne Kollisionsprüfung. Start und Zielstellung gleichverteilt. Ziel ist der EE-Punkt nach
+  einer offenen Gelenkbahn im frei schwebenden Simulator, d0 von 0,05 bis 1,2 m.
+- Regler R0 (Kp 5, 7 Gelenke, x, y, z, Inversion der jeweiligen Kette). Referenz ist eine Gerade mit
+  Minimum-Jerk-Profil (Dauer Tm 1,5 bis 10 s aus d0), Episode 15 s.
+- Erfolg wie E11: ≤ 5 mm und ≤ 5 mm/s, 1 s lang. Nachlauf = Beginn des Haltefensters minus Tm. Negativ heißt,
+  der Regler ist schon vor dem Ende der Referenz im 5-mm-Fenster.
+
+| Kette | Aufbau | Erfolg | Nachlauf Median / 90 % / max [s] | Endfehler 95 % [mm] | Basisdrehung Median [mrad] |
+|---|---|---|---|---|---|
+| O10 | alt, 10 Hz (wie `fixed1`) | 86 | 1,15 / 6,2 / 10,0 | 14,0 | 110 |
+| O20 | alt, 20 Hz | 94 | 0,11 / 4,1 / 8,0 | 0,11 | 106 |
+| A | neu ohne Filter, v_max und a_max wie alt (0,5 rad/s²) | 95 | −0,24 / 4,3 / 7,9 | 0,02 | 109 |
+| B | neu, v_max 0,95·HW-Cap, a_max 0,5 | 94 | −0,23 / 3,9 / 7,5 | 0,42 | 110 |
+| C | neu, v_max 0,95·HW-Cap, a_max 2 | 99 | −0,28 / 0,24 / 0,73 | 0,0005 | 102 |
+| D | wie C, Filter τ 0,1 s | 99 | 0,18 / 0,85 / 1,5 | 0,0003 | 102 |
+
+- Gepaart: O20 gegen O10 erreicht 9 Paare mehr und 1 weniger, Einschwingen im Median 0,65 s früher. C gegen O10:
+  13 mehr, keines weniger, Median 1,0 s früher. A gegen O20 und B gegen A: je 3 bis 4 Paare in beide Richtungen,
+  Median 0. C gegen B: 5 mehr, keines weniger.
+- Der Hebel ist die Beschleunigungsgrenze. Mit 2 statt 0,5 rad/s² bleibt der Nachlauf in 90 % der Paare unter
+  0,25 s statt bis zu 4 s. Filter weg (A) und höhere v_max (B) ändern für den Regler fast nichts. Der Regler
+  invertiert den Filter, wie beim Tracking (A75).
+- Der Wechsel von 10 auf 20 Hz bringt mit der alten Kette schon viel (86 auf 94). Bei der alten Kette ändert der
+  Takt die Zeitkonstante von Filter und Rate Limiter mit.
+- Ein Filter τ 0,1 s (D) kostet etwa 0,4 s Nachlauf, aber keinen Erfolg.
+- Paar 94 (d0 1,16 m) scheitert mit jeder Kette (57 bis 190 mm). Das ist eher eine Grenze von R0 (ohne Nullraum
+  für die Gelenkgrenzen) als der Kette. Bei A und B treten zusätzlich große Endfehler auf (Paar 26: 296 und
+  146 mm). Vermutlich engt die Bremskurve mit a_brake 0,4 rad/s² nahe den Grenzen stark ein. Geprüft ist das
+  nicht.
+- Die Basisdrehung ist bei allen gleich (R0 minimiert sie nicht).
+
+**Deutung:** Für den Regler entscheidet die Beschleunigungsgrenze, nicht der Filter. Für RL kann der Filter
+trotzdem wichtig sein, weil die Policy ihn nicht invertiert. Das prüft der Pilot (X6.3, Varianten C und D und
+die alte Kette als (c)). Der Wert a_max = 2 ist ein Platzhalter. Hält die Hardware ihn nicht, verschiebt sich das
+Ergebnis Richtung A und B.
+
+**Grenzen:** Paare ohne Kollisionsprüfung, URDF-Punkt statt Greiferspitze, Regler mit exaktem Modell, nur
+kinematisch, ein Regler (R0). Die alte Kette hat im Simulator keine Bremszone, das Deploy-Skript schon.
+
+Datenquelle: `X6_chain_test_20261113_184319.csv`, `X6_chain_compare_{pairs,runs,groups}_20261113_184715.csv`,
+Log `X6_chain_compare_matlab.log`.
+
+Paper: X6 (eigenes Paper oder Abschnitt, E7d), Interface-Design. Offen.
+
 ## Gliederung (für Phase P)
 
 Wird nach X1 und X2 vorgeschlagen.

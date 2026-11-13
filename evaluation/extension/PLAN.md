@@ -741,3 +741,7 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
 - **E18** 13.11.2026 (Nutzer: Kette für X6 neu entwerfen): Entwurf in „Neue Befehlskette für X6“. Offen sind
   a_max (Hardwarewert oder Messung) und ob der optionale Filter (τ 0,1 s) in den Pilot kommt. Vorschlag: nur
   Beschleunigungsgrenze, Filter als Pilotvariante.
+  Stand 13.11.2026: `chain_step.m` gebaut und getestet, Reglervergleich alt gegen neu auf 100 Paaren (RESULTS X6,
+  E18). Für den Regler entscheidet a_max (99 gegen 94 Erfolge bei 20 Hz), der Filter kaum. Damit ist der Wert von
+  a_max die wichtigste offene Zahl. Bremskurve statt linearer Bremszone (Abweichung vom Entwurf, begründet in
+  RESULTS).

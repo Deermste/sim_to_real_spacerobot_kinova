@@ -45,6 +45,12 @@ function res = ext_kinsim(policy, varargin)
 %   lim 7x1 Geschwindigkeitsgrenzen der Saettigung [rad/s] (Standard [], dann J2, J4 0,9774, J6 j6_lim, sonst 0).
 %     Fuer alle sieben Gelenke (X5) etwa [0.98 0.98 0.98 0.98 0.58 0.58 0.58].
 %   path 'planar' (Standard) oder 'tilted', tilt [Grad, Standard 30]: Referenzbahn aus ext_ref_path (X5.1).
+%   chain 'x6' (X6, E18): Befehlskette chain_step (Skalierung, Bremskurve, Beschleunigungsgrenze, HW-Cap) statt
+%     Saettigung, Filter und Rate Limiter. Parameter chainP (Standard chain_step('params') mit Ts = Ts_agent).
+%     Kennzahlen x6_brake, x6_accel, x6_cap: Anteil der Schritte, in denen die Stufe eingreift.
+%   refFcn @(t) -> numel(t) x 3: eigene Referenzbahn statt ext_ref_path (X6). Geschwindigkeit wie sonst als
+%     Rueckwaertsdifferenz.
+%   noStop (Standard false): Abbruchbedingung aus ext_reward ignorieren (Tests und offene Gelenkbahnen in X6).
 %   obs_ext (Standard false, X4.6 V2/V3): Beobachtung mit 38 Kanaelen wie die Modelle SK_x46*:
 %     [obs; Ausgang des Rate Limiters im vorigen Schritt fuer J2, J4, J6; Sollpunkt in 0,25 s und 0,5 s relativ
 %     zum EE (ext_ref_preview minus ep, nach Rauschen und Messfehler)]
@@ -91,6 +97,9 @@ p.addParameter('path', 'planar');
 p.addParameter('tilt', 30);
 p.addParameter('obs_ext', false);
 p.addParameter('filt_a', 0.95);
+p.addParameter('chainP', []);
+p.addParameter('refFcn', []);
+p.addParameter('noStop', false);
 p.parse(varargin{:});
 o = p.Results;
 
@@ -102,8 +111,16 @@ else
 end
 assert(~isempty(pol) || ~isempty(o.actionSeq) || ~isempty(o.ctrl), 'ext_kinsim:policy', ...
        'Policy, ctrl oder actionSeq angeben');
-assert(ismember(o.chain, {'full', 'sat'}), 'ext_kinsim:chain', 'chain ist ''full'' oder ''sat''');
+assert(ismember(o.chain, {'full', 'sat', 'x6'}), 'ext_kinsim:chain', 'chain ist ''full'', ''sat'' oder ''x6''');
 fullChain = strcmp(o.chain, 'full');
+x6Chain = strcmp(o.chain, 'x6');
+if x6Chain
+    cP = o.chainP;
+    if isempty(cP), cP = chain_step('params'); cP.Ts = o.Ts_agent; end
+    assert(abs(cP.Ts - o.Ts_agent) < 1e-12, 'ext_kinsim:x6', 'chainP.Ts muss Ts_agent sein');
+    cs = chain_step('init', cP);
+    x6Cnt = zeros(1, 4);                     % Schritte, Bremskurve, Beschleunigungsgrenze, HW-Cap (je ein Gelenk)
+end
 K = o.K;
 if isempty(K), K = ext_kin_model('base_mass', o.base_mass); end
 
@@ -119,7 +136,11 @@ dSlew = o.slew * o.Ts_agent;
 
 % --- Referenz wie desktop_run_episode (ref_timing 'wall', Halbkreis, X5.1 auch gekippt) ---
 t = (0:nS).' * h;
-traj = ext_ref_path(t, o);
+if isempty(o.refFcn)
+    traj = ext_ref_path(t, o);
+else
+    traj = o.refFcn(t);                      % eigene Referenz (X6: Gerade zum Ziel)
+end
 vref = [zeros(1, 3); diff(traj) / h];
 nObs = 29;
 if o.obs_ext
@@ -224,6 +245,10 @@ for k = 0:N
         end
         yr = yr + min(max(yf - yr, -dSlew), dSlew);
         cmd = yr * o.cmd_scale;
+    elseif x6Chain
+        [cmd, cs, ci] = chain_step(cs, a, q);
+        x6Cnt = x6Cnt + [1, any(ci.brake), any(ci.accel), any(ci.cap)];
+        cmd = cmd * o.cmd_scale;
     else
         cmd = sat * o.cmd_scale;
     end
@@ -232,7 +257,7 @@ for k = 0:N
         cmd = o.cmdHook(cmd, S);
     end
     obsA(k + 1, :) = obs.'; aRaw(k + 1, :) = a.'; aScl(k + 1, :) = cmd.'; rew(k + 1) = r; cst(k + 1) = c;
-    if isd
+    if isd && ~o.noStop
         done = true; kEnd = k; nEnd = n;
         stopReason = stopOf(obs);
         break
@@ -285,6 +310,9 @@ mtr.n_steps = kEnd + 1;
 mtr.t_end = kEnd * o.Ts_agent;
 mtr.early_stop = done || mtr.t_end < o.T - 0.1;
 mtr.stop_reason = stopReason;
+if x6Chain
+    mtr.x6_brake = x6Cnt(2) / x6Cnt(1); mtr.x6_accel = x6Cnt(3) / x6Cnt(1); mtr.x6_cap = x6Cnt(4) / x6Cnt(1);
+end
 
 res = struct('metrics', mtr, 'opts', o);
 res.ts = struct();

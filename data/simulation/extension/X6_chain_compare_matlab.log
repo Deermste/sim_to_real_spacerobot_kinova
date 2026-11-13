@@ -1,0 +1,18 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+100 Paare aus 103 Ziehungen
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+600 Laeufe in 1.1 min
+    chain     n     n_success    n_stop    t_settle_med    err_end_med    err_end_q95    ori_max_med    brake_med
+    _____    ___    _________    ______    ____________    ___________    ___________    ___________    _________
+
+    "O10"    100       86          0           8.15        7.4367e-09       0.013983       0.11024         NaN   
+    "O20"    100       94          0            7.1        2.0764e-15     0.00011134       0.10622         NaN   
+    "A"      100       95          0           7.05        2.2066e-15     1.8509e-05       0.10865           0   
+    "B"      100       94          0          7.125        2.3892e-15      0.0004174       0.10957           0   
+    "C"      100       99          0           6.15        1.9706e-15     5.4857e-07       0.10203           0   
+    "D"      100       99          0            6.5        6.6563e-12     3.3886e-07       0.10246           0   
+
