@@ -50,6 +50,8 @@ function res = ext_kinsim(policy, varargin)
 %     Kennzahlen x6_brake, x6_accel, x6_cap: Anteil der Schritte, in denen die Stufe eingreift.
 %   refFcn @(t) -> numel(t) x 3: eigene Referenzbahn statt ext_ref_path (X6). Geschwindigkeit wie sonst als
 %     Rueckwaertsdifferenz.
+%   qLim 7x1 Winkelgrenzen der Strecke (Klemme nach dem Integrator, Standard wie SK_desktop [2pi 2,41 2pi 2,66
+%     2,23 2,01 2pi]). X6: chain_step('params').q_lim mit Inf durch 2pi ersetzt.
 %   noStop (Standard false): Abbruchbedingung aus ext_reward ignorieren (Tests und offene Gelenkbahnen in X6).
 %   obs_ext (Standard false, X4.6 V2/V3): Beobachtung mit 38 Kanaelen wie die Modelle SK_x46*:
 %     [obs; Ausgang des Rate Limiters im vorigen Schritt fuer J2, J4, J6; Sollpunkt in 0,25 s und 0,5 s relativ
@@ -100,6 +102,7 @@ p.addParameter('filt_a', 0.95);
 p.addParameter('chainP', []);
 p.addParameter('refFcn', []);
 p.addParameter('noStop', false);
+p.addParameter('qLim', []);
 p.parse(varargin{:});
 o = p.Results;
 
@@ -132,6 +135,7 @@ nS = N * m;                                  % letzter Solverschritt
 lim = [0.0; 0.9774; 0.0; 0.9774; 0.0; o.j6_lim; 0.0];
 if ~isempty(o.lim), lim = o.lim(:); end
 qLim = [2*pi; 2.41; 2*pi; 2.66; 2.23; 2.01; 2*pi];
+if ~isempty(o.qLim), qLim = o.qLim(:); end   % X6: Datenblatt statt Modellwerte
 dSlew = o.slew * o.Ts_agent;
 
 % --- Referenz wie desktop_run_episode (ref_timing 'wall', Halbkreis, X5.1 auch gekippt) ---

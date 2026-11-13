@@ -33,6 +33,7 @@ function ctrl = ext_x2_controller(varargin)
 %   chainP (Standard []): Parameter der neuen Kette chain_step (X6, E18), nur mit invert. Der Regler haelt
 %     dann die Beschleunigungsgrenze und die Bremskurve ein und gibt die Aktion x ./ v_max aus. lim auf
 %     chainP.v_max setzen.
+%   qLim 7x1 Winkelgrenzen, die der Regler einhaelt (Standard wie SK_desktop, mit chainP die Grenzen der Kette).
 %   filt_a (Standard 0,95): Koeffizient des Befehlsfilters, den der Regler mit invert kennt (X4.6 V3: 0,85, dann
 %   in ext_kinsim dasselbe filt_a angeben).
 
@@ -54,6 +55,7 @@ p.addParameter('K', []);
 p.addParameter('lim', []);
 p.addParameter('filt_a', 0.95);
 p.addParameter('chainP', []);
+p.addParameter('qLim', []);
 p.parse(varargin{:});
 o = p.Results;
 assert(ismember(o.mode, {'weighted', 'priority'}), 'ext_x2_controller:mode', 'mode ist weighted oder priority');
@@ -61,6 +63,8 @@ if isempty(o.K), o.K = ext_kin_model(); end
 lim7 = [0; 0.9774; 0; 0.9774; 0; o.j6_lim; 0];
 if ~isempty(o.lim), lim7 = o.lim(:); end
 qLim = [2*pi; 2.41; 2*pi; 2.66; 2.23; 2.01; 2*pi];
+if ~isempty(o.chainP), qLim = min(o.chainP.q_lim, 2 * pi); end   % X6: Grenzen der Kette (Datenblatt)
+if ~isempty(o.qLim), qLim = o.qLim(:); end
 qLo = -qLim; qHi = qLim;
 if o.j6_side < 0, qHi(6) = 0; end
 if o.j6_side > 0, qLo(6) = 0; end

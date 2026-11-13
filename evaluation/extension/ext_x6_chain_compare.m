@@ -4,7 +4,7 @@ function R = ext_x6_chain_compare(varargin)
 %   R = ext_x6_chain_compare('nPairs', 20)        kleiner Lauf
 %
 %   Paare (vorlaeufig, ohne Kollisionspruefung, X6.1 ersetzt sie spaeter): Start q0 und Zielstellung qT
-%   gleichverteilt (Endlosgelenke [-pi, pi], sonst Grenze minus 5 Grad), fester Seed 0. Zielpunkt pT = Lage des
+%   gleichverteilt (Endlosgelenke [-pi, pi], sonst Datenblattgrenze minus 5 Grad), fester Seed 0. Zielpunkt pT = Lage des
 %   EE (URDF-Punkt) nach einer offenen Gelenkbahn von q0 nach qT im kinematischen Simulator (frei schwebend,
 %   gleichmaessig, hoechstens 0,4 rad/s), also unter frei schwebender Kinematik erreichbar. Behalten werden Paare
 %   mit d0 = |pT - p0| zwischen 0,05 und 1,2 m.
@@ -18,6 +18,7 @@ function R = ext_x6_chain_compare(varargin)
 %     B    neu, v_max 0,95 * HW-Cap, a_max 0,5
 %     C    neu, v_max 0,95 * HW-Cap, a_max 2 (Platzhalter, E18)
 %     D    wie C, dazu Filter tau 0,1 s
+%   Strecke und Regler mit den Winkelgrenzen des Datenblatts (chain_step('params').q_lim), auch bei der alten Kette.
 %   Erfolg wie E11: EE-Fehler zum Ziel <= 5 mm und EE-Geschwindigkeit <= 5 mm/s, 1 s lang, innerhalb von 15 s.
 %   Kennzahlen je Paar und Kette: Erfolg, Einschwingzeit (Beginn des Haltefensters), Endfehler (Mittel der
 %   letzten 0,5 s), groesste Basisdrehung, Abbruch, Anteil Bremskurve.
@@ -32,7 +33,11 @@ setup_project;
 K = ext_kin_model();
 
 % --- Paare ---
-qLim = [pi; 2.41; pi; 2.66; 2.23; 2.01; pi] - [0; 1; 0; 1; 1; 1; 0] * deg2rad(5);
+P0 = chain_step('params');
+qHw = min(P0.q_lim, 2 * pi);                 % Datenblatt, Endlosgelenke 2 pi (Strecke und Regler)
+fin = isfinite(P0.q_lim);
+qLim = pi * ones(7, 1);
+qLim(fin) = P0.q_lim(fin) - deg2rad(5);      % Starts und Ziele: Datenblatt minus 5 Grad, Endlosgelenke [-pi, pi]
 rs = RandStream('mt19937ar', 'Seed', o.seed);
 pr = {};
 tries = 0;
@@ -45,7 +50,7 @@ while numel(pr) < o.nPairs
     seq = repmat(((qT - q0) / (n * 0.05)).', n + 1, 1);
     seq(end, :) = 0;
     r = ext_kinsim([], 'actionSeq', seq, 'chain', 'sat', 'lim', 0.5 * ones(7, 1), 'Ts_agent', 0.05, ...
-                   'T', (n + 10) * 0.05, 'K', K, 'q0', q0, 'reward_mode', 1, 'noStop', true, ...
+                   'T', (n + 10) * 0.05, 'K', K, 'q0', q0, 'reward_mode', 1, 'noStop', true, 'qLim', qHw, ...
                    'refFcn', @(t) zeros(numel(t), 3));
     p0 = r.ts.ep(1, :).'; pT = r.ts.ep(end, :).';
     d0 = norm(pT - p0);
@@ -70,7 +75,7 @@ nP = numel(pr); nC = numel(ch);
 out = cell(nP, 1);
 t0 = tic;
 parfor i = 1:nP
-    out{i} = runPair(pr{i}, ch, K, sat);
+    out{i} = runPair(pr{i}, ch, K, sat, qHw);
 end
 fprintf('%d Laeufe in %.1f min\n', nP * nC, toc(t0) / 60);
 Rr = struct2table(vertcat(out{:}));
@@ -95,7 +100,7 @@ disp(R.groups);
 end
 
 % =====================================================================
-function rows = runPair(pr, ch, K, sat)
+function rows = runPair(pr, ch, K, sat, qHw)
 d0 = pr.d0;
 Tm = min(max(1.5, 9.4 * d0), 10);
 ref = @(t) minJerk(t, pr.p0, pr.pT, Tm);
@@ -105,7 +110,7 @@ for c = 1:numel(ch)
     cargs = {'beta', 0, 'Kp', 5, 'mu', 1e-4, 'joints', 1:7, 'task', [1 2 3], 'K', K, 'invert', true, ...
              'Ts_agent', Ts};
     if isempty(ch(c).P)
-        ctrl = ext_x2_controller(cargs{:}, 'lim', sat, 'slew', 0.5, 'filt_a', 0.95);
+        ctrl = ext_x2_controller(cargs{:}, 'lim', sat, 'slew', 0.5, 'filt_a', 0.95, 'qLim', qHw);
         sargs = {'chain', 'full', 'lim', sat, 'slew', 0.5, 'filt_a', 0.95};
     else
         Pc = ch(c).P; Pc.Ts = Ts;
@@ -113,7 +118,7 @@ for c = 1:numel(ch)
         sargs = {'chain', 'x6', 'chainP', Pc};
     end
     r = ext_kinsim([], 'ctrl', ctrl, sargs{:}, 'Ts_agent', Ts, 'T', 15, 'K', K, 'q0', pr.q0, ...
-                   'reward_mode', 1, 'refFcn', ref);
+                   'reward_mode', 1, 'refFcn', ref, 'qLim', qHw);
     ts = r.ts;
     ta = ts.t_agent;
     [pa, va] = minJerk(ta, pr.p0, pr.pT, Tm);

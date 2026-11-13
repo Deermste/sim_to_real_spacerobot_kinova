@@ -1729,6 +1729,10 @@ bevor ein Agent trainiert wird? Gemessen mit demselben Regler auf alter und neue
 
   Abweichung vom Entwurf: Die lineare Bremszone über 10° aus dem Deploy-Skript bremst bei voller Fahrt härter als
   die Beschleunigungsgrenze. Deshalb die Bremskurve aus dem Bremsweg.
+- Winkelgrenzen nach dem Gen3-Datenblatt (J2 ±128,9°, J4 ±147,8°, J6 ±120,3°, J1, J3, J5, J7 endlos), nicht die
+  Modellwerte von `SK_desktop` (J2 ±138°, J4 ±152°, J6 ±115°, J5 ±128°). Die Modellwerte fassen J2 und J4 weiter
+  als der echte Arm. Gilt für Kette, Strecke (`ext_kinsim` Option `qLim`) und Regler (Option `qLim`) in X6. Die
+  bisherigen Pfade behalten die Modellwerte.
 - `ext_kinsim`: Option `chain` 'x6' mit `chainP`, Kennzahlen `x6_brake`, `x6_accel`, `x6_cap`. Dazu `refFcn`
   (eigene Referenz) und `noStop` (Abbruch aus `ext_reward` ignorieren). `ext_x2_controller`: Option `chainP`.
   Der Regler hält dann Beschleunigungsgrenze und Bremskurve als Schranken ein und gibt x ./ v_max aus.
@@ -1737,8 +1741,8 @@ bevor ein Agent trainiert wird? Gemessen mit demselben Regler auf alter und neue
 - Rate: Der Sprung auf J2 ergibt bei 10, 20 und 40 Hz zu gleichen Zeiten denselben Befehl (Abweichung ≤ 1e-16),
   ohne und mit Filter. 95 % nach 0,25 s (10 Hz 0,3 s wegen der Abtastung).
 - Grenzen: 20 000 Zufallsschritte, |v| höchstens 0,95·v_cap, |Δv| höchstens a_max·Ts. Mit a = 0 bleibt v = 0.
-- Bremskurve im Simulator (volle Aktion gegen die Grenze, 20 Hz): J2, J4, J6 stehen 1,3 bis 1,5° vor der
-  Grenze. Von den 5° Rand verbrauchen Verzögerung und Gelenkfilter also etwa 3,5°.
+- Bremskurve im Simulator (volle Aktion gegen die Datenblattgrenze, 20 Hz): J2, J4, J6 stehen 1,3 bis 1,5° vor
+  der Grenze. Von den 5° Rand verbrauchen Verzögerung und Gelenkfilter also etwa 3,5°.
 - Alte Pfade bitgleich: Sweep full_inv gegen die gespeicherte Datei 5e-17, D16 r4 s2 kinematisch 3e-18.
 
 **Reglervergleich** (`ext_x6_chain_compare()`, 600 Läufe in 1,1 min):
@@ -1751,26 +1755,27 @@ bevor ein Agent trainiert wird? Gemessen mit demselben Regler auf alter und neue
 
 | Kette | Aufbau | Erfolg | Nachlauf Median / 90 % / max [s] | Endfehler 95 % [mm] | Basisdrehung Median [mrad] |
 |---|---|---|---|---|---|
-| O10 | alt, 10 Hz (wie `fixed1`) | 86 | 1,15 / 6,2 / 10,0 | 14,0 | 110 |
-| O20 | alt, 20 Hz | 94 | 0,11 / 4,1 / 8,0 | 0,11 | 106 |
-| A | neu ohne Filter, v_max und a_max wie alt (0,5 rad/s²) | 95 | −0,24 / 4,3 / 7,9 | 0,02 | 109 |
-| B | neu, v_max 0,95·HW-Cap, a_max 0,5 | 94 | −0,23 / 3,9 / 7,5 | 0,42 | 110 |
-| C | neu, v_max 0,95·HW-Cap, a_max 2 | 99 | −0,28 / 0,24 / 0,73 | 0,0005 | 102 |
-| D | wie C, Filter τ 0,1 s | 99 | 0,18 / 0,85 / 1,5 | 0,0003 | 102 |
+| O10 | alt, 10 Hz (wie `fixed1`) | 86 | 1,35 / 6,2 / 8,0 | 23,8 | 120 |
+| O20 | alt, 20 Hz | 95 | 0,10 / 4,4 / 6,8 | 12,4 | 120 |
+| A | neu ohne Filter, v_max und a_max wie alt (0,5 rad/s²) | 94 | −0,21 / 5,0 / 9,6 | 4,2 | 122 |
+| B | neu, v_max 0,95·HW-Cap, a_max 0,5 | 90 | −0,25 / 4,7 / 10,7 | 25,4 | 122 |
+| C | neu, v_max 0,95·HW-Cap, a_max 2 | 99 | −0,29 / 0,24 / 1,5 | < 0,001 | 111 |
+| D | wie C, Filter τ 0,1 s | 99 | 0,17 / 0,75 / 3,7 | < 0,001 | 110 |
 
-- Gepaart: O20 gegen O10 erreicht 9 Paare mehr und 1 weniger, Einschwingen im Median 0,65 s früher. C gegen O10:
-  13 mehr, keines weniger, Median 1,0 s früher. A gegen O20 und B gegen A: je 3 bis 4 Paare in beide Richtungen,
-  Median 0. C gegen B: 5 mehr, keines weniger.
+- Gepaart: O20 gegen O10 erreicht 9 Paare mehr und keines weniger, Einschwingen im Median 0,55 s früher. C gegen
+  O10: 13 mehr, keines weniger, Median 1,25 s früher. C gegen O20: 4 mehr, keines weniger. A gegen O20: 1 mehr,
+  2 weniger. B gegen A: 1 mehr, 5 weniger. C gegen B: 9 mehr, keines weniger.
 - Der Hebel ist die Beschleunigungsgrenze. Mit 2 statt 0,5 rad/s² bleibt der Nachlauf in 90 % der Paare unter
-  0,25 s statt bis zu 4 s. Filter weg (A) und höhere v_max (B) ändern für den Regler fast nichts. Der Regler
-  invertiert den Filter, wie beim Tracking (A75).
-- Der Wechsel von 10 auf 20 Hz bringt mit der alten Kette schon viel (86 auf 94). Bei der alten Kette ändert der
+  0,25 s statt 4 bis 5 s. Filter weg (A) ändert für den Regler fast nichts, er invertiert den Filter wie beim
+  Tracking (A75). Eine höhere v_max ohne höheres a_max (B) hilft nicht, eher im Gegenteil (90 statt 94).
+- Der Wechsel von 10 auf 20 Hz bringt mit der alten Kette schon viel (86 auf 95). Bei der alten Kette ändert der
   Takt die Zeitkonstante von Filter und Rate Limiter mit.
-- Ein Filter τ 0,1 s (D) kostet etwa 0,4 s Nachlauf, aber keinen Erfolg.
-- Paar 94 (d0 1,16 m) scheitert mit jeder Kette (57 bis 190 mm). Das ist eher eine Grenze von R0 (ohne Nullraum
-  für die Gelenkgrenzen) als der Kette. Bei A und B treten zusätzlich große Endfehler auf (Paar 26: 296 und
-  146 mm). Vermutlich engt die Bremskurve mit a_brake 0,4 rad/s² nahe den Grenzen stark ein. Geprüft ist das
-  nicht.
+- Ein Filter τ 0,1 s (D) kostet etwa 0,5 s Nachlauf (90 %), aber keinen Erfolg.
+- Paar 94 (d0 1,16 m) scheitert mit jeder Kette (46 bis 63 mm). Das ist eher eine Grenze von R0 (ohne Nullraum
+  für die Gelenkgrenzen) als der Kette. Mit a_max 0,5 rad/s² (O20, A, B, auch O10) scheitern einzelne Paare mit
+  großem Endfehler (Paar 25 und 34: 96 bis 188 mm). Die Ursache ist nicht geprüft. Bei a_max 2 kommt das nicht
+  vor. Korrektur 13.11.: Die erste Fassung vermutete die Bremskurve als Ursache. Das trifft nicht zu, weil die
+  alte Kette keine Bremskurve hat und dieselben Paare verliert.
 - Die Basisdrehung ist bei allen gleich (R0 minimiert sie nicht).
 
 **Deutung:** Für den Regler entscheidet die Beschleunigungsgrenze, nicht der Filter. Für RL kann der Filter
@@ -1781,7 +1786,7 @@ Ergebnis Richtung A und B.
 **Grenzen:** Paare ohne Kollisionsprüfung, URDF-Punkt statt Greiferspitze, Regler mit exaktem Modell, nur
 kinematisch, ein Regler (R0). Die alte Kette hat im Simulator keine Bremszone, das Deploy-Skript schon.
 
-Datenquelle: `X6_chain_test_20261113_184319.csv`, `X6_chain_compare_{pairs,runs,groups}_20261113_184715.csv`,
+Datenquelle: `X6_chain_test_20261113_190954.csv`, `X6_chain_compare_{pairs,runs,groups}_20261113_191125.csv`,
 Log `X6_chain_compare_matlab.log`.
 
 Paper: X6 (eigenes Paper oder Abschnitt, E7d), Interface-Design. Offen.

@@ -21,7 +21,8 @@ function [v, S, info] = chain_step(S, a, q)
 %     v_cap     0,75 * Datenblatt [1,3963 x4; 1,2218 x3] rad/s (wie safetyFactor in deploy_setpoint_v24)
 %     a_max     2 rad/s^2 (Platzhalter bis zum Hardwarewert, E18)
 %     a_brake   0,8 * a_max
-%     q_lim     Winkelgrenzen [Inf; 2,41; Inf; 2,66; 2,23; 2,01; Inf] rad (Endlosgelenke ohne Grenze)
+%     q_lim     Winkelgrenzen laut Gen3-Datenblatt: J2 128,9, J4 147,8, J6 120,3 Grad, J1, J3, J5, J7 endlos (Inf).
+%               Nicht die Modellwerte von SK_desktop (2,41 / 2,66 / 2,23 / 2,01 rad), die J2 und J4 zu weit fassen
 %     q_margin  5 Grad (Abstand, bei dem das Gelenk spaetestens steht)
 %     tau       0 (kein Filter)
 %     active    true(7, 1) (inaktive Gelenke bekommen den Befehl null)
@@ -31,7 +32,7 @@ if ischar(S)
         case 'params'
             dqData = [1.3963; 1.3963; 1.3963; 1.3963; 1.2218; 1.2218; 1.2218];
             P = struct('Ts', 0.05, 'v_cap', 0.75 * dqData, 'a_max', 2, 'q_margin', deg2rad(5), ...
-                       'q_lim', [Inf; 2.41; Inf; 2.66; 2.23; 2.01; Inf], 'tau', 0, 'active', true(7, 1));
+                       'q_lim', deg2rad([Inf; 128.9; Inf; 147.8; Inf; 120.3; Inf]), 'tau', 0, 'active', true(7, 1));
             P.v_max = 0.95 * P.v_cap;
             P.a_brake = 0.8 * P.a_max;
             v = P;

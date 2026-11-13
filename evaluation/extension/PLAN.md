@@ -742,6 +742,7 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
   a_max (Hardwarewert oder Messung) und ob der optionale Filter (τ 0,1 s) in den Pilot kommt. Vorschlag: nur
   Beschleunigungsgrenze, Filter als Pilotvariante.
   Stand 13.11.2026: `chain_step.m` gebaut und getestet, Reglervergleich alt gegen neu auf 100 Paaren (RESULTS X6,
-  E18). Für den Regler entscheidet a_max (99 gegen 94 Erfolge bei 20 Hz), der Filter kaum. Damit ist der Wert von
+  E18). Für den Regler entscheidet a_max (99 gegen 90 bis 95 Erfolge bei 20 Hz), der Filter kaum. Winkelgrenzen
+  in X6 nach Datenblatt statt Modellwerten. Damit ist der Wert von
   a_max die wichtigste offene Zahl. Bremskurve statt linearer Bremszone (Abweichung vom Entwurf, begründet in
   RESULTS).

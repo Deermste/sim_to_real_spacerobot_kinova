@@ -72,12 +72,13 @@ rows{end + 1} = row('3 Ruhe: max |v| bei a = 0', mx, '');
 
 % --- 4 Bremskurve ---
 K = ext_kin_model();
-qL = [2.41 2.66 2.01];
+qL = P0.q_lim([2 4 6]).';
+qHw = min(P0.q_lim, 2 * pi);
 jj = [2 4 6];
 for i = 1:3
     seq = zeros(121, 7); seq(:, jj(i)) = 1;
     r = ext_kinsim([], 'actionSeq', seq, 'chain', 'x6', 'Ts_agent', 0.05, 'T', 6, 'K', K, 'reward_mode', 1, ...
-                   'refFcn', @(t) zeros(numel(t), 3), 'noStop', true);
+                   'refFcn', @(t) zeros(numel(t), 3), 'noStop', true, 'qLim', qHw);
     qmax = max(r.ts.q(:, jj(i)));
     rows{end + 1} = row(sprintf('4 Bremse J%d: Grenze minus groesster Winkel [Grad]', jj(i)), ...
                         rad2deg(qL(i) - qmax), sprintf('Rand %.1f Grad, Bremskurve in %.0f %% der Schritte', ...
