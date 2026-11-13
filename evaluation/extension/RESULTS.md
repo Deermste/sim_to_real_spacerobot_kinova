@@ -1894,6 +1894,44 @@ Datenquelle: `X6_pairs_20261113_195451.mat` / `.csv`, Log `X6_pairs_matlab.log`,
 
 Paper: X6 (Methode, Auswertesatz). Offen.
 
+### X6.2 Vergleichsregler auf dem Paarsatz ✅ 13.11.2026 (Nullraum offen)
+
+**Aufbau:** `ext_x6_ctrl_eval()`, 635 Paare (500 Auswertesatz, 135 Labortage) × 4 Regler, 2540 Läufe in 4,1 min.
+Regler mit 7 Gelenken, x, y, z, Werkzeugpunkt, Nominalmodell gleich Strecke, Inversion der Kette, Grenzen nach
+Datenblatt. Referenz ist eine Minimum-Jerk-Gerade, Episode 15 s, Erfolg wie E11. Neue Kette mit a_max 2 rad/s²
+(Platzhalter). Die alte Kette läuft bei 10 Hz wie `fixed1`.
+
+| Regler | Auswertesatz: Erfolg | Nachlauf Median / 90 % [s] | Endfehler 95 % [mm] | Basisdrehung Median [mrad] | Labortage: Erfolg |
+|---|---|---|---|---|---|
+| R0, neue Kette | 498 / 500 | −0,27 / 0,30 | < 0,001 | 87 | 125 / 135 |
+| R0, alte Kette 10 Hz | 455 / 500 | 0,88 / 5,8 | 1,8 | 94 | 118 / 135 |
+| R0n (Nullraum, Mittelzug) | 25 / 500 | 0,75 / 3,5 | 8,6 | 124 | 1 / 135 |
+| Rb1n (Nullraum, β 1) | 23 / 500 | 0,85 / 3,9 | 7,2 | 121 | 6 / 135 |
+
+- Mit der neuen Kette erreicht R0 fast alle Paare. Die zwei Ausnahmen (Paar 34 und 332, d0 0,93 und 1,15 m)
+  enden 35 bis 41 mm vor dem Ziel. Damit sind 498 der 500 Ziele auch mit einem Regler belegt erreichbar.
+- Die alte Kette verliert vor allem die langen Wege: d0 0,8 bis 1,2 m 117 von 157 (neu 155), kürzere Wege
+  fast gleich (47/47, 133/135, 158/161 gegen 47/47, 135/135, 161/161). Viele Fehlschläge der alten Kette liegen
+  knapp unter 1 mm Endfehler, verfehlen aber das Haltekriterium innerhalb von 15 s. Die alte Kette braucht
+  länger.
+- Labortage: R0 erreicht 125 von 135 Paaren. 9 der 10 Fehlschläge haben d0 über 1,2 m (1,25 bis 1,64 m), also
+  außerhalb des Bereichs des Auswertesatzes. Ob dort das Ziel frei schwebend nicht erreichbar ist oder nur R0
+  scheitert, ist offen.
+- Mittelzug: Die erste Fassung (gewichtet in derselben Ausgleichsrechnung) ließ einen bleibenden Fehler von etwa
+  1 cm (12 von 500), weil der Term gegen die Bahn zieht. Auch im Nullraum (erst die Aufgabe, dann der Mittelzug
+  mit A x = A x1) scheitert er. Kleinster Fehler im Median 0,06 mm, danach Drift auf 2 mm. Vermutung: Die
+  Ausgleichsbewegung ist nur im Takt des Reglers reaktionsfrei. Gelenkfilter und Diskretisierung verschieben über
+  die mitdrehende Basis den Werkzeugpunkt. Geprüft ist das nicht. Für den Auswertesatz ist der Mittelzug nicht
+  nötig, R0 reicht. Offen, falls Paare an Gelenkgrenzen scheitern.
+
+**Grenzen:** Regler mit exaktem Modell, ohne Kollisionsvermeidung (die Gerade im Arbeitsraum ist nicht auf
+Kollision geprüft), a_max ist ein Platzhalter. Ein Paar gilt hier als erreichbar, wenn R0 es erreicht.
+
+Datenquelle: `X6_ctrl_eval_{runs,groups,cells}_20261113_212110.csv`, Log `X6_ctrl_eval_matlab.log`, Paarsatz
+`X6_pairs_20261113_195451.mat`.
+
+Paper: X6 (Vergleichsregler, Erreichbarkeit). Offen.
+
 ## Gliederung (für Phase P)
 
 Wird nach X1 und X2 vorgeschlagen.

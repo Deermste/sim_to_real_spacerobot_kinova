@@ -81,7 +81,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X5.3 | Hauptlauf 3D: 10 Seeds, Vergleich mit Nullraum-Regler | 1 Tag | ≈ 6–8 h | E4 | ⏸ |
 | X6.0 | Set-Point: Ausgangslage des alten Agenten, Zielwerte und Bezugspunkt festlegen | ½ Tag | – | E11 | ⬜ |
 | X6.1 | Schritt-Umgebung auf dem kinematischen Simulator (7 Gelenke, frei schwebend), Start- und Zielgenerator | 2 Tage | < 1 h | X0.2 | 🔄 Paarsatz, Strecke und Umgebung ✅ 13.11., Trainingssatz und Kollision im Training offen |
-| X6.2 | Vergleichsregler und Erreichbarkeit der Ziele | ½ Tag | < 1 h | X6.1 | ⬜ |
+| X6.2 | Vergleichsregler und Erreichbarkeit der Ziele | ½ Tag | < 1 h | X6.1 | ✅ 13.11. (R0 498/500 mit neuer Kette, 455 mit alter; Nullraum-Mittelzug offen) |
 | X6.3 | Pilot: drei Varianten × 1 Seed | 1 Tag | ≈ 4–6 h | X6.1, E12–E14 | ⬜ |
 | X6.4 | Hauptlauf 5 Seeds, Auswertung auf 500 Paaren, Gegenprobe in Simscape | 1 Tag | ≈ 8–12 h | X6.3 | ⬜ |
 | X6.5 | Deploy-Skript Set-Point v25 mit Emulation der Basis, Trockenläufe, Vorhersage | 2 Tage | 1 h | X3.1, X6.4 | ⬜ |

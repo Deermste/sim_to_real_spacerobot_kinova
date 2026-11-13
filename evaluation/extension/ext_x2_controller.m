@@ -34,7 +34,9 @@ function ctrl = ext_x2_controller(varargin)
 %     dann die Beschleunigungsgrenze und die Bremskurve ein und gibt die Aktion x ./ v_max aus. lim auf
 %     chainP.v_max setzen.
 %   gamma (Standard 0), kCenter 1 1/s: zusaetzlicher Term gamma |x_c - (-kCenter q_c)|^2 fuer die Gelenke mit
-%     endlicher Grenze (X6), zieht sie zur Mitte und haelt Abstand zu den Grenzen. Mit gamma = 0 wie bisher.
+%     endlicher Grenze (X6), zieht sie zur Mitte. Mit gamma = 0 wie bisher. In 'weighted' konkurriert der Term mit
+%     der Bahn und laesst einen bleibenden Fehler (X6.2, 13.11.). Deshalb mode 'nullspace': (1) Aufgabe wie R0,
+%     (2) beta |W x - w*|^2 + gamma |x_c - d_c|^2 + mu |x|^2 mit A x = A x1, beide unter den Schranken.
 %   qLim 7x1 Winkelgrenzen, die der Regler einhaelt (Standard wie SK_desktop, mit chainP die Grenzen der Kette).
 %   filt_a (Standard 0,95): Koeffizient des Befehlsfilters, den der Regler mit invert kennt (X4.6 V3: 0,85, dann
 %   in ext_kinsim dasselbe filt_a angeben).
@@ -62,7 +64,8 @@ p.addParameter('gamma', 0);
 p.addParameter('kCenter', 1);
 p.parse(varargin{:});
 o = p.Results;
-assert(ismember(o.mode, {'weighted', 'priority'}), 'ext_x2_controller:mode', 'mode ist weighted oder priority');
+assert(ismember(o.mode, {'weighted', 'priority', 'nullspace'}), 'ext_x2_controller:mode', ...
+       'mode ist weighted, priority oder nullspace');
 if isempty(o.K), o.K = ext_kin_model(); end
 lim7 = [0; 0.9774; 0; 0.9774; 0; o.j6_lim; 0];
 if ~isempty(o.lim), lim7 = o.lim(:); end
@@ -142,24 +145,36 @@ W = Rb * G(4:6, a);
 b = o.P * (R.vref - o.Kp * ep);
 wDes = -o.kOri * eo;
 rm = sqrt(o.mu) * eye(n);
-if o.gamma > 0                              % X6: Gelenke mit endlicher Grenze zur Mitte ziehen (Nullraum)
+if o.gamma > 0                              % X6: Gelenke mit endlicher Grenze zur Mitte ziehen
     fc = find(abs(o.qLimC(a)) < 2 * pi - 1e-9);
     Cc = zeros(numel(fc), n); Cc(sub2ind(size(Cc), 1:numel(fc), fc(:).')) = 1;
-    rm = [rm; sqrt(o.gamma) * Cc];
     dc = -o.kCenter * q(a(fc));
 else
-    dc = zeros(0, 1);
+    Cc = zeros(0, n); dc = zeros(0, 1);
 end
+rg = sqrt(o.gamma);
 if strcmp(o.mode, 'weighted')
     rb = sqrt(o.beta);
-    x = boxLsq([A; rb * W; rm], [b; rb * wDes; zeros(n, 1); sqrt(o.gamma) * dc], lo, hi);
-else
-    x1 = boxLsq([A; rm], [b; zeros(n, 1); sqrt(o.gamma) * dc], lo, hi);
+    x = boxLsq([A; rb * W; rm; rg * Cc], [b; rb * wDes; zeros(n, 1); rg * dc], lo, hi);
+elseif strcmp(o.mode, 'priority')
+    x1 = boxLsq([A; rm; rg * Cc], [b; zeros(n, 1); rg * dc], lo, hi);
     x = x1;
     try
-        x2 = lsqlin([W; rm], [wDes; zeros(n, 1); sqrt(o.gamma) * dc], [], [], A, A * x1, lo, hi, [], o.qp);
+        x2 = lsqlin([W; rm; rg * Cc], [wDes; zeros(n, 1); rg * dc], [], [], A, A * x1, lo, hi, [], o.qp);
         if all(isfinite(x2)), x = x2; end
     catch
+    end
+else                                        % 'nullspace' (X6): erst die Aufgabe, dann Basis und Mittelzug
+    x1 = boxLsq([A; rm], [b; zeros(n, 1)], lo, hi);
+    x = x1;
+    rb = sqrt(o.beta);
+    C2 = [rb * W; rg * Cc; rm];
+    if size(C2, 1) > n
+        try
+            x2 = lsqlin(C2, [rb * wDes; rg * dc; zeros(n, 1)], [], [], A, A * x1, lo, hi, [], o.qp);
+            if all(isfinite(x2)), x = x2; end
+        catch
+        end
     end
 end
 end

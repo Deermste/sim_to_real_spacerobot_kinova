@@ -7,10 +7,11 @@ function R = ext_x6_ctrl_eval(varargin)
 %   Grenzen nach Datenblatt, Inversion der Kette). Referenz: Gerade p0 -> pT mit Minimum-Jerk-Profil,
 %   Tm = min(max(1,5 s, 9,4 s/m * d0), 10 s), Episode 15 s. Varianten:
 %     R0      beta 0
-%     R0c     beta 0, gamma 0,01 (J2, J4, J6 zur Mitte, kCenter 1 1/s)
-%     Rb1c    beta 1, gamma 0,01 (weniger Basisdrehung)
-%     R0c_old wie R0c mit der alten Kette bei 10 Hz (Saettigung 0,9774 / 0,5774, Filter 0,95, Rate Limiter 0,5,
+%     R0n     Nullraum: erst die Aufgabe wie R0, dann J2, J4, J6 zur Mitte (gamma 0,1, kCenter 1 1/s)
+%     Rb1n    Nullraum mit beta 1 (weniger Basisdrehung) und gamma 0,1
+%     R0_old  R0 mit der alten Kette bei 10 Hz (Saettigung 0,9774 / 0,5774, Filter 0,95, Rate Limiter 0,5,
 %             wie fixed1)
+%   Erste Fassung (13.11.) mit Mittelzug im gewichteten Modus: bleibender Fehler von etwa 1 cm, verworfen.
 %   Neue Kette: chain_step('params') (a_max 2 rad/s^2, Platzhalter E18), 20 Hz.
 %   Erfolg wie E11: Fehler zum Ziel <= 5 mm und Geschwindigkeit <= 5 mm/s, 1 s lang, innerhalb von 15 s.
 %   Ein vom Regler erreichtes Paar gilt als belegt erreichbar (fuer die Laborpaare, reach_known 0).
@@ -37,8 +38,8 @@ K = ext_kin_model('tool_offset', [0; 0; 0.121]);
 C = chain_step('params');
 qHw = min(C.q_lim, 2 * pi);
 sat = [0.9774; 0.9774; 0.9774; 0.9774; 0.5774; 0.5774; 0.5774];
-V = struct('name', {'R0', 'R0c', 'Rb1c', 'R0c_old'}, 'beta', {0, 0, 1, 0}, 'gamma', {0, 0.01, 0.01, 0.01}, ...
-           'old', {false, false, false, true});
+V = struct('name', {'R0', 'R0n', 'Rb1n', 'R0_old'}, 'mode', {'weighted', 'nullspace', 'nullspace', 'weighted'}, ...
+           'beta', {0, 0, 1, 0}, 'gamma', {0, 0.1, 0.1, 0}, 'old', {false, false, false, true});
 n = numel(Pp);
 out = cell(n, 1);
 t0 = tic;
@@ -81,7 +82,7 @@ Tm = min(max(1.5, 9.4 * pr.d0), 10);
 ref = @(t) minJerk(t, pr.p0, pr.pT, Tm);
 rows = [];
 for v = 1:numel(V)
-    cargs = {'beta', V(v).beta, 'gamma', V(v).gamma, 'Kp', 5, 'mu', 1e-4, 'joints', 1:7, 'task', [1 2 3], ...
+    cargs = {'mode', V(v).mode, 'beta', V(v).beta, 'gamma', V(v).gamma, 'Kp', 5, 'mu', 1e-4, 'joints', 1:7, 'task', [1 2 3], ...
              'K', K, 'invert', true};
     if V(v).old
         Ts = 0.1;
