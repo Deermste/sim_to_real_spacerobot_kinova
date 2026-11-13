@@ -1,0 +1,9 @@
+check,value,note
+"SK_desktop MD5 wie vor X4.6",1,"897024e9e94468f6f074396c4523c6ec"
+"SK_desktop MD5 nach dem Bau von SK_x46s",1,""
+"V4 Kurztraining Kanaele",29,"SK_x46s"
+"V4 cfg.slew",2,""
+"V4 RMS Simscape gegen kinematisch (slew 2)",9.28107146691559e-10,"0.260874 m, mit slew 0,5 waeren es 0.260874 m"
+"V4 ori_max Simscape gegen kinematisch (slew 2)",2.12953256764625e-09,""
+"V4 kinematisch: max |Aenderung Rate Limiter| / (2 * 0,025)",0.0429189688145268,""
+"Sweep slew 0,5 gegen gespeichert: max |RMS| [m]",4.85722573273506e-17,""

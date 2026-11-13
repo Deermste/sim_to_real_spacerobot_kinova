@@ -63,6 +63,7 @@ Hb = [M * eye(3), -Smr; Smr, Hw];
 G = -Hb \ [JTw; Hwq];
 e = K.ee;
 pe = P(:, e);
+if isfield(K, 'tool') && any(K.tool ~= 0), pe = pe + R(:, :, e) * K.tool; end   % Werkzeugpunkt (X6)
 Jv = cross(z, pe - pj, 1) .* anc(e, :);
 Je = G(1:3, :) - skew(pe) * G(4:6, :) + Jv;
 if nargout > 3

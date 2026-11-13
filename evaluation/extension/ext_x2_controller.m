@@ -33,6 +33,8 @@ function ctrl = ext_x2_controller(varargin)
 %   chainP (Standard []): Parameter der neuen Kette chain_step (X6, E18), nur mit invert. Der Regler haelt
 %     dann die Beschleunigungsgrenze und die Bremskurve ein und gibt die Aktion x ./ v_max aus. lim auf
 %     chainP.v_max setzen.
+%   gamma (Standard 0), kCenter 1 1/s: zusaetzlicher Term gamma |x_c - (-kCenter q_c)|^2 fuer die Gelenke mit
+%     endlicher Grenze (X6), zieht sie zur Mitte und haelt Abstand zu den Grenzen. Mit gamma = 0 wie bisher.
 %   qLim 7x1 Winkelgrenzen, die der Regler einhaelt (Standard wie SK_desktop, mit chainP die Grenzen der Kette).
 %   filt_a (Standard 0,95): Koeffizient des Befehlsfilters, den der Regler mit invert kennt (X4.6 V3: 0,85, dann
 %   in ext_kinsim dasselbe filt_a angeben).
@@ -56,6 +58,8 @@ p.addParameter('lim', []);
 p.addParameter('filt_a', 0.95);
 p.addParameter('chainP', []);
 p.addParameter('qLim', []);
+p.addParameter('gamma', 0);
+p.addParameter('kCenter', 1);
 p.parse(varargin{:});
 o = p.Results;
 assert(ismember(o.mode, {'weighted', 'priority'}), 'ext_x2_controller:mode', 'mode ist weighted oder priority');
@@ -66,6 +70,7 @@ qLim = [2*pi; 2.41; 2*pi; 2.66; 2.23; 2.01; 2*pi];
 if ~isempty(o.chainP), qLim = min(o.chainP.q_lim, 2 * pi); end   % X6: Grenzen der Kette (Datenblatt)
 if ~isempty(o.qLim), qLim = o.qLim(:); end
 qLo = -qLim; qHi = qLim;
+o.qLimC = qLim;
 if o.j6_side < 0, qHi(6) = 0; end
 if o.j6_side > 0, qLo(6) = 0; end
 a = o.joints;
@@ -137,14 +142,22 @@ W = Rb * G(4:6, a);
 b = o.P * (R.vref - o.Kp * ep);
 wDes = -o.kOri * eo;
 rm = sqrt(o.mu) * eye(n);
+if o.gamma > 0                              % X6: Gelenke mit endlicher Grenze zur Mitte ziehen (Nullraum)
+    fc = find(abs(o.qLimC(a)) < 2 * pi - 1e-9);
+    Cc = zeros(numel(fc), n); Cc(sub2ind(size(Cc), 1:numel(fc), fc(:).')) = 1;
+    rm = [rm; sqrt(o.gamma) * Cc];
+    dc = -o.kCenter * q(a(fc));
+else
+    dc = zeros(0, 1);
+end
 if strcmp(o.mode, 'weighted')
     rb = sqrt(o.beta);
-    x = boxLsq([A; rb * W; rm], [b; rb * wDes; zeros(n, 1)], lo, hi);
+    x = boxLsq([A; rb * W; rm], [b; rb * wDes; zeros(n, 1); sqrt(o.gamma) * dc], lo, hi);
 else
-    x1 = boxLsq([A; rm], [b; zeros(n, 1)], lo, hi);
+    x1 = boxLsq([A; rm], [b; zeros(n, 1); sqrt(o.gamma) * dc], lo, hi);
     x = x1;
     try
-        x2 = lsqlin([W; rm], [wDes; zeros(n, 1)], [], [], A, A * x1, lo, hi, [], o.qp);
+        x2 = lsqlin([W; rm], [wDes; zeros(n, 1); sqrt(o.gamma) * dc], [], [], A, A * x1, lo, hi, [], o.qp);
         if all(isfinite(x2)), x = x2; end
     catch
     end

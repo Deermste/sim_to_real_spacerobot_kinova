@@ -1,8 +1,9 @@
-function mdlFile = ext_x4_6_build_model(dst, filtA, force)
+function mdlFile = ext_x4_6_build_model(dst, filtA, force, slew, extend)
 %EXT_X4_6_BUILD_MODEL  Modellkopie mit erweiterter Beobachtung fuer die Ablation X4.6 (Varianten V2 und V3).
 %   ext_x4_6_build_model('SK_x46', 0.95)    V2: 38 Kanaele, Filter wie im Training (0,95 y + 0,05 u)
 %   ext_x4_6_build_model('SK_x46f', 0.85)   V3: 38 Kanaele, Filter mit Zeitkonstante etwa 0,15 s (E17)
 %   ext_x4_6_build_model(dst, filtA, true)  neu bauen
+%   ext_x4_6_build_model('SK_x46s', 0.95, false, 2, false)   V4: Rate Limiter 2 rad/s^2 (fest), 29 Kanaele wie V1
 %
 %   Grundlage ist desktop_build_model(true, dst), also dasselbe Modell wie SK_desktop. SK_desktop selbst bleibt
 %   unveraendert. Zusaetzlich:
@@ -16,6 +17,8 @@ function mdlFile = ext_x4_6_build_model(dst, filtA, force)
 %   Die Workspace-Variablen EE_d25 und EE_d50 setzen desktop_run_episode und ext_x4_6_train.
 
 if nargin < 3, force = false; end
+if nargin < 4, slew = []; end
+if nargin < 5, extend = true; end
 assert(startsWith(dst, 'SK_x46'), 'ext_x4_6_build_model:name', 'Name muss mit SK_x46 beginnen');
 mdlFile = fullfile(sk_path('evaluation', 'desktop', 'models'), [dst '.slx']);
 if isfile(mdlFile) && ~force, return; end
@@ -26,6 +29,19 @@ load_system(mdlFile);
 % --- Filter ---
 set_param([dst '/Discrete Filter'], 'Numerator', sprintf('[%.17g]', 1 - filtA), ...
     'Denominator', sprintf('[1 %.17g]', -filtA));
+
+% --- Rate Limiter als feste Zahl (V4) ---
+if ~isempty(slew)
+    set_param([dst '/Rate Limiter'], 'RisingSlewLimit', sprintf('%.17g', slew), ...
+        'FallingSlewLimit', sprintf('%.17g', -slew));
+end
+if ~extend
+    save_system(dst, mdlFile);
+    close_system(dst, 0);
+    fprintf('X4.6-Modell erzeugt: %s (Filter %.4g, Rate Limiter %g, ohne zusaetzliche Kanaele)\n', ...
+            mdlFile, filtA, slew);
+    return
+end
 
 % --- Zustand der Kette im vorigen Schritt ---
 add_block('simulink/Discrete/Unit Delay', [dst '/RL Prev'], 'InitialCondition', 'zeros(7, 1)', ...

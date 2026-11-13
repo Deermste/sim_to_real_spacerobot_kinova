@@ -1,0 +1,7 @@
+check,value,note
+1 validateEnvironment,1,""
+2 Ziel am Start: Schritte bis Ende,20,"letzter Reward 50.50"
+3 Aktion null: Schritte bis Ende,300,"|e| am Ende 0.0826 m, d0 0.0826 m"
+4 Aktion +1: Schritte bis Ende,20,"letzter Reward -50.6, max |v_prev/v_max| 1.000"
+5 Zeit je env.step [ms],1.9596165,""
+6 groesster Betrag der Beobachtung,1.19591151205979,""

@@ -1,0 +1,26 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Modell erzeugt: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\evaluation\desktop\models\SK_x46s.slx
+X4.6-Modell erzeugt: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\evaluation\desktop\models\SK_x46s.slx (Filter 0.95, Rate Limiter 2, ohne zusaetzliche Kanaele)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+X4.6 V4: Modell SK_x46s, 29 Kanaele, Filter 0.95, Seed 0, 16 Episoden, 8 Worker
+X4.6 V4: Training fertig nach 0.9 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\desktop\_test\X4_6_ppo_40hz_r4_V4_seed0_ep16_test.mat
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+108 Laeufe in 0.6 min
+                               check                                  value                            note                      
+    ____________________________________________________________    __________    _______________________________________________
+
+    "SK_desktop MD5 wie vor X4.6"                                            1    "897024e9e94468f6f074396c4523c6ec"             
+    "SK_desktop MD5 nach dem Bau von SK_x46s"                                1    ""                                             
+    "V4 Kurztraining Kanaele"                                               29    "SK_x46s"                                      
+    "V4 cfg.slew"                                                            2    ""                                             
+    "V4 RMS Simscape gegen kinematisch (slew 2)"                    9.2811e-10    "0.260874 m, mit slew 0,5 waeren es 0.260874 m"
+    "V4 ori_max Simscape gegen kinematisch (slew 2)"                2.1295e-09    ""                                             
+    "V4 kinematisch: max |Aenderung Rate Limiter| / (2 * 0,025)"      0.042919    ""                                             
+    "Sweep slew 0,5 gegen gespeichert: max |RMS| [m]"               4.8572e-17    ""                                             
+

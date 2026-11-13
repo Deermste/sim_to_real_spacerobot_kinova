@@ -14,6 +14,8 @@ function K = ext_kin_model(varargin)
 %     link_mass_scale  Faktor auf Masse und Traegheit aller Armglieder, Standard 1
 %     mount_offset     3x1 Verschiebung des Arms auf der Basis [m] (im Basissystem), Standard null
 %     ee               Name des Endeffektor-Frames, Standard kinova_end_effector_link
+%     tool_offset      3x1 Werkzeugpunkt im EE-Frame [m], Standard null. X6: [0; 0; 0,121] (Greiferspitze wie
+%                      tool_pose der Kortex-API, kortex_frames)
 
 p = inputParser;
 p.addParameter('base_mass', 65);
@@ -21,6 +23,7 @@ p.addParameter('base_inertia', []);
 p.addParameter('link_mass_scale', 1);
 p.addParameter('mount_offset', [0 0 0]);
 p.addParameter('ee', 'kinova_end_effector_link');
+p.addParameter('tool_offset', [0; 0; 0]);
 p.parse(varargin{:});
 o = p.Results;
 if isempty(o.base_inertia), o.base_inertia = 10.833 * o.base_mass / 65; end
@@ -68,6 +71,7 @@ for i = find(K.parent == 0).'
     K.Tjp(1:3, 4, i) = K.Tjp(1:3, 4, i) + o.mount_offset(:);
 end
 K.ee = find(strcmp(names, o.ee), 1);
+K.tool = o.tool_offset(:);
 K.m0 = o.base_mass;
 K.I0 = o.base_inertia * eye(3);
 K.opts = o;

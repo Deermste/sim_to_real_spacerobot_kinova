@@ -12,6 +12,7 @@ function out = ext_x4_6_train(variant, seed, varargin)
 %     V2  V1 und 9 Kanaele mehr (Kette J2, J4, J6 im vorigen Schritt, Sollpunkt in 0,25 s und 0,5 s relativ zum
 %         EE), Grenzen 1. Modell SK_x46 (ext_x4_6_build_model, Filter 0,95)
 %     V3  V2 mit Filter 0,85 (Zeitkonstante etwa 0,15 s, E17). Modell SK_x46f
+%     V4  V1 mit Rate Limiter 2 statt 0,5 rad/s^2 (Nachtrag 13.11., A75). Modell SK_x46s, 29 Kanaele
 %   Ergebnis:
 %     SavedAgents/MotionProfile/X4_6/X4_6_ppo_40hz_r4_<V>_seed<Seed>_ep<Episoden>.mat   agent, cfg, info, curve
 %     data/simulation/extension/<Name>_train.csv   Lernkurve je Episode
@@ -21,13 +22,16 @@ p.addParameter('nEpisodes', 3000);
 p.addParameter('tag', '');
 p.parse(varargin{:});
 o = p.Results;
-assert(ismember(variant, {'V1', 'V2', 'V3'}), 'ext_x4_6_train:variant', 'Variante V1, V2 oder V3');
+assert(ismember(variant, {'V1', 'V2', 'V3', 'V4'}), 'ext_x4_6_train:variant', 'Variante V1 bis V4');
 setup_project;
-models = struct('V1', 'SK_desktop', 'V2', 'SK_x46', 'V3', 'SK_x46f');
-filts = struct('V1', 0.95, 'V2', 0.95, 'V3', 0.85);
+models = struct('V1', 'SK_desktop', 'V2', 'SK_x46', 'V3', 'SK_x46f', 'V4', 'SK_x46s');
+filts = struct('V1', 0.95, 'V2', 0.95, 'V3', 0.85, 'V4', 0.95);
+slews = struct('V1', 0.5, 'V2', 0.5, 'V3', 0.5, 'V4', 2);
 mdl = models.(variant);
 if strcmp(mdl, 'SK_desktop')
     desktop_build_model();
+elseif strcmp(variant, 'V4')
+    ext_x4_6_build_model(mdl, filts.(variant), false, slews.(variant), false);
 else
     ext_x4_6_build_model(mdl, filts.(variant));
 end
@@ -35,7 +39,8 @@ if ~bdIsLoaded(mdl), load_system(mdl); end
 set_param(mdl, 'SimMechanicsOpenEditorOnUpdate', 'off');
 rewardMode = 4; j6Lim = 0.9774; baseW = 2;
 
-cfg = struct('variant', variant, 'model', mdl, 'filtA', filts.(variant), 'rewardMode', rewardMode, ...
+cfg = struct('variant', variant, 'model', mdl, 'filtA', filts.(variant), 'slew', slews.(variant), ...
+    'rewardMode', rewardMode, ...
     'optsSet', 'base_sync', 'j6Lim', j6Lim, 'baseW', baseW, 'rateHz', 40, 'seed', seed, ...
     'nEpisodes', o.nEpisodes, 'Ts_agent', 0.025, 'Ts', 0.005, 'T', 8.5, 'base_mass', 65, 'hidden', 128, ...
     'parMode', 'sync', 'gradThreshold', 1);
@@ -64,7 +69,7 @@ actInfo = getActionInfo(ref.agent);
 qLim = [2*pi; 2.41; 2*pi; 2.66; 2.23; 2.01; 2*pi];
 dqLim = [1.3963; 1.3963; 1.3963; 1.3963; 1.2218; 1.2218; 1.2218];
 hi = [0.5 * ones(3, 1); ones(3, 1); 0.5 * ones(3, 1); ones(3, 1); qLim; dqLim; pi * ones(3, 1)];
-if ~strcmp(variant, 'V1'), hi = [hi; ones(9, 1)]; end
+if ismember(variant, {'V2', 'V3'}), hi = [hi; ones(9, 1)]; end
 obsInfo = rlNumericSpec([numel(hi) 1], 'LowerLimit', -hi, 'UpperLimit', hi);
 obsInfo.Name = oi0.Name;
 obsInfo.Description = oi0.Description;

@@ -1791,6 +1791,59 @@ Log `X6_chain_compare_matlab.log`.
 
 Paper: X6 (eigenes Paper oder Abschnitt, E7d), Interface-Design. Offen.
 
+### X6.1 Paarsatz, Strecke und Umgebung ✅ 13.11.2026 (Pilot offen)
+
+**Werkzeugpunkt:** `ext_kin_model` Option `tool_offset` (Standard null, alle bisherigen Pfade unverändert). X6 nutzt
+[0; 0; 0,121] m im EE-Frame wie `kortex_frames` (tool_pose der Kortex-API). Gegen `getTransform` der Robotics
+System Toolbox an 20 Zufallsstellungen: 3,5e-16 m.
+
+**Paarsatz** (`ext_x6_pairs()`, 23,7 min):
+- Kollisionsprüfung mit den Meshes der URDF und dem Basiswürfel. Der Greifer fehlt in der URDF und ist als
+  Zylinder ergänzt (r 4,5 cm, 2 bis 17 cm vor dem Flansch). Eltern-Kind-Paare sind ausgenommen, 14 ms je Prüfung.
+- Erste Fassung mit Greifer ab 0 cm: jede Stellung in Kollision (Greifer gegen Bracelet). Mit 2 cm Abstand ist
+  die Grundstellung frei, 27 von 200 Zufallsstellungen kollidieren.
+- Geprüft werden Start, Ziel und 12 Zwischenstellungen der Gelenkbahn. Das Ziel ist die Greiferspitze nach dieser
+  Bahn im frei schwebenden Simulator.
+- 500 Paare aus 4000 Ziehungen, 1217 davon mit Kollision verworfen. 464 Paare bleiben auf der ganzen Bahn
+  mindestens 5 cm über der Montagefläche (`hw_ok`). Basisdrehung entlang der offenen Bahn im Median 149 mrad,
+  höchstens 477 mrad.
+- Die Schichtung ist nur teilweise gelungen, weil zufällige Stellungen selten tief oder kurz enden. Je d0-Bereich
+  (0,05–0,2 / 0,2–0,5 / 0,5–0,8 / 0,8–1,2 m) und Bereich (unten / nah / weit):
+
+| d0 | unten | nah | weit |
+|---|---|---|---|
+| 0,05–0,2 | 1 | 8 | 38 |
+| 0,2–0,5 | 6 | 50 | 79 |
+| 0,5–0,8 | 11 | 58 | 92 |
+| 0,8–1,2 | 18 | 50 | 89 |
+
+  Für eine echte Schichtung müssten Ziele gezielt erzeugt werden (Ziel zuerst, dann Inverse Kinematik). Das ist
+  offen und erst nötig, wenn die Auswertung je Zelle ins Paper soll.
+- Dazu 135 Laborpaare (15 Starts × 9 Ziele der Labortage, Zielstellung q_check_deg, Ziel bei fester Basis,
+  d0 0,07 bis 1,64 m). Ob sie frei schwebend erreichbar sind, zeigt erst der Regler (X6.2).
+
+**Strecke** (`ext_x6_plant`): der Kern von `ext_kinsim` als Schrittfunktion. Gegen `ext_kinsim` mit denselben
+Aktionen (`ext_x6_plant_check()`, 3 × 300 Schritte, alle 7 Gelenke, Bremskurve aktiv): Werkzeugpunkt,
+Gelenkwinkel und Basisdrehung bitgleich (Abweichung 0). 2 ms je Agentenschritt.
+
+**Umgebung** (`ext_x6_env`, `rlFunctionEnv`, Entwurf für den Pilot):
+- 50 Beobachtungskanäle, Grenzen ±Inf, damit nichts gekappt wird (A72).
+- Reward und Abbruch wie X6.3 Punkt 4, Gewichte als Optionen.
+- Prüfung (`ext_x6_env_check()`):
+  - `validateEnvironment` besteht.
+  - Ziel am Start und Aktion null ergibt Erfolg nach 20 Schritten (1 s, +50).
+  - Aktion null bei einem Paar: kein Abbruch, Ende nach 15 s, Fehler bleibt d0.
+  - Volle Aktion ergibt Abbruch nach 1 s (−50). Die Kette bleibt in ihren Grenzen.
+  - 2,0 ms je `step`, größter Betrag der Beobachtung 1,2.
+
+**Offen:** Trainings-Paarsatz getrennt vom Auswertesatz (anderer Seed). Kollision im Training (heute nur in den
+Paaren geprüft, die Policy kann durch sich selbst fahren). Gewichte des Rewards und Curriculum im Pilot.
+
+Datenquelle: `X6_pairs_20261113_195451.mat` / `.csv`, Log `X6_pairs_matlab.log`,
+`X6_plant_check_20261113_193228.csv`, `X6_env_check_20261113_195519.csv`.
+
+Paper: X6 (Methode, Auswertesatz). Offen.
+
 ## Gliederung (für Phase P)
 
 Wird nach X1 und X2 vorgeschlagen.
