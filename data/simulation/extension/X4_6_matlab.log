@@ -8,3 +8,95 @@ Preserving jobs with IDs: 2 because they contain crash dump files.
 You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
 Connected to parallel pool with 8 workers.
 X4.6 V1: Modell SK_desktop, 29 Kanaele, Filter 0.95, Seed 0, 3000 Episoden, 8 Worker
+X4.6 V1: Training fertig nach 25.5 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V1_seed0_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V2_seed0_ep3000 (26 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V2: Modell SK_x46, 38 Kanaele, Filter 0.95, Seed 0, 3000 Episoden, 8 Worker
+X4.6 V2: Training fertig nach 25.9 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V2_seed0_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V3_seed0_ep3000 (52 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V3: Modell SK_x46f, 38 Kanaele, Filter 0.85, Seed 0, 3000 Episoden, 8 Worker
+X4.6 V3: Training fertig nach 25.6 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V3_seed0_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V1_seed1_ep3000 (78 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V1: Modell SK_desktop, 29 Kanaele, Filter 0.95, Seed 1, 3000 Episoden, 8 Worker
+X4.6 V1: Training fertig nach 24.5 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V1_seed1_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V2_seed1_ep3000 (102 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V2: Modell SK_x46, 38 Kanaele, Filter 0.95, Seed 1, 3000 Episoden, 8 Worker
+X4.6 V2: Training fertig nach 25.2 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V2_seed1_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V3_seed1_ep3000 (128 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V3: Modell SK_x46f, 38 Kanaele, Filter 0.85, Seed 1, 3000 Episoden, 8 Worker
+X4.6 V3: Training fertig nach 24.0 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V3_seed1_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V1_seed2_ep3000 (152 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V1: Modell SK_desktop, 29 Kanaele, Filter 0.95, Seed 2, 3000 Episoden, 8 Worker
+X4.6 V1: Training fertig nach 21.1 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V1_seed2_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V2_seed2_ep3000 (173 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V2: Modell SK_x46, 38 Kanaele, Filter 0.95, Seed 2, 3000 Episoden, 8 Worker
+X4.6 V2: Training fertig nach 24.2 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V2_seed2_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V3_seed2_ep3000 (197 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V3: Modell SK_x46f, 38 Kanaele, Filter 0.85, Seed 2, 3000 Episoden, 8 Worker
+X4.6 V3: Training fertig nach 23.1 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V3_seed2_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V1_seed3_ep3000 (220 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V1: Modell SK_desktop, 29 Kanaele, Filter 0.95, Seed 3, 3000 Episoden, 8 Worker
+X4.6 V1: Training fertig nach 25.5 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V1_seed3_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V2_seed3_ep3000 (246 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V2: Modell SK_x46, 38 Kanaele, Filter 0.95, Seed 3, 3000 Episoden, 8 Worker
+X4.6 V2: Training fertig nach 25.8 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V2_seed3_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V3_seed3_ep3000 (272 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V3: Modell SK_x46f, 38 Kanaele, Filter 0.85, Seed 3, 3000 Episoden, 8 Worker
+X4.6 V3: Training fertig nach 26.4 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V3_seed3_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V1_seed4_ep3000 (298 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V1: Modell SK_desktop, 29 Kanaele, Filter 0.95, Seed 4, 3000 Episoden, 8 Worker
+X4.6 V1: Training fertig nach 22.1 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V1_seed4_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V2_seed4_ep3000 (320 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V2: Modell SK_x46, 38 Kanaele, Filter 0.95, Seed 4, 3000 Episoden, 8 Worker
+X4.6 V2: Training fertig nach 21.0 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V2_seed4_ep3000.mat
+
+=== X4.6: X4_6_ppo_40hz_r4_V3_seed4_ep3000 (341 min seit Start) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X4.6 V3: Modell SK_x46f, 38 Kanaele, Filter 0.85, Seed 4, 3000 Episoden, 8 Worker
+X4.6 V3: Training fertig nach 21.4 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X4_6\X4_6_ppo_40hz_r4_V3_seed4_ep3000.mat
+
+X4.6: Training fertig nach 363 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+15 Agenten in 2.9 min. Ergebnis: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X_eval_X4_6_20261113_160116_*.csv
+
+X4.6: fertig nach 365 min

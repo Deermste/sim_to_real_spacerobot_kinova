@@ -26,6 +26,7 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 | K7 | Auf einer gekippten 3D-Bahn mit allen sieben Gelenken senkt der Nullraum des Reglers die Basisdrehung je nach Kipprichtung stark (−30°: 124 auf 10 mrad bei 2 mm) oder kaum (+30°: 14 auf 11 mrad). In der Ebene bringen die zusätzlichen Gelenke wenig | X5.1 | Nur Regler, kinematisch, nominal. RL in 3D offen (X5.2) |
 | K8 | Domain Randomization macht den Bahnfehler der Agenten fast unempfindlich gegen falsche Basismasse (+0,1 bis +0,4 statt +1,7 mm). Die Regler mit Nominalmodell bleiben trotzdem vorn (Faktor 2,0 bis 2,4) | X2.4, X4.5 | 10 Seeds je Variante, 26 Szenarien, nur kinematisch. X0.1 in SK_desktop offen. „DR-voll folgt öfter“ hängt an der Schwelle (X4.5), nicht Teil der Aussage |
 | K9 | Ein Budget als Nebenbedingung steuert die Basisdrehung (θ gegen ori_max ρ 0,70, bei den folgenden 0,77, Gewicht in K2 −0,18). Der Preis ist die Bahn: nur 27 von 50 Agenten folgen (r1 7 von 10, r4 10 von 10). Für θ ≤ 0,03 muss die Policy den Zweig von J6 finden, den auch der Regler nutzt, ohne ihn folgt keiner (0 von 7). Bei θ 0,03 halten mehr Agenten Bahn und Basis zugleich als in der Gewichtsreihe. Der Abstand zur Front bleibt (Faktor um 2 bis 3 wie ohne Budget), ein Filter auf r1 hält das Budget etwa gleich oft, aber mit mehr Bahnfehler | X1.3, X2.2, X1.4 Teil 2, X4.5 Runde 2 | 10 Seeds je Budget, 21 Episoden je Agent, nur Simulation. „Folgt seltener als r4“ nur mit Schwelle (X4.5), der Vorteil bei θ 0,02 nicht robust. Budget als Anteil der Schritte, nicht als Maximum. Kollaps bei θ 0,02 (A74) |
+| K10 | Weder richtige Beobachtungsgrenzen noch mehr Information (Zustand der Befehlskette, Vorschau der Bahn) noch ein schnellerer Filter verkleinern den Abstand zum Regler messbar (Faktor-Median 2,25 bis 2,69, alle Holm p ≥ 0,93). Der schnellere Filter erhöht nur den Befehlsruck (etwa neunfach). Beim Regler kostet der Filter nichts, die Kette kostet ihn über den Rate Limiter (1,2 auf 5,7 mm). Die Agenten mit dem kleinsten Abstand nutzen den negativen Zweig von J6 | X4.6 | 5 Seeds je Variante, aufbauend, nur Simulation. Nur große Effekte nachweisbar (kleinstes p nach Holm 0,024), etwa 10 % blieben unentdeckt. Rate Limiter nicht variiert |
 
 X0.1 (Auswerteprotokoll) steht und reproduziert D17. Mit ±2° Startstörung folgen 19 von 20 D16/D17-Agenten in
 allen 21 Episoden der Bahn, der Ausreißer ist ein ruhiger Agent. X0.2 (kinematischer Simulator) trifft
@@ -52,7 +53,9 @@ folgt die Basisdrehung dem Budget (K9). Viele Agenten verlieren dafür die Bahn,
 jede Episode ab (A74). Der Abstand zum Regler bleibt. Diagnose: Für ein strenges Budget muss die Policy den
 Zweig von J6 finden, den auch der Regler nutzt. X2.2: Kein Agent liegt vor der Front, das Budget ändert den
 Abstand nicht. X1.4 Teil 2: Ein Filter auf r1 hält das Budget ähnlich oft, die trainierten Agenten sind genauer,
-wenn sie folgen. X4.5 Runde 2: K9a und K1 hängen nicht an den Schwellen, K9b und K9c nur teilweise.
+wenn sie folgen. X4.5 Runde 2: K9a und K1 hängen nicht an den Schwellen, K9b und K9c nur teilweise. X4.6:
+Richtige Grenzen, neun Kanäle mehr und ein schnellerer Filter ändern den Abstand zum Regler nicht messbar (K10).
+Der Regler verliert durch die Kette nur am Rate Limiter, nicht am Filter (A75).
 
 ## Ausgangslage (aus dem alten Desktop-Plan und dem Paper, Stand 10.11.2026)
 
@@ -1387,7 +1390,7 @@ Datenquelle: `X4_5_{K9a,K9b,K9c,K1}_20261113_084521.csv` (dazu Runde 1 neu mit d
 
 Paper: Formulierung von K9 und K1. Offen.
 
-### X4.6 Ablation: Woher kommt der Abstand zum Regler? 🔄 Training seit 13.11.2026 09:55
+### X4.6 Ablation: Woher kommt der Abstand zum Regler? ✅ 13.11.2026
 
 **Umsetzung** (13.11.2026):
 - `SK_desktop` bleibt unverändert. V1 trainiert auf `SK_desktop`, nur mit eigenen Beobachtungsgrenzen in der
@@ -1415,6 +1418,76 @@ Paper: Formulierung von K9 und K1. Offen.
   gilt weiter der parallele Weg.
 
 Datenquelle: `X4_6_check_*.csv`, Log `X4_6_check_matlab.log`, `X_eval_X46bitcheck_20261113_095516_*`.
+
+**Lauf** (`ext_x4_6_run()`, 13.11.2026 09:55 bis 16:01): 15 Trainings ohne Fehler, je 21 bis 26 min, danach X0.1
+für alle 15 Agenten (2,9 min). Front für V3 neu gerechnet mit denselben Einstellungen wie die bisherige Front F
+aus X2.2, nur mit Filter 0,85: `ext_x2_sweep('filt_a', 0.85, 'variants', {'full_inv'}, 'j6', 0.9774)` (108
+Läufe) und der Sweep mit Rückführung der Basislage (Kp 5, J6-Seite 0 und −1, kOri 0 bis 5, 8 β und Vorrang, 90
+Läufe). Gegenprobe: Derselbe Sweep mit 0,95 trifft die gespeicherte Datei auf 5e-17.
+
+**Auswertung** (`ext_x4_6_report()`): V0 sind die 10 D16-r4-Agenten (X0.1 aus X1.3), V1 bis V3 je 5 Seeds.
+Faktor wie X2.2 gegen die Front mit derselben Kette (V0 bis V2 gegen F mit 0,95, V3 gegen F mit 0,85). Mittel
+über 21 Episoden, in Klammern die nominale Episode. Tests vor dem Lauf festgelegt: jede Variante gegen die vorige,
+Mann-Whitney, Holm über die drei Vergleiche je Kennzahl.
+
+| Variante | folgt | RMS Median [mm] | ori_max Median [mrad] | Faktor Median (Bereich) | Ruck Median | Zweig J6 neg / pos / mid | q6 begrenzt |
+|---|---|---|---|---|---|---|---|
+| V0 D16 r4 | 10/10 | 13,9 (10,9) | 52,5 | 2,69 (2,24–5,70), nominal 2,10 | 7,2 | 1 / 8 / 1 | 57 % |
+| V1 Grenzen | 5/5 | 12,9 (9,5) | 52,0 | 2,45 (1,95–3,58), nominal 1,80 | 5,9 | 1 / 4 / 0 | 0 |
+| V2 + 9 Kanäle | 5/5 | 11,7 (9,6) | 51,8 | 2,25 (1,20–3,61), nominal 1,85 | 4,0 | 2 / 2 / 1 | 0 |
+| V3 + Filter 0,85 | 5/5 | 12,9 (10,1) | 53,5 | 2,49 (1,85–2,73), nominal 1,96 | 34,8 | 0 / 5 / 0 | 0 |
+
+- Faktor: Keine Variante unterscheidet sich von der vorigen (Mittel p 0,37 / 0,69 / 0,69, nominal 0,31 / 1 /
+  0,55, nach Holm alle ≥ 0,93). Ebenso RMS, ori_max (Mittel und schlechteste Episode) und Anteil folgt (alle 1).
+- Ruck: V3 gegen V2 34,8 gegen 4,0 (p 0,008, Holm 0,024). Der schnellere Filter gibt die Unruhe der Rohaktion an
+  die Gelenke weiter. Das ist die einzige signifikante Änderung.
+- Front: Mit Filter 0,85 ist die Front praktisch dieselbe. Kleinster RMS bei ori_max ≤ 10 / 20 / 30 / 60 mrad:
+  11,92 / 5,42 / 5,17 / 5,17 mm mit 0,95, 11,92 / 5,42 / 5,17 / 5,17 mm mit 0,85.
+- Beobachtungsgrenzen: In V1 bis V3 ist keine Beobachtung mehr begrenzt (V0: q6 im Median in 57 % der
+  Schritte). Die Wahl des Zweigs ändert sich dadurch nicht. Wie in V0 nehmen die meisten Agenten den positiven
+  Zweig mit etwa 50 mrad.
+- Einzelfall V2 Seed 2: negativer Zweig, 10,2 mm bei 15,7 mrad (schlechteste Episode 20,4 mrad), Faktor 1,20,
+  nominal 0,90. Das ist der erste Agent, der in der nominalen Episode vor der Front liegt (in X2.2 kleinster
+  Faktor 1,50 nominal, 1,93 im Mittel). Ein Seed, kein Gruppeneffekt. V1 Seed 4 nimmt ebenfalls den negativen
+  Zweig (12,9 mm, 17,8 mrad, Faktor 1,95).
+- Gegenprobe kinematisch gegen Simscape (nominale Episode): höchstens 0,42 mm (V2 Seed 1, J6 in 39 % der
+  Schritte gesättigt), 16 von 25 Agenten unter 0,01 mm.
+
+**Nachtrag: Welcher Teil der Kette kostet den Regler?** (`ext_x4_6_chain()`, Einstellungen wie X2.1, kOri 0).
+Kleinster RMS bei ori_max ≤ 20 mrad:
+
+| Kette | Filter | RMS [mm] |
+|---|---|---|
+| volle Kette mit Inversion | 0,95 / 0,85 / 0,5 / ohne | 5,66 / 5,66 / 5,66 / 5,66 |
+| nur Sättigung (ideal, X2.1) | ohne, ohne Rate Limiter | 1,21 |
+
+Der Regler invertiert den Filter vollständig, der Filter kostet ihn also nichts. Der ganze Abstand zwischen idealer
+und echter Kette (1,2 auf 5,7 mm, A73) entsteht am Rate Limiter (0,5 rad/s², also 0,0125 rad/s je Agentenschritt).
+Bei ≤ 10 mrad liegen alle Ketten bei 11 bis 12 mm, dort begrenzt die Basisdrehung selbst.
+
+**Deutung:**
+- Die vor dem Lauf festgehaltene Erwartung trifft nur teilweise zu. V1 klein oder null: ja. V2 deutlich: nein,
+  der Median sinkt von 2,45 auf 2,25, im Rahmen der Streuung der Seeds. V3 ähnlich für RL und Regler: ja, aber aus
+  einem anderen Grund als erwartet. Der Filter ist für den Regler kein Engpass, für RL ebenfalls nicht.
+- In den getesteten Varianten kommt der Abstand zum Regler damit weder von fehlender Information über die Kette
+  und die kommende Bahn noch von der Filterzeitkonstante. Er sitzt eher im Lernverfahren und in der Wahl des
+  Zweigs von J6. Die meisten Agenten bleiben auf dem positiven Zweig (etwa 50 mrad). Die wenigen auf dem
+  negativen Zweig liegen der Front am nächsten (V2 Seed 2, V1 Seed 4). Das passt zur Diagnose von X1.3.
+- Für das Interface heißt das: Eine schnellere Filterung bringt in Simulation keine Genauigkeit, aber etwa
+  neunfachen Befehlsruck. Die Kette kostet den Regler über den Rate Limiter, nicht über den Filter (A75).
+
+**Grenzen:** 5 Seeds je Variante. Bei 5 gegen 5 ist das kleinste mögliche p 0,008 (nach Holm 0,024). Nachweisbar
+sind also nur Effekte, bei denen sich die Gruppen kaum überlappen. Ein Effekt von etwa 10 % auf den Faktor bleibt
+unentdeckt. Die Varianten bauen aufeinander auf (Reihenfolge). V2 und V3 ändern die Beobachtung bzw. die
+Sicherheitskette und laufen nicht mit den Deploy-Skripten. Nur Simulation. Der Rate Limiter wurde nicht variiert.
+Das wäre die nächste Variante, wenn die Kette weiter zerlegt werden soll.
+
+Datenquelle: `SavedAgents/MotionProfile/X4_6/X4_6_ppo_40hz_r4_V*_seed*_ep3000.mat`, `X4_6_runlog.csv`,
+`X4_6_matlab.log`, `X_eval_X4_6_20261113_160116_*`,
+`X4_6_report_{agents,groups,tests,front,frontPts}_20261113_160116.csv`, `X2_sweep_20261113_160801.csv`,
+`X2_sweep_20261113_160832.csv`, `X4_6_chain_20261113_161818.csv`.
+
+Paper: Abschnitt Vergleich mit dem Regler (Erklärung von K5), Ausblick Interface (Filter und Rate Limiter). Offen.
 
 ## X5 3D
 
