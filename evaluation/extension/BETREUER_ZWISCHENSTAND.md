@@ -73,6 +73,8 @@ unter Störungen. Das Paper wird damit eher eine Bewertung als eine Methode. Vor
 4. Die Emulation der Basis erlaubt einen geschlossenen Free-Floating-Test der Policy auf dem festen Arm. Sie
    prüft Regelung, Timing und Sicherheitslogik, nicht die echte Dynamik einer schwebenden Basis.
 5. Die Schnittstellendiagnose (Beobachtungsfehler, Abtastrate) aus der ersten Fassung wird kürzer.
+6. Optional (E19): Residual RL als Ausweg. Der Regler gibt den Grundbefehl, die Policy lernt eine begrenzte
+   Korrektur. Hilft sie unter Modellfehlern, ist das die positive Aussage, die der Geschichte bisher fehlt.
 
 ## 4 Entscheidungen
 
@@ -87,6 +89,7 @@ unter Störungen. Das Paper wird damit eher eine Bewertung als eine Methode. Vor
 | E5 | Agenten für den Labortag mit Emulation (X3.2) | D16 r4 s7 (Labortag 2, 6,6 mm Unterschied an gegen aus), Budget-Agent θ = 0,03 s6 (bester Budget-Agent, negativer Zweig, 4,7 mm Unterschied), r0 s0 als Gegenprobe |
 | Labor | Termin für X3.2 | früh anfragen. Set-Point vor Tracking (E16) geht nur, wenn X6 bis dahin fertig ist |
 | E6 | Ratenpaar D10 auf 10 Seeds | nein, wenn die Diagnose ohnehin gekürzt wird |
+| E19 | Residual RL (X7) in dieses Paper: Policy korrigiert den Regler, Vorteil unter Modellfehlern? | ja, als konstruktiver Teil („wo RL hilft und wo nicht“), etwa 2 bis 3 Tage, Rechenzeit 2 bis 4 h |
 
 ## 5 Grenzen, die im Paper stehen müssen
 

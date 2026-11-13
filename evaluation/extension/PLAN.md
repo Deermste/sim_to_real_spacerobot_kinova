@@ -86,6 +86,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X6.4 | Hauptlauf 5 Seeds, Auswertung auf 500 Paaren, Gegenprobe in Simscape | 1 Tag | ≈ 8–12 h | X6.3 | ⬜ |
 | X6.5 | Deploy-Skript Set-Point v25 mit Emulation der Basis, Trockenläufe, Vorhersage | 2 Tage | 1 h | X3.1, X6.4 | ⬜ |
 | X6.6 | Labortag Set-Point (Tracking X3.2 am selben Tag, wenn Zeit bleibt) | 1 Tag Labor + 1 Tag Auswertung | – | Labor | ⏸ |
+| X7 | Residual RL: Policy korrigiert den Regler, Vorteil unter Modellfehlern? 4 Varianten × 10 Seeds | 2–3 Tage | ≈ 2–4 h | E19, X4.6 V4 | ⏸ (Betreuer) |
 | P | Paper neu aufbauen und Ergebnisse übertragen | 2–3 Wochen | – | alle | ⏸ |
 
 Summe Rechenzeit ohne X5.3 etwa 55–65 h. Das sind etwa eine bis eineinhalb Wochen, wenn nachts und am Wochenende
@@ -103,6 +104,8 @@ trainiert wird. Die Arbeit liegt bei etwa vier bis sechs Wochen, das Paper danac
    Modus und Bitgleichheit prüfen.
 8. **X6 (Set-Point):** X6.0 bis X6.2 in freien Stunden. Pilot und Hauptlauf in Nächten, in denen keine Kette aus
    X1 bis X5 läuft. Der Labortag X6.6 kann mit X3.2 zusammenfallen (E16).
+9. **X7 (Residual RL):** erst nach dem Gespräch mit dem Betreuer (E19) und nach V4 aus X4.6. Die Umgebung braucht
+   nur Bausteine, die schon stehen (Strecke `ext_x6_plant`, Regler, Störszenarien aus X2.3).
 
 X1 und X2 entscheiden, ob die neue Geschichte trägt. Fallen beide Ergebnisse unerwartet aus (Nebenbedingung hilft
 nicht, Regler ist überall besser), ist das trotzdem ein Befund. Die Gewichtung im Paper ändert sich dann.
@@ -691,6 +694,69 @@ Reihenfolge nach Wunsch des Nutzers (E16): Set-Point zuerst. Bei wenig Zeit nur 
 
 ---
 
+## X7 Residual RL: Wo hilft RL dem Regler?
+
+Ergänzt am 13.11.2026 (Vorschlag, vom Nutzer in den Plan aufgenommen, E19 offen).
+
+**Warum:** Der modellbasierte Regler liegt in allen bisherigen Vergleichen vorn (K5, K6, K8, K10). Ohne
+konstruktiven Teil bleibt das Paper ein Negativbefund („warum dann RL?“). Residual RL ist die naheliegende
+Antwort: Der Regler liefert den Grundbefehl, die Policy lernt nur eine begrenzte Korrektur. Wo das Modell stimmt,
+sollte die Korrektur klein bleiben. Wo es nicht stimmt (Basismasse, Trägheit, Montage, Drift), kann sie
+ausgleichen, was der Regler mit dem Nominalmodell falsch macht. Das Verfahren ist bekannt (Residual Policy
+Learning). Neu wäre der Einsatz für die Basisdrehung frei schwebender Manipulatoren mit fairem Vergleich. Vor dem
+Paper die Literatur prüfen wie in X0.3.
+
+**Frage:** Ist Regler plus gelernte Korrektur unter Modellfehlern besser als der Regler allein, ohne nominal
+schlechter zu werden? Und ist er besser als reines RL?
+
+**Aufbau:**
+- Aufgabe wie bisher: Halbkreis 8,5 s, J2, J4, J6, 40 Hz, J6 0,9774 rad/s, alte Befehlskette (damit der Vergleich
+  zu X2 und X4.6 gilt). Rate Limiter je nach Ergebnis von V4 (X4.6) 0,5 oder 2 rad/s².
+- Grundregler: ein Punkt der Front aus X2.1 mit Nominalmodell, Inversion der Kette, Vorschlag Rβ 21,5 (J6-Seite −,
+  Kp 5). Er gibt die Gelenkgeschwindigkeit x_c.
+- Policy: Aktion Δ ∈ [−1, 1]³, Befehl x = x_c + ε·Δ mit ε = 0,2 rad/s (Variante 0,05). Danach dieselbe Kette.
+  Beobachtung wie X4.6 V1 (29 Kanäle, richtige Grenzen) und dazu x_c (3 Kanäle).
+- Reward r4 mit Gewicht 2 (wie D16) und eine Strafe auf |Δ|², damit die Korrektur ohne Grund null bleibt.
+- Training im kinematischen Simulator (rlFunctionEnv auf `ext_x6_plant` mit der alten Kette, gegen `ext_kinsim`
+  bitgleich zu prüfen wie in X6.1). Kein Simscape nötig, X0.2 zeigt ≤ 0,45 mm. Gegenprobe einzelner Agenten in
+  Simscape über einen Reglerblock wie `SK_x14`.
+
+**Varianten** (je 10 Seeds, 3000 Episoden):
+
+| Variante | Inhalt | Zweck |
+|---|---|---|
+| R | Regler allein, Nominalmodell | Bezug (kein Training) |
+| RL | reines RL wie X4.6 V1 (oder V4) | Bezug aus X4.6, schon vorhanden |
+| Res | Residual, nominal trainiert | lernt die Korrektur den Regler nominal zu verbessern? |
+| Res-DR | Residual, trainiert mit der DR-voll-Verteilung aus X2.4 | gleicht die Korrektur Modellfehler aus? |
+
+**Auswertung:**
+- X0.1 nominal und die 26 Szenarien aus X2.3 (`ext_x2_robust` mit Residual-Teilnehmern).
+- Kennzahlen: RMS und Basisdrehung je Szenario, Faktor gegen die Front, Anteil folgt.
+- Gepaarter Vergleich je Szenario gegen R (gleicher Grundregler): Zuwachs von RMS und Basisdrehung gegen nominal,
+  wie Δ Masse in X2.4.
+- Mann-Whitney über die Seeds, Holm über die Vergleiche Res gegen R, Res-DR gegen R, Res-DR gegen RL.
+
+**Erwartung (vor dem Lauf festhalten):**
+- Res nominal höchstens 10 % schlechter als R, eher gleich.
+- Res-DR in den Modellszenarien (Masse, Trägheit, Montage) mit kleinerem Zuwachs als R.
+- Res und Res-DR in allen Szenarien besser als RL.
+- Fällt Res-DR unter Modellfehlern nicht besser aus als R, ist das ebenfalls ein Ergebnis: Dann hilft RL hier
+  auch als Korrektur nicht.
+
+**Aufwand:** Umgebung und Prüfung etwa ein Tag. Training im kinematischen Simulator etwa 5 bis 15 min je Lauf auf
+8 Workern, 20 Läufe also 2 bis 4 h. Auswertung mit vorhandenen Skripten etwa ein halber Tag.
+
+**Grenzen:**
+- Die Korrektur braucht den Regler und damit das Modell zur Laufzeit, wie der Sicherheitsfilter in X1.4.
+- ε begrenzt, was die Policy ändern kann. Zu klein heißt kein Effekt, zu groß heißt wieder reines RL.
+- Auf der Hardware nur mit Emulation sinnvoll (X3), sonst sieht der Grundregler eine ruhende Basis.
+
+**Paper:** konstruktiver Teil nach dem Vergleich mit dem Regler („wo RL hilft und wo nicht“). Nur wenn E19 das so
+entscheidet.
+
+---
+
 ## Phase P: Paper
 
 Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
@@ -742,7 +808,9 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
   a_max (Hardwarewert oder Messung) und ob der optionale Filter (τ 0,1 s) in den Pilot kommt. Vorschlag: nur
   Beschleunigungsgrenze, Filter als Pilotvariante.
   Stand 13.11.2026: `chain_step.m` gebaut und getestet, Reglervergleich alt gegen neu auf 100 Paaren (RESULTS X6,
-  E18). Für den Regler entscheidet a_max (99 gegen 90 bis 95 Erfolge bei 20 Hz), der Filter kaum. Winkelgrenzen
-  in X6 nach Datenblatt statt Modellwerten. Damit ist der Wert von
-  a_max die wichtigste offene Zahl. Bremskurve statt linearer Bremszone (Abweichung vom Entwurf, begründet in
-  RESULTS).
+  E18). Für den Regler entscheidet a_max (99 gegen 90 bis 95 Erfolge bei 20 Hz), der Filter kaum. Damit ist der
+  Wert von a_max die wichtigste offene Zahl. Winkelgrenzen in X6 nach Datenblatt statt Modellwerten. Bremskurve
+  statt linearer Bremszone (Abweichung vom Entwurf, begründet in RESULTS).
+- **E19** (mit dem Betreuer): X7 Residual RL in dieses Paper? Vorschlag: ja, als konstruktiver Teil nach dem
+  Vergleich mit dem Regler. Es verschiebt die Geschichte von „Bewertung“ zu „Bewertung mit Ausweg“. Offen
+  außerdem: Grundregler (Vorschlag Rβ 21,5), ε (0,2 rad/s) und der Rate Limiter (nach V4).
