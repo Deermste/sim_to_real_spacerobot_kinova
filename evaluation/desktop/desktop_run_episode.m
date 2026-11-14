@@ -55,6 +55,9 @@ for k = 1:numel(fn)
 end
 
 in = Simulink.SimulationInput(cfg.model);
+if param && isfield(cfg, 'lim7') && ~isempty(cfg.lim7)
+    in = in.setVariable('p_lim7', cfg.lim7(:), 'Workspace', cfg.model);   % X5.1, Modell-Workspace
+end
 if ~param
     in = in.setModelParameter('StopTime', num2str(cfg.T), 'FixedStep', num2str(cfg.Ts), ...
         'Solver', 'ode14x', 'SolverType', 'Fixed-step');
@@ -119,6 +122,13 @@ switch cfg.ref_timing
         y = cfg.center(2) + 0 * t;
         z = cfg.center(3) + cfg.r * cos(omega * t);
         traj = [x(:), y(:), z(:)];
+        if isfield(cfg, 'path') && strcmp(cfg.path, 'tilted')
+            % gekippter Halbkreis (X5.1), dieselbe Funktion wie in ext_kinsim
+            assert(sx == 1 && ~(isfield(cfg, 'shape') && strcmp(cfg.shape, 'triangle')), ...
+                   'desktop_run_episode:tilted', 'tilted nur mit Halbkreis ohne mirror_x');
+            traj = ext_ref_path(t(:), struct('T', cfg.T_path, 'r', cfg.r, 'center', cfg.center, ...
+                                             'path', 'tilted', 'tilt', cfg.tilt));
+        end
         if isfield(cfg, 'shape') && strcmp(cfg.shape, 'triangle')
             P1 = cfg.center + [0, 0, cfg.r];
             P2 = cfg.center + [sx * cfg.r, 0, 0];

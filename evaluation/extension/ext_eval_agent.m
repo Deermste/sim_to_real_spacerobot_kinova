@@ -12,6 +12,9 @@ function [E, A] = ext_eval_agent(agentFile, varargin)
 %
 %   Optionen: nPert (20), pertDeg (2), active ([2 4 6]), base_mass (65), reward_mode, j6_lim, base_w,
 %   Ts_agent, label (Dateiname ohne Endung).
+%   X5 (14.11.): lim7, path und tilt kommen aus dem cfg des Agenten (Felder lim7, path, tilt), fehlen sie, gilt
+%   die ebene Bahn mit den alten Grenzen. Fuer X5 'active' 1:7 (Stoerung auf allen sieben Gelenken). Der Ruck
+%   rechnet dann ueber alle sieben Gelenke.
 %
 %   E  eine Zeile je Episode:
 %     draw         0 = nominal, 1..nPert gestoert
@@ -62,7 +65,8 @@ for k = 1:size(Q0, 1)
     c = desktop_config('agentFile', agentFile, 'reward_mode', setup.reward_mode, 'j6_lim', setup.j6_lim, ...
                        'base_w', setup.base_w, 'Ts_agent', setup.Ts_agent, 'base_mass', o.base_mass, ...
                        'theta', setup.theta, 'cost_type', setup.cost_type, 'model', setup.model, ...
-                       'q0', Q0(k, :).', 'explore', false, 'keepTs', true, 'T', T);
+                       'q0', Q0(k, :).', 'explore', false, 'keepTs', true, 'T', T, 'lim7', setup.lim7, ...
+                       'path', setup.path, 'tilt', setup.tilt);
     r = desktop_run_episode(c);
     m = r.metrics;
     epn = vecnorm(r.ts.ep, 2, 2);
@@ -70,7 +74,7 @@ for k = 1:size(Q0, 1)
     q4 = mean(epn(t >= 3 * T / 4 & t <= T + 1e-9));
     rows{k} = struct('agent', string(label), 'draw', k - 1, 'q0_J2', Q0(k, 2), 'q0_J4', Q0(k, 4), ...
         'q0_J6', Q0(k, 6), 'e0', epn(1), 'rms_ee', sqrt(mean(epn .^ 2)), 'ep_q4', q4, 'max_ee', m.max_ee, ...
-        'ori_max', m.ori_max, 'w_max', m.w_max, 'jerk_rms', cmdJerk(r.ts, setup.Ts_agent), ...
+        'ori_max', m.ori_max, 'w_max', m.w_max, 'jerk_rms', cmdJerk(r.ts, setup.Ts_agent, ~isempty(setup.lim7)), ...
         'cost_mean', costMean(r.ts), 'early_stop', double(m.early_stop), 'stop_reason', string(m.stop_reason), ...
         'ret', m.ret);
 end
@@ -96,7 +100,7 @@ end
 function s = agentSetup(file)
 % Trainingsbedingungen aus dem gespeicherten cfg (desktop_d12_train und Nachfolger)
 s = struct('reward_mode', 0, 'j6_lim', 0.1, 'base_w', 2, 'Ts_agent', [], 'theta', 0.03, 'cost_type', 1, ...
-           'model', 'SK_desktop');
+           'model', 'SK_desktop', 'lim7', [], 'path', 'planar', 'tilt', 30);
 vars = {whos('-file', file).name};
 if ismember('cfg', vars)
     S = load(file, 'cfg');
@@ -108,6 +112,9 @@ if ismember('cfg', vars)
     if isfield(c, 'theta'), s.theta = c.theta; end
     if isfield(c, 'costType'), s.cost_type = c.costType; end
     if isfield(c, 'model') && startsWith(c.model, 'SK_x46'), s.model = c.model; end   % X4.6 V2, V3
+    if isfield(c, 'lim7'), s.lim7 = c.lim7; end      % X5: alle sieben Gelenke
+    if isfield(c, 'path'), s.path = c.path; end      % X5: gekippte Bahn
+    if isfield(c, 'tilt'), s.tilt = c.tilt; end
 end
 if isempty(s.Ts_agent)
     S = load(file, 'agent');
@@ -121,11 +128,14 @@ c = NaN;
 if isfield(ts, 'cost'), c = mean(double(ts.cost(:))); end
 end
 
-function j = cmdJerk(ts, Ts_agent)
-% Ruck des Gelenkwinkel-Befehls: zweite Differenz des Geschwindigkeitsbefehls hinter der Kette
+function j = cmdJerk(ts, Ts_agent, all7)
+% Ruck des Gelenkwinkel-Befehls: zweite Differenz des Geschwindigkeitsbefehls hinter der Kette, J2, J4, J6
+% (bzw. alle sieben Gelenke bei X5)
 j = NaN;
 if ~isfield(ts, 'a_scaled'), return; end
-a = ts.a_scaled(:, [2 4 6]);
+jj = [2 4 6];
+if all7, jj = 1:7; end
+a = ts.a_scaled(:, jj);
 if size(a, 1) < 3, return; end
 d2 = diff(a, 2, 1) / Ts_agent ^ 2;
 j = sqrt(mean(sum(d2 .^ 2, 2)));

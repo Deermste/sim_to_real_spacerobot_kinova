@@ -1701,7 +1701,7 @@ Datenquelle V4: `SavedAgents/MotionProfile/X4_6/X4_6_ppo_40hz_r4_V4_seed*_ep3000
 
 ## X5 3D
 
-### X5.1 Machbarkeit im kinematischen Simulator ✅ 10.11.2026 (SK_desktop offen)
+### X5.1 Machbarkeit im kinematischen Simulator ✅ 10.11.2026 (SK_desktop ✅ 14.11.2026)
 
 **Frage:** Lässt sich eine echte 3D-Bahn mit allen sieben Gelenken fahren, und wie viel Basisdrehung spart der
 Nullraum des Reglers?
@@ -1754,11 +1754,36 @@ sind es 21–40 % (q6 oder q7). dq bleibt fast immer innerhalb. Mit E8 wäre die
 Gelenkstellungen blind, die der Nullraum nutzt. Entscheidung E9 (10.11.): Für X5 werden die Grenzen in der
 richtigen Reihenfolge gesetzt. E10 (10.11.): Die 3D-Bahn wird um −30° gekippt.
 
-**Grenzen:** nur kinematisch und nominal, Regler mit exaktem Modell. Die Modellparameter `p_active` und
-`p_path_id` in `SK_desktop` und die Bitgleichheitsprüfung folgen nach der Nachtkette (sie baut `SK_desktop` neu).
+**Grenzen:** nur kinematisch und nominal, Regler mit exaktem Modell.
 
 Datenquelle: `X5_1_feasibility_20261110_175620.csv`. Begrenzung: `ext_x5_1_obsclip()` (Ausgabe in der
 Konsole, Zahlen oben).
+
+**Nachtrag 14.11.2026: SK_desktop für X5** (`ext_x5_1_check('before')`, dann `('after')`):
+- Umsetzung anders als im Plan. Statt `p_active` gibt es `p_lim7` (7×1, Grenze der Sättigung je Gelenk, negative
+  Einträge behalten den alten Wert). Es liegt im Modell-Workspace mit Standard −1, kein bestehender Aufrufer muss
+  es setzen. Gesetzt wird es mit `setVariable(..., 'Workspace', <Modell>)` (`desktop_run_episode` über
+  `cfg.lim7`, `ext_x1_train` über die Option `lim7` im ResetFcn). `p_path_id` entfällt, weil die Bahn ohnehin als
+  `EE_ref`/`EE_vref` aus dem Workspace kommt (`desktop_config` Felder `path` und `tilt`, `ext_ref_path` wie in
+  `ext_kinsim`).
+- **Bitgleichheit:** Optimized (Modus 0), D16 r4 s2 und D16 r4 s2 mit gestörtem Start liefern im neuen Modell mit
+  Standardwerten dieselbe Beobachtung, dieselben Rohaktionen und denselben Return wie im alten (isequal, 3 von 3).
+- Fallstrick dabei: Die erste Episode eines Agenten in einer MATLAB-Sitzung weicht von den folgenden um 1e-8 bis
+  2e-7 in der Beobachtung ab (gemessen: erste Episode gegen Wiederholung im selben Modell). `desktop_run_episode`
+  hält den Agenten im Cache, das Netz rechnet beim ersten Aufruf offenbar minimal anders. Ein Vergleich vorher
+  gegen nachher muss jeweils die erste Episode je Agent nehmen (`clear desktop_run_episode`). Für frühere
+  Bitgleichheitsprüfungen mit gemischter Reihenfolge erklärt das Abweichungen dieser Größe.
+- **3D gegen ext_kinsim:** D16 r4 s2 mit allen sieben Gelenken (0,9774 / 0,5774 rad/s) auf der ebenen Bahn und auf
+  den um −30° und +30° gekippten Bahnen. Offen und geschlossen höchstens 5,8e-8 m RMS Abstand der EE-Bahn und
+  1,8e-7 rad in der Basisdrehung (Ziel ≤ 2 mm, ≤ 2 mrad). Kennzahlen in beiden gleich (RMS 100,0 / 125,1 /
+  181,8 mm, der ebene Agent ist für sieben Gelenke nicht trainiert).
+- **Grenzen wirken:** größte gesättigte Aktion je Gelenk höchstens die Grenze, J1, J3, J5, J7 bewegen sich. Im
+  Kurztraining (`ext_x5_2_run('test', true)`) liegen alle sieben Gelenke bei den Workern genau an der Grenze
+  (0,977 / 0,577), die Werte kommen also im parallelen Training an.
+
+Datenquelle: `X5_1_check_before_20261114_111336.mat`, `X5_1_check_after_20261114_111800.{csv,mat}` (gültiger
+Lauf in frischer Sitzung, der Lauf 111426 vergleicht wegen des Caches falsch), Logs `X5_1_check_matlab.log`,
+`X5_1_check2_matlab.log`.
 
 Paper: neuer Abschnitt 3D (Aufgabe, Regler-Front). Offen, hängt an X5.2 und E4.
 

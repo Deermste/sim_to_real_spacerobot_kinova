@@ -35,33 +35,44 @@ p.addParameter('lambda0', 0);
 p.addParameter('lambdaMax', 20);
 p.addParameter('model', 'SK_desktop');
 p.addParameter('tag', '');
+% X5 (14.11.2026): 3D-Bahn mit allen sieben Gelenken. Mit den Standardwerten wie bisher.
+p.addParameter('rewardMode', 5);      % 4 = r4 (D16, w 2), dann eta 0 und lambda0 0 setzen
+p.addParameter('path', 'planar');
+p.addParameter('tilt', 30);
+p.addParameter('lim7', []);           % 7x1 Saettigung (p_lim7 im Modell-Workspace)
+p.addParameter('j6Lim', 0.9774);
+p.addParameter('obsBounds', 'old');   % 'old' wie Optimized.mat (A72, E8), 'correct' in der Reihenfolge der Beobachtung (E9)
+p.addParameter('prefix', 'X1');       % Namensanfang und Ordner unter SavedAgents/MotionProfile
 p.parse(varargin{:});
 o = p.Results;
 assert(ismember(o.cost_type, [1 2]), 'ext_x1_train:cost', 'cost_type muss 1 oder 2 sein');
 assert(mod(o.nEpisodes, o.block) == 0, 'ext_x1_train:block', 'nEpisodes muss ein Vielfaches von block sein');
+assert(ismember(o.rewardMode, [4 5]), 'ext_x1_train:mode', 'rewardMode 4 oder 5');
 mdl = o.model;
-j6Lim = 0.9774;
+j6Lim = o.j6Lim;
+rewardMode = o.rewardMode;
 
 setup_project;
 desktop_build_model(false, mdl);
 if ~bdIsLoaded(mdl), load_system(mdl); end
 set_param(mdl, 'SimMechanicsOpenEditorOnUpdate', 'off');
 
-cfg = struct('rewardMode', 5, 'optsSet', 'base_sync', 'j6Lim', j6Lim, 'baseW', 2, 'theta', theta, ...
+cfg = struct('rewardMode', rewardMode, 'optsSet', 'base_sync', 'j6Lim', j6Lim, 'baseW', 2, 'theta', theta, ...
     'costType', o.cost_type, 'eta', o.eta, 'kp', o.kp, 'delta', o.delta, 'block', o.block, 'lambda0', o.lambda0, ...
     'lambdaMax', o.lambdaMax, 'model', mdl, 'rateHz', 40, 'seed', seed, 'nEpisodes', o.nEpisodes, ...
     'Ts_agent', 0.025, 'Ts', 0.005, 'T', 8.5, 'base_mass', 65, 'hidden', 128, 'parMode', 'sync', ...
-    'gradThreshold', 1);
+    'gradThreshold', 1, 'path', o.path, 'tilt', o.tilt, 'lim7', o.lim7, 'obsBounds', o.obsBounds);
 cfg.opts = struct('ExperienceHorizon', 1024, 'MiniBatchSize', 128, 'NumEpoch', 10, 'ClipFactor', 0.2, ...
     'DiscountFactor', 0.99, 'GAEFactor', 0.95, 'EntropyLossWeight', 1e-3, 'ActorLR', 1e-3, 'CriticLR', 5e-4);
 
 % --- Workspace wie in desktop_d12_train ---
-ec = desktop_config('Ts', cfg.Ts, 'Ts_agent', cfg.Ts_agent, 'T', cfg.T, 'base_mass', cfg.base_mass);
+ec = desktop_config('Ts', cfg.Ts, 'Ts_agent', cfg.Ts_agent, 'T', cfg.T, 'base_mass', cfg.base_mass, ...
+                    'path', o.path, 'tilt', o.tilt);
 [EE_ref, EE_vref] = makeReference(ec);
 vars = struct('EE_ref', EE_ref, 'EE_vref', EE_vref, 'reward_init', 0, 'isdone_init', 0, ...
     'p_Ts', ec.Ts, 'p_Ts_agent', ec.Ts_agent, 'p_T', ec.T, 'p_base_mass', ec.base_mass, ...
     'p_delay_steps', 0, 'p_damp_scale', 1, 'p_slew', ec.slew, 'p_cmd_scale', 1, 'p_obs_mode', 0, ...
-    'p_obs_noise', zeros(29, 1), 'p_reward_mode', 5, 'p_j6_lim', j6Lim, 'p_base_w', 2, ...
+    'p_obs_noise', zeros(29, 1), 'p_reward_mode', rewardMode, 'p_j6_lim', j6Lim, 'p_base_w', 2, ...
     'p_q0', zeros(7, 1), 'p_lambda', o.lambda0, 'p_theta', theta, 'p_cost_type', o.cost_type, ...
     'p_inertia_scale', 1);
 fn = fieldnames(vars);
@@ -73,6 +84,16 @@ end
 ref = load(sk_path('SavedAgents', 'MotionProfile', 'Circle', 'PPO', 'Optimized.mat'), 'agent');
 obsInfo = getObservationInfo(ref.agent);       % Grenzen unveraendert (E8, A72)
 actInfo = getActionInfo(ref.agent);
+if strcmp(o.obsBounds, 'correct')               % E9 (X5): wie X4.6 V1
+    qL = [2*pi; 2.41; 2*pi; 2.66; 2.23; 2.01; 2*pi];
+    dqL = [1.3963; 1.3963; 1.3963; 1.3963; 1.2218; 1.2218; 1.2218];
+    hi = [0.5 * ones(3, 1); ones(3, 1); 0.5 * ones(3, 1); ones(3, 1); qL; dqL; pi * ones(3, 1)];
+    oi0 = obsInfo;
+    obsInfo = rlNumericSpec([29 1], 'LowerLimit', -hi, 'UpperLimit', hi);
+    obsInfo.Name = oi0.Name;
+    obsInfo.Description = oi0.Description;
+    cfg.obsHi = hi;
+end
 rng(seed, 'twister');
 agent = rlPPOAgent(obsInfo, actInfo, rlAgentInitializationOptions('NumHiddenUnit', cfg.hidden));
 ao = agent.AgentOptions;
@@ -100,14 +121,18 @@ trainOpts = rlTrainingOptions('MaxEpisodes', o.block, 'MaxStepsPerEpisode', floo
 pool = gcp('nocreate');
 if isempty(pool), pool = parpool('Processes'); end
 
-name = sprintf('X1_ppo_40hz_r5_c%d_th%g_eta%g_seed%d_ep%d', o.cost_type, round(1000 * theta), o.eta, seed, ...
-               o.nEpisodes);
+if rewardMode == 5
+    name = sprintf('%s_ppo_40hz_r5_c%d_th%g_eta%g_seed%d_ep%d', o.prefix, o.cost_type, round(1000 * theta), ...
+                   o.eta, seed, o.nEpisodes);
+else
+    name = sprintf('%s_ppo_40hz_r%d_seed%d_ep%d', o.prefix, rewardMode, seed, o.nEpisodes);
+end
 if o.block ~= 100, name = sprintf('%s_b%d', name, o.block); end
 if o.lambda0 ~= 0, name = sprintf('%s_l%g', name, o.lambda0); end
 if o.kp > 0, name = sprintf('%s_kp%g', name, o.kp); end
 if ~isempty(o.tag), name = [name '_' o.tag]; end
 if isempty(o.tag)
-    agentDir = sk_path('SavedAgents', 'MotionProfile', 'X1');
+    agentDir = sk_path('SavedAgents', 'MotionProfile', o.prefix);
     csvDir = sk_path('data', 'simulation', 'extension');
 else
     agentDir = sk_path('data', 'simulation', 'desktop', '_test');
@@ -128,7 +153,7 @@ tStart = tic;
 for b = 1:nB
     tB = tic;
     lam = lambda;
-    env.ResetFcn = @(in) resetFcn(in, j6Lim, lam, theta, o.cost_type);
+    env.ResetFcn = @(in) resetFcn(in, j6Lim, lam, theta, o.cost_type, rewardMode, o.lim7, mdl);
     assignin('base', 'p_lambda', lam);
     stats = train(agent, env, trainOpts);
     [cMean, cSum] = episodeCost(stats);
@@ -162,11 +187,14 @@ out = struct('agentFile', agentFile, 'cfg', cfg, 'info', info, 'curve', curve, '
 end
 
 % =====================================================================
-function in = resetFcn(in, j6Lim, lambda, theta, costType)
+function in = resetFcn(in, j6Lim, lambda, theta, costType, rewardMode, lim7, mdl)
 % Alle Reward-Parameter je Episode setzen, damit sie sicher bei den Workern ankommen (wie D17)
 in = setVariable(in, 'reward_init', 0);
 in = setVariable(in, 'isdone_init', 0);
-in = setVariable(in, 'p_reward_mode', 5);
+in = setVariable(in, 'p_reward_mode', rewardMode);
+if ~isempty(lim7)
+    in = setVariable(in, 'p_lim7', lim7(:), 'Workspace', mdl);   % X5, Modell-Workspace
+end
 in = setVariable(in, 'p_j6_lim', j6Lim);
 in = setVariable(in, 'p_base_w', 2);
 in = setVariable(in, 'p_lambda', lambda);
@@ -196,13 +224,17 @@ end
 end
 
 function [EE_ref, EE_vref] = makeReference(cfg)
-% Halbkreis nach Zeit wie desktop_d12_train
+% Halbkreis nach Zeit wie desktop_d12_train, mit path 'tilted' gekippt (X5, ext_ref_path wie desktop_run_episode)
 t = 0:cfg.Ts:cfg.T;
 omega = pi / cfg.T_path;
 x = cfg.center(1) + cfg.r * sin(omega * t);
 y = cfg.center(2) + 0 * t;
 z = cfg.center(3) + cfg.r * cos(omega * t);
 traj = [x(:), y(:), z(:)];
+if strcmp(cfg.path, 'tilted')
+    traj = ext_ref_path(t(:), struct('T', cfg.T_path, 'r', cfg.r, 'center', cfg.center, 'path', 'tilted', ...
+                                     'tilt', cfg.tilt));
+end
 vref = [zeros(1, 3); diff(traj) / mean(diff(t))];
 EE_ref = timeseries(traj, t);
 EE_vref = timeseries(vref, t);

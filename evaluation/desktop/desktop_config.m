@@ -40,6 +40,10 @@ function cfg = desktop_config(varargin)
 %     q0           7x1 Startstellung der Gelenke [rad], Standard zeros(7,1) (gestreckte Nullstellung).
 %                  Die Referenz beginnt weiter an der nominalen EE-Lage, eine Stoerung erzeugt also einen
 %                  Anfangsfehler (X0.1)
+%     lim7         7x1 Geschwindigkeitsgrenzen der Saettigung [rad/s] fuer alle Gelenke (X5), [] = wie bisher
+%                  (J2, J4 0,9774, J6 j6_lim). Nur fuer SK_-Modelle (p_lim7 im Modell-Workspace)
+%     path, tilt   Bahn 'planar' (Standard) oder 'tilted' mit Kippwinkel tilt [Grad] (ext_ref_path, X5.1), nur
+%                  bei ref_timing 'wall' und shape 'halfcircle'
 %     ref_timing   'wall' = Referenz nach Zeit. 'sample' = Referenz rueckt pro Agentenschritt um Ts_ref_step
 %                  vor (Verhalten von V2.1), die Geschwindigkeitsreferenz bleibt die nominale
 %     Ts_ref_step  Referenzvorschub pro Schritt bei 'sample' [s], Standard 0,025
@@ -75,6 +79,9 @@ cfg.inertia_scale = 1;
 cfg.theta       = 0.03;
 cfg.cost_type   = 1;
 cfg.q0          = zeros(7, 1);
+cfg.lim7        = [];
+cfg.path        = 'planar';
+cfg.tilt        = 30;
 cfg.ref_timing  = 'wall';
 cfg.Ts_ref_step = 0.025;
 cfg.explore     = false;

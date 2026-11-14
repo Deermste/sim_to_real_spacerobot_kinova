@@ -32,6 +32,10 @@ function mdlFile = desktop_build_model(force, dst)
 %     p_lambda       Lagrange-Multiplikator der Nebenbedingung in Reward-Modus 5 (X1), Standard 0
 %     p_theta        Budget der Basisdrehung [rad] fuer das Kostensignal (X1), Standard 0,03
 %     p_cost_type    1 = Indikator (ori > theta), 2 = Scharnier max(0, ori - theta)/theta (X1), Standard 1
+%     p_lim7         7x1 Geschwindigkeitsgrenzen der Saettigung [rad/s] (X5.1), negative Eintraege = alte Werte
+%                    (J2, J4 0,9774, J6 p_j6_lim, sonst 0). Im Modell-Workspace, Standard -ones(7,1)
+%   Die Bahn (eben oder gekippt, X5) braucht keinen Modellparameter, sie kommt als EE_ref / EE_vref aus dem
+%   Workspace (desktop_run_episode, Felder path und tilt in desktop_config).
 %   Zusaetzlich geloggt: Rohaktion, gesaettigte, gefilterte, ratenbegrenzte und skalierte Aktion,
 %   Gelenkwinkel-Befehl hinter der Positionssaettigung, Beobachtung (obs) und Agenten-Eingang (obs_agent),
 %   isDone, Kostensignal der Nebenbedingung (cost, in allen Modi berechnet, wirkt nur in Modus 5).
@@ -69,8 +73,14 @@ end
 set_param([dst '/Reward/MATLAB Function'], 'SystemSampleTime', 'p_Ts_agent');
 
 % --- J6-Grenze der Saettigung als Parameter (D16). Original 0,1 rad/s, J2 und J4 bleiben bei 0,9774 rad/s ---
-set_param([dst '/Saturation'], 'UpperLimit', '[0.0; 0.9774; 0.0; 0.9774; 0.0; p_j6_lim; 0.0]', ...
-    'LowerLimit', '-1 * [0.0; 0.9774; 0.0; 0.9774; 0.0; p_j6_lim; 0.0]');
+% X5.1 (14.11.2026): p_lim7 (7x1) ersetzt je Gelenk die Grenze, negative Eintraege behalten den alten Wert.
+% p_lim7 liegt im Modell-Workspace (Standard -1, also wie vorher), damit kein bestehender Aufrufer es setzen muss.
+% Setzen mit SimulationInput.setVariable('p_lim7', v, 'Workspace', <Modell>).
+satOld = '[0.0; 0.9774; 0.0; 0.9774; 0.0; p_j6_lim; 0.0]';
+satExpr = sprintf('(%s .* (p_lim7 < 0) + p_lim7 .* (p_lim7 >= 0))', satOld);
+set_param([dst '/Saturation'], 'UpperLimit', satExpr, 'LowerLimit', ['-1 * ' satExpr]);
+mws = get_param(dst, 'ModelWorkspace');
+assignin(mws, 'p_lim7', -ones(7, 1));
 
 % --- Reward-Variante als Parameter (D12, Befund A51). Modus 0 rechnet wie rewardFcn im Original ---
 rwBlk = [dst '/Reward/MATLAB Function'];

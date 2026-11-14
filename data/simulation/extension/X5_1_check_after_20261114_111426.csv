@@ -1,0 +1,13 @@
+check,case,pass,value,limit,note
+1 bitgleich,optimized,0,1.0841559205943e-08,0,"Return 1593.083624 / 1593.083624"
+1 bitgleich,d16r4s2,0,1.73789301449734e-07,0,"Return 2614.236838 / 2614.236837"
+1 bitgleich,d16r4s2_q0,1,0,0,"Return 2385.664722 / 2385.664722"
+2 offen,planar+0,1,5.63654705595837e-08,0.002,"EE 5.64e-08 m, Basis 1.78e-07 rad, obs 2.6e-07"
+2 geschlossen,planar+0,1,5.1587868635596e-08,0.002,"EE 5.16e-08 m, Basis 1.78e-07 rad, obs 2.6e-07 | SK RMS 100.0 mm, ori_max 69.6 mrad, Return 546.6 | kin RMS 100.0 mm, ori_max 69.6 mrad, Return 546.6"
+3 Grenzen,planar+0,1,0,0,"max |a_sat| [0.388 0.44 0.644 0.824 0.577 0.433 0.577]"
+2 offen,tilted-30,1,5.79121044208292e-08,0.002,"EE 5.79e-08 m, Basis 1.78e-07 rad, obs 2.6e-07"
+2 geschlossen,tilted-30,1,5.24877815912777e-08,0.002,"EE 5.25e-08 m, Basis 1.78e-07 rad, obs 2.6e-07 | SK RMS 125.1 mm, ori_max 78.7 mrad, Return 548.1 | kin RMS 125.1 mm, ori_max 78.7 mrad, Return 548.1"
+3 Grenzen,tilted-30,1,0,0,"max |a_sat| [0.388 0.368 0.714 0.824 0.577 0.424 0.577]"
+2 offen,tilted+30,1,5.61386242836881e-08,0.002,"EE 5.61e-08 m, Basis 1.78e-07 rad, obs 2.6e-07"
+2 geschlossen,tilted+30,1,5.12322898321685e-08,0.002,"EE 5.12e-08 m, Basis 1.78e-07 rad, obs 2.6e-07 | SK RMS 181.8 mm, ori_max 71.9 mrad, Return 233.3 | kin RMS 181.8 mm, ori_max 71.9 mrad, Return 233.3"
+3 Grenzen,tilted+30,1,0,0,"max |a_sat| [0.388 0.368 0.649 0.824 0.577 0.423 0.577]"
