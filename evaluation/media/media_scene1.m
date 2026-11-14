@@ -10,7 +10,8 @@ function out = media_scene1(varargin)
 %   Darstellung je Feld (gleiche Kamera):
 %     Arm und Basiswuerfel in der wahren Lage (keine Ueberhoehung im Bild der Basis), Startlage der Basis als
 %     gestrichelter Wuerfel, Basisachsen (1,1 m) mit Spur der Achsspitzen, Sollbahn gestrichelt, Bahn des
-%     Endeffektors eingefaerbt nach dem Fehler, Anzeige der Basisdrehung als Balken (0 bis 150 mrad).
+%     Endeffektors eingefaerbt nach dem Fehler, Anzeige der Basisdrehung als Balken (0 bis 9 Grad).
+%     Winkel in Grad und Bogenminuten (7°08'), nicht in mrad.
 %   Optionen: video (true), fps (30), slow (1, Faktor der Zeitlupe), lang ('en'), res ([1920 1080]),
 %   strobe ([0 2.125 4.25 6.375 8.5] s, Posen im Standbild), outDir (media/scene1).
 
@@ -90,25 +91,25 @@ function L = labels(lang, runs)
 m1 = runs{1}.metrics; m2 = runs{2}.metrics;
 if strcmp(lang, 'en')
     L.title = {'Controller without null space (R0)', 'Controller with reaction-reducing null space (R\beta, \beta = 4.6)'};
-    L.sub = {sprintf('EE error %.1f mm RMS, base rotation up to %.0f mrad', 1000 * m1.rms_ee, 1000 * m1.ori_max), ...
-             sprintf('EE error %.1f mm RMS, base rotation up to %.0f mrad', 1000 * m2.rms_ee, 1000 * m2.ori_max)};
+    L.sub = {sprintf('EE error %.1f mm RMS, base rotation up to %s', 1000 * m1.rms_ee, fmtDeg(m1.ori_max)), ...
+             sprintf('EE error %.1f mm RMS, base rotation up to %s', 1000 * m2.rms_ee, fmtDeg(m2.ori_max))};
     L.time = 't = %.2f s';
     L.err = 'EE error %.1f mm';
-    L.ori = 'Base rotation %.0f mrad (%.1f°)';
+    L.ori = 'Base rotation %s';
     L.legend = {'Reference path', 'End-effector path', 'Base at start', 'Base axes'};
-    L.bar = 'Base rotation [mrad]';
+    L.bar = 'Base rotation';
     L.cbar = 'EE error [mm]';
     L.main = 'Free-floating base, tilted 3D path (-30°), all seven joints';
 else
     L.title = {'Regler ohne Nullraum (R0)', 'Regler mit reaktionsarmer Nullraumbewegung (R\beta, \beta = 4,6)'};
-    L.sub = {sprintf('EE-Fehler %.1f mm RMS, Basisdrehung bis %.0f mrad', 1000 * m1.rms_ee, 1000 * m1.ori_max), ...
-             sprintf('EE-Fehler %.1f mm RMS, Basisdrehung bis %.0f mrad', 1000 * m2.rms_ee, 1000 * m2.ori_max)};
+    L.sub = {sprintf('EE-Fehler %.1f mm RMS, Basisdrehung bis %s', 1000 * m1.rms_ee, fmtDeg(m1.ori_max)), ...
+             sprintf('EE-Fehler %.1f mm RMS, Basisdrehung bis %s', 1000 * m2.rms_ee, fmtDeg(m2.ori_max))};
     L.sub = strrep(L.sub, '.', ',');
     L.time = 't = %.2f s';
     L.err = 'EE-Fehler %.1f mm';
-    L.ori = 'Basisdrehung %.0f mrad (%.1f°)';
+    L.ori = 'Basisdrehung %s';
     L.legend = {'Sollbahn', 'Bahn des Endeffektors', 'Basis beim Start', 'Basisachsen'};
-    L.bar = 'Basisdrehung [mrad]';
+    L.bar = 'Basisdrehung';
     L.cbar = 'EE-Fehler [mm]';
     L.main = 'Frei schwebende Basis, gekippte 3D-Bahn (-30°), alle sieben Gelenke';
 end
@@ -185,10 +186,10 @@ for i = 1:2
                             'Color', [0.5 0.5 0.5]);
     S{i}.bar = annotation(fig, 'rectangle', [x0 + 0.2, 0.07, 0.001, 0.025], 'FaceColor', [0.85 0.3 0.2], ...
                           'Color', 'none');
-    S{i}.barTxt = annotation(fig, 'textbox', [x0 + 0.2, 0.025, 0.2, 0.04], 'String', L.bar + " (0 bis 150)", ...
+    S{i}.barTxt = annotation(fig, 'textbox', [x0 + 0.2, 0.025, 0.2, 0.04], 'String', L.bar + " (0° bis 9°)", ...
                              'EdgeColor', 'none', 'FontSize', 11, 'HorizontalAlignment', 'center', ...
                              'FitBoxToText', 'off');
-    if strcmp(L.lang, 'en'), S{i}.barTxt.String = L.bar + " (0 to 150)"; end
+    if strcmp(L.lang, 'en'), S{i}.barTxt.String = L.bar + " (0° to 9°)"; end
     S{i}.barX = x0 + 0.2;
     A{i} = ax;
 end
@@ -220,14 +221,19 @@ e = 1000 * vecnorm(ts.ep(1:n, :), 2, 2);
 S.ee.XData = [ee(:, 1); NaN]; S.ee.YData = [ee(:, 2); NaN]; S.ee.ZData = [ee(:, 3); NaN];
 S.ee.CData = [e; NaN];
 S.eeDot.XData = ee(end, 1); S.eeDot.YData = ee(end, 2); S.eeDot.ZData = ee(end, 3);
-ori = 1000 * ts.ori(n);
 s1 = sprintf(L.time, ts.t_ee(n));
 s2 = sprintf(L.err, e(end));
-s3 = sprintf(L.ori, ori, ori / 1000 * 180 / pi);
-if strcmp(L.lang, 'de'), s2 = strrep(s2, '.', ','); s3 = strrep(s3, '.', ','); s1 = strrep(s1, '.', ','); end
+s3 = sprintf(L.ori, fmtDeg(ts.ori(n)));
+if strcmp(L.lang, 'de'), s2 = strrep(s2, '.', ','); s1 = strrep(s1, '.', ','); end
 S.txt.String = {s1, s2, s3};
-w = 0.2 * min(ori / 150, 1);
+w = 0.2 * min(rad2deg(ts.ori(n)) / 9, 1);       % Balken 0 bis 9 Grad
 S.bar.Position(3) = max(w, 0.001);
+end
+
+function s = fmtDeg(rad)
+% Winkel in Grad und Bogenminuten, z. B. 7°08' (lesbarer als mrad, Wunsch des Nutzers 14.11.)
+m = round(rad2deg(rad) * 60);
+s = sprintf('%d°%02d''', floor(m / 60), mod(m, 60));
 end
 
 function drawGhostCube(ax)
