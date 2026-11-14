@@ -27,10 +27,16 @@ p.addParameter('agentFile', '');        % drittes Feld: RL-Agent (X5), leer = nu
 p.addParameter('agentTitle', {'RL agent (PPO)', 'RL-Agent (PPO)'});   % {en, de}
 p.addParameter('agentRewardMode', 4);
 p.addParameter('tag', '');              % Zusatz im Dateinamen, z. B. 'rl'
+% Freie Zusammenstellung (14.11.): Struct-Array mit kind ('ctrl' oder 'agent'), beta (ctrl), file und rewardMode
+% (agent), joints ('J246' wie die Bestandsagenten oder 'all7'), path ('planar'/'tilted'), tilt, title {en, de}.
+% Ersetzt die beiden Regler von Szene 1. Dazu name (Dateiname statt 'scene1') und main {en, de} (Gesamttitel).
+p.addParameter('panels', []);
+p.addParameter('name', 'scene1');
+p.addParameter('main', {});
 p.parse(varargin{:});
 o = p.Results;
 setup_project;
-if isempty(o.outDir), o.outDir = sk_path('media', 'scene1'); end
+if isempty(o.outDir), o.outDir = sk_path('media', o.name); end
 if ~isfolder(o.outDir), mkdir(o.outDir); end
 
 % --- Daten ---
@@ -38,7 +44,11 @@ K = ext_kin_model();
 lim = [0.98; 0.98; 0.98; 0.98; 0.58; 0.58; 0.58];
 betas = [0 4.6416];
 runs = cell(1, 2);
-for i = 1:2
+if ~isempty(o.panels)
+    [runs, titles] = buildRuns(o.panels, K);
+    betas = []; % nur Szene 1
+end
+for i = 1:2 * isempty(o.panels)
     c = ext_x2_controller('joints', 1:7, 'task', [1 2 3], 'lim', lim, 'j6_side', 0, 'K', K, 'invert', true, ...
                           'beta', betas(i));
     runs{i} = ext_kinsim([], 'ctrl', c, 'lim', lim, 'reward_mode', 4, 'path', 'tilted', 'tilt', -30, ...
@@ -46,9 +56,11 @@ for i = 1:2
     fprintf('beta %.4g: RMS %.2f mm, ori_max %.1f mrad\n', betas(i), 1000 * runs{i}.metrics.rms_ee, ...
             1000 * runs{i}.metrics.ori_max);
 end
-titles = {{'Controller without null space (R0)', 'Regler ohne Nullraum (R0)'}, ...
-          {'Controller with reaction-reducing null space (R\beta, \beta = 4.6)', ...
-           'Regler mit reaktionsarmer Nullraumbewegung (R\beta, \beta = 4,6)'}};
+if isempty(o.panels)
+    titles = {{'Controller without null space (R0)', 'Regler ohne Nullraum (R0)'}, ...
+              {'Controller with reaction-reducing null space (R\beta, \beta = 4.6)', ...
+               'Regler mit reaktionsarmer Nullraumbewegung (R\beta, \beta = 4,6)'}};
+end
 if ~isempty(o.agentFile)
     % RL-Agent wie im Training X5.2: Grenzen 0,9774 / 0,5774 rad/s, J6 0,5774, Beobachtungsgrenzen aus dem Agenten
     lim7 = [0.9774; 0.9774; 0.9774; 0.9774; 0.5774; 0.5774; 0.5774];
@@ -62,18 +74,19 @@ end
 nP = numel(runs);
 sfx = o.lang;
 if ~isempty(o.tag), sfx = [o.tag '_' o.lang]; end
-dataName = 'scene1_data.mat';
-if ~isempty(o.tag), dataName = sprintf('scene1_data_%s.mat', o.tag); end
+dataName = [o.name '_data.mat'];
+if ~isempty(o.tag), dataName = sprintf('%s_data_%s.mat', o.name, o.tag); end
 save(fullfile(o.outDir, dataName), 'runs', 'betas', 'lim', 'o');
 
 L = labels(o.lang, runs, titles);
+if ~isempty(o.main), L.main = o.main{1 + strcmp(o.lang, 'de')}; end
 M = media_robot('load');
 
 % --- Standbild (Stroboskop) ---
 fig = makeFigure(o.res);
 [A, S] = setupPanels(fig, M, runs, L, true, o.strobe);
 for i = 1:nP, setFrame(A{i}, S{i}, runs{i}, M, size(runs{i}.ts.q, 1), L, i); end
-stillFile = fullfile(o.outDir, sprintf('scene1_still_%s.png', sfx));
+stillFile = fullfile(o.outDir, sprintf('%s_still_%s.png', o.name, sfx));
 exportgraphics(fig, stillFile, 'Resolution', 200, 'BackgroundColor', 'white');
 close(fig);
 fprintf('Standbild: %s\n', stillFile);
@@ -83,7 +96,7 @@ out = struct('still', stillFile, 'video', '');
 if o.video
     fig = makeFigure(o.res);
     [A, S] = setupPanels(fig, M, runs, L, false, []);
-    vidFile = fullfile(o.outDir, sprintf('scene1_%s.mp4', sfx));
+    vidFile = fullfile(o.outDir, sprintf('%s_%s.mp4', o.name, sfx));
     vw = VideoWriter(vidFile, 'MPEG-4');
     vw.FrameRate = o.fps; vw.Quality = 95;
     open(vw);
@@ -110,6 +123,36 @@ end
 end
 
 % =====================================================================
+function [runs, titles] = buildRuns(P, K)
+% Laeufe aus der freien Zusammenstellung (Option panels), Aufbau wie die jeweiligen Studien
+runs = cell(1, numel(P)); titles = cell(1, numel(P));
+for i = 1:numel(P)
+    pr = P(i);
+    if strcmp(pr.joints, 'J246')
+        lim = [0; 0.9774; 0; 0.9774; 0; 0.9774; 0];        % wie D16 (J6 0,9774)
+        jnt = [2 4 6]; j6 = 0.9774;
+    else
+        lim = [0.9774; 0.9774; 0.9774; 0.9774; 0.5774; 0.5774; 0.5774];   % wie X5.2
+        jnt = 1:7; j6 = 0.5774;
+    end
+    task = [1 2 3];
+    if strcmp(pr.path, 'planar') && strcmp(pr.joints, 'J246'), task = [1 3]; end
+    if strcmp(pr.kind, 'ctrl')
+        c = ext_x2_controller('joints', jnt, 'task', task, 'lim', lim, 'j6_side', 0, 'K', K, 'invert', true, ...
+                              'beta', pr.beta);
+        runs{i} = ext_kinsim([], 'ctrl', c, 'lim', lim, 'reward_mode', 4, 'path', pr.path, 'tilt', pr.tilt, ...
+                             'chain', 'full', 'K', K);
+    else
+        pol = ext_policy(pr.file);
+        runs{i} = ext_kinsim(pol, 'reward_mode', pr.rewardMode, 'j6_lim', j6, 'base_w', 2, 'lim', lim, ...
+                             'path', pr.path, 'tilt', pr.tilt, 'K', K);
+    end
+    titles{i} = pr.title;
+    fprintf('%s: RMS %.2f mm, ori_max %.1f mrad, Abbruch %d\n', pr.title{1}, 1000 * runs{i}.metrics.rms_ee, ...
+            1000 * runs{i}.metrics.ori_max, runs{i}.metrics.early_stop);
+end
+end
+
 function L = labels(lang, runs, titles)
 il = 1 + strcmp(lang, 'de');
 L.title = cellfun(@(c) c{il}, titles, 'UniformOutput', false);
