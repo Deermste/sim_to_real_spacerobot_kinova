@@ -43,6 +43,8 @@ p.addParameter('lim7', []);           % 7x1 Saettigung (p_lim7 im Modell-Workspa
 p.addParameter('j6Lim', 0.9774);
 p.addParameter('obsBounds', 'old');   % 'old' wie Optimized.mat (A72, E8), 'correct' in der Reihenfolge der Beobachtung (E9)
 p.addParameter('prefix', 'X1');       % Namensanfang und Ordner unter SavedAgents/MotionProfile
+p.addParameter('actorLR', 1e-3);      % X5.2b (14.11.): kleinere Lernrate, Standard wie D16
+p.addParameter('ckptEvery', 0);       % Zwischenstand alle n Episoden (Vielfaches von block), 0 = aus
 p.parse(varargin{:});
 o = p.Results;
 assert(ismember(o.cost_type, [1 2]), 'ext_x1_train:cost', 'cost_type muss 1 oder 2 sein');
@@ -63,7 +65,8 @@ cfg = struct('rewardMode', rewardMode, 'optsSet', 'base_sync', 'j6Lim', j6Lim, '
     'Ts_agent', 0.025, 'Ts', 0.005, 'T', 8.5, 'base_mass', 65, 'hidden', 128, 'parMode', 'sync', ...
     'gradThreshold', 1, 'path', o.path, 'tilt', o.tilt, 'lim7', o.lim7, 'obsBounds', o.obsBounds);
 cfg.opts = struct('ExperienceHorizon', 1024, 'MiniBatchSize', 128, 'NumEpoch', 10, 'ClipFactor', 0.2, ...
-    'DiscountFactor', 0.99, 'GAEFactor', 0.95, 'EntropyLossWeight', 1e-3, 'ActorLR', 1e-3, 'CriticLR', 5e-4);
+    'DiscountFactor', 0.99, 'GAEFactor', 0.95, 'EntropyLossWeight', 1e-3, 'ActorLR', o.actorLR, 'CriticLR', 5e-4);
+cfg.ckptEvery = o.ckptEvery;
 
 % --- Workspace wie in desktop_d12_train ---
 ec = desktop_config('Ts', cfg.Ts, 'Ts_agent', cfg.Ts_agent, 'T', cfg.T, 'base_mass', cfg.base_mass, ...
@@ -130,6 +133,7 @@ end
 if o.block ~= 100, name = sprintf('%s_b%d', name, o.block); end
 if o.lambda0 ~= 0, name = sprintf('%s_l%g', name, o.lambda0); end
 if o.kp > 0, name = sprintf('%s_kp%g', name, o.kp); end
+if o.actorLR ~= 1e-3, name = sprintf('%s_lr%g', name, o.actorLR); end
 if ~isempty(o.tag), name = [name '_' o.tag]; end
 if isempty(o.tag)
     agentDir = sk_path('SavedAgents', 'MotionProfile', o.prefix);
@@ -172,6 +176,14 @@ for b = 1:nB
             lam, C, nValid, mean(stats.EpisodeReward), lambdaNext, toc(tB) / 60);
     lambda = lambdaNext;
     writetable(dual(1:b, :), fullfile(csvDir, [name '_dual.csv']));
+    if o.ckptEvery > 0 && mod(b * o.block, o.ckptEvery) == 0
+        % Zwischenstand (X5.2b): nur Agent und cfg, Auswertung mit ext_eval_agent moeglich
+        ckDir = fullfile(agentDir, [name '_ckpt_agent']);
+        if ~isfolder(ckDir), mkdir(ckDir); end
+        ck = struct('agent', agent, 'cfg', cfg);
+        ck.cfg.episodes = b * o.block;
+        save(fullfile(ckDir, sprintf('ep%05d.mat', b * o.block)), '-struct', 'ck');
+    end
 end
 wallTime = toc(tStart);
 fprintf('X1: Training fertig nach %.1f min\n', wallTime / 60);

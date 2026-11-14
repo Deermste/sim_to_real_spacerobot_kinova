@@ -18,21 +18,27 @@ p = inputParser;
 p.addParameter('test', false);
 p.addParameter('seeds', [0 1]);
 p.addParameter('nEpisodes', 3000);
+p.addParameter('variants', {'r4', 'x1'});
+p.addParameter('actorLR', 1e-3);       % X5.2b: 3e-4
+p.addParameter('ckptEvery', 0);        % X5.2b: 250 (Zwischenstaende, je nominal ausgewertet)
+p.addParameter('label', '');           % Zusatz in den CSV-Namen, z. B. 'b'
 p.parse(varargin{:});
 o = p.Results;
 setup_project;
 dd = sk_path('data', 'simulation', 'extension');
 lim7 = [0.9774; 0.9774; 0.9774; 0.9774; 0.5774; 0.5774; 0.5774];
 common = {'path', 'tilted', 'tilt', -30, 'lim7', lim7, 'j6Lim', 0.5774, 'obsBounds', 'correct', 'prefix', 'X5', ...
-          'block', 50};
+          'actorLR', o.actorLR, 'ckptEvery', o.ckptEvery, 'block', 50};
 nEp = o.nEpisodes; tag = ''; nPert = 20;
 if o.test
     nEp = 16; tag = 'test'; nPert = 0;
     common{end} = 16;                       % Bloecke zu 16
+    if o.ckptEvery > 0, common{end - 2} = 16; end
 end
 V = struct('name', {'r4', 'x1'}, 'theta', {0.03, 0.03}, ...
            'args', {{'rewardMode', 4, 'eta', 0, 'lambda0', 0}, {'rewardMode', 5, 'eta', 5, 'lambda0', 1, 'cost_type', 1, ...
                      'delta', 0.02}});
+V = V(ismember({V.name}, o.variants));
 runs = {};
 tAll = tic;
 for v = 1:numel(V)
@@ -48,11 +54,40 @@ for v = 1:numel(V)
 end
 fprintf('X5.2 Training fertig nach %.1f min\n', toc(tAll) / 60);
 R = struct2table([runs{:}]);
+% Zwischenstaende (X5.2b): je nominal auswerten, der beste (folgt, sonst kleinster RMS) kommt in die volle Auswertung
+Crows = {};
+if o.ckptEvery > 0
+    R0 = R;
+    for i = 1:height(R0)
+        [fd, fn] = fileparts(char(R0.file(i)));
+        ck = dir(fullfile(fd, [fn '_ckpt_agent'], 'ep*.mat'));
+        best = ''; bestKey = [Inf Inf];
+        for j = 1:numel(ck)
+            f = fullfile(ck(j).folder, ck(j).name);
+            [~, A1] = ext_eval_agent(f, 'nPert', 0, 'active', 1:7);
+            ep = sscanf(ck(j).name, 'ep%d.mat');
+            Crows{end + 1} = struct('variant', R0.variant(i), 'seed', R0.seed(i), 'episodes', ep, ...
+                'nom_rms_ee', A1.nom_rms_ee, 'nom_ep_q4', A1.nom_ep_q4, 'nom_ori_max', A1.nom_ori_max, ...
+                'nom_stop', A1.n_stop, 'file', string(f)); %#ok<AGROW>
+            fprintf('  %s Seed %d Ep. %4d: RMS %.1f mm, ep_q4 %.1f mm, ori_max %.1f mrad, Abbruch %d\n', ...
+                    R0.variant(i), R0.seed(i), ep, 1000 * A1.nom_rms_ee, 1000 * A1.nom_ep_q4, ...
+                    1000 * A1.nom_ori_max, A1.n_stop);
+            key = [A1.n_stop > 0 || ~(A1.nom_ep_q4 < 0.05), A1.nom_rms_ee];
+            if key(1) < bestKey(1) || (key(1) == bestKey(1) && key(2) < bestKey(2))
+                bestKey = key; best = f;
+            end
+        end
+        if ~isempty(best) && ~strcmp(best, char(R0.file(i)))
+            R = [R; table(R0.variant(i), R0.seed(i), string(best), 'VariableNames', R.Properties.VariableNames)]; %#ok<AGROW>
+        end
+    end
+end
 Arows = {}; Erows = {};
 for i = 1:height(R)
     [E, A] = ext_eval_agent(char(R.file(i)), 'nPert', nPert, 'active', 1:7);
-    A.variant = R.variant(i); A.seed = R.seed(i);
+    A.variant = R.variant(i); A.seed = R.seed(i); A.file = R.file(i);
     E.variant = repmat(R.variant(i), height(E), 1); E.seed = repmat(R.seed(i), height(E), 1);
+    E.file = repmat(R.file(i), height(E), 1);
     Arows{end + 1} = A; Erows{end + 1} = E; %#ok<AGROW>
     fprintf('%s Seed %d: folgt %d, RMS %.1f mm, ep_q4 schlechteste %.1f mm, ori_max schlechteste %.1f mrad, Abbrueche %d\n', ...
             R.variant(i), R.seed(i), A.follows, 1000 * A.rms_ee, 1000 * A.ep_q4_worst, 1000 * A.ori_max_worst, ...
@@ -68,9 +103,14 @@ for v = 1:numel(V)
 end
 stamp = char(datetime('now', 'Format', 'yyyyMMdd_HHmmss'));
 pre = 'X5_2_';
-if o.test, pre = 'X5_2_test_'; dd = sk_path('data', 'simulation', 'desktop', '_test'); end
+if ~isempty(o.label), pre = sprintf('X5_2%s_', o.label); end
+if o.test, pre = ['test_' pre]; dd = sk_path('data', 'simulation', 'desktop', '_test'); end
 writetable(S.agents, fullfile(dd, sprintf('%sagents_%s.csv', pre, stamp)));
 writetable(S.episodes, fullfile(dd, sprintf('%sepisodes_%s.csv', pre, stamp)));
+if ~isempty(Crows)
+    S.ckpt = struct2table([Crows{:}]);
+    writetable(S.ckpt, fullfile(dd, sprintf('%sckpt_%s.csv', pre, stamp)));
+end
 end
 
 % =====================================================================
