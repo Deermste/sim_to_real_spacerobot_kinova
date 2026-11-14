@@ -788,7 +788,7 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
   λ0 = 1, 3000 Episoden), zwei von zwei Seeds mit Budget, PID einer von zwei. λ bleibt vom Anfang her hoch, die
   Agenten sind vorsichtiger als nötig (RESULTS, X1.2b).
 - **E3** ✅ 10.11.2026: Gewichte 0, 2, 4, 8, 16 (mit 4). 30 Läufe.
-- **E4** X5 Go/No-Go nach dem Pilot.
+- **E4** ✅ 14.11.2026 (Nutzer bestätigt): X5 Go nach X5.2b (3 von 4 folgen), Hauptlauf X5.3 erledigt.
 - **E5** Agenten für den Labortag X3.2.
 - **E6** Ratenpaar auf 10 Seeds ja oder nein.
 - **E8** ✅ 10.11.2026 (Befund A72): Beobachtungsgrenzen für neue Trainings (X1, X2.4, X4.1) belassen, damit
