@@ -27,10 +27,13 @@ p.addParameter('titles', {'Old reward with base bonus (r0)', 'Revised reward (r4
 p.addParameter('main', 'Lab hardware, measured joint motion (Kinova Gen3, half-circle path)');
 p.addParameter('outDir', '');
 p.addParameter('tag', 'k1');
+p.addParameter('mode', 'tracking');      % 'setpoint': Ziel aus meta.target statt Sollbahn (Laeufe S10_nom usw.)
+p.addParameter('tol', 0.02);             % Set-Point: Toleranzkugel [m] (Trainingskriterium von fixed1)
 p.parse(varargin{:});
 o = p.Results;
 setup_project;
-if isempty(o.outDir), o.outDir = sk_path('media', 'hw_tracking'); end
+sp = strcmp(o.mode, 'setpoint');
+if isempty(o.outDir), o.outDir = sk_path('media', ['hw_' o.mode]); end
 if ~isfolder(o.outDir), mkdir(o.outDir); end
 
 % --- Daten ---
@@ -42,18 +45,23 @@ for i = 1:nP
     L = S.run.log; n = S.run.meta.nSteps;
     t = L.t_wall(1:n) - L.t_wall(1);
     B = media_hw_base(t, L.q(1:n, :), 'K', K);
-    err = vecnorm(L.ee_pos(1:n, :) - L.ee_ref(1:n, :), 2, 2);
-    D{i} = struct('t', t, 'q', L.q(1:n, :), 'ee', L.ee_pos(1:n, :), 'ref', L.ee_ref(1:n, :), 'err', err, ...
+    if sp
+        ref = repmat(S.run.meta.target(:).', n, 1);
+    else
+        ref = L.ee_ref(1:n, :);
+    end
+    err = vecnorm(L.ee_pos(1:n, :) - ref, 2, 2);
+    D{i} = struct('t', t, 'q', L.q(1:n, :), 'ee', L.ee_pos(1:n, :), 'ref', ref, 'err', err, ...
                   'B', B, 'rms', sqrt(mean(err .^ 2)), 'oriMax', max(B.ori), 'meta', S.run.meta);
-    fprintf('%s: RMS %.1f mm (Log %.1f mm), virtuelle Basis bis %.1f mrad\n', o.runs{i}, 1000 * D{i}.rms, ...
-            1000 * S.run.meta.rmsEp, 1000 * D{i}.oriMax);
+    fprintf('%s: RMS %.1f mm, Ende %.1f mm, virtuelle Basis bis %.1f mrad\n', o.runs{i}, 1000 * D{i}.rms, ...
+            1000 * err(end), 1000 * D{i}.oriMax);
 end
 M = media_robot('load');
 L = labels(o, D);
 
 % --- Standbild: Endlage, ganze Bahn ---
 fig = figure('Visible', 'off', 'Color', 'w', 'Units', 'pixels', 'Position', [0 0 o.res]);
-[A, Sx] = setupPanels(fig, M, D, L, o);
+[A, Sx] = setupPanels(fig, M, D, L, o, true);
 for i = 1:nP, setFrame(Sx{i}, D{i}, M, D{i}.t(end), L, o); end
 stillFile = fullfile(o.outDir, sprintf('hw_%s_still_%s.png', o.tag, o.lang));
 exportgraphics(fig, stillFile, 'Resolution', 200, 'BackgroundColor', 'white');
@@ -64,7 +72,7 @@ out = struct('still', stillFile, 'video', '');
 % --- Video ---
 if o.video
     fig = figure('Visible', 'off', 'Color', 'w', 'Units', 'pixels', 'Position', [0 0 o.res]);
-    [A, Sx] = setupPanels(fig, M, D, L, o); %#ok<ASGLU>
+    [~, Sx] = setupPanels(fig, M, D, L, o, false);
     vidFile = fullfile(o.outDir, sprintf('hw_%s_%s.mp4', o.tag, o.lang));
     vw = VideoWriter(vidFile, 'MPEG-4');
     vw.FrameRate = o.fps; vw.Quality = 95;
@@ -89,20 +97,33 @@ end
 % =====================================================================
 function L = labels(o, D)
 L.title = o.titles;
-L.sub = cellfun(@(d) sprintf('EE error %.1f mm RMS, virtual base rotation up to %s', 1000 * d.rms, ...
-                             fmtDeg(d.oriMax)), D, 'UniformOutput', false);
+L.sp = strcmp(o.mode, 'setpoint');
+L.tol = o.tol;
+if L.sp
+    L.sub = cellfun(@(d) sprintf('Start %.0f mm away, final error %.1f mm, virtual base up to %s', ...
+                                 1000 * d.err(1), 1000 * d.err(end), fmtDeg(d.oriMax)), D, 'UniformOutput', false);
+    L.err = 'Distance to target %.1f mm';
+    L.cbar = 'Distance to target [mm]';
+else
+    L.sub = cellfun(@(d) sprintf('EE error %.1f mm RMS, virtual base rotation up to %s', 1000 * d.rms, ...
+                                 fmtDeg(d.oriMax)), D, 'UniformOutput', false);
+    L.err = 'EE error %.1f mm';
+    L.cbar = 'EE error [mm]';
+end
 L.time = 't = %.2f s';
-L.err = 'EE error %.1f mm';
 L.ori = 'Virtual base %s';
 L.bar = sprintf('Virtual base rotation (0° to %d°)', o.barMax);
-L.cbar = 'EE error [mm]';
 L.main = o.main;
+if o.exaggerate == 1
+    scl = 'drawn to scale';
+else
+    scl = sprintf('drawn %g\\times enlarged', o.exaggerate);
+end
 L.note = sprintf(['Arm fixed to the lab table (grey block). Orange: attitude a free-floating 65-kg base would ' ...
-                  'take for the same joint motion (computed, drawn %d\\times enlarged). Numbers show the true angle.'], ...
-                 o.exaggerate);
+                  'take for the same joint motion (computed, %s). Numbers show the true angle.'], scl);
 end
 
-function [A, S] = setupPanels(fig, M, D, L, o)
+function [A, S] = setupPanels(fig, M, D, L, o, still)
 nP = numel(D);
 A = cell(1, nP); S = cell(1, nP);
 pw = 0.95 / nP;
@@ -114,11 +135,34 @@ for i = 1:nP
     d = D{i};
     ax = axes(fig, 'Position', [0.005 + pw * (i - 1), 0.15, pw, 0.69]); %#ok<LAXES>
     hold(ax, 'on'); axis(ax, 'equal'); axis(ax, 'off');
-    xlim(ax, [-0.62 0.62]); ylim(ax, [-0.62 0.62]); zlim(ax, [-0.12 1.78]);
-    ax.Clipping = 'on';
-    view(ax, -35, 22); camproj(ax, 'perspective');
-    camtarget(ax, [0 0 0.82]); camzoom(ax, 1.45);
-    plot3(ax, d.ref(:, 1), d.ref(:, 2), d.ref(:, 3), '--', 'Color', [0.15 0.15 0.15], 'LineWidth', 1.6);
+    if L.sp
+        % Set-Point: Starts im ganzen Arbeitsraum, groesserer Ausschnitt
+        xlim(ax, [-0.95 0.95]); ylim(ax, [-0.95 0.95]); zlim(ax, [-0.12 1.65]);
+        ax.Clipping = 'on';
+        view(ax, -35, 22); camproj(ax, 'perspective');
+        camtarget(ax, [0.15 0 0.8]); camzoom(ax, 1.75);
+    else
+        xlim(ax, [-0.62 0.62]); ylim(ax, [-0.62 0.62]); zlim(ax, [-0.12 1.78]);
+        ax.Clipping = 'on';
+        view(ax, -35, 22); camproj(ax, 'perspective');
+        camtarget(ax, [0 0 0.82]); camzoom(ax, 1.45);
+    end
+    if L.sp
+        % Ziel: Punkt und durchscheinende Toleranzkugel
+        [xs, ys, zs] = sphere(32);
+        c = d.ref(1, :);
+        surf(ax, c(1) + L.tol * xs, c(2) + L.tol * ys, c(3) + L.tol * zs, 'FaceColor', [0.2 0.75 0.3], ...
+             'FaceAlpha', 0.25, 'EdgeColor', 'none', 'FaceLighting', 'gouraud');
+        plot3(ax, c(1), c(2), c(3), 'p', 'MarkerSize', 16, 'MarkerFaceColor', [0.1 0.55 0.2], ...
+              'MarkerEdgeColor', 'k');
+    else
+        plot3(ax, d.ref(:, 1), d.ref(:, 2), d.ref(:, 3), '--', 'Color', [0.15 0.15 0.15], 'LineWidth', 1.6);
+    end
+    % Standbild: Startpose als Geisterbild
+    if still
+        Hg = media_robot('draw', M, ax, struct('armAlpha', 0.2, 'showBase', false, 'reduce', 0.3));
+        media_robot('update', M, Hg, d.q(1, :).', zeros(3, 1), [1 0 0 0]);
+    end
     % Arm auf der festen Montage (grauer Block, ruht)
     H = media_robot('draw', M, ax, struct('baseAlpha', 0.55, 'baseColor', [0.78 0.79 0.81]));
     % virtuelle Basis: oranger Drahtwuerfel und Achsen, vergroessert gedreht
