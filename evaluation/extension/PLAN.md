@@ -820,6 +820,9 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
   E18). Für den Regler entscheidet a_max (99 gegen 90 bis 95 Erfolge bei 20 Hz), der Filter kaum. Damit ist der
   Wert von a_max die wichtigste offene Zahl. Winkelgrenzen in X6 nach Datenblatt statt Modellwerten. Bremskurve
   statt linearer Bremszone (Abweichung vom Entwurf, begründet in RESULTS).
+  Stand 14.11.2026: Laut Gen3-Handbuch r9.1 (Tabelle 44) gilt für API-Geschwindigkeitsbefehle standardmäßig
+  1,0 rad/s² für J1–J4 und 10,0 für J5–J7, änderbar bis zur harten Grenze 5,2 / 10. Der Regler erreicht damit
+  497 von 500 Paaren (Platzhalter 498). Offen: Wert auf dem Laborarm auslesen, Kette für X6.4 auf 1 / 10 setzen.
 - **E19** (mit dem Betreuer): X7 Residual RL in dieses Paper? Vorschlag: ja, als konstruktiver Teil nach dem
   Vergleich mit dem Regler. Es verschiebt die Geschichte von „Bewertung“ zu „Bewertung mit Ausweg“. Offen
   außerdem: Grundregler (Vorschlag Rβ 21,5), ε (0,2 rad/s) und der Rate Limiter (nach V4).

@@ -1,0 +1,34 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+635 Paare aus C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X6_pairs_20261113_195451.mat
+a_max 2 rad/s^2, Varianten R0
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+635 Laeufe in 1.2 min
+     set      ctrl     n     n_success    lag_med     lag_q90    err_end_med    err_end_q95    ori_max_med    n_stop    brake_med
+    ______    ____    ___    _________    ________    _______    ___________    ___________    ___________    ______    _________
+
+    "eval"    "R0"    500       498       -0.27435        0.3    2.4095e-15     2.2695e-07      0.087245        0           0    
+    "lab"     "R0"    135       125       -0.26232    0.28702    1.5157e-15       0.028095      0.082673        0           0    
+
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+635 Paare aus C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X6_pairs_20261113_195451.mat
+a_max [1 1 1 1 10 10 10] rad/s^2, Varianten R0
+{Error using *
+Incorrect dimensions for matrix multiplication. Check that the number of columns in the first matrix matches the number of rows in the
+second matrix. To operate on each element of the matrix individually, use TIMES (.*) for elementwise multiplication.
+
+Error in chain_step (line 65)
+vUp = sqrt(2 * P.a_brake * max(dUp, 0));
+
+Error in ext_kinsim (line 253)
+        [cmd, cs, ci] = chain_step(cs, a, q);
+
+Error in ext_x6_ctrl_eval>runPair (line 106)
+    r = ext_kinsim([], 'ctrl', ctrl, sargs{:}, 'Ts_agent', Ts, 'T', 15, 'K', K, 'q0', pr.q0, ...
+
+Error in ext_x6_ctrl_eval (line 55)
+    parfor i = 1:n
+} 
+ERROR: MATLAB error Exit Status: 0x00000001

@@ -1841,6 +1841,56 @@ Log `X6_chain_compare_matlab.log`.
 
 Paper: X6 (eigenes Paper oder Abschnitt, E7d), Interface-Design. Offen.
 
+### E18 Nachtrag: a_max laut Gen3-Handbuch ✅ 14.11.2026
+
+**Quelle:** Kinova Gen3 Ultra lightweight robot user guide r9.1 (© 2023), Abschnitt „Joint limits“, S. 130–134,
+geladen von `kinovarobotics.com/uploads/User-Guide-Gen3-R07.pdf` (die Datei unter dieser Adresse ist r9.1).
+
+| Größe | J1–J4 (große Aktuatoren) | J5–J7 (kleine Aktuatoren) | Tabelle |
+|---|---|---|---|
+| Geschwindigkeit, allgemein | 1,39 rad/s | 1,22 rad/s | 41 |
+| Beschleunigung, harte Grenze | 5,2 rad/s² | 10,0 rad/s² | 43 |
+| Beschleunigung, angular joystick und joint trajectory | 1,0 rad/s² | 10,0 rad/s² | 44 |
+
+- API-Geschwindigkeitsbefehle (`SendJointSpeedsCommand`) versetzen den Arm in den Modus „angular joystick“
+  (Handbuch, Abschnitt „Angular joystick“). Dort gilt die Beschleunigungsgrenze aus Tabelle 44. Erreicht ein
+  Gelenk sie, wird die Beschleunigung gekappt („will max out at acceleration limit“).
+- Die Werte aus Tabelle 44 sind laut Handbuch Soft Limits. Sie lassen sich für die Winkelmodi je Gelenk über die
+  ControlConfig-API oder die Web App ändern, höchstens bis zur harten Grenze.
+- Damit liegt der Platzhalter 2 rad/s² für J1–J4 über dem Standardwert 1,0 und für J5–J7 weit darunter. Welcher
+  Wert auf dem Laborarm eingestellt ist, ist nicht geprüft. Auslesen ginge über die ControlConfig-API oder die Web
+  App (Seite Speed Limits).
+
+**Regler R0 mit a_max je Gelenk** (`ext_x6_ctrl_eval('ctrls', "R0", 'aMax', ...)`, 500 Auswertepaare und 135
+Laborpaare, sonst wie X6.2, neue Kette 20 Hz):
+
+| a_max J1–J4 / J5–J7 [rad/s²] | Auswertung | Labor | Nachlauf 90 % [s] |
+|---|---|---|---|
+| 2 / 2 (Platzhalter, wie X6.2) | 498 | 125 | 0,30 |
+| 1 / 10 (Standard laut Handbuch) | 497 | 125 | 0,32 |
+| 0,75 / 7,5 (75 % davon) | 496 | 125 | 0,34 |
+| 1 / 2 | 497 | 126 | 0,32 |
+| 5,2 / 10 (harte Grenze) | 498 | 125 | 0,30 |
+| 0,5 / 10 | 493 | 121 | 1,29 |
+| 0,5 / 0,5 | 468 | 116 | 3,52 |
+
+- Die Zeile mit a_max 2 wiederholt X6.2 (498 von 500). Der Umbau auf a_max je Gelenk ändert den Standardfall
+  also nicht.
+- Zwischen 0,75 und 5,2 rad/s² für J1–J4 ändert sich für den Regler fast nichts (496 bis 498). Erst bei 0,5
+  verliert er Paare, vor allem wenn auch J5–J7 langsam sind (468). Das erklärt die schwächeren Ketten A und B im
+  Vergleich oben (a_max 0,5 für alle Gelenke).
+- Für X6 heißt das: Mit dem Standardwert des Arms (1 / 10) bleibt der Regler so gut wie mit dem Platzhalter. Die
+  offene Zahl aus E18 ist damit weniger kritisch als angenommen. Der RL-Pilot lief mit dem Platzhalter 2 / 2. Für
+  den Hauptlauf (X6.4) und das Deploy-Skript (X6.5) sollte die Kette den Wert des Arms nutzen.
+
+**Grenzen:** nur der Regler R0, nur Simulation, exaktes Modell. Ob der Laborarm noch die Standardwerte hat, ist
+offen. Der Arm kappt die Beschleunigung selbst. Liegt das a_max der Kette darüber, weicht der gesendete Befehl vom
+ausgeführten ab, wie beim Rate Limiter in A75.
+
+Datenquelle: `X6_ctrl_eval_{amax2,amax_soft,amax_soft75,amax_1_2,amax_hard,amax_05_10,amax_05}_{runs,groups,cells}_
+20261114_*.csv` (Zeitstempel 092033, 092247, 092528, 092632, 092418, 092906, 093011), Logs `X6_amax_matlab.log`,
+`X6_amax2_matlab.log`, `X6_amax3_matlab.log`. Handbuch lokal als Text nicht im Repo.
+
 ### X6.1 Paarsatz, Strecke und Umgebung ✅ 13.11.2026 (Pilot offen)
 
 **Werkzeugpunkt:** `ext_kin_model` Option `tool_offset` (Standard null, alle bisherigen Pfade unverändert). X6 nutzt

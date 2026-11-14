@@ -86,6 +86,7 @@ if x6
     assert(o.invert, 'ext_x2_controller:x6', 'chainP nur mit invert');
     d = o.chainP.a_max * o.chainP.Ts;
 end
+d = d .* ones(7, 1);                         % je Gelenk (a_max darf ein Vektor sein, Handbuch Gen3 Tabelle 44)
 yf = zeros(7, 1); yr = zeros(7, 1);           % interne Kopie der Befehlskette (invert)
 ctrl = @step;
 
@@ -95,14 +96,15 @@ ctrl = @step;
         lo = max(-lim7(a), (qLo(a) - q(a)) / o.horizon);
         hi = min(lim7(a), (qHi(a) - q(a)) / o.horizon);
         if o.invert
-            lo = max(lo, yr(a) - d);
-            hi = min(hi, yr(a) + d);
+            lo = max(lo, yr(a) - d(a));
+            hi = min(hi, yr(a) + d(a));
         end
         if x6                                   % Bremskurve der Kette als Schranke (wie chain_step Stufe 2)
             cp = o.chainP;
             fin = isfinite(cp.q_lim(a));
-            vUp = sqrt(2 * cp.a_brake * max(cp.q_lim(a) - cp.q_margin - q(a), 0));
-            vLo = sqrt(2 * cp.a_brake * max(q(a) + cp.q_lim(a) - cp.q_margin, 0));
+            ab = cp.a_brake .* ones(7, 1);
+            vUp = sqrt(2 * ab(a) .* max(cp.q_lim(a) - cp.q_margin - q(a), 0));
+            vLo = sqrt(2 * ab(a) .* max(q(a) + cp.q_lim(a) - cp.q_margin, 0));
             hi(fin) = min(hi(fin), vUp(fin));
             lo(fin) = max(lo(fin), -vLo(fin));
         end

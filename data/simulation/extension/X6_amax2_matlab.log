@@ -1,0 +1,44 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+635 Paare aus C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X6_pairs_20261113_195451.mat
+a_max [1 1 1 1 10 10 10] rad/s^2, Varianten R0
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+635 Laeufe in 1.3 min
+     set      ctrl     n     n_success    lag_med     lag_q90    err_end_med    err_end_q95    ori_max_med    n_stop    brake_med
+    ______    ____    ___    _________    ________    _______    ___________    ___________    ___________    ______    _________
+
+    "eval"    "R0"    500       497       -0.26827    0.32396    2.5053e-15     4.6192e-10      0.088393        0           0    
+    "lab"     "R0"    135       125       -0.25788    0.28791    1.5471e-15       0.051565       0.08319        0           0    
+
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+635 Paare aus C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X6_pairs_20261113_195451.mat
+a_max [5.2 5.2 5.2 5.2 10 10 10] rad/s^2, Varianten R0
+635 Laeufe in 1.5 min
+     set      ctrl     n     n_success    lag_med     lag_q90    err_end_med    err_end_q95    ori_max_med    n_stop    brake_med
+    ______    ____    ___    _________    ________    _______    ___________    ___________    ___________    ______    _________
+
+    "eval"    "R0"    500       498       -0.27388    0.29666    2.4881e-15     4.1502e-07      0.086835        0           0    
+    "lab"     "R0"    135       125       -0.26232    0.28702    1.5471e-15       0.018913      0.082673        0           0    
+
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+635 Paare aus C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X6_pairs_20261113_195451.mat
+a_max [0.75 0.75 0.75 0.75 7.5 7.5 7.5] rad/s^2, Varianten R0
+635 Laeufe in 1.2 min
+     set      ctrl     n     n_success    lag_med     lag_q90    err_end_med    err_end_q95    ori_max_med    n_stop    brake_med
+    ______    ____    ___    _________    ________    _______    ___________    ___________    ___________    ______    _________
+
+    "eval"    "R0"    500       496       -0.25975    0.34023     2.589e-15     9.2645e-12      0.089367        0           0    
+    "lab"     "R0"    135       125       -0.25119    0.29402    1.5364e-15       0.042958      0.088134        0           0    
+
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+635 Paare aus C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X6_pairs_20261113_195451.mat
+a_max [1 1 1 1 2 2 2] rad/s^2, Varianten R0
+635 Laeufe in 1.1 min
+     set      ctrl     n     n_success    lag_med     lag_q90    err_end_med    err_end_q95    ori_max_med    n_stop    brake_med
+    ______    ____    ___    _________    ________    _______    ___________    ___________    ___________    ______    _________
+
+    "eval"    "R0"    500       497       -0.26658    0.31803    2.5043e-15     1.5279e-08      0.089192        0           0    
+    "lab"     "R0"    135       126       -0.26291    0.28502    1.5364e-15       0.027773      0.082673        0           0    
+

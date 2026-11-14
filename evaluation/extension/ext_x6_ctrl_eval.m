@@ -13,6 +13,8 @@ function R = ext_x6_ctrl_eval(varargin)
 %             wie fixed1)
 %   Erste Fassung (13.11.) mit Mittelzug im gewichteten Modus: bleibender Fehler von etwa 1 cm, verworfen.
 %   Neue Kette: chain_step('params') (a_max 2 rad/s^2, Platzhalter E18), 20 Hz.
+%   Option 'aMax' (seit 14.11.): a_max je Gelenk, z. B. [1 1 1 1 10 10 10] (Gen3-Handbuch r9.1, Tabelle 44, Grenze
+%   fuer angular joystick, in diesem Modus laufen die API-Geschwindigkeitsbefehle). 'ctrls' "R0" waehlt Varianten.
 %   Erfolg wie E11: Fehler zum Ziel <= 5 mm und Geschwindigkeit <= 5 mm/s, 1 s lang, innerhalb von 15 s.
 %   Ein vom Regler erreichtes Paar gilt als belegt erreichbar (fuer die Laborpaare, reach_known 0).
 %   CSV: data/simulation/extension/X6_ctrl_eval_{runs,groups,cells}_<Zeit>.csv
@@ -21,6 +23,9 @@ p = inputParser;
 p.addParameter('pairs', '');
 p.addParameter('sets', ["eval", "lab"]);
 p.addParameter('parallel', true);
+p.addParameter('aMax', []);          % a_max der neuen Kette (Skalar oder 7x1), leer = chain_step('params')
+p.addParameter('ctrls', []);         % Auswahl der Varianten, z. B. "R0" (leer = alle)
+p.addParameter('label', '');         % haengt an die CSV-Namen an (X6_ctrl_eval_<label>_...)
 p.parse(varargin{:});
 o = p.Results;
 setup_project;
@@ -36,10 +41,13 @@ Pp = L.P(ismember([L.P.set], o.sets));
 fprintf('%d Paare aus %s\n', numel(Pp), f);
 K = ext_kin_model('tool_offset', [0; 0; 0.121]);
 C = chain_step('params');
+if ~isempty(o.aMax), C.a_max = o.aMax(:); C.a_brake = 0.8 * C.a_max; end
 qHw = min(C.q_lim, 2 * pi);
 sat = [0.9774; 0.9774; 0.9774; 0.9774; 0.5774; 0.5774; 0.5774];
 V = struct('name', {'R0', 'R0n', 'Rb1n', 'R0_old'}, 'mode', {'weighted', 'nullspace', 'nullspace', 'weighted'}, ...
            'beta', {0, 0, 1, 0}, 'gamma', {0, 0.1, 0.1, 0}, 'old', {false, false, false, true});
+if ~isempty(o.ctrls), V = V(ismember(string({V.name}), string(o.ctrls))); end
+fprintf('a_max %s rad/s^2, Varianten %s\n', mat2str(C.a_max.'), strjoin({V.name}, ', '));
 n = numel(Pp);
 out = cell(n, 1);
 t0 = tic;
@@ -71,7 +79,9 @@ E = T(T.set == "eval", :);
 R.cells = groupsummary(E, {'ctrl', 'd0bin', 'region'}, {'mean', 'median'}, {'success', 'err_end', 'ori_max'});
 stamp = char(datetime('now', 'Format', 'yyyyMMdd_HHmmss'));
 for nm = ["runs", "groups", "cells"]
-    writetable(R.(nm), fullfile(dd, sprintf('X6_ctrl_eval_%s_%s.csv', nm, stamp)));
+    pre = 'X6_ctrl_eval_';
+    if ~isempty(o.label), pre = [pre o.label '_']; end
+    writetable(R.(nm), fullfile(dd, sprintf('%s%s_%s.csv', pre, nm, stamp)));
 end
 disp(R.groups);
 end

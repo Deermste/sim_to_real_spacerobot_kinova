@@ -19,7 +19,9 @@ function [v, S, info] = chain_step(S, a, q)
 %     Ts        0,05 s (20 Hz)
 %     v_max     0,95 * v_cap
 %     v_cap     0,75 * Datenblatt [1,3963 x4; 1,2218 x3] rad/s (wie safetyFactor in deploy_setpoint_v24)
-%     a_max     2 rad/s^2 (Platzhalter bis zum Hardwarewert, E18)
+%     a_max     2 rad/s^2 (Platzhalter bis zum Hardwarewert, E18). Darf ein 7x1-Vektor sein. Gen3-Handbuch r9.1,
+%               Tabelle 44 (angular joystick, gilt fuer API-Geschwindigkeitsbefehle): Standard 1,0 rad/s^2 fuer
+%               J1-J4 und 10,0 fuer J5-J7, harte Grenze (Tabelle 43) 5,2 und 10,0
 %     a_brake   0,8 * a_max
 %     q_lim     Winkelgrenzen laut Gen3-Datenblatt: J2 128,9, J4 147,8, J6 120,3 Grad, J1, J3, J5, J7 endlos (Inf).
 %               Nicht die Modellwerte von SK_desktop (2,41 / 2,66 / 2,23 / 2,01 rad), die J2 und J4 zu weit fassen
@@ -60,8 +62,8 @@ vStar = vs;
 % Stufe 2: Bremskurve vor den Winkelgrenzen
 dUp = P.q_lim - P.q_margin - q(:);
 dLo = q(:) + P.q_lim - P.q_margin;
-vUp = sqrt(2 * P.a_brake * max(dUp, 0));
-vLo = sqrt(2 * P.a_brake * max(dLo, 0));
+vUp = sqrt(2 * P.a_brake .* max(dUp, 0));
+vLo = sqrt(2 * P.a_brake .* max(dLo, 0));
 fin = isfinite(P.q_lim);
 brake = false(7, 1);
 up = fin & vs > vUp;
