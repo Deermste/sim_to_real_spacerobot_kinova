@@ -1,0 +1,35 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Start [0 15 180 -130 0 55 90] Grad, Werkzeugpunkt [0.578 0.001 0.934] m
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+X6 SAC mit HER, Seed 0: 51 Kanaele, 500 Trainings- und 100 Auswertepaare, tol 0.020 m, parallel 0
+Abschnitt  1:   100 Episoden,   5.3 min, Pruefung   0 % (Median 386.5 mm), Auswertung   0 % (Median 447.3 mm, 255.8 mm/s, Zeitende 51), Training 4.8 min, Auswertung 0.5 min
+Abschnitt  2:   200 Episoden,   9.8 min, Pruefung   0 % (Median 174.5 mm), Auswertung   0 % (Median 147.7 mm, 39.8 mm/s, Zeitende 100), Training 4.1 min, Auswertung 0.3 min
+Abschnitt  3:   300 Episoden,  14.3 min, Pruefung   0 % (Median 206.9 mm), Auswertung   0 % (Median 220.8 mm, 83.3 mm/s, Zeitende 99), Training 4.2 min, Auswertung 0.3 min
+Abschnitt  4:   400 Episoden,  19.1 min, Pruefung   0 % (Median 133.9 mm), Auswertung   0 % (Median 136.2 mm, 46.1 mm/s, Zeitende 96), Training 4.4 min, Auswertung 0.3 min
+Abschnitt  5:   500 Episoden,  23.8 min, Pruefung   0 % (Median 169.2 mm), Auswertung   0 % (Median 141.0 mm, 49.3 mm/s, Zeitende 100), Training 4.4 min, Auswertung 0.3 min
+Abschnitt  6:   600 Episoden,  28.8 min, Pruefung   0 % (Median 128.1 mm), Auswertung   0 % (Median 108.1 mm, 24.7 mm/s, Zeitende 100), Training 4.6 min, Auswertung 0.3 min
+Abschnitt  7:   700 Episoden,  34.1 min, Pruefung   0 % (Median 98.5 mm), Auswertung   0 % (Median 94.5 mm, 64.9 mm/s, Zeitende 82), Training 5.0 min, Auswertung 0.3 min
+Abschnitt  8:   800 Episoden,  39.4 min, Pruefung   0 % (Median 66.1 mm), Auswertung   0 % (Median 74.0 mm, 28.6 mm/s, Zeitende 100), Training 4.9 min, Auswertung 0.4 min
+Abschnitt  9:   900 Episoden,  44.7 min, Pruefung   0 % (Median 57.1 mm), Auswertung   0 % (Median 58.1 mm, 29.3 mm/s, Zeitende 100), Training 4.9 min, Auswertung 0.3 min
+Abschnitt 10:  1000 Episoden,  50.0 min, Pruefung   0 % (Median 65.3 mm), Auswertung   0 % (Median 64.8 mm, 57.7 mm/s, Zeitende 79), Training 4.9 min, Auswertung 0.3 min
+X6 SAC fertig nach 50.0 min, bester Auswertewert 0 %. Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X6\X6_sac_her_sanity_her_seed0.mat
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Start [0 15 180 -130 0 55 90] Grad, Werkzeugpunkt [0.578 0.001 0.934] m
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X6 SAC, Seed 0: 50 Kanaele, 500 Trainings- und 100 Auswertepaare, tol 0.020 m, parallel 0
+Abschnitt  1:   100 Episoden,   1.6 min, Pruefung   0 % (Median 342.4 mm), Auswertung   0 % (Median 338.0 mm, 75.9 mm/s, Zeitende 100), Training 1.2 min, Auswertung 0.4 min
+Abschnitt  2:   200 Episoden,   5.6 min, Pruefung   0 % (Median 207.6 mm), Auswertung   0 % (Median 201.1 mm, 49.8 mm/s, Zeitende 56), Training 3.7 min, Auswertung 0.3 min
+Abschnitt  3:   300 Episoden,  10.2 min, Pruefung   0 % (Median 239.7 mm), Auswertung   0 % (Median 223.4 mm, 51.3 mm/s, Zeitende 100), Training 4.3 min, Auswertung 0.3 min
+Abschnitt  4:   400 Episoden,  15.0 min, Pruefung   2 % (Median 193.2 mm), Auswertung   0 % (Median 188.8 mm, 73.3 mm/s, Zeitende 100), Training 4.4 min, Auswertung 0.4 min
+Abschnitt  5:   500 Episoden,  19.7 min, Pruefung   0 % (Median 68.9 mm), Auswertung   0 % (Median 66.2 mm, 34.0 mm/s, Zeitende 100), Training 4.4 min, Auswertung 0.3 min
+Abschnitt  6:   600 Episoden,  24.5 min, Pruefung  21 % (Median 35.1 mm), Auswertung   0 % (Median 38.3 mm, 20.4 mm/s, Zeitende 100), Training 4.4 min, Auswertung 0.3 min
+Abschnitt  7:   700 Episoden,  29.2 min, Pruefung   0 % (Median 22.2 mm), Auswertung   0 % (Median 20.8 mm, 32.7 mm/s, Zeitende 100), Training 4.4 min, Auswertung 0.3 min
+Abschnitt  8:   800 Episoden,  34.0 min, Pruefung   0 % (Median 18.4 mm), Auswertung   0 % (Median 16.9 mm, 38.2 mm/s, Zeitende 100), Training 4.4 min, Auswertung 0.3 min
+Abschnitt  9:   900 Episoden,  38.7 min, Pruefung   0 % (Median 82.7 mm), Auswertung   0 % (Median 66.4 mm, 40.2 mm/s, Zeitende 100), Training 4.4 min, Auswertung 0.3 min
+Abschnitt 10:  1000 Episoden,  43.5 min, Pruefung  23 % (Median 30.5 mm), Auswertung   0 % (Median 26.7 mm, 20.2 mm/s, Zeitende 99), Training 4.4 min, Auswertung 0.3 min
+Abschnitt 11:  1100 Episoden,  48.2 min, Pruefung   0 % (Median 39.3 mm), Auswertung   0 % (Median 41.0 mm, 29.2 mm/s, Zeitende 100), Training 4.4 min, Auswertung 0.3 min
+X6 SAC fertig nach 48.2 min, bester Auswertewert 0 %. Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X6\X6_sac_sanity_sac_seed0.mat

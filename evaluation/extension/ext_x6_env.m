@@ -41,6 +41,12 @@ function [env, info] = ext_x6_env(pool, varargin)
 %                  auf dcap verkuerzt (Curriculum, Standard Inf)
 %     'pFull'      Anteil der Episoden ohne Verkuerzung (Standard 0)
 %     'sequential' true: Paare der Reihe nach statt zufaellig (Auswertung)
+%   HER-Modus (seit 14.11., 'her' true, fuer SAC mit Hindsight Experience Replay, ext_x6_sac):
+%     Beobachtung 51 Kanaele: 1-3 Ziel (pT - c) / 0,5 und 4-6 Werkzeugpunkt (p - c) / 0,5 in Welt, c [0,5 0 0,7],
+%     7-9 v / 0,5 in Welt, 10-50 wie oben, 51 Abbruch (Kollision oder Klemme). Kein Fehlerkanal, kein Feinkanal,
+%     weil HER nur die Zielkanaele ersetzt. Reward ext_x6_her_reward (Potenzial wie 'progress', Bonus w_in je
+%     Schritt innerhalb von tol, ohne w_da). Kein Abbruch nach Abstand (haengt vom Ziel ab). 'stopSuccess' false:
+%     die Episode laeuft nach dem Erfolg weiter (Training), outcome bleibt "success".
 %   Zufallsstrom: auf einem Worker Seed 100 * seed + Worker-ID (sonst zoegen alle Worker dieselbe Folge).
 %   info: obsInfo, actInfo, opts. Logged Signals der Umgebung: Zustand, Paar, Zaehler, coll (Kollision im letzten
 %   Schritt), nMesh (Mesh-Pruefungen in der Episode), outcome (success, ood, clamp, coll, timeout), d (Abstand am
@@ -67,8 +73,12 @@ p.addParameter('sequential', false);
 p.addParameter('reward', 'step');
 p.addParameter('w_v', 0);       % Strafe auf |v| / 0,05 m/s ueberall (seit 14.11., gegen Pendeln am Ziel)
 p.addParameter('w_dq', 0);      % Strafe auf |dq| / 1 rad/s ueberall (Nullraumbewegung in Ruhe)
+p.addParameter('her', false);   % HER-Modus (seit 14.11., SAC mit HER), siehe unten
+p.addParameter('w_in', 1);      % HER-Modus: Bonus je Schritt innerhalb der Toleranz
+p.addParameter('stopSuccess', true);   % HER-Modus: Ende bei Erfolg (Auswertung) oder nicht (Training)
 p.parse(varargin{:});
 o = p.Results;
+if o.her, o.fine = true; end
 P = o.chainP;
 if isempty(P), P = chain_step('params'); end
 o.chainP = P;
@@ -83,8 +93,10 @@ if o.coll
 else
     CC = []; rb = [];
 end
-nObs = 50 - 3 * ~o.fine;
+nObs = 50 - 3 * ~o.fine + o.her;
 if ~o.fine, o.w_fine = 0; end
+H = struct('c', [0.5; 0; 0.7], 'v_cap', P.v_cap, 'w_lin', o.w_lin, 'w_fine', o.w_fine, 'w_v', o.w_v, ...
+           'w_dq', o.w_dq, 'w_brk', o.w_brk, 'w_base', o.w_base, 'w_in', o.w_in, 'tol', o.tol, 'r_fail', o.r_fail);
 obsInfo = rlNumericSpec([nObs 1], 'LowerLimit', -inf(nObs, 1), 'UpperLimit', inf(nObs, 1));   % keine Kappung (A72)
 obsInfo.Name = 'x6_obs';
 actInfo = rlNumericSpec([7 1], 'LowerLimit', -ones(7, 1), 'UpperLimit', ones(7, 1));
@@ -94,7 +106,8 @@ seededFor = -1; seqK = 0;   % Prozess, fuer den der Strom gilt (0 Client, sonst 
 nMax = round(o.T / P.Ts);
 nHold = round(1 / P.Ts);
 env = rlFunctionEnv(obsInfo, actInfo, @stepFcn, @resetFcn);
-info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o, 'K', K, 'plantOpt', plantOpt, 'coll', CC);
+info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o, 'K', K, 'plantOpt', plantOpt, 'coll', CC, ...
+              'her', H);
 
     function [obs, L] = resetFcn()
         tk = getCurrentTask();
@@ -126,8 +139,9 @@ info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o, 'K', K, 'plantO
         L.d0 = norm(L.pT - y.p); L.d = L.d0; L.dPrev = L.d0;
         L.aPrev = zeros(7, 1);
         L.brake = false(7, 1);
-        L.hold = 0; L.n = 0; L.coll = false; L.nMesh = 0;
+        L.hold = 0; L.n = 0; L.coll = false; L.nMesh = 0; L.fail = false; L.success = false;
         obs = observe(y, L);
+        L.obs = obs;
     end
 
     function [obs, r, done, L] = stepFcn(a, L)
@@ -157,6 +171,24 @@ info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o, 'K', K, 'plantO
         if d <= o.tol && sp <= o.tol, L.hold = L.hold + 1; else, L.hold = 0; end
         done = false;
         L.d = d;
+        if o.her
+            % HER-Modus: Reward nur aus den Beobachtungen, kein Abbruch nach Abstand (haengt vom Ziel ab)
+            L.fail = any(y.clamp) || L.coll;
+            obs = observe(y, L);
+            r = ext_x6_her_reward(L.obs, a, obs, H);
+            L.obs = obs;
+            if L.hold >= nHold && ~L.success, L.success = true; L.outcome = "success"; end
+            if L.fail
+                done = true;
+                if L.coll, L.outcome = "coll"; else, L.outcome = "clamp"; end
+            elseif L.success && o.stopSuccess
+                done = true;
+            elseif L.n >= nMax
+                done = true;
+                if ~L.success, L.outcome = "timeout"; end
+            end
+            return
+        end
         if L.hold >= nHold
             r = r + o.r_succ; done = true; L.outcome = "success";
         elseif d > L.d0 + 0.4 || any(y.clamp) || L.coll
@@ -173,8 +205,14 @@ info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o, 'K', K, 'plantO
     end
 
     function obs = observe(y, L)
-        eb = y.Rb.' * (L.pT - y.p);
         q = y.q;
+        if o.her
+            obs = [(L.pT - H.c) / 0.5; (y.p - H.c) / 0.5; y.v / 0.5; ...
+                   sin(q([1 3 5 7])); cos(q([1 3 5 7])); q(fin) ./ qL; y.dq ./ P.v_cap; y.e_ori / 0.5; ...
+                   y.w_base / 0.5; (qL - abs(q(fin))) ./ qL; L.cs.v_prev ./ P.v_max; double(L.brake); double(L.fail)];
+            return
+        end
+        eb = y.Rb.' * (L.pT - y.p);
         if o.fine, fc = min(max(eb, -0.05), 0.05) * 20; else, fc = zeros(0, 1); end
         obs = [eb; fc; y.Rb.' * y.v / 0.5; ...
                sin(q([1 3 5 7])); cos(q([1 3 5 7])); q(fin) ./ qL; y.dq ./ P.v_cap; y.e_ori / 0.5; ...

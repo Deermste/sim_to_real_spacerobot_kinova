@@ -2152,6 +2152,30 @@ Richtung, ohne Kollisionsprüfung, eine Stufe mit 2 cm. Sonst wie Variante a. Je
   Rollout pendelt der Agent weiter mit 15 bis 50 mm/s in 1 bis 14 mm Abstand. Stärkere Strafen verschieben das
   Ergebnis also nicht zum Halten, sie bremsen nur das Lernen der Annäherung.
 
+**SAC auf der leichten Aufgabe (E14-Rückfall, 14.11.):** `ext_x6_sac` über `ext_x6_sanity('algo', ...)`, dieselbe
+Aufgabe und Toleranz 2 cm wie oben, 45 min Training je Lauf, seriell (ein Prozess). SAC 2 × 256, γ 0,99, Minibatch
+256, Puffer 1e6, τ 5e-3, Lernraten 3e-4, Entropie automatisch, 1000 Startschritte.
+- **sanity_sac:** Umgebung und Gewichte wie sanity3 (50 Kanäle, Ende bei Erfolg).
+- **sanity_her:** Umgebung im HER-Modus (`ext_x6_env 'her'`): Ziel und Werkzeugpunkt als eigene Kanäle in Welt,
+  kein Fehler- und kein Feinkanal, Reward `ext_x6_her_reward` (Potenzial, Bonus 1 je Schritt innerhalb der
+  Toleranz, ohne w_da), im Training kein Ende bei Erfolg und kein Abbruch nach Abstand.
+  `rlHindsightReplayMemory`, Strategie future, 4 Ziele.
+
+| Lauf | Episoden | Endabstand Median je Abschnitt (Auswertung) | bester Abschnitt | Stufenprüfung 2 cm | Auswertung 5 mm | Endgeschwindigkeit Median |
+|---|---|---|---|---|---|---|
+| sanity_her | 1000 | 447 → 58 bis 65 mm | 58 mm (Abschnitt 9) | 0 % | 0 % | 25 bis 65 mm/s |
+| sanity_sac | 1100 | 338 → 17 bis 66 mm, schwankend | 17 mm (Abschnitt 8) | 0 bis 23 % | 0 % | 20 bis 40 mm/s |
+
+- Beide lernen in der Zeit die Annäherung schlechter als PPO (sanity2: 1,4 bis 2,6 mm) und halten ebenfalls
+  nicht. Die Endgeschwindigkeit liegt im selben Bereich wie bei PPO.
+- Der Vergleich ist auf gleiche Rechenzeit gestellt, nicht auf gleiche Schrittzahl. SAC sah etwa 0,3 Mio.
+  Schritte, PPO in 5000 Episoden deutlich mehr. Pro Schritt lernt SAC effizienter, hier reicht das nicht.
+- HER lernt langsamer als SAC ohne HER. Wahrscheinliche Ursache: Ohne Fehlerkanal muss das Netz die Differenz
+  aus zwei Lagen in Welt bilden (Eingänge der Größe 1, Ziel im Bereich von Millimetern). Der Lauf ändert neben HER
+  auch den Reward (Haltebonus), beides ist nicht getrennt.
+- Ein Seed je Lauf, kurze Laufzeit. Ein längerer SAC-Lauf könnte die Annäherung noch verbessern. Hinweise auf ein
+  Halten gibt es in keinem Abschnitt.
+
 **Stand X6.3 (14.11.):**
 - Der Aufbau ist nach zwei Entwurfsfehlern im Reward plausibel. Auf der leichten Aufgabe lernt PPO in 5000
   Episoden die Annäherung auf wenige Millimeter.
@@ -2162,14 +2186,18 @@ Richtung, ohne Kollisionsprüfung, eine Stufe mit 2 cm. Sonst wie Variante a. Je
   erst, wenn die leichte Aufgabe gelöst ist.
 - Das passt zu K10: Der Abstand zum Regler ist lernbegrenzt. Für ein exaktes Halten fehlt dem stochastischen
   Agenten ein Anreiz, den er unter Rauschen auch erfährt. Ein Regler hält dagegen von selbst (X6.2, R0 498 / 500).
-- Mögliche nächste Schritte (Entscheidung offen, siehe PLAN X6.3): X7 Residual RL (der Regler hält, RL korrigiert),
-  SAC mit HER (E14, Rückfall), oder weiter an PPO (Aktion als Geschwindigkeitsänderung, Streuung am Ende fest
-  klein, längeres Training).
+- SAC mit und ohne HER (E14-Rückfall) hält ebenfalls nicht und nähert sich in gleicher Zeit schlechter an als PPO.
+  Der Wechsel des Verfahrens löst das Problem also nicht.
+- Mögliche nächste Schritte (Entscheidung offen, siehe PLAN X6.3): X7 Residual RL (der Regler hält, RL korrigiert,
+  E19), oder weiter an PPO (Aktion als Geschwindigkeitsänderung, Streuung am Ende fest klein, Haltebonus wie im
+  HER-Modus, längeres Training).
 
 Datenquelle: `X6_pilot_{a,b,c}_seed0_{log,curve,eval}_20261114_*.csv`, Log `X6_pilot_matlab.log`, Agenten
 `SavedAgents/MotionProfile/X6/X6_pilot_{a,b,c}_seed0.mat`. Zweiter Lauf `X6_pilot_a_p2_seed0_*`, Log
 `X6_pilot_p2_matlab.log`. Plausibilitätstest `X6_pilot_a_sanity{,2,3,4}_seed0_*`, Logs
-`X6_sanity{,2,3,4}_matlab.log`.
+`X6_sanity{,2,3,4}_matlab.log`. SAC: `X6_sac_her_sanity_her_seed0_{log,curve,eval}_20261114_101747.csv`,
+`X6_sac_sanity_sac_seed0_{log,curve,eval}_20261114_110601.csv`, Log `X6_sanity_sac_matlab.log`, Agenten
+`SavedAgents/MotionProfile/X6/X6_sac{_her_sanity_her,_sanity_sac}_seed0.mat`.
 
 Paper: Nein (Fehlschlag des Aufbaus). Die Lehre zum Reward gehört höchstens in die Methode.
 
