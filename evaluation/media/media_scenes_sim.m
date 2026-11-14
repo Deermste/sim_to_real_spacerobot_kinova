@@ -38,5 +38,6 @@ switch scene
     otherwise
         error('media_scenes_sim:scene', 'Szene problem oder budget');
 end
-out = media_scene1('panels', P, 'name', ['sim_' scene], 'main', main, varargin{:});
+% Mast 1,0 m (z. B. Antenne) und Balken bis 5 Grad, damit die Basisdrehung sichtbar wird (Nutzer 14.11.)
+out = media_scene1('panels', P, 'name', ['sim_' scene], 'main', main, 'boom', 1.0, 'barMax', 5, varargin{:});
 end

@@ -31,6 +31,8 @@ p.addParameter('tag', '');              % Zusatz im Dateinamen, z. B. 'rl'
 % (agent), joints ('J246' wie die Bestandsagenten oder 'all7'), path ('planar'/'tilted'), tilt, title {en, de}.
 % Ersetzt die beiden Regler von Szene 1. Dazu name (Dateiname statt 'scene1') und main {en, de} (Gesamttitel).
 p.addParameter('panels', []);
+p.addParameter('boom', 0);              % Mast an der Basis [m] (maßstaeblich mitgedreht, z. B. Antenne), 0 = aus
+p.addParameter('barMax', 9);            % Balken der Basisdrehung bis barMax Grad
 p.addParameter('name', 'scene1');
 p.addParameter('main', {});
 p.parse(varargin{:});
@@ -80,6 +82,8 @@ save(fullfile(o.outDir, dataName), 'runs', 'betas', 'lim', 'o');
 
 L = labels(o.lang, runs, titles);
 if ~isempty(o.main), L.main = o.main{1 + strcmp(o.lang, 'de')}; end
+L.boom = o.boom;
+L.barMax = o.barMax;
 M = media_robot('load');
 
 % --- Standbild (Stroboskop) ---
@@ -232,6 +236,22 @@ for i = 1:nP
         S{i}.axes(k) = plot3(ax, [0 0], [0 0], [0 0], '-', 'Color', col(k, :), 'LineWidth', 2.2);
         S{i}.trail(k) = plot3(ax, NaN, NaN, NaN, '-', 'Color', [col(k, :) 0.6], 'LineWidth', 1.2);
     end
+    % Mast an der hinteren Ecke der Oberseite (z. B. Antenne), maßstaeblich mitgedreht, gestrichelt in der Startlage
+    S{i}.mast = [];
+    if L.boom > 0
+        f = [-0.45; -0.45; 0.5]; tp = f + [0; 0; L.boom];
+        nq = size(ts.quat, 1);
+        S{i}.mastFoot = ts.pb + squeeze(pagemtimes(Rall, repmat(f, 1, 1, nq))).';
+        S{i}.mastTip = ts.pb + squeeze(pagemtimes(Rall, repmat(tp, 1, 1, nq))).';
+        plot3(ax, [f(1) tp(1)], [f(2) tp(2)], [f(3) tp(3)], '--', 'Color', [0.2 0.2 0.2], 'LineWidth', 1.4, ...
+              'Clipping', 'off');
+        plot3(ax, tp(1), tp(2), tp(3), 'o', 'MarkerSize', 10, 'MarkerEdgeColor', [0.2 0.2 0.2], 'Clipping', 'off');
+        S{i}.mast = plot3(ax, [0 0], [0 0], [0 0], '-', 'Color', [0.15 0.15 0.18], 'LineWidth', 3.5, ...
+                          'Clipping', 'off');
+        S{i}.mastTrail = plot3(ax, NaN, NaN, NaN, '-', 'Color', [0.85 0.3 0.2], 'LineWidth', 1.6, 'Clipping', 'off');
+        S{i}.mastDot = plot3(ax, NaN, NaN, NaN, 'o', 'MarkerSize', 11, 'MarkerFaceColor', [0.85 0.3 0.2], ...
+                             'MarkerEdgeColor', 'k', 'Clipping', 'off');
+    end
     % Bahn des Endeffektors, eingefaerbt nach dem Fehler (0 bis 20 mm)
     S{i}.ee = patch(ax, 'XData', NaN, 'YData', NaN, 'ZData', NaN, 'CData', NaN, 'EdgeColor', 'interp', ...
                     'FaceColor', 'none', 'LineWidth', 3.2);
@@ -256,10 +276,10 @@ for i = 1:nP
                             'Color', [0.5 0.5 0.5]);
     S{i}.bar = annotation(fig, 'rectangle', [xb, 0.07, 0.001, 0.025], 'FaceColor', [0.85 0.3 0.2], ...
                           'Color', 'none');
-    S{i}.barTxt = annotation(fig, 'textbox', [xb, 0.025, bw, 0.04], 'String', L.bar + " (0° bis 9°)", ...
+    S{i}.barTxt = annotation(fig, 'textbox', [xb, 0.025, bw, 0.04], 'String', L.bar + sprintf(" (0° bis %g°)", L.barMax), ...
                              'EdgeColor', 'none', 'FontSize', 11, 'HorizontalAlignment', 'center', ...
                              'FitBoxToText', 'off');
-    if strcmp(L.lang, 'en'), S{i}.barTxt.String = L.bar + " (0° to 9°)"; end
+    if strcmp(L.lang, 'en'), S{i}.barTxt.String = L.bar + sprintf(" (0° to %g°)", L.barMax); end
     S{i}.barW = bw;
     A{i} = ax;
 end
@@ -286,6 +306,13 @@ for k = 1:3
     S.axes(k).XData = [pb(1) tip(1)]; S.axes(k).YData = [pb(2) tip(2)]; S.axes(k).ZData = [pb(3) tip(3)];
     S.trail(k).XData = TT(:, 1); S.trail(k).YData = TT(:, 2); S.trail(k).ZData = TT(:, 3);
 end
+if ~isempty(S.mast)
+    a = S.mastFoot(n, :); b = S.mastTip(n, :);
+    S.mast.XData = [a(1) b(1)]; S.mast.YData = [a(2) b(2)]; S.mast.ZData = [a(3) b(3)];
+    S.mastTrail.XData = S.mastTip(1:n, 1); S.mastTrail.YData = S.mastTip(1:n, 2);
+    S.mastTrail.ZData = S.mastTip(1:n, 3);
+    S.mastDot.XData = b(1); S.mastDot.YData = b(2); S.mastDot.ZData = b(3);
+end
 ee = ts.ref(1:n, :) + ts.ep(1:n, :);
 e = 1000 * vecnorm(ts.ep(1:n, :), 2, 2);
 S.ee.XData = [ee(:, 1); NaN]; S.ee.YData = [ee(:, 2); NaN]; S.ee.ZData = [ee(:, 3); NaN];
@@ -296,7 +323,7 @@ s2 = sprintf(L.err, e(end));
 s3 = sprintf(L.ori, fmtDeg(ts.ori(n)));
 if strcmp(L.lang, 'de'), s2 = strrep(s2, '.', ','); s1 = strrep(s1, '.', ','); end
 S.txt.String = {s1, s2, s3};
-w = S.barW * min(rad2deg(ts.ori(n)) / 9, 1);    % Balken 0 bis 9 Grad
+w = S.barW * min(rad2deg(ts.ori(n)) / L.barMax, 1);    % Balken 0 bis barMax Grad
 S.bar.Position(3) = max(w, 0.001);
 end
 
