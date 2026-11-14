@@ -79,7 +79,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X5.1 | 3D-Bahn mit allen 7 Gelenken: Modell, Machbarkeit mit dem Regler aus X2 | 2–3 Tage | 1 h | X2.1 | 🔄 Machbarkeit ✅ 10.11., SK_desktop offen |
 | X5.2 | Pilot 3D: 2 Varianten × 2 Seeds, Go/No-Go | ½ Tag | ≈ 3 h | X5.1 | ⬜ |
 | X5.3 | Hauptlauf 3D: 10 Seeds, Vergleich mit Nullraum-Regler | 1 Tag | ≈ 6–8 h | E4 | ⏸ |
-| X6.0 | Set-Point: Ausgangslage des alten Agenten, Zielwerte und Bezugspunkt festlegen | ½ Tag | – | E11 | ⬜ |
+| X6.0 | Set-Point: Ausgangslage des alten Agenten, Zielwerte und Bezugspunkt festlegen | ½ Tag | – | E11 | ✅ 14.11. (Literatur: e.deorbit 4 mm Annäherung, Fanghülle ±20 mm, ±2–5°) |
 | X6.1 | Schritt-Umgebung auf dem kinematischen Simulator (7 Gelenke, frei schwebend), Start- und Zielgenerator | 2 Tage | < 1 h | X0.2 | ✅ 13.11. (Paarsatz, Strecke, Umgebung, Trainingssatz 2000 Paare, Kollision je Schritt mit Kapsel-Vorfilter) |
 | X6.2 | Vergleichsregler und Erreichbarkeit der Ziele | ½ Tag | < 1 h | X6.1 | ✅ 13.11. (R0 498/500 mit neuer Kette, 455 mit alter; Nullraum-Mittelzug offen) |
 | X6.3 | Pilot: drei Varianten × 1 Seed | 1 Tag | ≈ 4–6 h | X6.1, E12–E14 | ⚠️ 14.11.: erster Lauf am Reward gescheitert. Nach der Korrektur lernt PPO im Plausibilitätstest die Annäherung auf wenige mm, aber kein Halten (0 % bei 5 mm). Entscheidung offen: X7, SAC mit HER oder weiter PPO |

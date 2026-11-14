@@ -1764,6 +1764,46 @@ Paper: neuer Abschnitt 3D (Aufgabe, Regler-Front). Offen, hängt an X5.2 und E4.
 
 ## X6 Set-Point
 
+### X6.0 Zielwerte: Literatur zur Toleranz ✅ 14.11.2026
+
+Frage aus PLAN X6.0: Reichen einige Millimeter Endfehler der Greiferspitze für eine Annäherung vor dem Greifen?
+
+**Quelle 1 (Primärquelle, offen zugänglich):** S. Jaekel, R. Lampariello, W. Rackl, M. De Stefano, N. Oumer,
+A. M. Giordano, O. Porges, M. Pietras, B. Brunner, J. Ratti, Q. Muehlbauer, M. Thiel, S. Estable, R. Biesbroek,
+A. Albu-Schäffer, „Design and Operational Elements of the Robotic Subsystem for the e.deorbit Debris Removal
+Mission“, Frontiers in Robotics and AI 5:100, 2018, doi:10.3389/frobt.2018.00100. Werte für den Fang von ENVISAT
+mit einem frei schwebenden 7-Gelenk-Arm:
+- Greifer (Abschnitt 4.3): Die Kontaktsimulation bestätigt „initial grasping position tolerances of 20mm lateral
+  and 5deg angular“.
+- Klemmmechanismus (Abschnitt 4.4): „A capture envelope of +/−21mm in all axes, +/−2deg about any axis was easily
+  achievable“, ausgelegt für eine blinde Annäherung mit heutiger Armtechnik.
+- Annäherung des Arms in der gekoppelten Simulation (Abschnitt 6.2): Die Simulation endet, sobald „position error
+  below 4 mm and 0.3deg“ erreicht ist. Das gelang für alle getesteten Fälle.
+- Bildverarbeitung (Abschnitt 6.1): ungünstigster Fehler der Lageschätzung ±2,5 cm.
+
+**Quelle 2 (Herstellerangabe):** Robotiq 2F-85, Hub 85 mm (Robotiq, Produktblatt Adaptive Grippers und
+Knowledge-Base-Artikel zur Auflösung). Bei einem Objekt der Breite w bleibt seitlich etwa ±(85 − w)/2 mm, bei
+w = 50 mm also ±17,5 mm. Ob der Laborarm diesen Greifer trägt, ist nicht geprüft. Der Werkzeugpunkt von 0,121 m
+passt zu einem Greifer dieser Größe, belegt ist das nicht.
+
+**Nicht verwendbar:** Eine Vortragsfolie aus Padua (Caon, PhD-Zwischenbericht) nennt 4,5 bis 5,5 mm Genauigkeit
+eines Industriearms vor einer Fangschnittstelle. Das ist keine begutachtete Quelle. Die ETS-VII-Berichte auf NTRS
+sind Scans ohne Textebene, ein Springer-Artikel mit Fanghüllen von ±25 und ±100 mm (doi:10.1007/s11771-013-1825-z)
+war nicht zugänglich. Beides ist nicht geprüft.
+
+**Deutung für E11:**
+- 5 mm liegt in der Größenordnung des Abbruchkriteriums der e.deorbit-Annäherung (4 mm) und etwa um den Faktor 4
+  unter den Fanghüllen von Greifer und Klemme (20 bis 21 mm). Die Annahme „einige Millimeter reichen“ ist damit
+  für diesen Fall belegt, mit Reserve für Fehler der Wahrnehmung.
+- Die Winkeltoleranzen dort sind eng (2° bis 5°). Die Orientierung als Stufe 2 (≤ 3°, PLAN X6.0) ist also für
+  einen echten Fang nötig und nicht nur eine Zugabe. Ohne sie bleibt die Aussage auf die Position beschränkt.
+- Für die Grenze von 5 mm/s und das Halten über 1 s wurde keine Quelle gefunden. Beides bleibt eine eigene,
+  vorsichtige Festlegung.
+- In unserem Aufbau ist das Ziel exakt bekannt. Bei e.deorbit ist der Schätzfehler (±2,5 cm) größer als die
+  Toleranz des Arms. Das gehört als Grenze ins Paper.
+
+Paper: Begründung der Zielwerte im X6-Teil (Quelle 1 als Literaturangabe). Offen bis E7d.
+
 ### E18 Neue Befehlskette: Tests und Reglervergleich ✅ 13.11.2026
 
 **Frage:** Funktioniert die neue Kette (PLAN „Neue Befehlskette für X6“)? Und was macht die Kette allein aus,
