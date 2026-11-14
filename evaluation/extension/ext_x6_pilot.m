@@ -8,6 +8,9 @@ function out = ext_x6_pilot(variant, seed, varargin)
 %     b  wie a, ohne Feinkanal und Feinterm (47 Kanaele, w_fine 0)
 %     c  wie a, aber 10 Hz und Filter tau 2 s in der Kette (wie fixed1: 0,95 je Schritt bei 10 Hz, tau 1,95 s)
 %   Ohne Randomisierung (Strecke wie ext_x6_plant, Nominalmodell). Kollision je Schritt beendet die Episode.
+%   Reward: 'reward' 'progress' (Standard seit 14.11., Potenzial, w_da 0,01, w_brk 0,02, w_base 0,05, r_fail -100)
+%   oder 'step' (erster Pilot 13.11., Gewichte der Umgebung, r_fail -50; lernte nur, die Episode zu beenden).
+%   'label' haengt an den Namen an (X6_pilot_<V>_<label>_seed<S>), der erste Pilot hat kein Label.
 %
 %   Training in Abschnitten zu 'chunk' Episoden (je Abschnitt ein train-Aufruf, Agent wird weitergegeben).
 %   Trainingspaare aus dem neuesten X6_train_*.mat, Auswertepaare aus dem neuesten X6_pairs_*.mat (set "eval").
@@ -35,6 +38,8 @@ p.addParameter('chunk', 500);
 p.addParameter('nEval', 100);
 p.addParameter('nCur', 48);
 p.addParameter('tag', '');
+p.addParameter('reward', 'progress');
+p.addParameter('label', '');
 p.parse(varargin{:});
 o = p.Results;
 assert(ismember(variant, {'a', 'b', 'c'}), 'ext_x6_pilot:variant', 'Variante a, b oder c');
@@ -54,11 +59,14 @@ C = chain_step('params');
 envArgs = {};
 if variant == "b", envArgs = {'fine', false}; end
 if variant == "c", C.Ts = 0.1; C.tau = 2; end
+if strcmp(o.reward, 'progress')
+    envArgs = [envArgs, {'reward', 'progress', 'w_da', 0.01, 'w_brk', 0.02, 'w_base', 0.05, 'r_fail', -100}];
+end
 lv = struct('tol', {0.05, 0.02, 0.01, 0.005}, 'dcap', {0.2, 0.4, 0.8, Inf});
 pFull = 0.2;
 cfg = struct('variant', variant, 'seed', seed, 'chainP', C, 'envArgs', {envArgs}, 'levels', lv, 'pFull', pFull, ...
     'chunk', o.chunk, 'maxEpisodes', o.maxEpisodes, 'maxHours', o.maxHours, 'nEval', numel(Pev), ...
-    'nCur', o.nCur, 'trainFile', dT(end).name, 'evalFile', dE(end).name, 'hidden', 256);
+    'nCur', o.nCur, 'reward', o.reward, 'label', o.label, 'trainFile', dT(end).name, 'evalFile', dE(end).name, 'hidden', 256);
 cfg.opts = struct('ExperienceHorizon', 1024, 'MiniBatchSize', 256, 'NumEpoch', 10, 'ClipFactor', 0.2, ...
     'DiscountFactor', 0.99, 'GAEFactor', 0.95, 'EntropyLossWeight', 1e-3, 'ActorLR', 3e-4, 'CriticLR', 1e-3);
 
@@ -134,7 +142,11 @@ end
 log = struct2table([logRows{:}]);
 info = struct('wallTime_s', toc(tStart), 'numWorkers', pool.NumWorkers, 'matlab', version, ...
     'date', char(datetime('now', 'Format', 'yyyy-MM-dd HH:mm:ss')), 'computer', getenv('COMPUTERNAME'));
-name = sprintf('X6_pilot_%s_seed%d', variant, seed);
+if isempty(o.label)
+    name = sprintf('X6_pilot_%s_seed%d', variant, seed);
+else
+    name = sprintf('X6_pilot_%s_%s_seed%d', variant, o.label, seed);
+end
 if isempty(o.tag)
     agentDir = sk_path('SavedAgents', 'MotionProfile', 'X6');
     csvDir = dd;

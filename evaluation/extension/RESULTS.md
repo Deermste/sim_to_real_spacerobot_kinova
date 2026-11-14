@@ -1993,6 +1993,48 @@ Datenquelle: `X6_ctrl_eval_{runs,groups,cells}_20261113_212110.csv`, Log `X6_ctr
 
 Paper: X6 (Vergleichsregler, Erreichbarkeit). Offen.
 
+### X6.3 Pilot 🔄 (erster Lauf 13./14.11.2026 gescheitert, Reward-Fehler)
+
+**Aufbau** (`ext_x6_pilot`):
+- PPO in `ext_x6_env`: 2 × 256, Horizont 1024, Minibatch 256, Lernraten 3e-4 / 1e-3, synchron auf 8 Workern.
+- Abschnitte zu 500 Episoden, Trainingssatz `X6_train_20261113_231852`, ohne Randomisierung.
+- Curriculum in vier Stufen: tol 5 / 2 / 1 / 0,5 cm, dcap 0,2 / 0,4 / 0,8 m / voll, 20 % der Episoden mit voller
+  Weglänge. Die nächste Stufe kommt ab 80 % auf 48 festen Trainingspaaren.
+- Nach jedem Abschnitt läuft der Agent deterministisch auf 100 Paaren des Auswertesatzes (5 mm, E11).
+- Varianten: a (E18, 20 Hz, Feinkanal), b (ohne Feinkanal und Feinterm), c (10 Hz, Filter τ 2 s). Je höchstens
+  20 000 Episoden oder 2 h.
+
+**Erster Lauf, Reward 'step'** (je Schritt −d + 0,5 exp(−d / 5 mm) − Strafen, Abbruch −50):
+- Alle drei Varianten nach 20 000 Episoden (je etwa 1 h) bei 0 %. Die erste Stufe (5 cm, 0,2 m) wurde nie
+  erreicht, auch nicht auf den Trainingspaaren.
+- In der Auswertung endet jede Episode mit Kollision oder OOD, keine mit Zeitende: a 88 / 12, b 80 / 19 (dazu 1 Klemme),
+  c 53 / 25 von 100 (c dazu 22 Klemmen).
+- Die Episoden werden im Training kürzer, der Reward steigt dadurch:
+
+| Variante | Schritte je Episode, Abschnitt 1 → 40 | Reward je Episode, Abschnitt 1 → 40 |
+|---|---|---|
+| a | 97,6 → 30,0 | −114 → −66 |
+| b | 105,5 → 29,7 | −119 → −69 |
+| c | 92,0 → 25,9 | −97 → −73 |
+
+- **Ursache (Fehler im Entwurf):** Jeder Schritt kostet −d. Auf Stufe 1 mit d um 0,2 m sind das über 15 s etwa
+  −60, dazu die Strafen. Ein Abbruch kostet einmalig −50. Früh zu kollidieren oder wegzufahren war damit
+  billiger, als in der Nähe zu bleiben, ohne das Ziel zu treffen. Der Agent lernte genau das.
+- Der Lauf sagt deshalb nichts über PPO, den Feinkanal oder die Kette. Die Varianten sind nicht vergleichbar.
+
+**Behebung** (`'reward', 'progress'`, Standard in `ext_x6_pilot` seit 14.11.):
+- Der Abstand und der Feinterm gehen als Potenzial ein, Φ(d) = −d / 1 cm + 10 exp(−d / 5 mm) und
+  r = Φ(d) − Φ(d_prev) − Strafen.
+- Kleinere Strafen (w_da 0,01, w_brk 0,02, w_base 0,05) und Abbruch −100.
+- Prüfung an einem Paar (dcap 0,2 m): Aktion null über 15 s ergibt 0,0, volle Aktion −141,2 (OOD nach
+  30 Schritten), Ziel 3 mm vom Start mit Aktion null +50 (Erfolg). Ein frühes Ende lohnt sich nicht mehr.
+- Zweiter Lauf: Variante a, höchstens 1 h, Label p2. Ergebnis folgt.
+
+Datenquelle: `X6_pilot_{a,b,c}_seed0_{log,curve,eval}_20261114_*.csv`, Log `X6_pilot_matlab.log`, Agenten
+`SavedAgents/MotionProfile/X6/X6_pilot_{a,b,c}_seed0.mat`.
+
+Paper: Nein (Fehlschlag des Aufbaus). Die Lehre zum Reward gehört höchstens in die Methode.
+
 ## Gliederung (für Phase P)
 
 Wird nach X1 und X2 vorgeschlagen.

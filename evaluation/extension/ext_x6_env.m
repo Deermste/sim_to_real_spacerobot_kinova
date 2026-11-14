@@ -22,6 +22,11 @@ function [env, info] = ext_x6_env(pool, varargin)
 %   Reward je Schritt (Entwurf, Gewichte als Optionen):
 %     -w_lin d + w_fine exp(-d / 5 mm) - w_da |a - a_prev|^2 - w_brk any(brake) - w_base |w_base|
 %     - w_stop |v| / 0,05 nahe am Ziel (d < 2 cm)
+%     Option 'reward' 'progress' (seit 14.11., nach dem ersten Pilot): Abstand und Feinterm als Potenzial
+%       Phi(d) = -w_lin d / 1 cm + 20 w_fine exp(-d / 5 mm),  r = Phi(d) - Phi(d_prev) - (Strafen wie oben)
+%     Ueber eine Episode summiert sich Phi zu Phi(d_Ende) - Phi(d0). Ein fruehes Ende spart damit nichts. Mit
+%     'step' (Standard, erster Pilot) kostet jeder Schritt -w_lin d, und ein Abbruch mit r_fail war billiger als
+%     15 s in der Naehe des Ziels (der Agent lernte, die Episode zu beenden).
 %     d = |pT - p|. Erfolg: d <= 5 mm und |v| <= 5 mm/s 20 Schritte lang (1 s), +r_succ, Ende.
 %     Abbruch: d > d0 + 0,4 m (wie oodMargin im Deploy-Skript), ein Gelenk an der Klemme der Strecke oder
 %     Kollision (Option 'coll', Standard true: ext_x6_coll mit Kapseln als Vorfilter und Mesh-Pruefung, Arm gegen
@@ -57,6 +62,7 @@ p.addParameter('tol', 0.005);
 p.addParameter('dcap', Inf);
 p.addParameter('pFull', 0);
 p.addParameter('sequential', false);
+p.addParameter('reward', 'step');
 p.parse(varargin{:});
 o = p.Results;
 P = o.chainP;
@@ -113,7 +119,7 @@ info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o, 'K', K, 'plantO
         L.id = 0;
         if isfield(pr, 'id'), L.id = pr.id; end
         L.outcome = "running";
-        L.d0 = norm(L.pT - y.p); L.d = L.d0;
+        L.d0 = norm(L.pT - y.p); L.d = L.d0; L.dPrev = L.d0;
         L.aPrev = zeros(7, 1);
         L.brake = false(7, 1);
         L.hold = 0; L.n = 0; L.coll = false; L.nMesh = 0;
@@ -135,8 +141,14 @@ info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o, 'K', K, 'plantO
         e = L.pT - y.p;
         d = norm(e);
         sp = norm(y.v);
-        r = -o.w_lin * d + o.w_fine * exp(-d / 0.005) - o.w_da * sum((a - L.aPrev) .^ 2) ...
-            - o.w_brk * any(ci.brake) - o.w_base * norm(y.w_base) - o.w_stop * (d < 0.02) * sp / 0.05;
+        pen = o.w_da * sum((a - L.aPrev) .^ 2) + o.w_brk * any(ci.brake) + o.w_base * norm(y.w_base) ...
+              + o.w_stop * (d < 0.02) * sp / 0.05;
+        if strcmp(o.reward, 'progress')
+            r = phi(d) - phi(L.dPrev) - pen;
+        else
+            r = -o.w_lin * d + o.w_fine * exp(-d / 0.005) - pen;
+        end
+        L.dPrev = d;
         L.aPrev = a;
         if d <= o.tol && sp <= o.tol, L.hold = L.hold + 1; else, L.hold = 0; end
         done = false;
@@ -150,6 +162,10 @@ info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o, 'K', K, 'plantO
             done = true; L.outcome = "timeout";
         end
         obs = observe(y, L);
+    end
+
+    function f = phi(d)
+        f = -o.w_lin * d / 0.01 + 20 * o.w_fine * exp(-d / 0.005);
     end
 
     function obs = observe(y, L)

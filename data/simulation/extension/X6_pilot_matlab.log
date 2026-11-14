@@ -1,0 +1,135 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+X6 Pilot a, Seed 0: 50 Kanaele, 20 Hz, 2000 Trainings- und 100 Auswertepaare, 8 Worker
+Abschnitt  1:   500 Episoden,   3.0 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 548.3 mm, Kollision 68, OOD 20, Zeitende 6), Training 2.3 min, Auswertung 0.7 min
+Abschnitt  2:  1000 Episoden,   5.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 525.7 mm, Kollision 80, OOD 10, Zeitende 0), Training 1.9 min, Auswertung 0.3 min
+Abschnitt  3:  1500 Episoden,   7.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 572.3 mm, Kollision 81, OOD 13, Zeitende 0), Training 1.8 min, Auswertung 0.2 min
+Abschnitt  4:  2000 Episoden,   8.6 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 577.7 mm, Kollision 82, OOD 16, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt  5:  2500 Episoden,  10.1 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 564.2 mm, Kollision 79, OOD 18, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt  6:  3000 Episoden,  11.6 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 538.6 mm, Kollision 84, OOD 15, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt  7:  3500 Episoden,  13.0 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 586.2 mm, Kollision 83, OOD 17, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt  8:  4000 Episoden,  14.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 558.0 mm, Kollision 81, OOD 18, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt  9:  4500 Episoden,  16.0 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 550.2 mm, Kollision 84, OOD 15, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 10:  5000 Episoden,  17.6 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 547.3 mm, Kollision 82, OOD 18, Zeitende 0), Training 1.4 min, Auswertung 0.2 min
+Abschnitt 11:  5500 Episoden,  18.9 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 560.9 mm, Kollision 84, OOD 15, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 12:  6000 Episoden,  20.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 546.5 mm, Kollision 79, OOD 21, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 13:  6500 Episoden,  21.8 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 566.0 mm, Kollision 76, OOD 24, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 14:  7000 Episoden,  23.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 554.8 mm, Kollision 85, OOD 15, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 15:  7500 Episoden,  24.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 567.6 mm, Kollision 80, OOD 20, Zeitende 0), Training 1.0 min, Auswertung 0.2 min
+Abschnitt 16:  8000 Episoden,  26.0 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 572.1 mm, Kollision 79, OOD 21, Zeitende 0), Training 1.2 min, Auswertung 0.3 min
+Abschnitt 17:  8500 Episoden,  27.6 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 521.7 mm, Kollision 83, OOD 17, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 18:  9000 Episoden,  29.1 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 512.3 mm, Kollision 84, OOD 16, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 19:  9500 Episoden,  30.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 523.5 mm, Kollision 82, OOD 18, Zeitende 0), Training 1.0 min, Auswertung 0.2 min
+Abschnitt 20: 10000 Episoden,  31.8 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 523.5 mm, Kollision 84, OOD 16, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 21: 10500 Episoden,  33.2 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 553.9 mm, Kollision 85, OOD 15, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 22: 11000 Episoden,  34.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 527.4 mm, Kollision 86, OOD 13, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 23: 11500 Episoden,  36.0 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 544.3 mm, Kollision 83, OOD 17, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 24: 12000 Episoden,  37.4 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 528.0 mm, Kollision 84, OOD 15, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 25: 12500 Episoden,  38.8 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 544.7 mm, Kollision 84, OOD 16, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 26: 13000 Episoden,  40.1 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 551.3 mm, Kollision 86, OOD 14, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 27: 13500 Episoden,  41.4 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 555.9 mm, Kollision 87, OOD 13, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 28: 14000 Episoden,  42.8 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 567.8 mm, Kollision 86, OOD 14, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 29: 14500 Episoden,  44.4 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 556.7 mm, Kollision 86, OOD 14, Zeitende 0), Training 1.4 min, Auswertung 0.2 min
+Abschnitt 30: 15000 Episoden,  45.9 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 549.0 mm, Kollision 87, OOD 13, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 31: 15500 Episoden,  47.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 540.6 mm, Kollision 88, OOD 12, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 32: 16000 Episoden,  48.6 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 550.8 mm, Kollision 88, OOD 12, Zeitende 0), Training 1.0 min, Auswertung 0.2 min
+Abschnitt 33: 16500 Episoden,  50.0 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 546.0 mm, Kollision 85, OOD 15, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 34: 17000 Episoden,  51.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 566.4 mm, Kollision 85, OOD 15, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 35: 17500 Episoden,  52.8 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 573.6 mm, Kollision 83, OOD 17, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 36: 18000 Episoden,  54.2 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 558.2 mm, Kollision 87, OOD 13, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 37: 18500 Episoden,  55.6 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 551.4 mm, Kollision 87, OOD 13, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 38: 19000 Episoden,  56.9 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 546.7 mm, Kollision 89, OOD 11, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 39: 19500 Episoden,  58.2 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 556.8 mm, Kollision 90, OOD 10, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 40: 20000 Episoden,  59.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 563.6 mm, Kollision 88, OOD 12, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+X6 Pilot a fertig nach 59.5 min, bester Auswertewert 0 %. Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X6\X6_pilot_a_seed0.mat
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X6 Pilot b, Seed 0: 47 Kanaele, 20 Hz, 2000 Trainings- und 100 Auswertepaare, 8 Worker
+Abschnitt  1:   500 Episoden,   2.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 590.5 mm, Kollision 63, OOD 20, Zeitende 12), Training 2.1 min, Auswertung 0.6 min
+Abschnitt  2:  1000 Episoden,   4.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 585.7 mm, Kollision 75, OOD 21, Zeitende 0), Training 1.8 min, Auswertung 0.3 min
+Abschnitt  3:  1500 Episoden,   6.2 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 564.8 mm, Kollision 81, OOD 18, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt  4:  2000 Episoden,   7.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 563.9 mm, Kollision 77, OOD 20, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt  5:  2500 Episoden,   9.0 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 559.1 mm, Kollision 79, OOD 21, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt  6:  3000 Episoden,  10.4 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 566.9 mm, Kollision 80, OOD 20, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt  7:  3500 Episoden,  11.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 561.1 mm, Kollision 82, OOD 18, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt  8:  4000 Episoden,  13.2 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 594.9 mm, Kollision 80, OOD 20, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt  9:  4500 Episoden,  14.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 585.1 mm, Kollision 79, OOD 20, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 10:  5000 Episoden,  16.2 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 596.1 mm, Kollision 76, OOD 24, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 11:  5500 Episoden,  17.6 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 615.4 mm, Kollision 72, OOD 28, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 12:  6000 Episoden,  19.1 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 616.3 mm, Kollision 80, OOD 20, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 13:  6500 Episoden,  20.4 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 639.2 mm, Kollision 78, OOD 22, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 14:  7000 Episoden,  21.9 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 605.7 mm, Kollision 80, OOD 20, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 15:  7500 Episoden,  23.1 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 588.0 mm, Kollision 83, OOD 17, Zeitende 0), Training 1.0 min, Auswertung 0.2 min
+Abschnitt 16:  8000 Episoden,  24.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 604.0 mm, Kollision 82, OOD 17, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 17:  8500 Episoden,  26.1 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 580.3 mm, Kollision 82, OOD 18, Zeitende 0), Training 1.4 min, Auswertung 0.2 min
+Abschnitt 18:  9000 Episoden,  27.4 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 589.8 mm, Kollision 82, OOD 18, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 19:  9500 Episoden,  28.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 585.0 mm, Kollision 81, OOD 19, Zeitende 0), Training 1.0 min, Auswertung 0.2 min
+Abschnitt 20: 10000 Episoden,  29.9 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 594.1 mm, Kollision 82, OOD 18, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 21: 10500 Episoden,  31.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 590.9 mm, Kollision 82, OOD 18, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 22: 11000 Episoden,  32.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 573.0 mm, Kollision 81, OOD 19, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 23: 11500 Episoden,  34.1 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 590.5 mm, Kollision 82, OOD 18, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 24: 12000 Episoden,  35.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 602.9 mm, Kollision 80, OOD 20, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 25: 12500 Episoden,  36.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 588.9 mm, Kollision 82, OOD 18, Zeitende 0), Training 1.0 min, Auswertung 0.2 min
+Abschnitt 26: 13000 Episoden,  38.1 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 596.8 mm, Kollision 84, OOD 16, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 27: 13500 Episoden,  39.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 596.0 mm, Kollision 83, OOD 17, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 28: 14000 Episoden,  41.0 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 576.3 mm, Kollision 82, OOD 18, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 29: 14500 Episoden,  42.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 561.8 mm, Kollision 83, OOD 17, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 30: 15000 Episoden,  43.9 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 568.2 mm, Kollision 82, OOD 18, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 31: 15500 Episoden,  45.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 576.4 mm, Kollision 83, OOD 17, Zeitende 0), Training 1.4 min, Auswertung 0.2 min
+Abschnitt 32: 16000 Episoden,  47.0 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 572.4 mm, Kollision 85, OOD 15, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 33: 16500 Episoden,  48.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 573.0 mm, Kollision 85, OOD 15, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 34: 17000 Episoden,  49.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 555.5 mm, Kollision 84, OOD 16, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 35: 17500 Episoden,  51.2 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 561.3 mm, Kollision 82, OOD 18, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 36: 18000 Episoden,  52.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 559.5 mm, Kollision 82, OOD 18, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 37: 18500 Episoden,  54.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 573.1 mm, Kollision 78, OOD 22, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 38: 19000 Episoden,  55.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 569.7 mm, Kollision 79, OOD 21, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 39: 19500 Episoden,  57.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 561.9 mm, Kollision 82, OOD 18, Zeitende 0), Training 1.4 min, Auswertung 0.2 min
+Abschnitt 40: 20000 Episoden,  58.8 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 571.9 mm, Kollision 80, OOD 19, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+X6 Pilot b fertig nach 58.8 min, bester Auswertewert 0 %. Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X6\X6_pilot_b_seed0.mat
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X6 Pilot c, Seed 0: 50 Kanaele, 10 Hz, 2000 Trainings- und 100 Auswertepaare, 8 Worker
+Abschnitt  1:   500 Episoden,   2.1 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 560.2 mm, Kollision 51, OOD 16, Zeitende 19), Training 1.7 min, Auswertung 0.4 min
+Abschnitt  2:  1000 Episoden,   4.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 549.7 mm, Kollision 63, OOD 15, Zeitende 8), Training 1.8 min, Auswertung 0.4 min
+Abschnitt  3:  1500 Episoden,   6.4 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 544.1 mm, Kollision 61, OOD 21, Zeitende 2), Training 1.8 min, Auswertung 0.3 min
+Abschnitt  4:  2000 Episoden,   8.2 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 573.4 mm, Kollision 55, OOD 20, Zeitende 0), Training 1.4 min, Auswertung 0.3 min
+Abschnitt  5:  2500 Episoden,   9.8 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 571.1 mm, Kollision 56, OOD 21, Zeitende 0), Training 1.4 min, Auswertung 0.2 min
+Abschnitt  6:  3000 Episoden,  11.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 588.7 mm, Kollision 63, OOD 23, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt  7:  3500 Episoden,  12.9 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 635.8 mm, Kollision 58, OOD 23, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt  8:  4000 Episoden,  14.4 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 562.4 mm, Kollision 66, OOD 20, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt  9:  4500 Episoden,  15.9 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 524.2 mm, Kollision 70, OOD 16, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 10:  5000 Episoden,  17.4 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 567.0 mm, Kollision 66, OOD 19, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 11:  5500 Episoden,  19.0 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 567.6 mm, Kollision 61, OOD 22, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 12:  6000 Episoden,  20.6 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 573.1 mm, Kollision 60, OOD 22, Zeitende 0), Training 1.4 min, Auswertung 0.2 min
+Abschnitt 13:  6500 Episoden,  22.1 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 583.1 mm, Kollision 57, OOD 23, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 14:  7000 Episoden,  23.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 589.0 mm, Kollision 57, OOD 25, Zeitende 0), Training 1.4 min, Auswertung 0.2 min
+Abschnitt 15:  7500 Episoden,  25.0 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 587.5 mm, Kollision 55, OOD 26, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 16:  8000 Episoden,  26.4 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 571.1 mm, Kollision 56, OOD 24, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 17:  8500 Episoden,  27.8 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 585.0 mm, Kollision 53, OOD 28, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 18:  9000 Episoden,  29.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 604.4 mm, Kollision 53, OOD 28, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 19:  9500 Episoden,  30.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 605.1 mm, Kollision 53, OOD 26, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 20: 10000 Episoden,  32.2 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 623.1 mm, Kollision 52, OOD 27, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 21: 10500 Episoden,  33.6 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 616.3 mm, Kollision 51, OOD 28, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 22: 11000 Episoden,  34.8 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 610.3 mm, Kollision 50, OOD 27, Zeitende 0), Training 1.0 min, Auswertung 0.2 min
+Abschnitt 23: 11500 Episoden,  36.1 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 613.6 mm, Kollision 51, OOD 26, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 24: 12000 Episoden,  37.4 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 607.8 mm, Kollision 51, OOD 27, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 25: 12500 Episoden,  39.0 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 586.5 mm, Kollision 52, OOD 24, Zeitende 0), Training 1.4 min, Auswertung 0.2 min
+Abschnitt 26: 13000 Episoden,  40.4 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 607.2 mm, Kollision 55, OOD 27, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 27: 13500 Episoden,  41.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 608.8 mm, Kollision 54, OOD 27, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 28: 14000 Episoden,  43.2 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 625.7 mm, Kollision 56, OOD 31, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 29: 14500 Episoden,  44.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 615.8 mm, Kollision 57, OOD 30, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 30: 15000 Episoden,  45.9 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 602.9 mm, Kollision 58, OOD 28, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 31: 15500 Episoden,  47.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 615.8 mm, Kollision 59, OOD 27, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 32: 16000 Episoden,  48.6 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 607.1 mm, Kollision 56, OOD 27, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 33: 16500 Episoden,  49.9 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 585.5 mm, Kollision 57, OOD 24, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 34: 17000 Episoden,  51.2 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 589.5 mm, Kollision 57, OOD 24, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 35: 17500 Episoden,  52.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 590.8 mm, Kollision 55, OOD 22, Zeitende 0), Training 1.2 min, Auswertung 0.2 min
+Abschnitt 36: 18000 Episoden,  54.1 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 587.5 mm, Kollision 55, OOD 24, Zeitende 0), Training 1.3 min, Auswertung 0.2 min
+Abschnitt 37: 18500 Episoden,  55.4 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 614.8 mm, Kollision 54, OOD 24, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 38: 19000 Episoden,  56.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 584.7 mm, Kollision 55, OOD 23, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 39: 19500 Episoden,  58.0 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 599.0 mm, Kollision 56, OOD 24, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+Abschnitt 40: 20000 Episoden,  59.3 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 585.0 mm, Kollision 53, OOD 25, Zeitende 0), Training 1.1 min, Auswertung 0.2 min
+X6 Pilot c fertig nach 59.3 min, bester Auswertewert 0 %. Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X6\X6_pilot_c_seed0.mat
+FERTIG
