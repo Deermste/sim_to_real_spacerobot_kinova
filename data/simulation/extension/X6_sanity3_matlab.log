@@ -1,0 +1,21 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Start [0 15 180 -130 0 55 90] Grad, Werkzeugpunkt [0.578 0.001 0.934] m
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+X6 Pilot a, Seed 0: 50 Kanaele, 20 Hz, 500 Trainings- und 100 Auswertepaare, 8 Worker
+Abschnitt  1:   500 Episoden,   2.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 30.1 mm, Kollision 0, OOD 0, Zeitende 100), Training 2.0 min, Auswertung 0.5 min
+Abschnitt  2:  1000 Episoden,   4.9 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 8.0 mm, Kollision 0, OOD 0, Zeitende 100), Training 2.0 min, Auswertung 0.4 min
+Abschnitt  3:  1500 Episoden,   7.3 min, Stufe 1, Stufenpruefung   2 %, Auswertung   0 % (Median 3.9 mm, Kollision 0, OOD 0, Zeitende 100), Training 2.0 min, Auswertung 0.3 min
+Abschnitt  4:  2000 Episoden,   9.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 3.9 mm, Kollision 0, OOD 12, Zeitende 87), Training 2.0 min, Auswertung 0.3 min
+Abschnitt  5:  2500 Episoden,  12.0 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 4.1 mm, Kollision 0, OOD 0, Zeitende 100), Training 2.0 min, Auswertung 0.3 min
+Abschnitt  6:  3000 Episoden,  14.4 min, Stufe 1, Stufenpruefung  15 %, Auswertung   0 % (Median 3.1 mm, Kollision 0, OOD 0, Zeitende 100), Training 2.0 min, Auswertung 0.3 min
+Abschnitt  7:  3500 Episoden,  16.8 min, Stufe 1, Stufenpruefung  31 %, Auswertung   0 % (Median 2.8 mm, Kollision 0, OOD 0, Zeitende 100), Training 2.0 min, Auswertung 0.3 min
+Abschnitt  8:  4000 Episoden,  19.2 min, Stufe 1, Stufenpruefung   6 %, Auswertung   0 % (Median 6.3 mm, Kollision 0, OOD 0, Zeitende 100), Training 2.0 min, Auswertung 0.4 min
+Abschnitt  9:  4500 Episoden,  21.6 min, Stufe 1, Stufenpruefung  29 %, Auswertung   0 % (Median 6.1 mm, Kollision 0, OOD 0, Zeitende 100), Training 2.0 min, Auswertung 0.3 min
+Abschnitt 10:  5000 Episoden,  24.0 min, Stufe 1, Stufenpruefung  17 %, Auswertung   0 % (Median 3.6 mm, Kollision 0, OOD 0, Zeitende 100), Training 2.0 min, Auswertung 0.4 min
+X6 Pilot a fertig nach 24.0 min, bester Auswertewert 0 %. Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X6\X6_pilot_a_sanity3_seed0.mat
+FERTIG

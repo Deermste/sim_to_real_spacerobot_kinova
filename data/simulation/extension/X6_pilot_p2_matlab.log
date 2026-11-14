@@ -5,3 +5,17 @@ Preserving jobs with IDs: 2 because they contain crash dump files.
 You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
 Connected to parallel pool with 8 workers.
 X6 Pilot a, Seed 0: 50 Kanaele, 20 Hz, 2000 Trainings- und 100 Auswertepaare, 8 Worker
+Abschnitt  1:   500 Episoden,   5.3 min, Stufe 1, Stufenpruefung   2 %, Auswertung   0 % (Median 493.7 mm, Kollision 28, OOD 17, Zeitende 52), Training 4.2 min, Auswertung 1.0 min
+Abschnitt  2:  1000 Episoden,  10.4 min, Stufe 1, Stufenpruefung   6 %, Auswertung   0 % (Median 572.8 mm, Kollision 29, OOD 19, Zeitende 52), Training 4.3 min, Auswertung 0.9 min
+Abschnitt  3:  1500 Episoden,  15.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 568.8 mm, Kollision 24, OOD 17, Zeitende 58), Training 4.2 min, Auswertung 0.8 min
+Abschnitt  4:  2000 Episoden,  20.2 min, Stufe 1, Stufenpruefung   4 %, Auswertung   0 % (Median 532.7 mm, Kollision 30, OOD 14, Zeitende 54), Training 3.9 min, Auswertung 0.8 min
+Abschnitt  5:  2500 Episoden,  25.5 min, Stufe 1, Stufenpruefung   2 %, Auswertung   0 % (Median 562.1 mm, Kollision 32, OOD 15, Zeitende 46), Training 4.5 min, Auswertung 0.7 min
+Abschnitt  6:  3000 Episoden,  30.6 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 486.2 mm, Kollision 26, OOD 11, Zeitende 54), Training 4.4 min, Auswertung 0.8 min
+Abschnitt  7:  3500 Episoden,  35.6 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 555.4 mm, Kollision 28, OOD 19, Zeitende 48), Training 4.2 min, Auswertung 0.7 min
+Abschnitt  8:  4000 Episoden,  41.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 557.7 mm, Kollision 26, OOD 13, Zeitende 59), Training 5.1 min, Auswertung 0.8 min
+Abschnitt  9:  4500 Episoden,  45.7 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 450.6 mm, Kollision 30, OOD 9, Zeitende 61), Training 3.4 min, Auswertung 0.8 min
+Abschnitt 10:  5000 Episoden,  51.4 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 493.2 mm, Kollision 23, OOD 9, Zeitende 66), Training 4.9 min, Auswertung 0.8 min
+Abschnitt 11:  5500 Episoden,  56.6 min, Stufe 1, Stufenpruefung   2 %, Auswertung   0 % (Median 497.7 mm, Kollision 26, OOD 10, Zeitende 62), Training 4.5 min, Auswertung 0.8 min
+Abschnitt 12:  6000 Episoden,  60.5 min, Stufe 1, Stufenpruefung   0 %, Auswertung   0 % (Median 541.0 mm, Kollision 22, OOD 13, Zeitende 61), Training 3.2 min, Auswertung 0.7 min
+X6 Pilot a fertig nach 60.5 min, bester Auswertewert 0 %. Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X6\X6_pilot_a_p2_seed0.mat
+FERTIG

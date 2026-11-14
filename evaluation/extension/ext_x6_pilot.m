@@ -9,7 +9,10 @@ function out = ext_x6_pilot(variant, seed, varargin)
 %     c  wie a, aber 10 Hz und Filter tau 2 s in der Kette (wie fixed1: 0,95 je Schritt bei 10 Hz, tau 1,95 s)
 %   Ohne Randomisierung (Strecke wie ext_x6_plant, Nominalmodell). Kollision je Schritt beendet die Episode.
 %   Reward: 'reward' 'progress' (Standard seit 14.11., Potenzial, w_da 0,01, w_brk 0,02, w_base 0,05, r_fail -100)
-%   oder 'step' (erster Pilot 13.11., Gewichte der Umgebung, r_fail -50; lernte nur, die Episode zu beenden).
+%   und w_stop 0 (seit 14.11.: mit 0,2 blieb der Agent im Plausibilitaetstest 2,5 cm vor dem Ziel stehen, weil
+%   jede Bewegung innerhalb von 2 cm kostete), oder 'step' (erster Pilot 13.11., Gewichte der Umgebung, r_fail -50; lernte nur, die Episode zu beenden).
+%   Plausibilitaetstest: 'pools' (struct train, eval), 'levels', 'pFull', 'envExtra' ersetzen Paarsaetze,
+%   Curriculum und Umgebungsoptionen (ext_x6_sanity).
 %   'label' haengt an den Namen an (X6_pilot_<V>_<label>_seed<S>), der erste Pilot hat kein Label.
 %
 %   Training in Abschnitten zu 'chunk' Episoden (je Abschnitt ein train-Aufruf, Agent wird weitergegeben).
@@ -40,6 +43,14 @@ p.addParameter('nCur', 48);
 p.addParameter('tag', '');
 p.addParameter('reward', 'progress');
 p.addParameter('label', '');
+p.addParameter('pools', []);        % struct mit train und eval (Paare), ersetzt die Dateien (Plausibilitaetstest)
+p.addParameter('levels', []);       % struct-Array mit tol und dcap, ersetzt das Curriculum
+p.addParameter('pFull', 0.2);
+p.addParameter('w_v', 0.05);        % seit 14.11. (sanity2 pendelte mit 25 bis 50 mm/s um das Ziel)
+p.addParameter('w_dq', 0.02);
+p.addParameter('w_da', 0.01);
+p.addParameter('w_stop', 0);        % Bremsterm (Lauf p2 und erster Plausibilitaetstest: 0,2, siehe oben)
+p.addParameter('envExtra', {});     % weitere Optionen fuer ext_x6_env, z. B. {'coll', false}
 p.parse(varargin{:});
 o = p.Results;
 assert(ismember(variant, {'a', 'b', 'c'}), 'ext_x6_pilot:variant', 'Variante a, b oder c');
@@ -51,6 +62,7 @@ Lt = load(fullfile(dT(end).folder, dT(end).name), 'P');
 Le = load(fullfile(dE(end).folder, dE(end).name), 'P');
 Ptr = Lt.P;
 Pev = Le.P([Le.P.set] == "eval");
+if ~isempty(o.pools), Ptr = o.pools.train; Pev = o.pools.eval; end
 Pev = Pev(1:min(o.nEval, numel(Pev)));
 rsC = RandStream('mt19937ar', 'Seed', 500 + seed);
 Pcur = Ptr(randperm(rsC, numel(Ptr), o.nCur));
@@ -60,13 +72,16 @@ envArgs = {};
 if variant == "b", envArgs = {'fine', false}; end
 if variant == "c", C.Ts = 0.1; C.tau = 2; end
 if strcmp(o.reward, 'progress')
-    envArgs = [envArgs, {'reward', 'progress', 'w_da', 0.01, 'w_brk', 0.02, 'w_base', 0.05, 'r_fail', -100}];
+    envArgs = [envArgs, {'reward', 'progress', 'w_da', o.w_da, 'w_brk', 0.02, 'w_base', 0.05, 'r_fail', -100, ...
+                         'w_stop', o.w_stop, 'w_v', o.w_v, 'w_dq', o.w_dq}];
 end
+envArgs = [envArgs, o.envExtra];
 lv = struct('tol', {0.05, 0.02, 0.01, 0.005}, 'dcap', {0.2, 0.4, 0.8, Inf});
-pFull = 0.2;
+if ~isempty(o.levels), lv = o.levels; end
+pFull = o.pFull;
 cfg = struct('variant', variant, 'seed', seed, 'chainP', C, 'envArgs', {envArgs}, 'levels', lv, 'pFull', pFull, ...
     'chunk', o.chunk, 'maxEpisodes', o.maxEpisodes, 'maxHours', o.maxHours, 'nEval', numel(Pev), ...
-    'nCur', o.nCur, 'reward', o.reward, 'label', o.label, 'trainFile', dT(end).name, 'evalFile', dE(end).name, 'hidden', 256);
+    'nCur', o.nCur, 'reward', o.reward, 'w_stop', o.w_stop, 'w_v', o.w_v, 'w_dq', o.w_dq, 'label', o.label, 'trainFile', dT(end).name, 'evalFile', dE(end).name, 'hidden', 256);
 cfg.opts = struct('ExperienceHorizon', 1024, 'MiniBatchSize', 256, 'NumEpoch', 10, 'ClipFactor', 0.2, ...
     'DiscountFactor', 0.99, 'GAEFactor', 0.95, 'EntropyLossWeight', 1e-3, 'ActorLR', 3e-4, 'CriticLR', 1e-3);
 

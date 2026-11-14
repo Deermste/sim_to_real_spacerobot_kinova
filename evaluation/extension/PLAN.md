@@ -82,7 +82,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X6.0 | Set-Point: Ausgangslage des alten Agenten, Zielwerte und Bezugspunkt festlegen | ½ Tag | – | E11 | ⬜ |
 | X6.1 | Schritt-Umgebung auf dem kinematischen Simulator (7 Gelenke, frei schwebend), Start- und Zielgenerator | 2 Tage | < 1 h | X0.2 | ✅ 13.11. (Paarsatz, Strecke, Umgebung, Trainingssatz 2000 Paare, Kollision je Schritt mit Kapsel-Vorfilter) |
 | X6.2 | Vergleichsregler und Erreichbarkeit der Ziele | ½ Tag | < 1 h | X6.1 | ✅ 13.11. (R0 498/500 mit neuer Kette, 455 mit alter; Nullraum-Mittelzug offen) |
-| X6.3 | Pilot: drei Varianten × 1 Seed | 1 Tag | ≈ 4–6 h | X6.1, E12–E14 | 🔄 läuft seit 13.11. nachts (`ext_x6_pilot`, a, b, c je ≤ 2 h) |
+| X6.3 | Pilot: drei Varianten × 1 Seed | 1 Tag | ≈ 4–6 h | X6.1, E12–E14 | ⚠️ 14.11.: erster Lauf am Reward gescheitert. Nach der Korrektur lernt PPO im Plausibilitätstest die Annäherung auf wenige mm, aber kein Halten (0 % bei 5 mm). Entscheidung offen: X7, SAC mit HER oder weiter PPO |
 | X6.4 | Hauptlauf 5 Seeds, Auswertung auf 500 Paaren, Gegenprobe in Simscape | 1 Tag | ≈ 8–12 h | X6.3 | ⬜ |
 | X6.5 | Deploy-Skript Set-Point v25 mit Emulation der Basis, Trockenläufe, Vorhersage | 2 Tage | 1 h | X3.1, X6.4 | ⬜ |
 | X6.6 | Labortag Set-Point (Tracking X3.2 am selben Tag, wenn Zeit bleibt) | 1 Tag Labor + 1 Tag Auswertung | – | Labor | ⏸ |

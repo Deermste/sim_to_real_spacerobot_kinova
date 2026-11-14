@@ -1993,7 +1993,7 @@ Datenquelle: `X6_ctrl_eval_{runs,groups,cells}_20261113_212110.csv`, Log `X6_ctr
 
 Paper: X6 (Vergleichsregler, Erreichbarkeit). Offen.
 
-### X6.3 Pilot 🔄 (erster Lauf 13./14.11.2026 gescheitert, Reward-Fehler)
+### X6.3 Pilot ⚠️ (14.11.2026: PPO lernt die Annäherung, nicht das Halten)
 
 **Aufbau** (`ext_x6_pilot`):
 - PPO in `ext_x6_env`: 2 × 256, Horizont 1024, Minibatch 256, Lernraten 3e-4 / 1e-3, synchron auf 8 Workern.
@@ -2028,10 +2028,58 @@ Paper: X6 (Vergleichsregler, Erreichbarkeit). Offen.
 - Kleinere Strafen (w_da 0,01, w_brk 0,02, w_base 0,05) und Abbruch −100.
 - Prüfung an einem Paar (dcap 0,2 m): Aktion null über 15 s ergibt 0,0, volle Aktion −141,2 (OOD nach
   30 Schritten), Ziel 3 mm vom Start mit Aktion null +50 (Erfolg). Ein frühes Ende lohnt sich nicht mehr.
-- Zweiter Lauf: Variante a, höchstens 1 h, Label p2. Ergebnis folgt.
+**Zweiter Lauf, Reward 'progress', Variante a, Label p2** (1 h, 6000 Episoden):
+- Die Episoden bleiben lang (231 bis 290 Schritte statt 30). Im Auswertesatz laufen 46 bis 66 von 100 bis zum
+  Zeitende, Kollisionen 22 bis 32 statt 80 bis 90.
+- Gelernt wird trotzdem nichts Brauchbares: Stufenprüfung 0 bis 6 %, Auswertung 0 %, Endabstand im Median 450
+  bis 573 mm (also etwa d0). Der Reward je Episode schwankt zwischen −20 und −65 ohne Trend.
+- Der Agent gibt große Aktionen aus (Mittel 0,3 bis 0,7 je Gelenk am Start), die Streuung der Exploration liegt
+  nach 6000 Episoden noch bei 0,3 bis 0,7.
+
+**Plausibilitätstest** (`ext_x6_sanity`): ein fester Start (erster Laborstart), Ziele 5 bis 15 cm in zufälliger
+Richtung, ohne Kollisionsprüfung, eine Stufe mit 2 cm. Sonst wie Variante a. Je 5000 Episoden, etwa 25 min.
+
+| Lauf | Änderung | Endabstand Median (Auswertung) | Stufenprüfung 2 cm | Auswertung 5 mm |
+|---|---|---|---|---|
+| sanity | w_stop 0,2 (wie p2) | 24 bis 39 mm, 90 %-Quantil 26 bis 30 mm | 0 % nach Abschnitt 1 | 0 % |
+| sanity2 | w_stop 0 | 1,4 bis 2,6 mm ab Abschnitt 4 | 0 bis 2 % | 0 % |
+| sanity3 | dazu w_v 0,05, w_dq 0,02 | 2,8 bis 6,3 mm | bis 31 % | 0 % |
+
+- **sanity:** Fast alle Endpunkte liegen 25 mm vor dem Ziel. Der Bremsterm w_stop bestraft jede Bewegung innerhalb
+  von 2 cm. Unter Explorationsrauschen bewegt sich der Arm immer etwas, innerhalb von 2 cm kostet das über eine
+  Episode etwa −60, die letzten 2 cm Annäherung bringen nur +2. Der Agent bleibt vor der Zone stehen (zweiter
+  Fehler im Entwurf).
+- **sanity2:** Der Agent erreicht das Ziel bis auf 1 bis 3 mm, pendelt aber mit 25 bis 50 mm/s darum (Rollout
+  von 5 Paaren, |dq| 0,1 bis 0,2 rad/s). Die gemessene Geschwindigkeit stimmt (gegen den Differenzenquotienten der
+  Lage 167,4 zu 166,9 mm/s). Ohne Anreiz zum Stillstand außer dem Erfolgsbonus, der unter Rauschen fast nie
+  kommt, lernt er kein Halten.
+- **sanity3:** Mit einer Strafe auf |v| und |dq| überall (ohne Zone, damit keine Barriere entsteht) bleibt das
+  Pendeln bei 20 bis 35 mm/s. Die Strafe ist mit etwa 0,025 je Schritt zu schwach.
+- Die Kette Umgebung, Agent und Training funktioniert also: Der Agent lernt die Annäherung auf wenige Millimeter.
+  Das Halten in Ruhe lernt er bisher nicht. Das passt zu K10 (lernbegrenzt, nicht schnittstellenbegrenzt).
+- **sanity4** (w_v 0,2, w_dq 0,05, w_da 0,1, etwa 0,1 je Schritt beim Pendeln): Die Annäherung wird langsamer
+  gelernt (Median 258 mm nach Abschnitt 1, 8,8 mm nach Abschnitt 10), Stufenprüfung bis 44 %, Auswertung 0 %. Im
+  Rollout pendelt der Agent weiter mit 15 bis 50 mm/s in 1 bis 14 mm Abstand. Stärkere Strafen verschieben das
+  Ergebnis also nicht zum Halten, sie bremsen nur das Lernen der Annäherung.
+
+**Stand X6.3 (14.11.):**
+- Der Aufbau ist nach zwei Entwurfsfehlern im Reward plausibel. Auf der leichten Aufgabe lernt PPO in 5000
+  Episoden die Annäherung auf wenige Millimeter.
+- Das Halten in Ruhe (5 mm und 5 mm/s, 1 s lang) lernt PPO in keinem der vier Plausibilitätsläufe. Der Agent
+  pendelt mit 15 bis 50 mm/s um das Ziel. Auf der vollen Aufgabe (zufällige Starts, Kollision) kommt er nicht
+  einmal in die Nähe.
+- Die Varianten a, b und c sind mit diesem Stand nicht sinnvoll vergleichbar. Ein Pilot über alle drei lohnt sich
+  erst, wenn die leichte Aufgabe gelöst ist.
+- Das passt zu K10: Der Abstand zum Regler ist lernbegrenzt. Für ein exaktes Halten fehlt dem stochastischen
+  Agenten ein Anreiz, den er unter Rauschen auch erfährt. Ein Regler hält dagegen von selbst (X6.2, R0 498 / 500).
+- Mögliche nächste Schritte (Entscheidung offen, siehe PLAN X6.3): X7 Residual RL (der Regler hält, RL korrigiert),
+  SAC mit HER (E14, Rückfall), oder weiter an PPO (Aktion als Geschwindigkeitsänderung, Streuung am Ende fest
+  klein, längeres Training).
 
 Datenquelle: `X6_pilot_{a,b,c}_seed0_{log,curve,eval}_20261114_*.csv`, Log `X6_pilot_matlab.log`, Agenten
-`SavedAgents/MotionProfile/X6/X6_pilot_{a,b,c}_seed0.mat`.
+`SavedAgents/MotionProfile/X6/X6_pilot_{a,b,c}_seed0.mat`. Zweiter Lauf `X6_pilot_a_p2_seed0_*`, Log
+`X6_pilot_p2_matlab.log`. Plausibilitätstest `X6_pilot_a_sanity{,2,3,4}_seed0_*`, Logs
+`X6_sanity{,2,3,4}_matlab.log`.
 
 Paper: Nein (Fehlschlag des Aufbaus). Die Lehre zum Reward gehört höchstens in die Methode.
 

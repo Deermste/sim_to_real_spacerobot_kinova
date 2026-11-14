@@ -24,6 +24,8 @@ function [env, info] = ext_x6_env(pool, varargin)
 %     - w_stop |v| / 0,05 nahe am Ziel (d < 2 cm)
 %     Option 'reward' 'progress' (seit 14.11., nach dem ersten Pilot): Abstand und Feinterm als Potenzial
 %       Phi(d) = -w_lin d / 1 cm + 20 w_fine exp(-d / 5 mm),  r = Phi(d) - Phi(d_prev) - (Strafen wie oben)
+%     Optionen w_v und w_dq: Strafe w_v |v| / 0,05 m/s + w_dq |dq| ueberall, ohne Zone um das Ziel (eine Zone
+%     wirkt wie eine Barriere, siehe w_stop im Plausibilitaetstest). Standard 0.
 %     Ueber eine Episode summiert sich Phi zu Phi(d_Ende) - Phi(d0). Ein fruehes Ende spart damit nichts. Mit
 %     'step' (Standard, erster Pilot) kostet jeder Schritt -w_lin d, und ein Abbruch mit r_fail war billiger als
 %     15 s in der Naehe des Ziels (der Agent lernte, die Episode zu beenden).
@@ -63,6 +65,8 @@ p.addParameter('dcap', Inf);
 p.addParameter('pFull', 0);
 p.addParameter('sequential', false);
 p.addParameter('reward', 'step');
+p.addParameter('w_v', 0);       % Strafe auf |v| / 0,05 m/s ueberall (seit 14.11., gegen Pendeln am Ziel)
+p.addParameter('w_dq', 0);      % Strafe auf |dq| / 1 rad/s ueberall (Nullraumbewegung in Ruhe)
 p.parse(varargin{:});
 o = p.Results;
 P = o.chainP;
@@ -142,7 +146,7 @@ info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o, 'K', K, 'plantO
         d = norm(e);
         sp = norm(y.v);
         pen = o.w_da * sum((a - L.aPrev) .^ 2) + o.w_brk * any(ci.brake) + o.w_base * norm(y.w_base) ...
-              + o.w_stop * (d < 0.02) * sp / 0.05;
+              + o.w_stop * (d < 0.02) * sp / 0.05 + o.w_v * sp / 0.05 + o.w_dq * norm(y.dq);
         if strcmp(o.reward, 'progress')
             r = phi(d) - phi(L.dPrev) - pen;
         else
