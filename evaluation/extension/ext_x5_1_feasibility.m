@@ -21,6 +21,9 @@ p.addParameter('betas', [0 1 4.6416 21.544 46.416 100 1000 1e4]);
 p.addParameter('sides', [0 -1 1]);
 p.addParameter('paths', {{'planar', 0}, {'tilted', 30}, {'tilted', -30}});
 p.addParameter('save', true);
+p.addParameter('lim7', [0.98; 0.98; 0.98; 0.98; 0.58; 0.58; 0.58]);   % X5.3-Front: 0,9774 / 0,5774 wie die Agenten
+p.addParameter('sets', {'J246', 'all7'});
+p.addParameter('label', '');
 p.parse(varargin{:});
 o = p.Results;
 setup_project;
@@ -28,8 +31,9 @@ K = ext_kin_model();
 qLim = [2*pi; 2.41; 2*pi; 2.66; 2.23; 2.01; 2*pi];
 sets = {
     'J246', [2 4 6], [0; 0.9774; 0; 0.9774; 0; 0.9774; 0]
-    'all7', 1:7,     [0.98; 0.98; 0.98; 0.98; 0.58; 0.58; 0.58]
+    'all7', 1:7,     o.lim7(:)
     };
+sets = sets(ismember(sets(:, 1), o.sets), :);
 rows = {};
 tAll = tic;
 for ip = 1:numel(o.paths)
@@ -79,7 +83,9 @@ end
 outFile = '';
 if o.save
     stamp = char(datetime('now', 'Format', 'yyyyMMdd_HHmmss'));
-    outFile = sk_path('data', 'simulation', 'extension', ['X5_1_feasibility_' stamp '.csv']);
+    pre = 'X5_1_feasibility_';
+    if ~isempty(o.label), pre = ['X5_' o.label '_']; end
+    outFile = sk_path('data', 'simulation', 'extension', [pre stamp '.csv']);
     writetable(T, outFile);
     fprintf('Ergebnis: %s\n', outFile);
 end
