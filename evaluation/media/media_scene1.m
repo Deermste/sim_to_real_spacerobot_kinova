@@ -2,7 +2,7 @@ function out = media_scene1(varargin)
 %MEDIA_SCENE1  Szene 1: gekippte 3D-Bahn, Regler ohne gegen mit Nullraum, Basisdrehung und Bahn im Bild (K7).
 %   out = media_scene1()                        Standbild (PNG) und Video (MP4) unter media/scene1/
 %   out = media_scene1('video', false)          nur Standbild
-%   out = media_scene1('lang', 'en')            englische Beschriftung (Paper)
+%   out = media_scene1('lang', 'de')            deutsche Beschriftung (Standard Englisch)
 %
 %   Daten: ext_kinsim, nominal, Bahn tilted -30 Grad (E10), alle sieben Gelenke (0,98 / 0,58 rad/s), volle
 %   Befehlskette mit Inversion, J6-Seite 0. Links R0 (beta 0), rechts Rbeta (beta 4,6416), wie in
@@ -11,14 +11,14 @@ function out = media_scene1(varargin)
 %     Arm und Basiswuerfel in der wahren Lage (keine Ueberhoehung im Bild der Basis), Startlage der Basis als
 %     gestrichelter Wuerfel, Basisachsen (1,1 m) mit Spur der Achsspitzen, Sollbahn gestrichelt, Bahn des
 %     Endeffektors eingefaerbt nach dem Fehler, Anzeige der Basisdrehung als Balken (0 bis 150 mrad).
-%   Optionen: video (true), fps (30), slow (1, Faktor der Zeitlupe), lang ('de'), res ([1920 1080]),
+%   Optionen: video (true), fps (30), slow (1, Faktor der Zeitlupe), lang ('en'), res ([1920 1080]),
 %   strobe ([0 2.125 4.25 6.375 8.5] s, Posen im Standbild), outDir (media/scene1).
 
 p = inputParser;
 p.addParameter('video', true);
 p.addParameter('fps', 30);
 p.addParameter('slow', 1);
-p.addParameter('lang', 'de');
+p.addParameter('lang', 'en');     % seit 14.11. Englisch als Standard (Nutzer), 'de' fuer deutsche Beschriftung
 p.addParameter('res', [1920 1080]);
 p.addParameter('strobe', [0 2.125 4.25 6.375 8.5]);
 p.addParameter('outDir', '');
