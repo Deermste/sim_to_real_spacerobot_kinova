@@ -23,6 +23,10 @@ p.addParameter('lang', 'en');     % seit 14.11. Englisch als Standard (Nutzer), 
 p.addParameter('res', [1920 1080]);
 p.addParameter('strobe', [0 2.125 4.25 6.375 8.5]);
 p.addParameter('outDir', '');
+p.addParameter('agentFile', '');        % drittes Feld: RL-Agent (X5), leer = nur die beiden Regler
+p.addParameter('agentTitle', {'RL agent (PPO)', 'RL-Agent (PPO)'});   % {en, de}
+p.addParameter('agentRewardMode', 4);
+p.addParameter('tag', '');              % Zusatz im Dateinamen, z. B. 'rl'
 p.parse(varargin{:});
 o = p.Results;
 setup_project;
@@ -42,17 +46,34 @@ for i = 1:2
     fprintf('beta %.4g: RMS %.2f mm, ori_max %.1f mrad\n', betas(i), 1000 * runs{i}.metrics.rms_ee, ...
             1000 * runs{i}.metrics.ori_max);
 end
-save(fullfile(o.outDir, 'scene1_data.mat'), 'runs', 'betas', 'lim');
+titles = {{'Controller without null space (R0)', 'Regler ohne Nullraum (R0)'}, ...
+          {'Controller with reaction-reducing null space (R\beta, \beta = 4.6)', ...
+           'Regler mit reaktionsarmer Nullraumbewegung (R\beta, \beta = 4,6)'}};
+if ~isempty(o.agentFile)
+    % RL-Agent wie im Training X5.2: Grenzen 0,9774 / 0,5774 rad/s, J6 0,5774, Beobachtungsgrenzen aus dem Agenten
+    lim7 = [0.9774; 0.9774; 0.9774; 0.9774; 0.5774; 0.5774; 0.5774];
+    pol = ext_policy(o.agentFile);
+    runs{3} = ext_kinsim(pol, 'reward_mode', o.agentRewardMode, 'j6_lim', 0.5774, 'base_w', 2, 'lim', lim7, ...
+                         'path', 'tilted', 'tilt', -30, 'K', K);
+    titles{3} = o.agentTitle;
+    fprintf('Agent: RMS %.2f mm, ori_max %.1f mrad, Abbruch %d\n', 1000 * runs{3}.metrics.rms_ee, ...
+            1000 * runs{3}.metrics.ori_max, runs{3}.metrics.early_stop);
+end
+nP = numel(runs);
+sfx = o.lang;
+if ~isempty(o.tag), sfx = [o.tag '_' o.lang]; end
+dataName = 'scene1_data.mat';
+if ~isempty(o.tag), dataName = sprintf('scene1_data_%s.mat', o.tag); end
+save(fullfile(o.outDir, dataName), 'runs', 'betas', 'lim', 'o');
 
-L = labels(o.lang, runs);
+L = labels(o.lang, runs, titles);
 M = media_robot('load');
 
 % --- Standbild (Stroboskop) ---
 fig = makeFigure(o.res);
 [A, S] = setupPanels(fig, M, runs, L, true, o.strobe);
-nEnd = size(runs{1}.ts.q, 1);
-for i = 1:2, setFrame(A{i}, S{i}, runs{i}, M, nEnd, L, i); end
-stillFile = fullfile(o.outDir, sprintf('scene1_still_%s.png', o.lang));
+for i = 1:nP, setFrame(A{i}, S{i}, runs{i}, M, size(runs{i}.ts.q, 1), L, i); end
+stillFile = fullfile(o.outDir, sprintf('scene1_still_%s.png', sfx));
 exportgraphics(fig, stillFile, 'Resolution', 200, 'BackgroundColor', 'white');
 close(fig);
 fprintf('Standbild: %s\n', stillFile);
@@ -62,7 +83,7 @@ out = struct('still', stillFile, 'video', '');
 if o.video
     fig = makeFigure(o.res);
     [A, S] = setupPanels(fig, M, runs, L, false, []);
-    vidFile = fullfile(o.outDir, sprintf('scene1_%s.mp4', o.lang));
+    vidFile = fullfile(o.outDir, sprintf('scene1_%s.mp4', sfx));
     vw = VideoWriter(vidFile, 'MPEG-4');
     vw.FrameRate = o.fps; vw.Quality = 95;
     open(vw);
@@ -72,7 +93,9 @@ if o.video
     sz = [];
     for k = 1:numel(tF)
         n = find(t <= tF(k) + 1e-9, 1, 'last');
-        for i = 1:2, setFrame(A{i}, S{i}, runs{i}, M, n, L, i); end
+        for i = 1:nP
+            setFrame(A{i}, S{i}, runs{i}, M, min(n, size(runs{i}.ts.q, 1)), L, i);   % Abbruch: letzte Lage halten
+        end
         drawnow;
         fr = getframe(fig);
         if isempty(sz), sz = size(fr.cdata); end
@@ -87,12 +110,12 @@ end
 end
 
 % =====================================================================
-function L = labels(lang, runs)
-m1 = runs{1}.metrics; m2 = runs{2}.metrics;
+function L = labels(lang, runs, titles)
+il = 1 + strcmp(lang, 'de');
+L.title = cellfun(@(c) c{il}, titles, 'UniformOutput', false);
 if strcmp(lang, 'en')
-    L.title = {'Controller without null space (R0)', 'Controller with reaction-reducing null space (R\beta, \beta = 4.6)'};
-    L.sub = {sprintf('EE error %.1f mm RMS, base rotation up to %s', 1000 * m1.rms_ee, fmtDeg(m1.ori_max)), ...
-             sprintf('EE error %.1f mm RMS, base rotation up to %s', 1000 * m2.rms_ee, fmtDeg(m2.ori_max))};
+    L.sub = cellfun(@(r) sprintf('EE error %.1f mm RMS, base rotation up to %s', 1000 * r.metrics.rms_ee, ...
+                                 fmtDeg(r.metrics.ori_max)), runs, 'UniformOutput', false);
     L.time = 't = %.2f s';
     L.err = 'EE error %.1f mm';
     L.ori = 'Base rotation %s';
@@ -101,9 +124,8 @@ if strcmp(lang, 'en')
     L.cbar = 'EE error [mm]';
     L.main = 'Free-floating base, tilted 3D path (-30°), all seven joints';
 else
-    L.title = {'Regler ohne Nullraum (R0)', 'Regler mit reaktionsarmer Nullraumbewegung (R\beta, \beta = 4,6)'};
-    L.sub = {sprintf('EE-Fehler %.1f mm RMS, Basisdrehung bis %s', 1000 * m1.rms_ee, fmtDeg(m1.ori_max)), ...
-             sprintf('EE-Fehler %.1f mm RMS, Basisdrehung bis %s', 1000 * m2.rms_ee, fmtDeg(m2.ori_max))};
+    L.sub = cellfun(@(r) sprintf('EE-Fehler %.1f mm RMS, Basisdrehung bis %s', 1000 * r.metrics.rms_ee, ...
+                                 fmtDeg(r.metrics.ori_max)), runs, 'UniformOutput', false);
     L.sub = strrep(L.sub, '.', ',');
     L.time = 't = %.2f s';
     L.err = 'EE-Fehler %.1f mm';
@@ -121,13 +143,16 @@ fig = figure('Visible', 'off', 'Color', 'w', 'Units', 'pixels', 'Position', [0 0
 end
 
 function [A, S] = setupPanels(fig, M, runs, L, strobe, tStrobe)
-A = cell(1, 2); S = cell(1, 2);
+nP = numel(runs);
+A = cell(1, nP); S = cell(1, nP);
+pw = 0.95 / nP;                                  % Breite je Feld
+fs = 15 - 2 * (nP > 2);                          % Schrift kleiner bei drei Feldern
 annotation(fig, 'textbox', [0 0.925 1 0.06], 'String', L.main, 'EdgeColor', 'none', ...
            'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', 'FontSize', 20, 'FontWeight', 'bold', ...
            'FitBoxToText', 'off');
 cmap = turbo(256);
-for i = 1:2
-    ax = axes(fig, 'Position', [0.005 + 0.475 * (i - 1), 0.12, 0.475, 0.72]); %#ok<LAXES>
+for i = 1:nP
+    ax = axes(fig, 'Position', [0.005 + pw * (i - 1), 0.12, pw, 0.72]); %#ok<LAXES>
     hold(ax, 'on'); axis(ax, 'equal'); axis(ax, 'off');
     % Ausschnitt: Wuerfel unten abgeschnitten (Clipping an den Achsgrenzen), damit Arm und Bahn groesser werden
     xlim(ax, [-0.62 0.62]); ylim(ax, [-0.62 0.62]); zlim(ax, [-0.12 1.78]);
@@ -173,37 +198,39 @@ for i = 1:2
     light(ax, 'Position', [1 -1 2], 'Style', 'infinite');
     light(ax, 'Position', [-1 1 1], 'Style', 'infinite', 'Color', [0.5 0.5 0.5]);
     S{i}.H = H;
-    annotation(fig, 'textbox', [0.005 + 0.475 * (i - 1), 0.84, 0.475, 0.08], 'String', {L.title{i}, L.sub{i}}, ...
+    annotation(fig, 'textbox', [0.005 + pw * (i - 1), 0.84, pw, 0.08], 'String', {L.title{i}, L.sub{i}}, ...
                'EdgeColor', 'none', 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', ...
-               'FontSize', 15, 'Interpreter', 'tex', 'FitBoxToText', 'off');
+               'FontSize', fs, 'Interpreter', 'tex', 'FitBoxToText', 'off');
     S{i}.ax = ax;
-    % Text und Balken unter dem Feld
-    x0 = 0.05 + 0.475 * (i - 1);
-    S{i}.txt = annotation(fig, 'textbox', [x0 0.01 0.19 0.11], 'String', '', 'EdgeColor', 'none', ...
-                          'FontSize', 14, 'FontName', 'Consolas', 'Interpreter', 'none', 'FitBoxToText', 'off', ...
+    % Text und Balken unter dem Feld (Text links, Balken rechts, je etwa 40 % der Feldbreite)
+    x0 = 0.005 + pw * (i - 1) + 0.05 * pw;
+    bw = 0.42 * pw;
+    S{i}.txt = annotation(fig, 'textbox', [x0 0.01 0.45 * pw 0.11], 'String', '', 'EdgeColor', 'none', ...
+                          'FontSize', fs - 1, 'FontName', 'Consolas', 'Interpreter', 'none', 'FitBoxToText', 'off', ...
                           'VerticalAlignment', 'middle');
-    S{i}.barBg = annotation(fig, 'rectangle', [x0 + 0.2, 0.07, 0.2, 0.025], 'FaceColor', [0.93 0.93 0.93], ...
+    xb = x0 + 0.47 * pw;
+    S{i}.barBg = annotation(fig, 'rectangle', [xb, 0.07, bw, 0.025], 'FaceColor', [0.93 0.93 0.93], ...
                             'Color', [0.5 0.5 0.5]);
-    S{i}.bar = annotation(fig, 'rectangle', [x0 + 0.2, 0.07, 0.001, 0.025], 'FaceColor', [0.85 0.3 0.2], ...
+    S{i}.bar = annotation(fig, 'rectangle', [xb, 0.07, 0.001, 0.025], 'FaceColor', [0.85 0.3 0.2], ...
                           'Color', 'none');
-    S{i}.barTxt = annotation(fig, 'textbox', [x0 + 0.2, 0.025, 0.2, 0.04], 'String', L.bar + " (0° bis 9°)", ...
+    S{i}.barTxt = annotation(fig, 'textbox', [xb, 0.025, bw, 0.04], 'String', L.bar + " (0° bis 9°)", ...
                              'EdgeColor', 'none', 'FontSize', 11, 'HorizontalAlignment', 'center', ...
                              'FitBoxToText', 'off');
     if strcmp(L.lang, 'en'), S{i}.barTxt.String = L.bar + " (0° to 9°)"; end
-    S{i}.barX = x0 + 0.2;
+    S{i}.barW = bw;
     A{i} = ax;
 end
 % weisser Streifen unter Text und Balken (der abgeschnittene Wuerfel ragt sonst hinein), Text und Balken nach vorn
 annotation(fig, 'rectangle', [0 0 1 0.125], 'FaceColor', 'w', 'Color', 'w');
-for i = 1:2
+for i = 1:nP
     for h = [S{i}.txt, S{i}.barBg, S{i}.bar, S{i}.barTxt]
         uistack(h, 'top');
     end
 end
 % gemeinsame Farbskala
-cb = colorbar(A{2}, 'Position', [0.96 0.3 0.01 0.4]);
+cb = colorbar(A{end}, 'Position', [0.96 0.3 0.01 0.4]);
 cb.Label.String = L.cbar; cb.FontSize = 11;
-linkprop([A{1}, A{2}], {'CameraPosition', 'CameraTarget', 'CameraUpVector', 'CameraViewAngle'});
+linkprop([A{:}], {'CameraPosition', 'CameraTarget', 'CameraUpVector', 'CameraViewAngle'});
 end
 
 function setFrame(ax, S, run, M, n, L, ~) %#ok<INUSL>
@@ -226,7 +253,7 @@ s2 = sprintf(L.err, e(end));
 s3 = sprintf(L.ori, fmtDeg(ts.ori(n)));
 if strcmp(L.lang, 'de'), s2 = strrep(s2, '.', ','); s1 = strrep(s1, '.', ','); end
 S.txt.String = {s1, s2, s3};
-w = 0.2 * min(rad2deg(ts.ori(n)) / 9, 1);       % Balken 0 bis 9 Grad
+w = S.barW * min(rad2deg(ts.ori(n)) / 9, 1);    % Balken 0 bis 9 Grad
 S.bar.Position(3) = max(w, 0.001);
 end
 
