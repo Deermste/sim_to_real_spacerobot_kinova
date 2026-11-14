@@ -1787,6 +1787,57 @@ Lauf in frischer Sitzung, der Lauf 111426 vergleicht wegen des Caches falsch), L
 
 Paper: neuer Abschnitt 3D (Aufgabe, Regler-Front). Offen, hängt an X5.2 und E4.
 
+### X5.2 Pilot 3D ⚠️ 14.11.2026 (No-Go nach der Regel, Agenten verlernen im Training)
+
+**Aufbau** (`ext_x5_2_run()`, 11:22 bis 13:10): wie X1.3 (`ext_x1_train`, 40 Hz, 65 kg, PPO wie D16, Blöcke zu 50
+Episoden, 3000 Episoden), Bahn um −30° gekippt (E10), Sättigung `p_lim7` = 0,9774 rad/s J1–J4 und 0,5774 rad/s
+J5–J7, Beobachtungsgrenzen in der Reihenfolge der Beobachtung (E9). Varianten r4 (Modus 4, w 2, λ 0) und x1
+(Modus 5, θ 0,03, Kosten A, δ 0,02, η 5, λ0 1), je Seed 0 und 1, je 25 bis 28 min. Auswertung X0.1 mit 21
+Episoden, Startstörung ±2° auf allen sieben Gelenken. Go-Regel (PLAN): je Variante folgt mindestens ein Seed.
+
+| Agent | folgt | Abbrüche (von 21) | RMS Mittel [mm] | nominal: RMS / ori_max / Abbruch |
+|---|---|---|---|---|
+| r4 Seed 0 | nein | 17 | 201 | 190 mm / 89 mrad / ja |
+| r4 Seed 1 | nein | 21 | 248 | 317 mm / 27 mrad / ja |
+| x1 Seed 0 | nein | 21 | 254 | 263 mm / 92 mrad / ja |
+| x1 Seed 1 | nein | 0 | 233 | 223 mm / 35 mrad / nein, ep_q4 371 mm |
+
+Zum Vergleich der Regler auf derselben Bahn (X5.1): R0 4,2 mm / 124 mrad, Rβ 4,6 2,1 mm / 9,7 mrad.
+
+**Lernkurven** (Mittel je 500 Episoden, stochastische Policy im Training):
+
+| Agent | 1–500 | 501–1000 | 1001–1500 | 1501–2000 | 2001–2500 | 2501–3000 |
+|---|---|---|---|---|---|---|
+| r4 s0 | 569 | 1765 | 1814 | 1428 | 859 | 193 |
+| r4 s1 | 1029 | 2118 | 1829 | 895 | −110 | −357 |
+| x1 s0 | −417 | 260 | 527 | 344 | 119 | −424 |
+| x1 s1 | −1062 | −301 | 244 | 158 | −154 | −417 |
+
+- **No-Go nach der Regel:** Kein Agent folgt der Bahn, drei von vier brechen schon in der nominalen Episode ab
+  (EE mehr als 0,5 m von der Bahn).
+- **Die Agenten verlernen.** Der Return steigt bis etwa Episode 1000 bis 1500 (r4 s1 bis 2118, zum Vergleich
+  D16 r4 s2 in der Ebene 2614 in der nominalen Auswertung) und fällt danach stark. Die Episoden bleiben dabei voll
+  lang (ab Episode 500 fast alle 340 Schritte). Ein gelernter Abbruch wie in A74 ist das also nicht. Die
+  Kostenrate C (Anteil der Schritte über 30 mrad) steigt bei r4 von 0 auf 0,33 bis 0,46. Bei x1 steigt λ bis an
+  die Obergrenze 20 (Seed 1), C bleibt lange unter δ und springt am Ende hoch.
+- Gespeichert ist nur der letzte Agent. Ob ein Stand um Episode 1000 der Bahn gefolgt wäre, ist offen. Die
+  Returns um 2000 sprechen für eine brauchbare Bahn, allerdings mit stochastischer Policy.
+- Vermutete Ursache: Instabilität des Trainings mit den D16-Lernraten (Actor 1e-3) bei sieben statt drei
+  Gelenken. Geprüft ist das nicht. Die Regel aus PLAN (sonst 5000 Episoden) passt nicht, mehr Episoden würden den
+  Abfall eher verlängern.
+
+**Deutung:** In 3D mit allen sieben Gelenken findet PPO mit dem bisherigen Aufbau in 3000 Episoden keine
+stabile Lösung, während der Regler die Bahn mit 2 mm und 0,6° fährt. Das passt zu K10 (lernbegrenzt). Ein fairer
+Vergleich braucht aber erst einen Agenten, der überhaupt folgt.
+
+**Grenzen:** 2 Seeds je Variante, nur der letzte Agent, Hyperparameter aus der Ebene übernommen.
+
+Datenquelle: `X5_2_agents_20261114_131022.csv`, `X5_2_episodes_20261114_131022.csv`,
+`X5_ppo_40hz_{r4_seed{0,1}_ep3000_b50, r5_c1_th30_eta5_seed{0,1}_ep3000_b50_l1}_{train,dual}.csv`, Log
+`X5_2_matlab.log`, Agenten `SavedAgents/MotionProfile/X5/`.
+
+Paper: offen bis E4.
+
 ## X6 Set-Point
 
 ### X6.0 Zielwerte: Literatur zur Toleranz ✅ 14.11.2026

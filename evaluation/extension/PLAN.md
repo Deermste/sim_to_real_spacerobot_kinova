@@ -77,7 +77,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X4.5 | Sensitivität der eigenen Schwellen („folgt“, Budget-Toleranz, „ruhig“), ohne Training | ½ Tag | < 10 min | X4.1, X2.4 | ✅ Runde 1 11.11., Runde 2 13.11. |
 | X4.6 | Ablation: Woher kommt der Abstand von RL zum Regler (Beobachtung, Kette)? 3 Varianten × 5 Seeds | 2 Tage | ≈ 7 h | E17 | ✅ 13.11. (K10, A75, V4 abends: Rate Limiter bremst nur den Regler) |
 | X5.1 | 3D-Bahn mit allen 7 Gelenken: Modell, Machbarkeit mit dem Regler aus X2 | 2–3 Tage | 1 h | X2.1 | ✅ Machbarkeit 10.11., SK_desktop 14.11. (p_lim7, bitgleich, 3D gegen ext_kinsim 6e-8 m) |
-| X5.2 | Pilot 3D: 2 Varianten × 2 Seeds, Go/No-Go | ½ Tag | ≈ 3 h | X5.1 | 🔄 14.11. (`ext_x5_2_run`: r4 und X1 θ 0,03, Seeds 0 und 1, −30°) |
+| X5.2 | Pilot 3D: 2 Varianten × 2 Seeds, Go/No-Go | ½ Tag | ≈ 3 h | X5.1 | ⚠️ 14.11.: No-Go nach der Regel (0 von 4 folgen). Return steigt bis Ep. 1000–1500 und fällt dann, nur letzter Agent gespeichert. E4 offen |
 | X5.3 | Hauptlauf 3D: 10 Seeds, Vergleich mit Nullraum-Regler | 1 Tag | ≈ 6–8 h | E4 | ⏸ |
 | X6.0 | Set-Point: Ausgangslage des alten Agenten, Zielwerte und Bezugspunkt festlegen | ½ Tag | – | E11 | ✅ 14.11. (Literatur: e.deorbit 4 mm Annäherung, Fanghülle ±20 mm, ±2–5°) |
 | X6.1 | Schritt-Umgebung auf dem kinematischen Simulator (7 Gelenke, frei schwebend), Start- und Zielgenerator | 2 Tage | < 1 h | X0.2 | ✅ 13.11. (Paarsatz, Strecke, Umgebung, Trainingssatz 2000 Paare, Kollision je Schritt mit Kapsel-Vorfilter) |
