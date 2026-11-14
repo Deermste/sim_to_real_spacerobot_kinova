@@ -1838,6 +1838,39 @@ Datenquelle: `X5_2_agents_20261114_131022.csv`, `X5_2_episodes_20261114_131022.c
 
 Paper: offen bis E4.
 
+### X5.2b Zweiter Pilot 3D ✅ 14.11.2026 (Go: mit kleinerer Lernrate folgen 3 von 4)
+
+**Aufbau** (`ext_x5_2_run('variants', {'r4'}, 'actorLR', 3e-4, 'ckptEvery', 250, 'label', 'b')`, 13:35 bis
+14:35): wie X5.2, nur r4, Seeds 0 und 1, Lernrate des Actors 3e-4 statt 1e-3, Zwischenstand alle 250 Episoden.
+Jeder Zwischenstand nominal ausgewertet (eine Episode), der beste je Lauf (folgt, sonst kleinster RMS) und der
+letzte Agent mit X0.1 (21 Episoden, Störung auf allen sieben Gelenken).
+
+| Agent | folgt | RMS Mittel [mm] | ep_q4 schlechteste [mm] | ori_max Mittel / schlechteste [mrad] | Ruck |
+|---|---|---|---|---|---|
+| s0 letzter (Ep. 3000) | ja | 16,6 | 28,3 | 16,6 / 21,8 | 4,4 |
+| s1 letzter (Ep. 3000) | nein | 29,4 | 50,4 | 16,2 / 17,9 | 16,4 |
+| s0 Ep. 1000 (bester Zwischenstand) | ja | 10,4 | 10,7 | 18,8 / 20,3 | 4,3 |
+| s1 Ep. 2000 (bester Zwischenstand) | ja | 11,5 | 13,2 | 14,5 / 17,8 | 5,5 |
+
+- **Kein Verlernen mehr.** Der Return steigt bis etwa Episode 1000 auf 2500 bis 2600 und bleibt dort (s0 bis zum
+  Ende 2640, s1 mit Schwankungen 2270 bis 2610). Die Kostenrate C bleibt ab Episode 750 bis 1000 nahe null. In
+  X5.2 fiel der Return mit Lernrate 1e-3 ab Episode 1500 auf Werte unter null. Die vermutete Ursache aus X5.2
+  (Instabilität durch die Lernrate) passt dazu, ein Seed-Vergleich mit gleicher Rate fehlt.
+- **Go nach der Regel** (je Variante folgt mindestens ein Seed): r4 folgt mit 3 von 4 Agenten. s1 letzter Agent
+  verfehlt „folgt“ knapp (ep_q4 50,4 mm bei Schwelle 50 mm).
+- **Gegen den Regler auf derselben Bahn** (X5.1, nominal): R0 4,2 mm / 124 mrad, Rβ 4,6 2,1 mm / 9,7 mrad. Der
+  beste Agent liegt mit 10,4 mm / 18,8 mrad (Mittel über 21 Episoden) zwischen beiden. Er dreht die Basis etwa
+  6-mal weniger als R0, ohne dass die Basis im Reward eine Nebenbedingung ist (nur der glatte Term von r4), ist
+  aber etwa 5-mal ungenauer als Rβ bei doppelter Basisdrehung. Der Abstand zur Front wie in der Ebene (K5, K10).
+
+**Grenzen:** 2 Seeds. Der beste Zwischenstand ist mit der nominalen Episode ausgewählt, die auch Teil der 21
+Auswerteepisoden ist (leichte Auswahlverzerrung, die übrigen 20 sind unabhängig). Hyperparameter sonst aus der Ebene.
+
+Datenquelle: `X5_2b_{agents,episodes,ckpt}_20261114_143532.csv`, `X5_ppo_40hz_r4_seed{0,1}_ep3000_b50_lr0.0003_
+{train,dual}.csv`, Log `X5_2b_matlab.log`, Agenten und Zwischenstände unter `SavedAgents/MotionProfile/X5/`.
+
+Paper: Abschnitt 3D (RL gegen Regler-Front), sobald X5.3 läuft. E4 nach der Regel Go.
+
 ## X6 Set-Point
 
 ### X6.0 Zielwerte: Literatur zur Toleranz ✅ 14.11.2026
