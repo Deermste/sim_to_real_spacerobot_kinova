@@ -78,7 +78,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X4.6 | Ablation: Woher kommt der Abstand von RL zum Regler (Beobachtung, Kette)? 3 Varianten × 5 Seeds | 2 Tage | ≈ 7 h | E17 | ✅ 13.11. (K10, A75, V4 abends: Rate Limiter bremst nur den Regler) |
 | X5.1 | 3D-Bahn mit allen 7 Gelenken: Modell, Machbarkeit mit dem Regler aus X2 | 2–3 Tage | 1 h | X2.1 | ✅ Machbarkeit 10.11., SK_desktop 14.11. (p_lim7, bitgleich, 3D gegen ext_kinsim 6e-8 m) |
 | X5.2 | Pilot 3D: 2 Varianten × 2 Seeds, Go/No-Go | ½ Tag | ≈ 3 h | X5.1 | ✅ 14.11.: erster Lauf No-Go (Verlernen bei Lernrate 1e-3), X5.2b mit 3e-4 und Zwischenständen Go (3 von 4 folgen, bester 10,4 mm / 18,8 mrad). E4 bestätigen |
-| X5.3 | Hauptlauf 3D: 10 Seeds, Vergleich mit Nullraum-Regler | 1 Tag | ≈ 6–8 h | E4 | ⏸ |
+| X5.3 | Hauptlauf 3D: 10 Seeds, Vergleich mit Nullraum-Regler | 1 Tag | ≈ 6–8 h | E4 | ✅ 14.11. (8,1 h): r4 9 von 10 folgen (bester Zwischenstand, 11,8 mm / 17,8 mrad), Abstand zur Front Faktor 4,1, x1 (θ 0,03) dreht mehr als r4. RESULTS X5.3, K11, Abbildung `tradeoff3d` |
 | X6.0 | Set-Point: Ausgangslage des alten Agenten, Zielwerte und Bezugspunkt festlegen | ½ Tag | – | E11 | ✅ 14.11. (Literatur: e.deorbit 4 mm Annäherung, Fanghülle ±20 mm, ±2–5°) |
 | X6.1 | Schritt-Umgebung auf dem kinematischen Simulator (7 Gelenke, frei schwebend), Start- und Zielgenerator | 2 Tage | < 1 h | X0.2 | ✅ 13.11. (Paarsatz, Strecke, Umgebung, Trainingssatz 2000 Paare, Kollision je Schritt mit Kapsel-Vorfilter) |
 | X6.2 | Vergleichsregler und Erreichbarkeit der Ziele | ½ Tag | < 1 h | X6.1 | ✅ 13.11. (R0 498/500 mit neuer Kette, 455 mit alter; Nullraum-Mittelzug offen) |
@@ -99,7 +99,7 @@ trainiert wird. Die Arbeit liegt bei etwa vier bis sechs Wochen, das Paper danac
 3. **Woche 3:** X2.2, X2.3, X1.4, nachts X2.4. Parallel X3.1.
 4. **Woche 4:** X5.1 und X5.2, dann Go/No-Go (E4). X4.2.
 5. **Zwischenstand mit dem Betreuer:** Geschichte festlegen (E7), X4.4 entscheiden, Labortermin für X3.2.
-6. **Danach:** X5.3, X3.2, dann Phase P.
+6. **Danach:** X5.3 (✅ 14.11.), X3.2, dann Phase P.
 7. **X4.5 und X4.6:** X4.5 erste Runde sofort (nur Daten), zweite nach X1.3. X4.6 in der Nacht nach X1.3, vorher
    Modus und Bitgleichheit prüfen.
 8. **X6 (Set-Point):** X6.0 bis X6.2 in freien Stunden. Pilot und Hauptlauf in Nächten, in denen keine Kette aus

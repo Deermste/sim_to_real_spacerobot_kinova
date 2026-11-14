@@ -13,7 +13,7 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 - Jeder Eintrag endet mit „Paper:“ und dem Ziel (Abschnitt, Tabelle, Abbildung) sowie „offen“ oder „übertragen“.
 - Kernaussagen nach jedem Eintrag aktualisieren.
 
-## Kernaussagen (Stand 13.11.2026)
+## Kernaussagen (Stand 14.11.2026)
 
 | # | Aussage | Beleg | Sicherheit |
 |---|---|---|---|
@@ -23,11 +23,12 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 | K4 | Gelenkbahnen der Hardware ergeben dieselbe Basisdrehung wie die Fixed-Base-Simulation (≤ 2 mrad) | D19 | 8 Agenten, offene Rechnung |
 | K5 | Ein modellbasierter Regler (exaktes Modell, kennt die Befehlskette) dominiert alle RL-Agenten: 0,020 rad bei 5,7 mm, 0,013 rad bei 9 mm | X2.1 | Kinematischer Simulator, in Simscape auf 3e-7 bestätigt. Robustheit offen (X2.3) |
 | K6 | Auch mit Nominalmodell bleibt der Regler bei falscher Masse, Trägheit, Verzögerung, Verstärkung, Rauschen, Startstellung und Drift vor den Agenten. Am knappsten bei Kinematikfehlern (Montage) und Drift um x | X2.3 Teil 1 | 26 Szenarien, 20 Agenten ohne Randomisierung, nur kinematisch |
-| K7 | Auf einer gekippten 3D-Bahn mit allen sieben Gelenken senkt der Nullraum des Reglers die Basisdrehung je nach Kipprichtung stark (−30°: 124 auf 10 mrad bei 2 mm) oder kaum (+30°: 14 auf 11 mrad). In der Ebene bringen die zusätzlichen Gelenke wenig | X5.1 | Nur Regler, kinematisch, nominal. RL in 3D offen (X5.2) |
+| K7 | Auf einer gekippten 3D-Bahn mit allen sieben Gelenken senkt der Nullraum des Reglers die Basisdrehung je nach Kipprichtung stark (−30°: 124 auf 10 mrad bei 2 mm) oder kaum (+30°: 14 auf 11 mrad). In der Ebene bringen die zusätzlichen Gelenke wenig | X5.1 | Nur Regler, kinematisch, nominal. RL in 3D siehe K11 |
 | K8 | Domain Randomization macht den Bahnfehler der Agenten fast unempfindlich gegen falsche Basismasse (+0,1 bis +0,4 statt +1,7 mm). Die Regler mit Nominalmodell bleiben trotzdem vorn (Faktor 2,0 bis 2,4) | X2.4, X4.5 | 10 Seeds je Variante, 26 Szenarien, nur kinematisch, X0.1 in SK_desktop bestätigt (13.11.). „DR-voll folgt öfter“ hängt an der Schwelle (X4.5), nicht Teil der Aussage |
 | K9 | Ein Budget als Nebenbedingung steuert die Basisdrehung (θ gegen ori_max ρ 0,70, bei den folgenden 0,77, Gewicht in K2 −0,18). Der Preis ist die Bahn: nur 27 von 50 Agenten folgen (r1 7 von 10, r4 10 von 10). Für θ ≤ 0,03 muss die Policy den Zweig von J6 finden, den auch der Regler nutzt, ohne ihn folgt keiner (0 von 7). Bei θ 0,03 halten mehr Agenten Bahn und Basis zugleich als in der Gewichtsreihe. Der Abstand zur Front bleibt (Faktor um 2 bis 3 wie ohne Budget), ein Filter auf r1 hält das Budget etwa gleich oft, aber mit mehr Bahnfehler. Unter Störungen scheitern beide verschieden: Der Filter hält das Maximum und verliert eher die Bahn, das Training hält die Bahn und überschreitet das Budget bei Modellfehlern | X1.3, X2.2, X1.4 Teil 2 und 3, X4.5 Runde 2 | 10 Seeds je Budget, 21 Episoden je Agent, nur Simulation. „Folgt seltener als r4“ nur mit Schwelle (X4.5), der Vorteil bei θ 0,02 nicht robust. Budget als Anteil der Schritte, nicht als Maximum. Kollaps bei θ 0,02 (A74) |
 | K10 | Weder richtige Beobachtungsgrenzen noch mehr Information (Zustand der Befehlskette, Vorschau der Bahn) noch eine schnellere Kette (Filter 0,85 oder Rate Limiter 2 statt 0,5 rad/s²) machen die Agenten genauer (RMS 12 bis 13 mm in allen Varianten, Faktor gegen die alte Front 2,25 bis 2,69). Die schnellere Kette erhöht nur den Befehlsruck (4- bis 9-fach). Den Regler dagegen bremst die Kette über den Rate Limiter: mit 2 rad/s² 1,4 statt 5,7 mm, der Faktor gegen die eigene Front steigt dann auf 9,5. Die Genauigkeit der Agenten setzt in diesem Aufbau das Lernverfahren, nicht die Schnittstelle. Die Agenten mit dem kleinsten Abstand nutzen den negativen Zweig von J6 | X4.6 (V1 bis V4) | 5 Seeds je Variante, aufbauend, nur Simulation. Nur große Effekte nachweisbar (kleinstes p nach Holm 0,024). V4 nachträglich, gleiche Hyperparameter wie V1 |
 
+| K11 | Auf der gekippten 3D-Bahn mit allen sieben Gelenken lernen die Agenten verlässlich (r4: 9 von 10 beste Zwischenstände folgen, 11,8 mm RMS, 17,8 mrad schlechteste Drehung im Median). Der Abstand zur Front ist größer als in der Ebene (Faktor 4,1 statt 2 bis 3), weil der Regler den Nullraum nutzt. Ein Budget von 0,03 rad ist in 3D locker und macht die Agenten nicht ruhiger, sondern lässt mehr Drehung zu als r4 (7 von 7 Seed-Paaren, Median +7,7 mrad) | X5.2b, X5.3 | 10 Seeds je Variante, 21 Episoden je Agent, nur Simulation. Bester Zwischenstand nominal ausgewählt, letzte Agenten schlechter (r4 7 von 10 folgen). Nur ein Budget und eine Bahn |
 X0.1 (Auswerteprotokoll) steht und reproduziert D17. Mit ±2° Startstörung folgen 19 von 20 D16/D17-Agenten in
 allen 21 Episoden der Bahn, der Ausreißer ist ein ruhiger Agent. X0.2 (kinematischer Simulator) trifft
 `SK_desktop` im geschlossenen Kreis auf ≤ 0,45 mm und ≤ 0,34 mrad, meist auf 1e-6, und ist etwa zwölfmal schneller.
@@ -61,6 +62,10 @@ Nachträge 13.11.: X0.1 in `SK_desktop` bestätigt K8 für die DR-Agenten. Unter
 Maximum, die gefilterten Agenten verlieren aber eher die Bahn, die trainierten überschreiten bei Modellfehlern das
 Budget (X1.4 Teil 3). In Simscape rechnet der Filter wie kinematisch. Für den Labortag liegt eine Vorhersage je
 Kandidat vor (X3.2).
+Nachträge 14.11.: X5.1 auch in `SK_desktop` (3D-Bahn bitgleich zum alten Modell in der Ebene). X5.2b und X5.3:
+In 3D folgen mit Lernrate 3e-4 und Zwischenständen 9 von 10 r4-Agenten, der Abstand zur Front des Reglers ist
+etwa doppelt so groß wie in der Ebene, ein Budget von 0,03 rad hilft dort nicht (K11). X6 (Set-Point): Weder PPO
+noch SAC mit HER halten das Ziel, X6 bleibt durch das Lernverfahren begrenzt.
 
 ## Ausgangslage (aus dem alten Desktop-Plan und dem Paper, Stand 10.11.2026)
 
@@ -1870,6 +1875,94 @@ Datenquelle: `X5_2b_{agents,episodes,ckpt}_20261114_143532.csv`, `X5_ppo_40hz_r4
 {train,dual}.csv`, Log `X5_2b_matlab.log`, Agenten und Zwischenstände unter `SavedAgents/MotionProfile/X5/`.
 
 Paper: Abschnitt 3D (RL gegen Regler-Front), sobald X5.3 läuft. E4 nach der Regel Go.
+
+### X5.3 Hauptlauf 3D ✅ 14.11.2026 (r4 und x1 je 10 Seeds, Abstand zur Front etwa Faktor 4)
+
+**Frage:** Lernen die Agenten auf der gekippten 3D-Bahn mit allen sieben Gelenken verlässlich, und wie weit
+liegen sie von der Front des Reglers entfernt, der den Nullraum nutzt (K7)?
+
+**Aufbau** (`ext_x5_3_run`, 15:04 bis 23:13, 8,1 h):
+1. Front des Reglers: `ext_x5_1_feasibility` auf tilted −30 mit allen sieben Gelenken und den Grenzen der
+   Agenten (0,9774 rad/s J1 bis J4, 0,5774 rad/s J5 bis J7), β 0 und 21 Werte von 0,1 bis 1e4, Prioritätsform,
+   J6-Seiten 0, −1, +1, volle Kette mit Inversion. Ergebnis 70 von 72 Läufen folgen, 17 Pareto-Punkte.
+2. X1-Pilot in 3D: x1 (θ 0,03 rad, Indikator-Kosten, η 5, λ0 1, δ 0,02, Blöcke zu 50 Episoden, wie X1.3),
+   Seeds 0 und 1, Lernrate 3e-4, Zwischenstand alle 250 Episoden. Go (2 von 4 Agenten folgen).
+3. r4 Seeds 2 bis 9, Einstellungen wie X5.2b (Seeds 0 und 1 von dort).
+4. x1 Seeds 2 bis 9 (wegen Go in 2).
+
+Je Lauf 3000 Episoden. Der letzte Agent und der beste Zwischenstand (nominal ausgewählt wie X5.2b) werden mit X0.1
+ausgewertet (21 Episoden, ±2° Startstörung auf allen sieben Gelenken). Zusammenfassung mit `ext_x5_3_summary`.
+
+**Front des Reglers (nominal):** von 2,0 mm RMS bei 10,3 mrad (0°35′) bis 36,1 mm bei 2,4 mrad (0°08′). Bei
+etwa 10 mm braucht der Regler etwa 7 mrad. Unter 10 mrad wird er rasch ungenauer (6,1 mm bei 8,3 mrad, 13 mm bei
+6,4 mrad).
+
+**Agenten** (je 10 Seeds, RMS Mittel der 21 Episoden, ep_q4 und ori_max schlechteste der 21 Episoden, Median über
+die folgenden Agenten, in Klammern die Spanne):
+
+| Variante, Stufe | folgen | RMS [mm] | ori_max schlechteste [mrad] | ori_max Mittel [mrad] | Ruck (Median) |
+|---|---|---|---|---|---|
+| r4 letzter Agent | 7 von 10 | 14,1 (11,6–17,6) | 20,6 (16,7–35,2) | 16,6 | 5,1 |
+| r4 bester Zwischenstand | 9 von 10 | 11,8 (9,8–12,6) | 17,8 (13,5–25,5) | 14,5 | 4,0 |
+| x1 letzter Agent | 7 von 10 | 21,3 (11,5–24,2) | 30,0 (17,3–37,5) | 25,3 | 10,7 |
+| x1 bester Zwischenstand | 7 von 10 | 13,4 (11,4–23,2) | 25,6 (21,2–30,0) | 21,3 | 5,4 |
+
+- Nicht folgend: r4 letzter Agent Seeds 1, 7, 8, bester Zwischenstand nur Seed 8 (ep_q4 50,5 mm, knapp über der
+  Schwelle). x1 in beiden Stufen Seeds 0, 7, 8. Kein Agent bricht eine Episode ab.
+- Beste Zwischenstände bei r4 nach 750 bis 2750 Episoden (Median 1500), bei x1 nach 2250 bis 3000. Bei r4
+  verschlechtert sich ein Teil der Läufe gegen Ende wieder, auch mit Lernrate 3e-4 (2 Agenten folgen nur im
+  Zwischenstand). Bei x1 liegt der beste Stand meist am Ende, die Läufe lernen langsamer.
+
+**Gegen die Front** (nominale Lesart wie die Front, folgende beste Zwischenstände):
+- r4: Median 8,7 mm bei 13,8 mrad. Bei derselben Basisdrehung erreicht der Regler 2,0 mm (Faktor 4,1 im Median).
+  Bei demselben RMS braucht der Regler 7,1 mrad, also etwa die Hälfte. Kein Agent liegt vor der Front.
+- x1: Median 11,1 mm bei 21,9 mrad, Faktor 5,6, bei demselben RMS braucht der Regler 6,8 mrad.
+- Bis auf einen drehen alle folgenden Agenten die Basis stärker als der genaueste Punkt der Front (10,3 mrad). Der
+  Vergleich bei gleicher Drehung trifft deshalb fast immer diesen Punkt. Der Faktor sagt also, wie viel genauer
+  der Regler bei gleicher oder kleinerer Drehung ist, nicht wie die Front verläuft. Die Ausnahme ist r4 Seed 2
+  (9,1 mm bei 9,5 mrad, Front 6,1 mm, Faktor 1,5). Er liegt der Front am nächsten.
+- Zum Vergleich in der Ebene (X2.2, K9): Faktor 2 bis 3. In 3D ist der Abstand größer, weil der Regler dort den
+  Nullraum nutzt (K7) und die Agenten diesen Vorteil nur zum Teil finden.
+
+**x1 gegen r4:**
+- Das Budget wirkt im Training. λ steigt in allen zehn x1-Läufen auf 12,9 bis 20 (Obergrenze 20 in Seeds 5 und 6)
+  und liegt am Ende bei 8 bis 19. Die Kostenrate C (Anteil der Schritte über θ, nominal im Training) liegt in den
+  letzten 20 Blöcken bei 0 bis 0,01, also unter δ 0,02. Nominal bleiben alle folgenden besten Zwischenstände
+  von x1 mit dem Maximum unter 30 mrad (Median 21,9, höchstens 27,1 mrad). Von den folgenden letzten Agenten
+  liegen 3 von 7 mit dem Maximum knapp darüber (30,5 bis 33,5 mrad). Das Budget zählt Schritte über θ, nicht
+  das Maximum (K9).
+- Trotzdem drehen die x1-Agenten die Basis stärker als r4. Bei den 7 Seeds, in denen beide beste Zwischenstände
+  folgen, liegt ori_max (schlechteste) bei x1 in allen 7 Fällen höher (Median +7,7 mrad, Vorzeichentest zweiseitig
+  p = 0,016). Der RMS ist bei x1 in 5 von 7 Fällen größer (Median +1,5 mm).
+- Deutung: In 3D liegt r4 schon ohne Budget unter 30 mrad (nominal 13,8 mrad). Das Budget von 0,03 rad ist hier
+  also locker. Die Policy hat unter dem Budget keinen Anreiz, weiter unter die Grenze zu gehen, und nutzt den
+  Spielraum für die Bahn. Das hohe λ kostet zusätzlich Lernzeit (beste Stände später, letzter Agent ungenauer und
+  mit doppeltem Ruck). Das passt zu K9 (das Budget steuert die Drehung auf das Budget hin, nicht darunter). Ein
+  strengeres Budget in 3D (etwa 0,015 rad) ist nicht getestet.
+
+**Abbildung:** `media/figures/tradeoff3d_{paper,slide}.{pdf,png}` (`media_fig_tradeoff_3d`), Aufbau wie
+`tradeoff_*` für die Ebene: Front als Treppe, beste Zwischenstände als große Marker (gefüllt folgt, hohl folgt
+nicht), letzter Agent desselben Laufs als kleiner Punkt mit Verbindungslinie, Budget als senkrechte Linie.
+
+**Grenzen:**
+- Nur Simulation (kinematischer Simulator für die Front, `SK_desktop` für Training und X0.1).
+- Der beste Zwischenstand ist mit der nominalen Episode ausgewählt, die auch eine der 21 Auswerteepisoden ist
+  (leichte Auswahlverzerrung wie X5.2b). Für das Paper beide Stufen nennen oder die Auswahl als Teil des
+  Verfahrens beschreiben (frühes Anhalten mit einer Prüfepisode).
+- Hyperparameter aus der Ebene, nur die Lernrate angepasst. Nur ein Budget (0,03 rad), nur eine Bahn (−30°).
+- Die Front ist nominal und mit exaktem Modell. Die Robustheit des Reglers in 3D ist nicht geprüft (X2.3 nur in
+  der Ebene).
+
+Korrektur zur Rückmeldung an den Nutzer vom 14.11. abends: Dort stand, λ sei im X1-Piloten bei 0 geblieben. Das war
+falsch. Die gelesenen Logzeilen gehörten zu einem r4-Lauf (η 0, λ immer 0). In den x1-Läufen ist λ hoch (siehe oben).
+
+Datenquelle: `X5_3_summary_20261114_231420.csv` (eine Zeile je Agent, mit Abstand zur Front),
+`X5_3_front_20261114_150547.csv`, `X5_2b_{agents,episodes,ckpt}_20261114_143532.csv` (r4 Seeds 0, 1),
+`X5_2c_{agents,episodes,ckpt}_20261114_155811.csv` (x1 Seeds 0, 1),
+`X5_23_r4_{agents,episodes,ckpt}_20261114_194452.csv`, `X5_23_x1_{agents,episodes,ckpt}_20261114_231248.csv`,
+Log `X5_3_matlab.log` (λ und C je Block), Agenten und Zwischenstände unter `SavedAgents/MotionProfile/X5/`.
+
+Paper: Abschnitt 3D mit Abbildung `tradeoff3d_paper` (RL gegen Regler-Front, r4 und x1), offen.
 
 ## X6 Set-Point
 

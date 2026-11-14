@@ -1,0 +1,1445 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+=== X5.3 Schritt 1: Front 3D ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+tilted -30 all7 fertig (0.9 min)
+Ergebnis: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X5_3_front_20261114_150547.csv
+=== X5.3 Schritt 2: X1-Pilot 3D (1.0 min) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+X1: theta 0.030 rad, Kosten 1, eta 5, kp 0, delta 0.02, Seed 0, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 1.000, C 0.4754 (50 Ep.), Return -651.3 -> lambda 3.277 (1.2 min)
+X1 Block  2/60: lambda 3.277, C 0.7312 (50 Ep.), Return -1028.5 -> lambda 6.833 (0.5 min)
+X1 Block  3/60: lambda 6.833, C 0.5287 (50 Ep.), Return -1432.5 -> lambda 9.377 (0.4 min)
+X1 Block  4/60: lambda 9.377, C 0.3803 (50 Ep.), Return -873.6 -> lambda 11.178 (0.3 min)
+X1 Block  5/60: lambda 11.178, C 0.4427 (50 Ep.), Return -1144.4 -> lambda 13.292 (0.3 min)
+X1 Block  6/60: lambda 13.292, C 0.3646 (50 Ep.), Return -1146.3 -> lambda 15.015 (0.3 min)
+X1 Block  7/60: lambda 15.015, C 0.2436 (50 Ep.), Return -705.0 -> lambda 16.133 (0.3 min)
+X1 Block  8/60: lambda 16.133, C 0.1913 (50 Ep.), Return -570.4 -> lambda 16.989 (0.2 min)
+X1 Block  9/60: lambda 16.989, C 0.1720 (50 Ep.), Return -530.4 -> lambda 17.750 (0.2 min)
+X1 Block 10/60: lambda 17.750, C 0.1157 (50 Ep.), Return -401.8 -> lambda 18.228 (0.2 min)
+X1 Block 11/60: lambda 18.228, C 0.0653 (50 Ep.), Return -319.7 -> lambda 18.454 (0.2 min)
+X1 Block 12/60: lambda 18.454, C 0.0566 (50 Ep.), Return -334.7 -> lambda 18.637 (0.3 min)
+X1 Block 13/60: lambda 18.637, C 0.0390 (50 Ep.), Return -298.9 -> lambda 18.732 (0.2 min)
+X1 Block 14/60: lambda 18.732, C 0.0104 (50 Ep.), Return -174.9 -> lambda 18.684 (0.2 min)
+X1 Block 15/60: lambda 18.684, C 0.0391 (50 Ep.), Return -206.4 -> lambda 18.780 (0.2 min)
+X1 Block 16/60: lambda 18.780, C 0.0039 (50 Ep.), Return -128.0 -> lambda 18.699 (0.2 min)
+X1 Block 17/60: lambda 18.699, C 0.0020 (50 Ep.), Return -93.4 -> lambda 18.609 (0.2 min)
+X1 Block 18/60: lambda 18.609, C 0.0141 (50 Ep.), Return -102.0 -> lambda 18.580 (0.2 min)
+X1 Block 19/60: lambda 18.580, C 0.0036 (50 Ep.), Return -69.3 -> lambda 18.498 (0.2 min)
+X1 Block 20/60: lambda 18.498, C 0.0125 (50 Ep.), Return -85.9 -> lambda 18.460 (0.2 min)
+X1 Block 21/60: lambda 18.460, C 0.0000 (50 Ep.), Return -49.1 -> lambda 18.360 (0.2 min)
+X1 Block 22/60: lambda 18.360, C 0.0065 (50 Ep.), Return -52.2 -> lambda 18.293 (0.2 min)
+X1 Block 23/60: lambda 18.293, C 0.0115 (50 Ep.), Return -54.0 -> lambda 18.250 (0.2 min)
+X1 Block 24/60: lambda 18.250, C 0.0080 (50 Ep.), Return -58.5 -> lambda 18.190 (0.3 min)
+X1 Block 25/60: lambda 18.190, C 0.0119 (50 Ep.), Return -63.4 -> lambda 18.150 (0.3 min)
+X1 Block 26/60: lambda 18.150, C 0.0739 (50 Ep.), Return -299.3 -> lambda 18.420 (0.3 min)
+X1 Block 27/60: lambda 18.420, C 0.0044 (50 Ep.), Return -8.4 -> lambda 18.342 (0.3 min)
+X1 Block 28/60: lambda 18.342, C 0.0055 (50 Ep.), Return -17.5 -> lambda 18.269 (0.3 min)
+X1 Block 29/60: lambda 18.269, C 0.0738 (50 Ep.), Return -308.9 -> lambda 18.538 (0.3 min)
+X1 Block 30/60: lambda 18.538, C 0.0269 (50 Ep.), Return -86.1 -> lambda 18.573 (0.3 min)
+X1 Block 31/60: lambda 18.573, C 0.0118 (50 Ep.), Return 29.9 -> lambda 18.532 (0.3 min)
+X1 Block 32/60: lambda 18.532, C 0.0159 (50 Ep.), Return 41.7 -> lambda 18.512 (0.3 min)
+X1 Block 33/60: lambda 18.512, C 0.0032 (50 Ep.), Return 81.5 -> lambda 18.427 (0.3 min)
+X1 Block 34/60: lambda 18.427, C 0.0470 (50 Ep.), Return -125.0 -> lambda 18.562 (0.4 min)
+X1 Block 35/60: lambda 18.562, C 0.0419 (50 Ep.), Return -190.8 -> lambda 18.672 (0.4 min)
+X1 Block 36/60: lambda 18.672, C 0.0170 (50 Ep.), Return -36.8 -> lambda 18.657 (0.4 min)
+X1 Block 37/60: lambda 18.657, C 0.0135 (50 Ep.), Return -32.1 -> lambda 18.625 (0.4 min)
+X1 Block 38/60: lambda 18.625, C 0.0185 (50 Ep.), Return -87.1 -> lambda 18.617 (0.4 min)
+X1 Block 39/60: lambda 18.617, C 0.0876 (50 Ep.), Return -426.0 -> lambda 18.955 (0.4 min)
+X1 Block 40/60: lambda 18.955, C 0.0046 (50 Ep.), Return 17.1 -> lambda 18.878 (0.4 min)
+X1 Block 41/60: lambda 18.878, C 0.0087 (50 Ep.), Return 1.8 -> lambda 18.821 (0.4 min)
+X1 Block 42/60: lambda 18.821, C 0.0012 (50 Ep.), Return 232.3 -> lambda 18.727 (0.4 min)
+X1 Block 43/60: lambda 18.727, C 0.0182 (50 Ep.), Return 245.0 -> lambda 18.719 (0.4 min)
+X1 Block 44/60: lambda 18.719, C 0.0037 (50 Ep.), Return 404.6 -> lambda 18.637 (0.4 min)
+X1 Block 45/60: lambda 18.637, C 0.0013 (50 Ep.), Return 457.9 -> lambda 18.544 (0.4 min)
+X1 Block 46/60: lambda 18.544, C 0.0188 (50 Ep.), Return 423.9 -> lambda 18.538 (0.4 min)
+X1 Block 47/60: lambda 18.538, C 0.0152 (50 Ep.), Return 470.0 -> lambda 18.514 (0.4 min)
+X1 Block 48/60: lambda 18.514, C 0.0014 (50 Ep.), Return 555.5 -> lambda 18.421 (0.4 min)
+X1 Block 49/60: lambda 18.421, C 0.0005 (50 Ep.), Return 617.5 -> lambda 18.323 (0.4 min)
+X1 Block 50/60: lambda 18.323, C 0.0019 (50 Ep.), Return 654.7 -> lambda 18.233 (0.4 min)
+X1 Block 51/60: lambda 18.233, C 0.0001 (50 Ep.), Return 694.3 -> lambda 18.133 (0.4 min)
+X1 Block 52/60: lambda 18.133, C 0.0000 (50 Ep.), Return 777.3 -> lambda 18.033 (0.4 min)
+X1 Block 53/60: lambda 18.033, C 0.0194 (50 Ep.), Return 722.8 -> lambda 18.030 (0.4 min)
+X1 Block 54/60: lambda 18.030, C 0.0053 (50 Ep.), Return 751.0 -> lambda 17.957 (0.4 min)
+X1 Block 55/60: lambda 17.957, C 0.0000 (50 Ep.), Return 820.4 -> lambda 17.857 (0.4 min)
+X1 Block 56/60: lambda 17.857, C 0.0000 (50 Ep.), Return 842.4 -> lambda 17.757 (0.4 min)
+X1 Block 57/60: lambda 17.757, C 0.0155 (50 Ep.), Return 769.0 -> lambda 17.734 (0.4 min)
+X1 Block 58/60: lambda 17.734, C 0.0000 (50 Ep.), Return 754.6 -> lambda 17.634 (0.4 min)
+X1 Block 59/60: lambda 17.634, C 0.0008 (50 Ep.), Return 871.9 -> lambda 17.538 (0.4 min)
+X1 Block 60/60: lambda 17.538, C 0.0049 (50 Ep.), Return 845.3 -> lambda 17.463 (0.4 min)
+X1: Training fertig nach 21.6 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r5_c1_th30_eta5_seed0_ep3000_b50_l1_lr0.0003.mat
+X5.2 x1 Seed 0: 22.2 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 5, kp 0, delta 0.02, Seed 1, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 1.000, C 0.4896 (50 Ep.), Return -610.5 -> lambda 3.348 (0.4 min)
+X1 Block  2/60: lambda 3.348, C 0.5702 (50 Ep.), Return -907.6 -> lambda 6.099 (0.4 min)
+X1 Block  3/60: lambda 6.099, C 0.4554 (50 Ep.), Return -997.1 -> lambda 8.276 (0.4 min)
+X1 Block  4/60: lambda 8.276, C 0.4033 (50 Ep.), Return -1114.6 -> lambda 10.193 (0.4 min)
+X1 Block  5/60: lambda 10.193, C 0.3389 (50 Ep.), Return -951.9 -> lambda 11.787 (0.3 min)
+X1 Block  6/60: lambda 11.787, C 0.1935 (50 Ep.), Return -718.3 -> lambda 12.655 (0.3 min)
+X1 Block  7/60: lambda 12.655, C 0.0655 (50 Ep.), Return -291.5 -> lambda 12.883 (0.3 min)
+X1 Block  8/60: lambda 12.883, C 0.0270 (50 Ep.), Return -188.2 -> lambda 12.917 (0.3 min)
+X1 Block  9/60: lambda 12.917, C 0.0062 (50 Ep.), Return -37.3 -> lambda 12.849 (0.3 min)
+X1 Block 10/60: lambda 12.849, C 0.0098 (50 Ep.), Return 25.7 -> lambda 12.798 (0.4 min)
+X1 Block 11/60: lambda 12.798, C 0.0141 (50 Ep.), Return 41.5 -> lambda 12.768 (0.4 min)
+X1 Block 12/60: lambda 12.768, C 0.0027 (50 Ep.), Return 153.5 -> lambda 12.682 (0.4 min)
+X1 Block 13/60: lambda 12.682, C 0.0072 (50 Ep.), Return 284.2 -> lambda 12.618 (0.4 min)
+X1 Block 14/60: lambda 12.618, C 0.0080 (50 Ep.), Return 461.3 -> lambda 12.558 (0.4 min)
+X1 Block 15/60: lambda 12.558, C 0.0000 (50 Ep.), Return 562.2 -> lambda 12.458 (0.4 min)
+X1 Block 16/60: lambda 12.458, C 0.0003 (50 Ep.), Return 770.9 -> lambda 12.359 (0.4 min)
+X1 Block 17/60: lambda 12.359, C 0.0000 (50 Ep.), Return 886.8 -> lambda 12.259 (0.4 min)
+X1 Block 18/60: lambda 12.259, C 0.0015 (50 Ep.), Return 1019.7 -> lambda 12.167 (0.4 min)
+X1 Block 19/60: lambda 12.167, C 0.0040 (50 Ep.), Return 1065.5 -> lambda 12.087 (0.4 min)
+X1 Block 20/60: lambda 12.087, C 0.0000 (50 Ep.), Return 986.0 -> lambda 11.987 (0.4 min)
+X1 Block 21/60: lambda 11.987, C 0.0004 (50 Ep.), Return 985.1 -> lambda 11.889 (0.4 min)
+X1 Block 22/60: lambda 11.889, C 0.0000 (50 Ep.), Return 965.6 -> lambda 11.789 (0.4 min)
+X1 Block 23/60: lambda 11.789, C 0.0000 (50 Ep.), Return 965.2 -> lambda 11.689 (0.4 min)
+X1 Block 24/60: lambda 11.689, C 0.0008 (50 Ep.), Return 1040.3 -> lambda 11.593 (0.4 min)
+X1 Block 25/60: lambda 11.593, C 0.0000 (50 Ep.), Return 1008.8 -> lambda 11.493 (0.4 min)
+X1 Block 26/60: lambda 11.493, C 0.0000 (50 Ep.), Return 881.6 -> lambda 11.393 (0.4 min)
+X1 Block 27/60: lambda 11.393, C 0.0008 (50 Ep.), Return 862.1 -> lambda 11.297 (0.4 min)
+X1 Block 28/60: lambda 11.297, C 0.0000 (50 Ep.), Return 941.7 -> lambda 11.197 (0.4 min)
+X1 Block 29/60: lambda 11.197, C 0.0004 (50 Ep.), Return 1032.2 -> lambda 11.099 (0.4 min)
+X1 Block 30/60: lambda 11.099, C 0.0000 (50 Ep.), Return 1044.4 -> lambda 10.999 (0.4 min)
+X1 Block 31/60: lambda 10.999, C 0.0002 (50 Ep.), Return 1128.9 -> lambda 10.900 (0.4 min)
+X1 Block 32/60: lambda 10.900, C 0.0128 (50 Ep.), Return 1035.8 -> lambda 10.864 (0.4 min)
+X1 Block 33/60: lambda 10.864, C 0.0016 (50 Ep.), Return 888.2 -> lambda 10.772 (0.4 min)
+X1 Block 34/60: lambda 10.772, C 0.0020 (50 Ep.), Return 863.6 -> lambda 10.682 (0.4 min)
+X1 Block 35/60: lambda 10.682, C 0.0000 (50 Ep.), Return 973.4 -> lambda 10.582 (0.4 min)
+X1 Block 36/60: lambda 10.582, C 0.0014 (50 Ep.), Return 1024.4 -> lambda 10.489 (0.4 min)
+X1 Block 37/60: lambda 10.489, C 0.0000 (50 Ep.), Return 1081.4 -> lambda 10.389 (0.4 min)
+X1 Block 38/60: lambda 10.389, C 0.0012 (50 Ep.), Return 1115.0 -> lambda 10.295 (0.4 min)
+X1 Block 39/60: lambda 10.295, C 0.0024 (50 Ep.), Return 1136.9 -> lambda 10.207 (0.4 min)
+X1 Block 40/60: lambda 10.207, C 0.0000 (50 Ep.), Return 1146.6 -> lambda 10.107 (0.4 min)
+X1 Block 41/60: lambda 10.107, C 0.0000 (50 Ep.), Return 1060.8 -> lambda 10.007 (0.4 min)
+X1 Block 42/60: lambda 10.007, C 0.0000 (50 Ep.), Return 1040.6 -> lambda 9.907 (0.4 min)
+X1 Block 43/60: lambda 9.907, C 0.0025 (50 Ep.), Return 965.1 -> lambda 9.820 (0.4 min)
+X1 Block 44/60: lambda 9.820, C 0.0000 (50 Ep.), Return 944.2 -> lambda 9.720 (0.4 min)
+X1 Block 45/60: lambda 9.720, C 0.0000 (50 Ep.), Return 976.2 -> lambda 9.620 (0.4 min)
+X1 Block 46/60: lambda 9.620, C 0.0000 (50 Ep.), Return 1050.6 -> lambda 9.520 (0.4 min)
+X1 Block 47/60: lambda 9.520, C 0.0002 (50 Ep.), Return 1104.4 -> lambda 9.421 (0.4 min)
+X1 Block 48/60: lambda 9.421, C 0.0002 (50 Ep.), Return 1153.7 -> lambda 9.322 (0.4 min)
+X1 Block 49/60: lambda 9.322, C 0.0002 (50 Ep.), Return 1189.0 -> lambda 9.223 (0.4 min)
+X1 Block 50/60: lambda 9.223, C 0.0010 (50 Ep.), Return 1189.3 -> lambda 9.128 (0.4 min)
+X1 Block 51/60: lambda 9.128, C 0.0011 (50 Ep.), Return 1209.6 -> lambda 9.033 (0.4 min)
+X1 Block 52/60: lambda 9.033, C 0.0002 (50 Ep.), Return 1199.5 -> lambda 8.934 (0.4 min)
+X1 Block 53/60: lambda 8.934, C 0.0009 (50 Ep.), Return 1162.0 -> lambda 8.839 (0.4 min)
+X1 Block 54/60: lambda 8.839, C 0.0000 (50 Ep.), Return 1140.0 -> lambda 8.739 (0.4 min)
+X1 Block 55/60: lambda 8.739, C 0.0000 (50 Ep.), Return 1169.0 -> lambda 8.639 (0.4 min)
+X1 Block 56/60: lambda 8.639, C 0.0000 (50 Ep.), Return 1155.1 -> lambda 8.539 (0.4 min)
+X1 Block 57/60: lambda 8.539, C 0.0000 (50 Ep.), Return 1181.4 -> lambda 8.439 (0.4 min)
+X1 Block 58/60: lambda 8.439, C 0.0000 (50 Ep.), Return 1203.8 -> lambda 8.339 (0.4 min)
+X1 Block 59/60: lambda 8.339, C 0.0000 (50 Ep.), Return 1189.1 -> lambda 8.239 (0.4 min)
+X1 Block 60/60: lambda 8.239, C 0.0000 (50 Ep.), Return 1200.3 -> lambda 8.139 (0.4 min)
+X1: Training fertig nach 25.1 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r5_c1_th30_eta5_seed1_ep3000_b50_l1_lr0.0003.mat
+X5.2 x1 Seed 1: 25.2 min
+X5.2 Training fertig nach 47.4 min
+  x1 Seed 0 Ep.  250: RMS 250.8 mm, ep_q4 NaN mm, ori_max 65.6 mrad, Abbruch 1
+  x1 Seed 0 Ep.  500: RMS 213.0 mm, ep_q4 NaN mm, ori_max 59.1 mrad, Abbruch 1
+  x1 Seed 0 Ep.  750: RMS 219.4 mm, ep_q4 NaN mm, ori_max 12.6 mrad, Abbruch 1
+  x1 Seed 0 Ep. 1000: RMS 198.9 mm, ep_q4 NaN mm, ori_max 21.1 mrad, Abbruch 1
+  x1 Seed 0 Ep. 1250: RMS 190.3 mm, ep_q4 NaN mm, ori_max 25.3 mrad, Abbruch 1
+  x1 Seed 0 Ep. 1500: RMS 184.9 mm, ep_q4 NaN mm, ori_max 24.1 mrad, Abbruch 1
+  x1 Seed 0 Ep. 1750: RMS 178.7 mm, ep_q4 NaN mm, ori_max 20.9 mrad, Abbruch 1
+  x1 Seed 0 Ep. 2000: RMS 227.5 mm, ep_q4 401.9 mm, ori_max 36.3 mrad, Abbruch 1
+  x1 Seed 0 Ep. 2250: RMS 92.9 mm, ep_q4 162.8 mm, ori_max 31.7 mrad, Abbruch 0
+  x1 Seed 0 Ep. 2500: RMS 165.3 mm, ep_q4 303.9 mm, ori_max 47.4 mrad, Abbruch 0
+  x1 Seed 0 Ep. 2750: RMS 119.6 mm, ep_q4 212.8 mm, ori_max 70.7 mrad, Abbruch 0
+  x1 Seed 0 Ep. 3000: RMS 105.2 mm, ep_q4 181.3 mm, ori_max 88.6 mrad, Abbruch 0
+  x1 Seed 1 Ep.  250: RMS 193.1 mm, ep_q4 NaN mm, ori_max 30.9 mrad, Abbruch 1
+  x1 Seed 1 Ep.  500: RMS 192.3 mm, ep_q4 NaN mm, ori_max 33.9 mrad, Abbruch 1
+  x1 Seed 1 Ep.  750: RMS 137.6 mm, ep_q4 242.5 mm, ori_max 25.0 mrad, Abbruch 0
+  x1 Seed 1 Ep. 1000: RMS 31.2 mm, ep_q4 56.6 mm, ori_max 26.6 mrad, Abbruch 0
+  x1 Seed 1 Ep. 1250: RMS 57.6 mm, ep_q4 106.1 mm, ori_max 20.1 mrad, Abbruch 0
+  x1 Seed 1 Ep. 1500: RMS 40.1 mm, ep_q4 62.2 mm, ori_max 24.4 mrad, Abbruch 0
+  x1 Seed 1 Ep. 1750: RMS 72.9 mm, ep_q4 106.7 mm, ori_max 25.6 mrad, Abbruch 0
+  x1 Seed 1 Ep. 2000: RMS 28.8 mm, ep_q4 50.3 mm, ori_max 32.3 mrad, Abbruch 0
+  x1 Seed 1 Ep. 2250: RMS 25.6 mm, ep_q4 33.7 mm, ori_max 28.8 mrad, Abbruch 0
+  x1 Seed 1 Ep. 2500: RMS 13.1 mm, ep_q4 14.9 mm, ori_max 34.7 mrad, Abbruch 0
+  x1 Seed 1 Ep. 2750: RMS 9.0 mm, ep_q4 9.2 mm, ori_max 21.9 mrad, Abbruch 0
+  x1 Seed 1 Ep. 3000: RMS 21.6 mm, ep_q4 33.0 mm, ori_max 32.6 mrad, Abbruch 0
+x1 Seed 0: folgt 0, RMS 108.9 mm, ep_q4 schlechteste 237.3 mm, ori_max schlechteste 120.1 mrad, Abbrueche 0
+x1 Seed 1: folgt 1, RMS 21.3 mm, ep_q4 schlechteste 39.8 mm, ori_max schlechteste 36.6 mrad, Abbrueche 0
+x1 Seed 0: folgt 0, RMS 94.3 mm, ep_q4 schlechteste 176.4 mm, ori_max schlechteste 36.9 mrad, Abbrueche 0
+x1 Seed 1: folgt 1, RMS 11.4 mm, ep_q4 schlechteste 15.3 mm, ori_max schlechteste 25.6 mrad, Abbrueche 0
+Go/No-Go x1: 2 von 4 Seeds folgen -> Go
+X1-Pilot: 2 von 4 Agenten folgen -> true
+=== X5.3 Schritt 3: r4 Seeds 2 bis 9 (53.4 min) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 0, kp 0, delta 0.02, Seed 2, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 0.000, C 0.4646 (50 Ep.), Return -378.5 -> lambda 0.000 (0.4 min)
+X1 Block  2/60: lambda 0.000, C 0.6447 (50 Ep.), Return -64.5 -> lambda 0.000 (0.3 min)
+X1 Block  3/60: lambda 0.000, C 0.5766 (50 Ep.), Return -90.5 -> lambda 0.000 (0.4 min)
+X1 Block  4/60: lambda 0.000, C 0.5429 (50 Ep.), Return 71.4 -> lambda 0.000 (0.4 min)
+X1 Block  5/60: lambda 0.000, C 0.2996 (50 Ep.), Return 302.5 -> lambda 0.000 (0.4 min)
+X1 Block  6/60: lambda 0.000, C 0.3036 (50 Ep.), Return 384.0 -> lambda 0.000 (0.4 min)
+X1 Block  7/60: lambda 0.000, C 0.3317 (50 Ep.), Return 626.2 -> lambda 0.000 (0.4 min)
+X1 Block  8/60: lambda 0.000, C 0.2638 (50 Ep.), Return 771.3 -> lambda 0.000 (0.4 min)
+X1 Block  9/60: lambda 0.000, C 0.2732 (50 Ep.), Return 840.7 -> lambda 0.000 (0.4 min)
+X1 Block 10/60: lambda 0.000, C 0.2520 (50 Ep.), Return 1089.1 -> lambda 0.000 (0.4 min)
+X1 Block 11/60: lambda 0.000, C 0.2466 (50 Ep.), Return 1332.3 -> lambda 0.000 (0.4 min)
+X1 Block 12/60: lambda 0.000, C 0.1723 (50 Ep.), Return 1601.0 -> lambda 0.000 (0.4 min)
+X1 Block 13/60: lambda 0.000, C 0.1593 (50 Ep.), Return 1746.4 -> lambda 0.000 (0.4 min)
+X1 Block 14/60: lambda 0.000, C 0.1117 (50 Ep.), Return 2010.3 -> lambda 0.000 (0.4 min)
+X1 Block 15/60: lambda 0.000, C 0.1086 (50 Ep.), Return 2065.4 -> lambda 0.000 (0.4 min)
+X1 Block 16/60: lambda 0.000, C 0.0565 (50 Ep.), Return 2068.3 -> lambda 0.000 (0.4 min)
+X1 Block 17/60: lambda 0.000, C 0.0169 (50 Ep.), Return 2230.1 -> lambda 0.000 (0.4 min)
+X1 Block 18/60: lambda 0.000, C 0.0028 (50 Ep.), Return 2308.7 -> lambda 0.000 (0.4 min)
+X1 Block 19/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2475.3 -> lambda 0.000 (0.4 min)
+X1 Block 20/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2532.8 -> lambda 0.000 (0.4 min)
+X1 Block 21/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2533.4 -> lambda 0.000 (0.4 min)
+X1 Block 22/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2505.1 -> lambda 0.000 (0.4 min)
+X1 Block 23/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2383.1 -> lambda 0.000 (0.4 min)
+X1 Block 24/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2467.1 -> lambda 0.000 (0.5 min)
+X1 Block 25/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2502.9 -> lambda 0.000 (0.4 min)
+X1 Block 26/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2508.9 -> lambda 0.000 (0.4 min)
+X1 Block 27/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2513.8 -> lambda 0.000 (0.4 min)
+X1 Block 28/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2545.2 -> lambda 0.000 (0.4 min)
+X1 Block 29/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2418.0 -> lambda 0.000 (0.4 min)
+X1 Block 30/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2463.6 -> lambda 0.000 (0.4 min)
+X1 Block 31/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2377.0 -> lambda 0.000 (0.4 min)
+X1 Block 32/60: lambda 0.000, C 0.0006 (50 Ep.), Return 2434.7 -> lambda 0.000 (0.4 min)
+X1 Block 33/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2507.8 -> lambda 0.000 (0.4 min)
+X1 Block 34/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2572.6 -> lambda 0.000 (0.4 min)
+X1 Block 35/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2487.3 -> lambda 0.000 (0.4 min)
+X1 Block 36/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2417.8 -> lambda 0.000 (0.4 min)
+X1 Block 37/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2458.3 -> lambda 0.000 (0.4 min)
+X1 Block 38/60: lambda 0.000, C 0.0013 (50 Ep.), Return 2346.9 -> lambda 0.000 (0.4 min)
+X1 Block 39/60: lambda 0.000, C 0.0164 (50 Ep.), Return 2341.0 -> lambda 0.000 (0.4 min)
+X1 Block 40/60: lambda 0.000, C 0.0065 (50 Ep.), Return 2229.0 -> lambda 0.000 (0.4 min)
+X1 Block 41/60: lambda 0.000, C 0.0050 (50 Ep.), Return 2071.2 -> lambda 0.000 (0.4 min)
+X1 Block 42/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2165.0 -> lambda 0.000 (0.4 min)
+X1 Block 43/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2350.5 -> lambda 0.000 (0.4 min)
+X1 Block 44/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2390.3 -> lambda 0.000 (0.4 min)
+X1 Block 45/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2442.0 -> lambda 0.000 (0.4 min)
+X1 Block 46/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2421.4 -> lambda 0.000 (0.4 min)
+X1 Block 47/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2446.1 -> lambda 0.000 (0.5 min)
+X1 Block 48/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2425.0 -> lambda 0.000 (0.5 min)
+X1 Block 49/60: lambda 0.000, C 0.0010 (50 Ep.), Return 2395.8 -> lambda 0.000 (0.4 min)
+X1 Block 50/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2473.8 -> lambda 0.000 (0.4 min)
+X1 Block 51/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2491.5 -> lambda 0.000 (0.4 min)
+X1 Block 52/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2486.5 -> lambda 0.000 (0.4 min)
+X1 Block 53/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2527.9 -> lambda 0.000 (0.4 min)
+X1 Block 54/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2432.2 -> lambda 0.000 (0.4 min)
+X1 Block 55/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2431.1 -> lambda 0.000 (0.4 min)
+X1 Block 56/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2456.1 -> lambda 0.000 (0.4 min)
+X1 Block 57/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2446.0 -> lambda 0.000 (0.4 min)
+X1 Block 58/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2507.2 -> lambda 0.000 (0.4 min)
+X1 Block 59/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2501.9 -> lambda 0.000 (0.4 min)
+X1 Block 60/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2484.0 -> lambda 0.000 (0.4 min)
+X1: Training fertig nach 25.7 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r4_seed2_ep3000_b50_lr0.0003.mat
+X5.2 r4 Seed 2: 25.7 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 0, kp 0, delta 0.02, Seed 3, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 0.000, C 0.5105 (50 Ep.), Return -306.5 -> lambda 0.000 (0.4 min)
+X1 Block  2/60: lambda 0.000, C 0.7132 (50 Ep.), Return -149.3 -> lambda 0.000 (0.4 min)
+X1 Block  3/60: lambda 0.000, C 0.5466 (50 Ep.), Return -132.4 -> lambda 0.000 (0.4 min)
+X1 Block  4/60: lambda 0.000, C 0.3498 (50 Ep.), Return 73.1 -> lambda 0.000 (0.4 min)
+X1 Block  5/60: lambda 0.000, C 0.2880 (50 Ep.), Return 161.4 -> lambda 0.000 (0.4 min)
+X1 Block  6/60: lambda 0.000, C 0.2599 (50 Ep.), Return 512.3 -> lambda 0.000 (0.4 min)
+X1 Block  7/60: lambda 0.000, C 0.0532 (50 Ep.), Return 976.4 -> lambda 0.000 (0.4 min)
+X1 Block  8/60: lambda 0.000, C 0.0628 (50 Ep.), Return 1044.6 -> lambda 0.000 (0.4 min)
+X1 Block  9/60: lambda 0.000, C 0.0101 (50 Ep.), Return 1237.8 -> lambda 0.000 (0.4 min)
+X1 Block 10/60: lambda 0.000, C 0.0009 (50 Ep.), Return 1436.2 -> lambda 0.000 (0.4 min)
+X1 Block 11/60: lambda 0.000, C 0.0080 (50 Ep.), Return 1663.8 -> lambda 0.000 (0.4 min)
+X1 Block 12/60: lambda 0.000, C 0.0082 (50 Ep.), Return 1761.4 -> lambda 0.000 (0.4 min)
+X1 Block 13/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2010.7 -> lambda 0.000 (0.4 min)
+X1 Block 14/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2085.7 -> lambda 0.000 (0.4 min)
+X1 Block 15/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2199.8 -> lambda 0.000 (0.4 min)
+X1 Block 16/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2165.6 -> lambda 0.000 (0.4 min)
+X1 Block 17/60: lambda 0.000, C 0.0005 (50 Ep.), Return 2233.5 -> lambda 0.000 (0.4 min)
+X1 Block 18/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2315.7 -> lambda 0.000 (0.4 min)
+X1 Block 19/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2407.1 -> lambda 0.000 (0.4 min)
+X1 Block 20/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2410.2 -> lambda 0.000 (0.4 min)
+X1 Block 21/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2423.7 -> lambda 0.000 (0.5 min)
+X1 Block 22/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2472.8 -> lambda 0.000 (0.4 min)
+X1 Block 23/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2483.2 -> lambda 0.000 (0.4 min)
+X1 Block 24/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2487.4 -> lambda 0.000 (0.4 min)
+X1 Block 25/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2517.2 -> lambda 0.000 (0.4 min)
+X1 Block 26/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2481.1 -> lambda 0.000 (0.4 min)
+X1 Block 27/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2406.2 -> lambda 0.000 (0.4 min)
+X1 Block 28/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2382.6 -> lambda 0.000 (0.4 min)
+X1 Block 29/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2376.3 -> lambda 0.000 (0.4 min)
+X1 Block 30/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2401.0 -> lambda 0.000 (0.4 min)
+X1 Block 31/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2487.9 -> lambda 0.000 (0.4 min)
+X1 Block 32/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2551.6 -> lambda 0.000 (0.4 min)
+X1 Block 33/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2567.4 -> lambda 0.000 (0.4 min)
+X1 Block 34/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2574.2 -> lambda 0.000 (0.4 min)
+X1 Block 35/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2617.7 -> lambda 0.000 (0.4 min)
+X1 Block 36/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2637.0 -> lambda 0.000 (0.4 min)
+X1 Block 37/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2649.0 -> lambda 0.000 (0.4 min)
+X1 Block 38/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2656.5 -> lambda 0.000 (0.4 min)
+X1 Block 39/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2655.4 -> lambda 0.000 (0.4 min)
+X1 Block 40/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2653.3 -> lambda 0.000 (0.4 min)
+X1 Block 41/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2655.4 -> lambda 0.000 (0.4 min)
+X1 Block 42/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2619.2 -> lambda 0.000 (0.4 min)
+X1 Block 43/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2522.3 -> lambda 0.000 (0.4 min)
+X1 Block 44/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2580.1 -> lambda 0.000 (0.4 min)
+X1 Block 45/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2629.9 -> lambda 0.000 (0.4 min)
+X1 Block 46/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2658.9 -> lambda 0.000 (0.4 min)
+X1 Block 47/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2662.4 -> lambda 0.000 (0.4 min)
+X1 Block 48/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2654.9 -> lambda 0.000 (0.4 min)
+X1 Block 49/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2643.2 -> lambda 0.000 (0.4 min)
+X1 Block 50/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2619.1 -> lambda 0.000 (0.4 min)
+X1 Block 51/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2608.7 -> lambda 0.000 (0.4 min)
+X1 Block 52/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2641.3 -> lambda 0.000 (0.4 min)
+X1 Block 53/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2609.2 -> lambda 0.000 (0.4 min)
+X1 Block 54/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2591.6 -> lambda 0.000 (0.4 min)
+X1 Block 55/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2479.4 -> lambda 0.000 (0.4 min)
+X1 Block 56/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2415.3 -> lambda 0.000 (0.4 min)
+X1 Block 57/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2416.5 -> lambda 0.000 (0.4 min)
+X1 Block 58/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2530.3 -> lambda 0.000 (0.4 min)
+X1 Block 59/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2574.7 -> lambda 0.000 (0.4 min)
+X1 Block 60/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2603.8 -> lambda 0.000 (0.4 min)
+X1: Training fertig nach 26.0 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r4_seed3_ep3000_b50_lr0.0003.mat
+X5.2 r4 Seed 3: 26.0 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 0, kp 0, delta 0.02, Seed 4, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 0.000, C 0.5574 (50 Ep.), Return -388.2 -> lambda 0.000 (0.4 min)
+X1 Block  2/60: lambda 0.000, C 0.7275 (50 Ep.), Return -193.7 -> lambda 0.000 (0.4 min)
+X1 Block  3/60: lambda 0.000, C 0.6865 (50 Ep.), Return -164.6 -> lambda 0.000 (0.4 min)
+X1 Block  4/60: lambda 0.000, C 0.6652 (50 Ep.), Return -87.9 -> lambda 0.000 (0.4 min)
+X1 Block  5/60: lambda 0.000, C 0.4998 (50 Ep.), Return 226.4 -> lambda 0.000 (0.4 min)
+X1 Block  6/60: lambda 0.000, C 0.2131 (50 Ep.), Return 508.5 -> lambda 0.000 (0.4 min)
+X1 Block  7/60: lambda 0.000, C 0.3505 (50 Ep.), Return 622.0 -> lambda 0.000 (0.4 min)
+X1 Block  8/60: lambda 0.000, C 0.2307 (50 Ep.), Return 771.6 -> lambda 0.000 (0.4 min)
+X1 Block  9/60: lambda 0.000, C 0.1918 (50 Ep.), Return 986.5 -> lambda 0.000 (0.4 min)
+X1 Block 10/60: lambda 0.000, C 0.1129 (50 Ep.), Return 1146.9 -> lambda 0.000 (0.4 min)
+X1 Block 11/60: lambda 0.000, C 0.0827 (50 Ep.), Return 1320.4 -> lambda 0.000 (0.5 min)
+X1 Block 12/60: lambda 0.000, C 0.0505 (50 Ep.), Return 1538.8 -> lambda 0.000 (0.4 min)
+X1 Block 13/60: lambda 0.000, C 0.0072 (50 Ep.), Return 1786.9 -> lambda 0.000 (0.4 min)
+X1 Block 14/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2084.4 -> lambda 0.000 (0.4 min)
+X1 Block 15/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2386.2 -> lambda 0.000 (0.4 min)
+X1 Block 16/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2374.0 -> lambda 0.000 (0.4 min)
+X1 Block 17/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2484.7 -> lambda 0.000 (0.4 min)
+X1 Block 18/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2267.0 -> lambda 0.000 (0.4 min)
+X1 Block 19/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2421.1 -> lambda 0.000 (0.4 min)
+X1 Block 20/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2469.3 -> lambda 0.000 (0.4 min)
+X1 Block 21/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2482.8 -> lambda 0.000 (0.4 min)
+X1 Block 22/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2512.0 -> lambda 0.000 (0.4 min)
+X1 Block 23/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2432.3 -> lambda 0.000 (0.4 min)
+X1 Block 24/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2430.5 -> lambda 0.000 (0.4 min)
+X1 Block 25/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2473.7 -> lambda 0.000 (0.4 min)
+X1 Block 26/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2413.2 -> lambda 0.000 (0.4 min)
+X1 Block 27/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2299.7 -> lambda 0.000 (0.4 min)
+X1 Block 28/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2336.4 -> lambda 0.000 (0.4 min)
+X1 Block 29/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2335.4 -> lambda 0.000 (0.4 min)
+X1 Block 30/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2347.4 -> lambda 0.000 (0.4 min)
+X1 Block 31/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2387.0 -> lambda 0.000 (0.4 min)
+X1 Block 32/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2468.3 -> lambda 0.000 (0.4 min)
+X1 Block 33/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2469.0 -> lambda 0.000 (0.4 min)
+X1 Block 34/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2475.3 -> lambda 0.000 (0.4 min)
+X1 Block 35/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2503.0 -> lambda 0.000 (0.4 min)
+X1 Block 36/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2519.6 -> lambda 0.000 (0.4 min)
+X1 Block 37/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2504.1 -> lambda 0.000 (0.4 min)
+X1 Block 38/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2531.3 -> lambda 0.000 (0.4 min)
+X1 Block 39/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2530.2 -> lambda 0.000 (0.4 min)
+X1 Block 40/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2451.2 -> lambda 0.000 (0.4 min)
+X1 Block 41/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2319.4 -> lambda 0.000 (0.4 min)
+X1 Block 42/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2317.0 -> lambda 0.000 (0.4 min)
+X1 Block 43/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2218.0 -> lambda 0.000 (0.4 min)
+X1 Block 44/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2174.0 -> lambda 0.000 (0.4 min)
+X1 Block 45/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2174.8 -> lambda 0.000 (0.4 min)
+X1 Block 46/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2244.9 -> lambda 0.000 (0.4 min)
+X1 Block 47/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2316.3 -> lambda 0.000 (0.4 min)
+X1 Block 48/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2331.2 -> lambda 0.000 (0.4 min)
+X1 Block 49/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2364.3 -> lambda 0.000 (0.4 min)
+X1 Block 50/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2479.7 -> lambda 0.000 (0.4 min)
+X1 Block 51/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2525.4 -> lambda 0.000 (0.4 min)
+X1 Block 52/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2543.4 -> lambda 0.000 (0.4 min)
+X1 Block 53/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2558.8 -> lambda 0.000 (0.4 min)
+X1 Block 54/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2594.5 -> lambda 0.000 (0.4 min)
+X1 Block 55/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2623.7 -> lambda 0.000 (0.4 min)
+X1 Block 56/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2632.8 -> lambda 0.000 (0.4 min)
+X1 Block 57/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2625.3 -> lambda 0.000 (0.4 min)
+X1 Block 58/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2464.2 -> lambda 0.000 (0.4 min)
+X1 Block 59/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2620.2 -> lambda 0.000 (0.4 min)
+X1 Block 60/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2649.5 -> lambda 0.000 (0.4 min)
+X1: Training fertig nach 25.9 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r4_seed4_ep3000_b50_lr0.0003.mat
+X5.2 r4 Seed 4: 25.9 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 0, kp 0, delta 0.02, Seed 5, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 0.000, C 0.4746 (50 Ep.), Return -334.7 -> lambda 0.000 (0.4 min)
+X1 Block  2/60: lambda 0.000, C 0.6484 (50 Ep.), Return -138.5 -> lambda 0.000 (0.4 min)
+X1 Block  3/60: lambda 0.000, C 0.3479 (50 Ep.), Return 129.7 -> lambda 0.000 (0.4 min)
+X1 Block  4/60: lambda 0.000, C 0.2402 (50 Ep.), Return 312.4 -> lambda 0.000 (0.4 min)
+X1 Block  5/60: lambda 0.000, C 0.0716 (50 Ep.), Return 881.9 -> lambda 0.000 (0.4 min)
+X1 Block  6/60: lambda 0.000, C 0.0023 (50 Ep.), Return 1299.5 -> lambda 0.000 (0.4 min)
+X1 Block  7/60: lambda 0.000, C 0.0000 (50 Ep.), Return 1633.6 -> lambda 0.000 (0.4 min)
+X1 Block  8/60: lambda 0.000, C 0.0000 (50 Ep.), Return 1861.3 -> lambda 0.000 (0.4 min)
+X1 Block  9/60: lambda 0.000, C 0.0000 (50 Ep.), Return 1939.1 -> lambda 0.000 (0.4 min)
+X1 Block 10/60: lambda 0.000, C 0.0008 (50 Ep.), Return 2104.5 -> lambda 0.000 (0.4 min)
+X1 Block 11/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2137.3 -> lambda 0.000 (0.4 min)
+X1 Block 12/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2300.5 -> lambda 0.000 (0.4 min)
+X1 Block 13/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2394.8 -> lambda 0.000 (0.4 min)
+X1 Block 14/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2464.8 -> lambda 0.000 (0.4 min)
+X1 Block 15/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2522.5 -> lambda 0.000 (0.4 min)
+X1 Block 16/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2537.4 -> lambda 0.000 (0.4 min)
+X1 Block 17/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2470.6 -> lambda 0.000 (0.4 min)
+X1 Block 18/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2468.1 -> lambda 0.000 (0.4 min)
+X1 Block 19/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2446.7 -> lambda 0.000 (0.4 min)
+X1 Block 20/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2436.6 -> lambda 0.000 (0.4 min)
+X1 Block 21/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2462.5 -> lambda 0.000 (0.4 min)
+X1 Block 22/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2464.5 -> lambda 0.000 (0.4 min)
+X1 Block 23/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2275.8 -> lambda 0.000 (0.4 min)
+X1 Block 24/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2241.0 -> lambda 0.000 (0.4 min)
+X1 Block 25/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2414.4 -> lambda 0.000 (0.4 min)
+X1 Block 26/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2491.4 -> lambda 0.000 (0.4 min)
+X1 Block 27/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2524.9 -> lambda 0.000 (0.4 min)
+X1 Block 28/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2505.0 -> lambda 0.000 (0.4 min)
+X1 Block 29/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2494.1 -> lambda 0.000 (0.4 min)
+X1 Block 30/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2529.8 -> lambda 0.000 (0.4 min)
+X1 Block 31/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2496.3 -> lambda 0.000 (0.4 min)
+X1 Block 32/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2546.5 -> lambda 0.000 (0.4 min)
+X1 Block 33/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2537.0 -> lambda 0.000 (0.4 min)
+X1 Block 34/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2528.4 -> lambda 0.000 (0.5 min)
+X1 Block 35/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2514.8 -> lambda 0.000 (0.5 min)
+X1 Block 36/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2397.6 -> lambda 0.000 (0.4 min)
+X1 Block 37/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2467.5 -> lambda 0.000 (0.4 min)
+X1 Block 38/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2432.0 -> lambda 0.000 (0.4 min)
+X1 Block 39/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2356.1 -> lambda 0.000 (0.4 min)
+X1 Block 40/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2363.7 -> lambda 0.000 (0.4 min)
+X1 Block 41/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2360.1 -> lambda 0.000 (0.4 min)
+X1 Block 42/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2344.4 -> lambda 0.000 (0.4 min)
+X1 Block 43/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2316.1 -> lambda 0.000 (0.4 min)
+X1 Block 44/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2368.8 -> lambda 0.000 (0.4 min)
+X1 Block 45/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2439.8 -> lambda 0.000 (0.4 min)
+X1 Block 46/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2392.5 -> lambda 0.000 (0.4 min)
+X1 Block 47/60: lambda 0.000, C 0.0004 (50 Ep.), Return 2349.9 -> lambda 0.000 (0.4 min)
+X1 Block 48/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2356.0 -> lambda 0.000 (0.4 min)
+X1 Block 49/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2339.8 -> lambda 0.000 (0.4 min)
+X1 Block 50/60: lambda 0.000, C 0.0002 (50 Ep.), Return 2327.6 -> lambda 0.000 (0.4 min)
+X1 Block 51/60: lambda 0.000, C 0.0004 (50 Ep.), Return 2250.9 -> lambda 0.000 (0.4 min)
+X1 Block 52/60: lambda 0.000, C 0.0004 (50 Ep.), Return 2219.5 -> lambda 0.000 (0.4 min)
+X1 Block 53/60: lambda 0.000, C 0.0013 (50 Ep.), Return 2240.7 -> lambda 0.000 (0.4 min)
+X1 Block 54/60: lambda 0.000, C 0.0025 (50 Ep.), Return 2255.8 -> lambda 0.000 (0.4 min)
+X1 Block 55/60: lambda 0.000, C 0.0097 (50 Ep.), Return 2204.9 -> lambda 0.000 (0.4 min)
+X1 Block 56/60: lambda 0.000, C 0.0049 (50 Ep.), Return 2151.7 -> lambda 0.000 (0.4 min)
+X1 Block 57/60: lambda 0.000, C 0.0080 (50 Ep.), Return 2200.2 -> lambda 0.000 (0.4 min)
+X1 Block 58/60: lambda 0.000, C 0.0096 (50 Ep.), Return 2206.0 -> lambda 0.000 (0.4 min)
+X1 Block 59/60: lambda 0.000, C 0.0090 (50 Ep.), Return 2243.0 -> lambda 0.000 (0.4 min)
+X1 Block 60/60: lambda 0.000, C 0.0081 (50 Ep.), Return 2270.8 -> lambda 0.000 (0.4 min)
+X1: Training fertig nach 26.1 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r4_seed5_ep3000_b50_lr0.0003.mat
+X5.2 r4 Seed 5: 26.1 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 0, kp 0, delta 0.02, Seed 6, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 0.000, C 0.4830 (50 Ep.), Return -360.0 -> lambda 0.000 (0.4 min)
+X1 Block  2/60: lambda 0.000, C 0.6711 (50 Ep.), Return -111.9 -> lambda 0.000 (0.4 min)
+X1 Block  3/60: lambda 0.000, C 0.6060 (50 Ep.), Return -96.6 -> lambda 0.000 (0.4 min)
+X1 Block  4/60: lambda 0.000, C 0.5285 (50 Ep.), Return 79.1 -> lambda 0.000 (0.4 min)
+X1 Block  5/60: lambda 0.000, C 0.2087 (50 Ep.), Return 266.6 -> lambda 0.000 (0.4 min)
+X1 Block  6/60: lambda 0.000, C 0.2058 (50 Ep.), Return 766.9 -> lambda 0.000 (0.4 min)
+X1 Block  7/60: lambda 0.000, C 0.1509 (50 Ep.), Return 1135.1 -> lambda 0.000 (0.4 min)
+X1 Block  8/60: lambda 0.000, C 0.1182 (50 Ep.), Return 1368.2 -> lambda 0.000 (0.4 min)
+X1 Block  9/60: lambda 0.000, C 0.0810 (50 Ep.), Return 1415.6 -> lambda 0.000 (0.4 min)
+X1 Block 10/60: lambda 0.000, C 0.0006 (50 Ep.), Return 1582.2 -> lambda 0.000 (0.4 min)
+X1 Block 11/60: lambda 0.000, C 0.0009 (50 Ep.), Return 1763.8 -> lambda 0.000 (0.4 min)
+X1 Block 12/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2051.4 -> lambda 0.000 (0.4 min)
+X1 Block 13/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2147.1 -> lambda 0.000 (0.4 min)
+X1 Block 14/60: lambda 0.000, C 0.0000 (50 Ep.), Return 1979.4 -> lambda 0.000 (0.4 min)
+X1 Block 15/60: lambda 0.000, C 0.0009 (50 Ep.), Return 1937.3 -> lambda 0.000 (0.4 min)
+X1 Block 16/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2032.7 -> lambda 0.000 (0.4 min)
+X1 Block 17/60: lambda 0.000, C 0.0004 (50 Ep.), Return 2148.0 -> lambda 0.000 (0.4 min)
+X1 Block 18/60: lambda 0.000, C 0.0029 (50 Ep.), Return 2194.6 -> lambda 0.000 (0.4 min)
+X1 Block 19/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2115.1 -> lambda 0.000 (0.4 min)
+X1 Block 20/60: lambda 0.000, C 0.0004 (50 Ep.), Return 2190.9 -> lambda 0.000 (0.4 min)
+X1 Block 21/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2213.6 -> lambda 0.000 (0.4 min)
+X1 Block 22/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2136.3 -> lambda 0.000 (0.4 min)
+X1 Block 23/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2155.6 -> lambda 0.000 (0.4 min)
+X1 Block 24/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2276.4 -> lambda 0.000 (0.4 min)
+X1 Block 25/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2302.8 -> lambda 0.000 (0.4 min)
+X1 Block 26/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2398.5 -> lambda 0.000 (0.4 min)
+X1 Block 27/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2432.3 -> lambda 0.000 (0.4 min)
+X1 Block 28/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2445.1 -> lambda 0.000 (0.4 min)
+X1 Block 29/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2431.8 -> lambda 0.000 (0.4 min)
+X1 Block 30/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2397.6 -> lambda 0.000 (0.4 min)
+X1 Block 31/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2441.6 -> lambda 0.000 (0.4 min)
+X1 Block 32/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2475.3 -> lambda 0.000 (0.4 min)
+X1 Block 33/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2443.6 -> lambda 0.000 (0.4 min)
+X1 Block 34/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2366.8 -> lambda 0.000 (0.4 min)
+X1 Block 35/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2398.2 -> lambda 0.000 (0.4 min)
+X1 Block 36/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2454.8 -> lambda 0.000 (0.4 min)
+X1 Block 37/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2441.8 -> lambda 0.000 (0.4 min)
+X1 Block 38/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2417.5 -> lambda 0.000 (0.4 min)
+X1 Block 39/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2401.0 -> lambda 0.000 (0.4 min)
+X1 Block 40/60: lambda 0.000, C 0.0008 (50 Ep.), Return 2393.7 -> lambda 0.000 (0.4 min)
+X1 Block 41/60: lambda 0.000, C 0.0002 (50 Ep.), Return 2371.2 -> lambda 0.000 (0.4 min)
+X1 Block 42/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2384.0 -> lambda 0.000 (0.5 min)
+X1 Block 43/60: lambda 0.000, C 0.0004 (50 Ep.), Return 2434.2 -> lambda 0.000 (0.4 min)
+X1 Block 44/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2474.1 -> lambda 0.000 (0.4 min)
+X1 Block 45/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2491.3 -> lambda 0.000 (0.4 min)
+X1 Block 46/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2439.4 -> lambda 0.000 (0.4 min)
+X1 Block 47/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2490.1 -> lambda 0.000 (0.4 min)
+X1 Block 48/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2537.8 -> lambda 0.000 (0.4 min)
+X1 Block 49/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2568.2 -> lambda 0.000 (0.4 min)
+X1 Block 50/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2581.4 -> lambda 0.000 (0.4 min)
+X1 Block 51/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2614.3 -> lambda 0.000 (0.4 min)
+X1 Block 52/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2609.5 -> lambda 0.000 (0.4 min)
+X1 Block 53/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2575.8 -> lambda 0.000 (0.4 min)
+X1 Block 54/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2437.1 -> lambda 0.000 (0.4 min)
+X1 Block 55/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2492.3 -> lambda 0.000 (0.4 min)
+X1 Block 56/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2647.1 -> lambda 0.000 (0.4 min)
+X1 Block 57/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2656.5 -> lambda 0.000 (0.4 min)
+X1 Block 58/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2671.8 -> lambda 0.000 (0.4 min)
+X1 Block 59/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2679.6 -> lambda 0.000 (0.4 min)
+X1 Block 60/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2680.2 -> lambda 0.000 (0.4 min)
+X1: Training fertig nach 25.9 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r4_seed6_ep3000_b50_lr0.0003.mat
+X5.2 r4 Seed 6: 25.9 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 0, kp 0, delta 0.02, Seed 7, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 0.000, C 0.4486 (50 Ep.), Return -407.9 -> lambda 0.000 (0.4 min)
+X1 Block  2/60: lambda 0.000, C 0.7232 (50 Ep.), Return -152.0 -> lambda 0.000 (0.4 min)
+X1 Block  3/60: lambda 0.000, C 0.6437 (50 Ep.), Return -125.1 -> lambda 0.000 (0.4 min)
+X1 Block  4/60: lambda 0.000, C 0.4883 (50 Ep.), Return 32.2 -> lambda 0.000 (0.3 min)
+X1 Block  5/60: lambda 0.000, C 0.4113 (50 Ep.), Return 220.4 -> lambda 0.000 (0.4 min)
+X1 Block  6/60: lambda 0.000, C 0.1945 (50 Ep.), Return 437.5 -> lambda 0.000 (0.4 min)
+X1 Block  7/60: lambda 0.000, C 0.2452 (50 Ep.), Return 563.7 -> lambda 0.000 (0.4 min)
+X1 Block  8/60: lambda 0.000, C 0.2987 (50 Ep.), Return 704.6 -> lambda 0.000 (0.4 min)
+X1 Block  9/60: lambda 0.000, C 0.2796 (50 Ep.), Return 995.2 -> lambda 0.000 (0.4 min)
+X1 Block 10/60: lambda 0.000, C 0.1419 (50 Ep.), Return 1260.3 -> lambda 0.000 (0.4 min)
+X1 Block 11/60: lambda 0.000, C 0.0113 (50 Ep.), Return 1560.3 -> lambda 0.000 (0.4 min)
+X1 Block 12/60: lambda 0.000, C 0.0000 (50 Ep.), Return 1835.2 -> lambda 0.000 (0.4 min)
+X1 Block 13/60: lambda 0.000, C 0.0020 (50 Ep.), Return 1879.9 -> lambda 0.000 (0.4 min)
+X1 Block 14/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2167.4 -> lambda 0.000 (0.4 min)
+X1 Block 15/60: lambda 0.000, C 0.0043 (50 Ep.), Return 2200.7 -> lambda 0.000 (0.4 min)
+X1 Block 16/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2355.6 -> lambda 0.000 (0.4 min)
+X1 Block 17/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2465.9 -> lambda 0.000 (0.4 min)
+X1 Block 18/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2490.3 -> lambda 0.000 (0.4 min)
+X1 Block 19/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2549.3 -> lambda 0.000 (0.4 min)
+X1 Block 20/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2562.2 -> lambda 0.000 (0.4 min)
+X1 Block 21/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2594.8 -> lambda 0.000 (0.4 min)
+X1 Block 22/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2621.5 -> lambda 0.000 (0.4 min)
+X1 Block 23/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2564.9 -> lambda 0.000 (0.4 min)
+X1 Block 24/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2487.8 -> lambda 0.000 (0.4 min)
+X1 Block 25/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2495.3 -> lambda 0.000 (0.4 min)
+X1 Block 26/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2495.5 -> lambda 0.000 (0.4 min)
+X1 Block 27/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2569.0 -> lambda 0.000 (0.4 min)
+X1 Block 28/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2459.3 -> lambda 0.000 (0.4 min)
+X1 Block 29/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2509.8 -> lambda 0.000 (0.4 min)
+X1 Block 30/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2511.1 -> lambda 0.000 (0.4 min)
+X1 Block 31/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2496.6 -> lambda 0.000 (0.4 min)
+X1 Block 32/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2494.5 -> lambda 0.000 (0.4 min)
+X1 Block 33/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2549.3 -> lambda 0.000 (0.4 min)
+X1 Block 34/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2498.6 -> lambda 0.000 (0.4 min)
+X1 Block 35/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2490.3 -> lambda 0.000 (0.4 min)
+X1 Block 36/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2518.1 -> lambda 0.000 (0.4 min)
+X1 Block 37/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2520.0 -> lambda 0.000 (0.4 min)
+X1 Block 38/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2499.0 -> lambda 0.000 (0.4 min)
+X1 Block 39/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2462.3 -> lambda 0.000 (0.4 min)
+X1 Block 40/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2507.0 -> lambda 0.000 (0.4 min)
+X1 Block 41/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2496.9 -> lambda 0.000 (0.4 min)
+X1 Block 42/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2489.3 -> lambda 0.000 (0.4 min)
+X1 Block 43/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2471.7 -> lambda 0.000 (0.4 min)
+X1 Block 44/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2303.9 -> lambda 0.000 (0.4 min)
+X1 Block 45/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2064.4 -> lambda 0.000 (0.4 min)
+X1 Block 46/60: lambda 0.000, C 0.0005 (50 Ep.), Return 2262.7 -> lambda 0.000 (0.4 min)
+X1 Block 47/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2376.2 -> lambda 0.000 (0.4 min)
+X1 Block 48/60: lambda 0.000, C 0.0004 (50 Ep.), Return 2419.4 -> lambda 0.000 (0.4 min)
+X1 Block 49/60: lambda 0.000, C 0.0002 (50 Ep.), Return 2435.1 -> lambda 0.000 (0.4 min)
+X1 Block 50/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2431.0 -> lambda 0.000 (0.4 min)
+X1 Block 51/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2389.4 -> lambda 0.000 (0.4 min)
+X1 Block 52/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2283.0 -> lambda 0.000 (0.4 min)
+X1 Block 53/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2283.6 -> lambda 0.000 (0.4 min)
+X1 Block 54/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2341.6 -> lambda 0.000 (0.4 min)
+X1 Block 55/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2289.2 -> lambda 0.000 (0.5 min)
+X1 Block 56/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2224.2 -> lambda 0.000 (0.4 min)
+X1 Block 57/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2274.0 -> lambda 0.000 (0.4 min)
+X1 Block 58/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2216.8 -> lambda 0.000 (0.4 min)
+X1 Block 59/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2084.9 -> lambda 0.000 (0.4 min)
+X1 Block 60/60: lambda 0.000, C 0.0005 (50 Ep.), Return 1899.2 -> lambda 0.000 (0.4 min)
+X1: Training fertig nach 25.6 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r4_seed7_ep3000_b50_lr0.0003.mat
+X5.2 r4 Seed 7: 25.6 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 0, kp 0, delta 0.02, Seed 8, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 0.000, C 0.5121 (50 Ep.), Return -339.6 -> lambda 0.000 (0.4 min)
+X1 Block  2/60: lambda 0.000, C 0.6287 (50 Ep.), Return -46.2 -> lambda 0.000 (0.4 min)
+X1 Block  3/60: lambda 0.000, C 0.5400 (50 Ep.), Return -47.3 -> lambda 0.000 (0.4 min)
+X1 Block  4/60: lambda 0.000, C 0.4463 (50 Ep.), Return 8.2 -> lambda 0.000 (0.3 min)
+X1 Block  5/60: lambda 0.000, C 0.2919 (50 Ep.), Return 145.0 -> lambda 0.000 (0.3 min)
+X1 Block  6/60: lambda 0.000, C 0.3293 (50 Ep.), Return 348.5 -> lambda 0.000 (0.4 min)
+X1 Block  7/60: lambda 0.000, C 0.1765 (50 Ep.), Return 430.1 -> lambda 0.000 (0.4 min)
+X1 Block  8/60: lambda 0.000, C 0.2075 (50 Ep.), Return 625.8 -> lambda 0.000 (0.4 min)
+X1 Block  9/60: lambda 0.000, C 0.1167 (50 Ep.), Return 958.0 -> lambda 0.000 (0.4 min)
+X1 Block 10/60: lambda 0.000, C 0.0993 (50 Ep.), Return 1217.6 -> lambda 0.000 (0.4 min)
+X1 Block 11/60: lambda 0.000, C 0.0655 (50 Ep.), Return 1451.9 -> lambda 0.000 (0.4 min)
+X1 Block 12/60: lambda 0.000, C 0.0108 (50 Ep.), Return 1690.4 -> lambda 0.000 (0.4 min)
+X1 Block 13/60: lambda 0.000, C 0.0209 (50 Ep.), Return 1842.1 -> lambda 0.000 (0.4 min)
+X1 Block 14/60: lambda 0.000, C 0.0052 (50 Ep.), Return 2066.8 -> lambda 0.000 (0.4 min)
+X1 Block 15/60: lambda 0.000, C 0.0045 (50 Ep.), Return 2117.2 -> lambda 0.000 (0.4 min)
+X1 Block 16/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2264.8 -> lambda 0.000 (0.4 min)
+X1 Block 17/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2309.8 -> lambda 0.000 (0.4 min)
+X1 Block 18/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2366.1 -> lambda 0.000 (0.4 min)
+X1 Block 19/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2313.0 -> lambda 0.000 (0.4 min)
+X1 Block 20/60: lambda 0.000, C 0.0015 (50 Ep.), Return 2124.4 -> lambda 0.000 (0.5 min)
+X1 Block 21/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2184.2 -> lambda 0.000 (0.5 min)
+X1 Block 22/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2278.2 -> lambda 0.000 (0.6 min)
+X1 Block 23/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2346.7 -> lambda 0.000 (0.4 min)
+X1 Block 24/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2359.5 -> lambda 0.000 (0.4 min)
+X1 Block 25/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2428.6 -> lambda 0.000 (0.5 min)
+X1 Block 26/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2438.7 -> lambda 0.000 (0.4 min)
+X1 Block 27/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2463.6 -> lambda 0.000 (0.4 min)
+X1 Block 28/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2388.9 -> lambda 0.000 (0.4 min)
+X1 Block 29/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2363.8 -> lambda 0.000 (0.4 min)
+X1 Block 30/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2334.7 -> lambda 0.000 (0.5 min)
+X1 Block 31/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2356.1 -> lambda 0.000 (0.5 min)
+X1 Block 32/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2272.2 -> lambda 0.000 (0.4 min)
+X1 Block 33/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2286.8 -> lambda 0.000 (0.4 min)
+X1 Block 34/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2219.6 -> lambda 0.000 (0.4 min)
+X1 Block 35/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2156.2 -> lambda 0.000 (0.4 min)
+X1 Block 36/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2151.7 -> lambda 0.000 (0.4 min)
+X1 Block 37/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2205.5 -> lambda 0.000 (0.4 min)
+X1 Block 38/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2137.2 -> lambda 0.000 (0.4 min)
+X1 Block 39/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2093.2 -> lambda 0.000 (0.4 min)
+X1 Block 40/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2130.3 -> lambda 0.000 (0.4 min)
+X1 Block 41/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2201.3 -> lambda 0.000 (0.4 min)
+X1 Block 42/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2320.2 -> lambda 0.000 (0.4 min)
+X1 Block 43/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2350.2 -> lambda 0.000 (0.4 min)
+X1 Block 44/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2284.1 -> lambda 0.000 (0.4 min)
+X1 Block 45/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2287.9 -> lambda 0.000 (0.4 min)
+X1 Block 46/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2192.7 -> lambda 0.000 (0.4 min)
+X1 Block 47/60: lambda 0.000, C 0.0003 (50 Ep.), Return 2150.2 -> lambda 0.000 (0.4 min)
+X1 Block 48/60: lambda 0.000, C 0.0050 (50 Ep.), Return 2074.6 -> lambda 0.000 (0.4 min)
+X1 Block 49/60: lambda 0.000, C 0.0171 (50 Ep.), Return 2097.1 -> lambda 0.000 (0.4 min)
+X1 Block 50/60: lambda 0.000, C 0.0850 (50 Ep.), Return 1938.4 -> lambda 0.000 (0.4 min)
+X1 Block 51/60: lambda 0.000, C 0.0504 (50 Ep.), Return 2065.8 -> lambda 0.000 (0.4 min)
+X1 Block 52/60: lambda 0.000, C 0.0126 (50 Ep.), Return 2131.4 -> lambda 0.000 (0.4 min)
+X1 Block 53/60: lambda 0.000, C 0.0058 (50 Ep.), Return 2168.9 -> lambda 0.000 (0.4 min)
+X1 Block 54/60: lambda 0.000, C 0.0030 (50 Ep.), Return 2211.5 -> lambda 0.000 (0.4 min)
+X1 Block 55/60: lambda 0.000, C 0.0009 (50 Ep.), Return 2223.9 -> lambda 0.000 (0.4 min)
+X1 Block 56/60: lambda 0.000, C 0.0001 (50 Ep.), Return 2191.3 -> lambda 0.000 (0.4 min)
+X1 Block 57/60: lambda 0.000, C 0.0024 (50 Ep.), Return 2197.2 -> lambda 0.000 (0.4 min)
+X1 Block 58/60: lambda 0.000, C 0.0013 (50 Ep.), Return 2212.2 -> lambda 0.000 (0.4 min)
+X1 Block 59/60: lambda 0.000, C 0.0003 (50 Ep.), Return 2238.5 -> lambda 0.000 (0.4 min)
+X1 Block 60/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2127.0 -> lambda 0.000 (0.4 min)
+X1: Training fertig nach 26.0 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r4_seed8_ep3000_b50_lr0.0003.mat
+X5.2 r4 Seed 8: 26.1 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 0, kp 0, delta 0.02, Seed 9, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 0.000, C 0.4573 (50 Ep.), Return -336.7 -> lambda 0.000 (0.4 min)
+X1 Block  2/60: lambda 0.000, C 0.6930 (50 Ep.), Return -120.3 -> lambda 0.000 (0.4 min)
+X1 Block  3/60: lambda 0.000, C 0.5225 (50 Ep.), Return -15.9 -> lambda 0.000 (0.4 min)
+X1 Block  4/60: lambda 0.000, C 0.2764 (50 Ep.), Return 192.6 -> lambda 0.000 (0.5 min)
+X1 Block  5/60: lambda 0.000, C 0.0974 (50 Ep.), Return 285.4 -> lambda 0.000 (0.4 min)
+X1 Block  6/60: lambda 0.000, C 0.1028 (50 Ep.), Return 410.5 -> lambda 0.000 (0.4 min)
+X1 Block  7/60: lambda 0.000, C 0.1739 (50 Ep.), Return 696.4 -> lambda 0.000 (0.4 min)
+X1 Block  8/60: lambda 0.000, C 0.1857 (50 Ep.), Return 879.7 -> lambda 0.000 (0.4 min)
+X1 Block  9/60: lambda 0.000, C 0.1357 (50 Ep.), Return 1356.5 -> lambda 0.000 (0.4 min)
+X1 Block 10/60: lambda 0.000, C 0.0434 (50 Ep.), Return 1629.5 -> lambda 0.000 (0.4 min)
+X1 Block 11/60: lambda 0.000, C 0.0310 (50 Ep.), Return 1903.6 -> lambda 0.000 (0.4 min)
+X1 Block 12/60: lambda 0.000, C 0.0040 (50 Ep.), Return 2219.8 -> lambda 0.000 (0.4 min)
+X1 Block 13/60: lambda 0.000, C 0.0053 (50 Ep.), Return 2209.4 -> lambda 0.000 (0.4 min)
+X1 Block 14/60: lambda 0.000, C 0.0019 (50 Ep.), Return 2199.7 -> lambda 0.000 (0.4 min)
+X1 Block 15/60: lambda 0.000, C 0.0049 (50 Ep.), Return 2310.2 -> lambda 0.000 (0.4 min)
+X1 Block 16/60: lambda 0.000, C 0.0025 (50 Ep.), Return 2437.1 -> lambda 0.000 (0.4 min)
+X1 Block 17/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2424.1 -> lambda 0.000 (0.4 min)
+X1 Block 18/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2376.8 -> lambda 0.000 (0.4 min)
+X1 Block 19/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2364.6 -> lambda 0.000 (0.4 min)
+X1 Block 20/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2278.1 -> lambda 0.000 (0.4 min)
+X1 Block 21/60: lambda 0.000, C 0.0010 (50 Ep.), Return 1991.6 -> lambda 0.000 (0.4 min)
+X1 Block 22/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2232.8 -> lambda 0.000 (0.4 min)
+X1 Block 23/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2248.4 -> lambda 0.000 (0.4 min)
+X1 Block 24/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2197.4 -> lambda 0.000 (0.4 min)
+X1 Block 25/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2287.0 -> lambda 0.000 (0.4 min)
+X1 Block 26/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2368.6 -> lambda 0.000 (0.4 min)
+X1 Block 27/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2443.0 -> lambda 0.000 (0.4 min)
+X1 Block 28/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2506.2 -> lambda 0.000 (0.4 min)
+X1 Block 29/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2562.0 -> lambda 0.000 (0.4 min)
+X1 Block 30/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2546.7 -> lambda 0.000 (0.4 min)
+X1 Block 31/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2547.3 -> lambda 0.000 (0.4 min)
+X1 Block 32/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2505.7 -> lambda 0.000 (0.4 min)
+X1 Block 33/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2523.2 -> lambda 0.000 (0.4 min)
+X1 Block 34/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2517.5 -> lambda 0.000 (0.4 min)
+X1 Block 35/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2543.4 -> lambda 0.000 (0.4 min)
+X1 Block 36/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2557.8 -> lambda 0.000 (0.4 min)
+X1 Block 37/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2532.4 -> lambda 0.000 (0.4 min)
+X1 Block 38/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2528.2 -> lambda 0.000 (0.4 min)
+X1 Block 39/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2487.3 -> lambda 0.000 (0.4 min)
+X1 Block 40/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2552.2 -> lambda 0.000 (0.4 min)
+X1 Block 41/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2565.0 -> lambda 0.000 (0.4 min)
+X1 Block 42/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2515.1 -> lambda 0.000 (0.4 min)
+X1 Block 43/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2526.8 -> lambda 0.000 (0.4 min)
+X1 Block 44/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2544.7 -> lambda 0.000 (0.4 min)
+X1 Block 45/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2494.0 -> lambda 0.000 (0.4 min)
+X1 Block 46/60: lambda 0.000, C 0.0001 (50 Ep.), Return 2463.8 -> lambda 0.000 (0.4 min)
+X1 Block 47/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2483.7 -> lambda 0.000 (0.4 min)
+X1 Block 48/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2520.4 -> lambda 0.000 (0.4 min)
+X1 Block 49/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2576.1 -> lambda 0.000 (0.4 min)
+X1 Block 50/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2558.4 -> lambda 0.000 (0.4 min)
+X1 Block 51/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2498.0 -> lambda 0.000 (0.4 min)
+X1 Block 52/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2507.6 -> lambda 0.000 (0.4 min)
+X1 Block 53/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2450.2 -> lambda 0.000 (0.4 min)
+X1 Block 54/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2456.6 -> lambda 0.000 (0.4 min)
+X1 Block 55/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2467.7 -> lambda 0.000 (0.4 min)
+X1 Block 56/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2499.4 -> lambda 0.000 (0.4 min)
+X1 Block 57/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2506.9 -> lambda 0.000 (0.5 min)
+X1 Block 58/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2498.9 -> lambda 0.000 (0.4 min)
+X1 Block 59/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2500.0 -> lambda 0.000 (0.4 min)
+X1 Block 60/60: lambda 0.000, C 0.0000 (50 Ep.), Return 2536.7 -> lambda 0.000 (0.4 min)
+X1: Training fertig nach 25.9 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r4_seed9_ep3000_b50_lr0.0003.mat
+X5.2 r4 Seed 9: 26.0 min
+X5.2 Training fertig nach 207.2 min
+  r4 Seed 2 Ep.  250: RMS 275.8 mm, ep_q4 NaN mm, ori_max 32.2 mrad, Abbruch 1
+  r4 Seed 2 Ep.  500: RMS 137.7 mm, ep_q4 452.6 mm, ori_max 152.0 mrad, Abbruch 1
+  r4 Seed 2 Ep.  750: RMS 113.5 mm, ep_q4 185.1 mm, ori_max 139.9 mrad, Abbruch 0
+  r4 Seed 2 Ep. 1000: RMS 9.1 mm, ep_q4 8.5 mm, ori_max 9.5 mrad, Abbruch 0
+  r4 Seed 2 Ep. 1250: RMS 11.8 mm, ep_q4 10.8 mm, ori_max 9.4 mrad, Abbruch 0
+  r4 Seed 2 Ep. 1500: RMS 16.3 mm, ep_q4 23.1 mm, ori_max 19.8 mrad, Abbruch 0
+  r4 Seed 2 Ep. 1750: RMS 12.3 mm, ep_q4 17.4 mm, ori_max 22.1 mrad, Abbruch 0
+  r4 Seed 2 Ep. 2000: RMS 27.5 mm, ep_q4 48.8 mm, ori_max 16.4 mrad, Abbruch 0
+  r4 Seed 2 Ep. 2250: RMS 12.8 mm, ep_q4 15.9 mm, ori_max 25.8 mrad, Abbruch 0
+  r4 Seed 2 Ep. 2500: RMS 14.5 mm, ep_q4 21.2 mm, ori_max 16.3 mrad, Abbruch 0
+  r4 Seed 2 Ep. 2750: RMS 21.9 mm, ep_q4 36.3 mm, ori_max 22.1 mrad, Abbruch 0
+  r4 Seed 2 Ep. 3000: RMS 12.4 mm, ep_q4 12.3 mm, ori_max 18.3 mrad, Abbruch 0
+  r4 Seed 3 Ep.  250: RMS 187.5 mm, ep_q4 NaN mm, ori_max 75.2 mrad, Abbruch 1
+  r4 Seed 3 Ep.  500: RMS 133.4 mm, ep_q4 226.9 mm, ori_max 38.9 mrad, Abbruch 0
+  r4 Seed 3 Ep.  750: RMS 17.8 mm, ep_q4 27.9 mm, ori_max 27.5 mrad, Abbruch 0
+  r4 Seed 3 Ep. 1000: RMS 11.1 mm, ep_q4 7.3 mm, ori_max 21.2 mrad, Abbruch 0
+  r4 Seed 3 Ep. 1250: RMS 11.0 mm, ep_q4 12.2 mm, ori_max 25.5 mrad, Abbruch 0
+  r4 Seed 3 Ep. 1500: RMS 9.2 mm, ep_q4 5.4 mm, ori_max 15.8 mrad, Abbruch 0
+  r4 Seed 3 Ep. 1750: RMS 9.0 mm, ep_q4 6.5 mm, ori_max 16.2 mrad, Abbruch 0
+  r4 Seed 3 Ep. 2000: RMS 13.0 mm, ep_q4 12.1 mm, ori_max 17.3 mrad, Abbruch 0
+  r4 Seed 3 Ep. 2250: RMS 9.6 mm, ep_q4 7.4 mm, ori_max 17.6 mrad, Abbruch 0
+  r4 Seed 3 Ep. 2500: RMS 11.0 mm, ep_q4 15.7 mm, ori_max 14.2 mrad, Abbruch 0
+  r4 Seed 3 Ep. 2750: RMS 10.6 mm, ep_q4 14.5 mm, ori_max 13.8 mrad, Abbruch 0
+  r4 Seed 3 Ep. 3000: RMS 9.4 mm, ep_q4 5.1 mm, ori_max 16.2 mrad, Abbruch 0
+  r4 Seed 4 Ep.  250: RMS 149.5 mm, ep_q4 NaN mm, ori_max 98.8 mrad, Abbruch 1
+  r4 Seed 4 Ep.  500: RMS 125.9 mm, ep_q4 344.9 mm, ori_max 54.9 mrad, Abbruch 1
+  r4 Seed 4 Ep.  750: RMS 21.5 mm, ep_q4 34.2 mm, ori_max 13.9 mrad, Abbruch 0
+  r4 Seed 4 Ep. 1000: RMS 8.8 mm, ep_q4 10.9 mm, ori_max 9.3 mrad, Abbruch 0
+  r4 Seed 4 Ep. 1250: RMS 8.7 mm, ep_q4 5.6 mm, ori_max 11.1 mrad, Abbruch 0
+  r4 Seed 4 Ep. 1500: RMS 11.5 mm, ep_q4 14.3 mm, ori_max 17.4 mrad, Abbruch 0
+  r4 Seed 4 Ep. 1750: RMS 16.8 mm, ep_q4 22.1 mm, ori_max 19.5 mrad, Abbruch 0
+  r4 Seed 4 Ep. 2000: RMS 9.7 mm, ep_q4 11.7 mm, ori_max 14.5 mrad, Abbruch 0
+  r4 Seed 4 Ep. 2250: RMS 39.7 mm, ep_q4 65.0 mm, ori_max 27.9 mrad, Abbruch 0
+  r4 Seed 4 Ep. 2500: RMS 14.0 mm, ep_q4 21.2 mm, ori_max 19.7 mrad, Abbruch 0
+  r4 Seed 4 Ep. 2750: RMS 10.3 mm, ep_q4 12.6 mm, ori_max 15.4 mrad, Abbruch 0
+  r4 Seed 4 Ep. 3000: RMS 11.1 mm, ep_q4 11.0 mm, ori_max 14.6 mrad, Abbruch 0
+  r4 Seed 5 Ep.  250: RMS 41.4 mm, ep_q4 46.1 mm, ori_max 20.0 mrad, Abbruch 0
+  r4 Seed 5 Ep.  500: RMS 14.3 mm, ep_q4 22.4 mm, ori_max 10.7 mrad, Abbruch 0
+  r4 Seed 5 Ep.  750: RMS 8.2 mm, ep_q4 7.4 mm, ori_max 12.1 mrad, Abbruch 0
+  r4 Seed 5 Ep. 1000: RMS 20.3 mm, ep_q4 30.6 mm, ori_max 11.0 mrad, Abbruch 0
+  r4 Seed 5 Ep. 1250: RMS 15.8 mm, ep_q4 18.7 mm, ori_max 12.3 mrad, Abbruch 0
+  r4 Seed 5 Ep. 1500: RMS 13.4 mm, ep_q4 8.9 mm, ori_max 14.6 mrad, Abbruch 0
+  r4 Seed 5 Ep. 1750: RMS 8.9 mm, ep_q4 4.4 mm, ori_max 17.2 mrad, Abbruch 0
+  r4 Seed 5 Ep. 2000: RMS 23.2 mm, ep_q4 38.6 mm, ori_max 34.2 mrad, Abbruch 0
+  r4 Seed 5 Ep. 2250: RMS 18.5 mm, ep_q4 27.1 mm, ori_max 23.0 mrad, Abbruch 0
+  r4 Seed 5 Ep. 2500: RMS 18.3 mm, ep_q4 26.0 mm, ori_max 42.2 mrad, Abbruch 0
+  r4 Seed 5 Ep. 2750: RMS 24.2 mm, ep_q4 37.7 mm, ori_max 42.9 mrad, Abbruch 0
+  r4 Seed 5 Ep. 3000: RMS 15.8 mm, ep_q4 23.1 mm, ori_max 30.9 mrad, Abbruch 0
+  r4 Seed 6 Ep.  250: RMS 160.0 mm, ep_q4 208.5 mm, ori_max 66.0 mrad, Abbruch 0
+  r4 Seed 6 Ep.  500: RMS 176.5 mm, ep_q4 321.2 mm, ori_max 120.2 mrad, Abbruch 0
+  r4 Seed 6 Ep.  750: RMS 191.4 mm, ep_q4 369.6 mm, ori_max 87.4 mrad, Abbruch 1
+  r4 Seed 6 Ep. 1000: RMS 134.2 mm, ep_q4 239.2 mm, ori_max 76.5 mrad, Abbruch 0
+  r4 Seed 6 Ep. 1250: RMS 79.1 mm, ep_q4 139.3 mm, ori_max 24.2 mrad, Abbruch 0
+  r4 Seed 6 Ep. 1500: RMS 19.2 mm, ep_q4 29.5 mm, ori_max 22.7 mrad, Abbruch 0
+  r4 Seed 6 Ep. 1750: RMS 14.3 mm, ep_q4 19.9 mm, ori_max 16.3 mrad, Abbruch 0
+  r4 Seed 6 Ep. 2000: RMS 15.1 mm, ep_q4 19.8 mm, ori_max 21.9 mrad, Abbruch 0
+  r4 Seed 6 Ep. 2250: RMS 12.4 mm, ep_q4 19.1 mm, ori_max 20.8 mrad, Abbruch 0
+  r4 Seed 6 Ep. 2500: RMS 9.2 mm, ep_q4 5.5 mm, ori_max 23.8 mrad, Abbruch 0
+  r4 Seed 6 Ep. 2750: RMS 8.9 mm, ep_q4 7.3 mm, ori_max 16.5 mrad, Abbruch 0
+  r4 Seed 6 Ep. 3000: RMS 10.5 mm, ep_q4 15.9 mm, ori_max 11.1 mrad, Abbruch 0
+  r4 Seed 7 Ep.  250: RMS 174.0 mm, ep_q4 NaN mm, ori_max 32.5 mrad, Abbruch 1
+  r4 Seed 7 Ep.  500: RMS 141.2 mm, ep_q4 314.6 mm, ori_max 29.4 mrad, Abbruch 1
+  r4 Seed 7 Ep.  750: RMS 19.7 mm, ep_q4 30.7 mm, ori_max 14.6 mrad, Abbruch 0
+  r4 Seed 7 Ep. 1000: RMS 10.4 mm, ep_q4 8.0 mm, ori_max 16.0 mrad, Abbruch 0
+  r4 Seed 7 Ep. 1250: RMS 12.8 mm, ep_q4 20.9 mm, ori_max 12.7 mrad, Abbruch 0
+  r4 Seed 7 Ep. 1500: RMS 11.8 mm, ep_q4 14.1 mm, ori_max 14.4 mrad, Abbruch 0
+  r4 Seed 7 Ep. 1750: RMS 12.3 mm, ep_q4 15.0 mm, ori_max 20.2 mrad, Abbruch 0
+  r4 Seed 7 Ep. 2000: RMS 6.9 mm, ep_q4 6.5 mm, ori_max 12.1 mrad, Abbruch 0
+  r4 Seed 7 Ep. 2250: RMS 30.8 mm, ep_q4 45.1 mm, ori_max 25.6 mrad, Abbruch 0
+  r4 Seed 7 Ep. 2500: RMS 18.8 mm, ep_q4 26.8 mm, ori_max 15.5 mrad, Abbruch 0
+  r4 Seed 7 Ep. 2750: RMS 33.5 mm, ep_q4 56.3 mm, ori_max 19.8 mrad, Abbruch 0
+  r4 Seed 7 Ep. 3000: RMS 34.9 mm, ep_q4 58.6 mm, ori_max 26.0 mrad, Abbruch 0
+  r4 Seed 8 Ep.  250: RMS 211.6 mm, ep_q4 495.8 mm, ori_max 59.7 mrad, Abbruch 1
+  r4 Seed 8 Ep.  500: RMS 156.5 mm, ep_q4 290.0 mm, ori_max 94.7 mrad, Abbruch 1
+  r4 Seed 8 Ep.  750: RMS 23.9 mm, ep_q4 33.2 mm, ori_max 19.0 mrad, Abbruch 0
+  r4 Seed 8 Ep. 1000: RMS 34.9 mm, ep_q4 59.9 mm, ori_max 15.6 mrad, Abbruch 0
+  r4 Seed 8 Ep. 1250: RMS 41.3 mm, ep_q4 71.1 mm, ori_max 15.7 mrad, Abbruch 0
+  r4 Seed 8 Ep. 1500: RMS 30.2 mm, ep_q4 52.4 mm, ori_max 15.5 mrad, Abbruch 0
+  r4 Seed 8 Ep. 1750: RMS 57.3 mm, ep_q4 102.3 mm, ori_max 23.3 mrad, Abbruch 0
+  r4 Seed 8 Ep. 2000: RMS 36.9 mm, ep_q4 61.1 mm, ori_max 16.2 mrad, Abbruch 0
+  r4 Seed 8 Ep. 2250: RMS 42.6 mm, ep_q4 76.4 mm, ori_max 26.9 mrad, Abbruch 0
+  r4 Seed 8 Ep. 2500: RMS 28.1 mm, ep_q4 36.5 mm, ori_max 48.9 mrad, Abbruch 0
+  r4 Seed 8 Ep. 2750: RMS 30.4 mm, ep_q4 53.5 mm, ori_max 28.0 mrad, Abbruch 0
+  r4 Seed 8 Ep. 3000: RMS 42.8 mm, ep_q4 77.1 mm, ori_max 26.6 mrad, Abbruch 0
+  r4 Seed 9 Ep.  250: RMS 196.1 mm, ep_q4 NaN mm, ori_max 24.5 mrad, Abbruch 1
+  r4 Seed 9 Ep.  500: RMS 124.2 mm, ep_q4 212.1 mm, ori_max 96.9 mrad, Abbruch 1
+  r4 Seed 9 Ep.  750: RMS 50.0 mm, ep_q4 70.3 mm, ori_max 54.5 mrad, Abbruch 0
+  r4 Seed 9 Ep. 1000: RMS 17.4 mm, ep_q4 23.8 mm, ori_max 11.6 mrad, Abbruch 0
+  r4 Seed 9 Ep. 1250: RMS 26.5 mm, ep_q4 39.8 mm, ori_max 11.0 mrad, Abbruch 0
+  r4 Seed 9 Ep. 1500: RMS 15.0 mm, ep_q4 19.0 mm, ori_max 11.5 mrad, Abbruch 0
+  r4 Seed 9 Ep. 1750: RMS 11.5 mm, ep_q4 15.0 mm, ori_max 12.2 mrad, Abbruch 0
+  r4 Seed 9 Ep. 2000: RMS 15.4 mm, ep_q4 21.4 mm, ori_max 15.1 mrad, Abbruch 0
+  r4 Seed 9 Ep. 2250: RMS 27.9 mm, ep_q4 46.6 mm, ori_max 22.9 mrad, Abbruch 0
+  r4 Seed 9 Ep. 2500: RMS 7.1 mm, ep_q4 9.2 mm, ori_max 17.9 mrad, Abbruch 0
+  r4 Seed 9 Ep. 2750: RMS 15.9 mm, ep_q4 20.3 mm, ori_max 21.0 mrad, Abbruch 0
+  r4 Seed 9 Ep. 3000: RMS 8.3 mm, ep_q4 9.0 mm, ori_max 11.7 mrad, Abbruch 0
+r4 Seed 2: folgt 1, RMS 15.6 mm, ep_q4 schlechteste 27.5 mm, ori_max schlechteste 23.7 mrad, Abbrueche 0
+r4 Seed 3: folgt 1, RMS 11.6 mm, ep_q4 schlechteste 10.6 mm, ori_max schlechteste 20.1 mrad, Abbrueche 0
+r4 Seed 4: folgt 1, RMS 14.1 mm, ep_q4 schlechteste 15.1 mm, ori_max schlechteste 20.6 mrad, Abbrueche 0
+r4 Seed 5: folgt 1, RMS 17.6 mm, ep_q4 schlechteste 38.2 mm, ori_max schlechteste 35.2 mrad, Abbrueche 0
+r4 Seed 6: folgt 1, RMS 13.0 mm, ep_q4 schlechteste 19.7 mm, ori_max schlechteste 16.7 mrad, Abbrueche 0
+r4 Seed 7: folgt 0, RMS 35.4 mm, ep_q4 schlechteste 65.2 mm, ori_max schlechteste 30.0 mrad, Abbrueche 0
+r4 Seed 8: folgt 0, RMS 44.1 mm, ep_q4 schlechteste 94.5 mm, ori_max schlechteste 31.8 mrad, Abbrueche 0
+r4 Seed 9: folgt 1, RMS 13.0 mm, ep_q4 schlechteste 26.3 mm, ori_max schlechteste 16.8 mrad, Abbrueche 0
+r4 Seed 2: folgt 1, RMS 12.0 mm, ep_q4 schlechteste 13.9 mm, ori_max schlechteste 13.6 mrad, Abbrueche 0
+r4 Seed 3: folgt 1, RMS 11.9 mm, ep_q4 schlechteste 12.3 mm, ori_max schlechteste 22.3 mrad, Abbrueche 0
+r4 Seed 4: folgt 1, RMS 12.0 mm, ep_q4 schlechteste 10.1 mm, ori_max schlechteste 13.5 mrad, Abbrueche 0
+r4 Seed 5: folgt 1, RMS 11.8 mm, ep_q4 schlechteste 14.5 mm, ori_max schlechteste 14.1 mrad, Abbrueche 0
+r4 Seed 6: folgt 1, RMS 11.7 mm, ep_q4 schlechteste 13.6 mm, ori_max schlechteste 23.2 mrad, Abbrueche 0
+r4 Seed 7: folgt 1, RMS 9.8 mm, ep_q4 schlechteste 10.7 mm, ori_max schlechteste 15.7 mrad, Abbrueche 0
+r4 Seed 8: folgt 0, RMS 25.0 mm, ep_q4 schlechteste 50.5 mm, ori_max schlechteste 21.3 mrad, Abbrueche 0
+r4 Seed 9: folgt 1, RMS 12.6 mm, ep_q4 schlechteste 18.9 mm, ori_max schlechteste 25.5 mrad, Abbrueche 0
+Go/No-Go r4: 13 von 16 Seeds folgen -> Go
+=== X5.3 Schritt 4: x1 Seeds 2 bis 9 (280.1 min) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 5, kp 0, delta 0.02, Seed 2, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 1.000, C 0.4390 (50 Ep.), Return -602.7 -> lambda 3.095 (0.4 min)
+X1 Block  2/60: lambda 3.095, C 0.5342 (50 Ep.), Return -704.0 -> lambda 5.666 (0.4 min)
+X1 Block  3/60: lambda 5.666, C 0.4263 (50 Ep.), Return -1073.6 -> lambda 7.698 (0.4 min)
+X1 Block  4/60: lambda 7.698, C 0.4582 (50 Ep.), Return -1420.2 -> lambda 9.889 (0.4 min)
+X1 Block  5/60: lambda 9.889, C 0.4151 (50 Ep.), Return -1506.3 -> lambda 11.864 (0.4 min)
+X1 Block  6/60: lambda 11.864, C 0.2297 (50 Ep.), Return -791.6 -> lambda 12.913 (0.3 min)
+X1 Block  7/60: lambda 12.913, C 0.2039 (50 Ep.), Return -521.4 -> lambda 13.832 (0.3 min)
+X1 Block  8/60: lambda 13.832, C 0.3400 (50 Ep.), Return -1324.7 -> lambda 15.432 (0.4 min)
+X1 Block  9/60: lambda 15.432, C 0.2033 (50 Ep.), Return -922.8 -> lambda 16.348 (0.3 min)
+X1 Block 10/60: lambda 16.348, C 0.2170 (50 Ep.), Return -980.7 -> lambda 17.333 (0.3 min)
+X1 Block 11/60: lambda 17.333, C 0.1657 (50 Ep.), Return -627.8 -> lambda 18.062 (0.3 min)
+X1 Block 12/60: lambda 18.062, C 0.1190 (50 Ep.), Return -536.7 -> lambda 18.557 (0.3 min)
+X1 Block 13/60: lambda 18.557, C 0.0860 (50 Ep.), Return -460.4 -> lambda 18.887 (0.4 min)
+X1 Block 14/60: lambda 18.887, C 0.0390 (50 Ep.), Return -197.8 -> lambda 18.982 (0.4 min)
+X1 Block 15/60: lambda 18.982, C 0.0178 (50 Ep.), Return -49.7 -> lambda 18.971 (0.4 min)
+X1 Block 16/60: lambda 18.971, C 0.0050 (50 Ep.), Return 131.9 -> lambda 18.896 (0.3 min)
+X1 Block 17/60: lambda 18.896, C 0.0118 (50 Ep.), Return 183.6 -> lambda 18.855 (0.3 min)
+X1 Block 18/60: lambda 18.855, C 0.0080 (50 Ep.), Return 243.4 -> lambda 18.795 (0.4 min)
+X1 Block 19/60: lambda 18.795, C 0.0047 (50 Ep.), Return 317.2 -> lambda 18.719 (0.4 min)
+X1 Block 20/60: lambda 18.719, C 0.0009 (50 Ep.), Return 385.7 -> lambda 18.623 (0.4 min)
+X1 Block 21/60: lambda 18.623, C 0.0007 (50 Ep.), Return 421.7 -> lambda 18.526 (0.5 min)
+X1 Block 22/60: lambda 18.526, C 0.0003 (50 Ep.), Return 469.6 -> lambda 18.428 (0.4 min)
+X1 Block 23/60: lambda 18.428, C 0.0000 (50 Ep.), Return 604.0 -> lambda 18.328 (0.4 min)
+X1 Block 24/60: lambda 18.328, C 0.0000 (50 Ep.), Return 721.0 -> lambda 18.228 (0.4 min)
+X1 Block 25/60: lambda 18.228, C 0.0000 (50 Ep.), Return 885.7 -> lambda 18.128 (0.4 min)
+X1 Block 26/60: lambda 18.128, C 0.0000 (50 Ep.), Return 982.4 -> lambda 18.028 (0.4 min)
+X1 Block 27/60: lambda 18.028, C 0.0020 (50 Ep.), Return 915.3 -> lambda 17.938 (0.4 min)
+X1 Block 28/60: lambda 17.938, C 0.0021 (50 Ep.), Return 921.7 -> lambda 17.848 (0.4 min)
+X1 Block 29/60: lambda 17.848, C 0.0128 (50 Ep.), Return 761.2 -> lambda 17.812 (0.4 min)
+X1 Block 30/60: lambda 17.812, C 0.0114 (50 Ep.), Return 667.9 -> lambda 17.770 (0.4 min)
+X1 Block 31/60: lambda 17.770, C 0.0022 (50 Ep.), Return 703.0 -> lambda 17.680 (0.4 min)
+X1 Block 32/60: lambda 17.680, C 0.0060 (50 Ep.), Return 668.2 -> lambda 17.610 (0.4 min)
+X1 Block 33/60: lambda 17.610, C 0.0014 (50 Ep.), Return 760.6 -> lambda 17.517 (0.4 min)
+X1 Block 34/60: lambda 17.517, C 0.0014 (50 Ep.), Return 811.5 -> lambda 17.424 (0.4 min)
+X1 Block 35/60: lambda 17.424, C 0.0008 (50 Ep.), Return 957.3 -> lambda 17.328 (0.4 min)
+X1 Block 36/60: lambda 17.328, C 0.0009 (50 Ep.), Return 992.6 -> lambda 17.233 (0.4 min)
+X1 Block 37/60: lambda 17.233, C 0.0000 (50 Ep.), Return 1087.9 -> lambda 17.133 (0.4 min)
+X1 Block 38/60: lambda 17.133, C 0.0000 (50 Ep.), Return 1126.1 -> lambda 17.033 (0.4 min)
+X1 Block 39/60: lambda 17.033, C 0.0000 (50 Ep.), Return 1141.9 -> lambda 16.933 (0.4 min)
+X1 Block 40/60: lambda 16.933, C 0.0000 (50 Ep.), Return 1128.0 -> lambda 16.833 (0.4 min)
+X1 Block 41/60: lambda 16.833, C 0.0000 (50 Ep.), Return 1173.8 -> lambda 16.733 (0.4 min)
+X1 Block 42/60: lambda 16.733, C 0.0000 (50 Ep.), Return 1198.4 -> lambda 16.633 (0.4 min)
+X1 Block 43/60: lambda 16.633, C 0.0000 (50 Ep.), Return 1189.0 -> lambda 16.533 (0.4 min)
+X1 Block 44/60: lambda 16.533, C 0.0000 (50 Ep.), Return 1206.1 -> lambda 16.433 (0.4 min)
+X1 Block 45/60: lambda 16.433, C 0.0000 (50 Ep.), Return 1147.3 -> lambda 16.333 (0.4 min)
+X1 Block 46/60: lambda 16.333, C 0.0000 (50 Ep.), Return 1123.3 -> lambda 16.233 (0.4 min)
+X1 Block 47/60: lambda 16.233, C 0.0000 (50 Ep.), Return 1145.8 -> lambda 16.133 (0.4 min)
+X1 Block 48/60: lambda 16.133, C 0.0000 (50 Ep.), Return 1204.3 -> lambda 16.033 (0.4 min)
+X1 Block 49/60: lambda 16.033, C 0.0000 (50 Ep.), Return 1231.0 -> lambda 15.933 (0.4 min)
+X1 Block 50/60: lambda 15.933, C 0.0000 (50 Ep.), Return 1215.9 -> lambda 15.833 (0.4 min)
+X1 Block 51/60: lambda 15.833, C 0.0000 (50 Ep.), Return 1250.2 -> lambda 15.733 (0.4 min)
+X1 Block 52/60: lambda 15.733, C 0.0000 (50 Ep.), Return 1265.5 -> lambda 15.633 (0.4 min)
+X1 Block 53/60: lambda 15.633, C 0.0000 (50 Ep.), Return 1271.2 -> lambda 15.533 (0.4 min)
+X1 Block 54/60: lambda 15.533, C 0.0000 (50 Ep.), Return 1276.9 -> lambda 15.433 (0.4 min)
+X1 Block 55/60: lambda 15.433, C 0.0000 (50 Ep.), Return 1275.2 -> lambda 15.333 (0.4 min)
+X1 Block 56/60: lambda 15.333, C 0.0000 (50 Ep.), Return 1270.1 -> lambda 15.233 (0.4 min)
+X1 Block 57/60: lambda 15.233, C 0.0000 (50 Ep.), Return 1241.7 -> lambda 15.133 (0.4 min)
+X1 Block 58/60: lambda 15.133, C 0.0000 (50 Ep.), Return 1111.2 -> lambda 15.033 (0.4 min)
+X1 Block 59/60: lambda 15.033, C 0.0000 (50 Ep.), Return 1076.6 -> lambda 14.933 (0.4 min)
+X1 Block 60/60: lambda 14.933, C 0.0001 (50 Ep.), Return 1096.8 -> lambda 14.833 (0.4 min)
+X1: Training fertig nach 24.4 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r5_c1_th30_eta5_seed2_ep3000_b50_l1_lr0.0003.mat
+X5.2 x1 Seed 2: 24.4 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 5, kp 0, delta 0.02, Seed 3, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 1.000, C 0.5159 (50 Ep.), Return -602.4 -> lambda 3.480 (0.4 min)
+X1 Block  2/60: lambda 3.480, C 0.6827 (50 Ep.), Return -809.3 -> lambda 6.793 (0.4 min)
+X1 Block  3/60: lambda 6.793, C 0.4541 (50 Ep.), Return -1100.3 -> lambda 8.964 (0.4 min)
+X1 Block  4/60: lambda 8.964, C 0.4833 (50 Ep.), Return -1418.6 -> lambda 11.280 (0.4 min)
+X1 Block  5/60: lambda 11.280, C 0.3651 (50 Ep.), Return -1171.5 -> lambda 13.006 (0.3 min)
+X1 Block  6/60: lambda 13.006, C 0.1951 (50 Ep.), Return -783.2 -> lambda 13.882 (0.3 min)
+X1 Block  7/60: lambda 13.882, C 0.0784 (50 Ep.), Return -409.9 -> lambda 14.174 (0.3 min)
+X1 Block  8/60: lambda 14.174, C 0.0907 (50 Ep.), Return -427.1 -> lambda 14.527 (0.3 min)
+X1 Block  9/60: lambda 14.527, C 0.1018 (50 Ep.), Return -323.5 -> lambda 14.936 (0.3 min)
+X1 Block 10/60: lambda 14.936, C 0.0164 (50 Ep.), Return -190.0 -> lambda 14.918 (0.3 min)
+X1 Block 11/60: lambda 14.918, C 0.0000 (50 Ep.), Return -107.2 -> lambda 14.818 (0.3 min)
+X1 Block 12/60: lambda 14.818, C 0.0027 (50 Ep.), Return -53.4 -> lambda 14.731 (0.3 min)
+X1 Block 13/60: lambda 14.731, C 0.0051 (50 Ep.), Return -13.9 -> lambda 14.657 (0.4 min)
+X1 Block 14/60: lambda 14.657, C 0.0014 (50 Ep.), Return 126.4 -> lambda 14.564 (0.4 min)
+X1 Block 15/60: lambda 14.564, C 0.0102 (50 Ep.), Return 167.8 -> lambda 14.515 (0.4 min)
+X1 Block 16/60: lambda 14.515, C 0.0000 (50 Ep.), Return 266.3 -> lambda 14.415 (0.4 min)
+X1 Block 17/60: lambda 14.415, C 0.0012 (50 Ep.), Return 343.2 -> lambda 14.321 (0.4 min)
+X1 Block 18/60: lambda 14.321, C 0.0010 (50 Ep.), Return 445.4 -> lambda 14.226 (0.4 min)
+X1 Block 19/60: lambda 14.226, C 0.0009 (50 Ep.), Return 576.9 -> lambda 14.130 (0.4 min)
+X1 Block 20/60: lambda 14.130, C 0.0001 (50 Ep.), Return 645.2 -> lambda 14.031 (0.4 min)
+X1 Block 21/60: lambda 14.031, C 0.0165 (50 Ep.), Return 630.9 -> lambda 14.014 (0.4 min)
+X1 Block 22/60: lambda 14.014, C 0.0090 (50 Ep.), Return 763.7 -> lambda 13.959 (0.4 min)
+X1 Block 23/60: lambda 13.959, C 0.0207 (50 Ep.), Return 755.8 -> lambda 13.962 (0.4 min)
+X1 Block 24/60: lambda 13.962, C 0.0142 (50 Ep.), Return 815.8 -> lambda 13.933 (0.4 min)
+X1 Block 25/60: lambda 13.933, C 0.0000 (50 Ep.), Return 878.8 -> lambda 13.833 (0.4 min)
+X1 Block 26/60: lambda 13.833, C 0.0060 (50 Ep.), Return 870.4 -> lambda 13.763 (0.4 min)
+X1 Block 27/60: lambda 13.763, C 0.0048 (50 Ep.), Return 879.9 -> lambda 13.687 (0.4 min)
+X1 Block 28/60: lambda 13.687, C 0.0007 (50 Ep.), Return 958.8 -> lambda 13.590 (0.4 min)
+X1 Block 29/60: lambda 13.590, C 0.0004 (50 Ep.), Return 929.0 -> lambda 13.492 (0.4 min)
+X1 Block 30/60: lambda 13.492, C 0.0045 (50 Ep.), Return 983.2 -> lambda 13.415 (0.4 min)
+X1 Block 31/60: lambda 13.415, C 0.0165 (50 Ep.), Return 926.6 -> lambda 13.398 (0.4 min)
+X1 Block 32/60: lambda 13.398, C 0.0013 (50 Ep.), Return 890.2 -> lambda 13.304 (0.4 min)
+X1 Block 33/60: lambda 13.304, C 0.0047 (50 Ep.), Return 881.8 -> lambda 13.228 (0.4 min)
+X1 Block 34/60: lambda 13.228, C 0.0313 (50 Ep.), Return 741.8 -> lambda 13.284 (0.4 min)
+X1 Block 35/60: lambda 13.284, C 0.0071 (50 Ep.), Return 773.8 -> lambda 13.220 (0.4 min)
+X1 Block 36/60: lambda 13.220, C 0.0031 (50 Ep.), Return 788.5 -> lambda 13.135 (0.4 min)
+X1 Block 37/60: lambda 13.135, C 0.0000 (50 Ep.), Return 869.2 -> lambda 13.035 (0.4 min)
+X1 Block 38/60: lambda 13.035, C 0.0009 (50 Ep.), Return 864.9 -> lambda 12.940 (0.4 min)
+X1 Block 39/60: lambda 12.940, C 0.0000 (50 Ep.), Return 941.1 -> lambda 12.840 (0.4 min)
+X1 Block 40/60: lambda 12.840, C 0.0029 (50 Ep.), Return 954.5 -> lambda 12.754 (0.4 min)
+X1 Block 41/60: lambda 12.754, C 0.0065 (50 Ep.), Return 927.5 -> lambda 12.686 (0.4 min)
+X1 Block 42/60: lambda 12.686, C 0.0000 (50 Ep.), Return 1042.5 -> lambda 12.586 (0.4 min)
+X1 Block 43/60: lambda 12.586, C 0.0008 (50 Ep.), Return 1117.9 -> lambda 12.490 (0.4 min)
+X1 Block 44/60: lambda 12.490, C 0.0000 (50 Ep.), Return 1156.2 -> lambda 12.390 (0.4 min)
+X1 Block 45/60: lambda 12.390, C 0.0054 (50 Ep.), Return 1160.1 -> lambda 12.317 (0.4 min)
+X1 Block 46/60: lambda 12.317, C 0.0072 (50 Ep.), Return 1163.2 -> lambda 12.253 (0.4 min)
+X1 Block 47/60: lambda 12.253, C 0.0000 (50 Ep.), Return 1121.4 -> lambda 12.153 (0.4 min)
+X1 Block 48/60: lambda 12.153, C 0.0000 (50 Ep.), Return 1075.6 -> lambda 12.053 (0.4 min)
+X1 Block 49/60: lambda 12.053, C 0.0000 (50 Ep.), Return 1107.1 -> lambda 11.953 (0.4 min)
+X1 Block 50/60: lambda 11.953, C 0.0000 (50 Ep.), Return 1140.9 -> lambda 11.853 (0.4 min)
+X1 Block 51/60: lambda 11.853, C 0.0000 (50 Ep.), Return 1159.1 -> lambda 11.753 (0.4 min)
+X1 Block 52/60: lambda 11.753, C 0.0000 (50 Ep.), Return 1179.1 -> lambda 11.653 (0.4 min)
+X1 Block 53/60: lambda 11.653, C 0.0000 (50 Ep.), Return 1216.8 -> lambda 11.553 (0.4 min)
+X1 Block 54/60: lambda 11.553, C 0.0000 (50 Ep.), Return 1195.8 -> lambda 11.453 (0.4 min)
+X1 Block 55/60: lambda 11.453, C 0.0000 (50 Ep.), Return 1225.7 -> lambda 11.353 (0.4 min)
+X1 Block 56/60: lambda 11.353, C 0.0000 (50 Ep.), Return 1230.8 -> lambda 11.253 (0.4 min)
+X1 Block 57/60: lambda 11.253, C 0.0002 (50 Ep.), Return 1264.3 -> lambda 11.154 (0.4 min)
+X1 Block 58/60: lambda 11.154, C 0.0000 (50 Ep.), Return 1237.1 -> lambda 11.054 (0.5 min)
+X1 Block 59/60: lambda 11.054, C 0.0001 (50 Ep.), Return 1264.9 -> lambda 10.955 (0.4 min)
+X1 Block 60/60: lambda 10.955, C 0.0001 (50 Ep.), Return 1297.5 -> lambda 10.855 (0.4 min)
+X1: Training fertig nach 24.6 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r5_c1_th30_eta5_seed3_ep3000_b50_l1_lr0.0003.mat
+X5.2 x1 Seed 3: 24.6 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 5, kp 0, delta 0.02, Seed 4, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 1.000, C 0.5247 (50 Ep.), Return -649.3 -> lambda 3.524 (0.4 min)
+X1 Block  2/60: lambda 3.524, C 0.6726 (50 Ep.), Return -977.2 -> lambda 6.787 (0.4 min)
+X1 Block  3/60: lambda 6.787, C 0.3617 (50 Ep.), Return -916.4 -> lambda 8.495 (0.4 min)
+X1 Block  4/60: lambda 8.495, C 0.3245 (50 Ep.), Return -826.7 -> lambda 10.018 (0.3 min)
+X1 Block  5/60: lambda 10.018, C 0.2613 (50 Ep.), Return -576.1 -> lambda 11.224 (0.3 min)
+X1 Block  6/60: lambda 11.224, C 0.2384 (50 Ep.), Return -600.0 -> lambda 12.316 (0.3 min)
+X1 Block  7/60: lambda 12.316, C 0.2127 (50 Ep.), Return -703.1 -> lambda 13.280 (0.3 min)
+X1 Block  8/60: lambda 13.280, C 0.1885 (50 Ep.), Return -649.2 -> lambda 14.122 (0.3 min)
+X1 Block  9/60: lambda 14.122, C 0.1857 (50 Ep.), Return -567.0 -> lambda 14.951 (0.3 min)
+X1 Block 10/60: lambda 14.951, C 0.1681 (50 Ep.), Return -563.0 -> lambda 15.692 (0.3 min)
+X1 Block 11/60: lambda 15.692, C 0.1522 (50 Ep.), Return -483.2 -> lambda 16.352 (0.3 min)
+X1 Block 12/60: lambda 16.352, C 0.1325 (50 Ep.), Return -511.6 -> lambda 16.915 (0.4 min)
+X1 Block 13/60: lambda 16.915, C 0.1216 (50 Ep.), Return -519.1 -> lambda 17.423 (0.3 min)
+X1 Block 14/60: lambda 17.423, C 0.1260 (50 Ep.), Return -547.6 -> lambda 17.952 (0.4 min)
+X1 Block 15/60: lambda 17.952, C 0.0705 (50 Ep.), Return -371.7 -> lambda 18.205 (0.4 min)
+X1 Block 16/60: lambda 18.205, C 0.0706 (50 Ep.), Return -517.6 -> lambda 18.458 (0.4 min)
+X1 Block 17/60: lambda 18.458, C 0.0502 (50 Ep.), Return -313.9 -> lambda 18.609 (0.4 min)
+X1 Block 18/60: lambda 18.609, C 0.0158 (50 Ep.), Return -127.6 -> lambda 18.588 (0.4 min)
+X1 Block 19/60: lambda 18.588, C 0.0013 (50 Ep.), Return -23.4 -> lambda 18.494 (0.4 min)
+X1 Block 20/60: lambda 18.494, C 0.0018 (50 Ep.), Return 90.1 -> lambda 18.403 (0.4 min)
+X1 Block 21/60: lambda 18.403, C 0.0005 (50 Ep.), Return 204.6 -> lambda 18.306 (0.4 min)
+X1 Block 22/60: lambda 18.306, C 0.0000 (50 Ep.), Return 316.3 -> lambda 18.206 (0.4 min)
+X1 Block 23/60: lambda 18.206, C 0.0000 (50 Ep.), Return 435.1 -> lambda 18.106 (0.4 min)
+X1 Block 24/60: lambda 18.106, C 0.0000 (50 Ep.), Return 460.6 -> lambda 18.006 (0.4 min)
+X1 Block 25/60: lambda 18.006, C 0.0000 (50 Ep.), Return 520.2 -> lambda 17.906 (0.4 min)
+X1 Block 26/60: lambda 17.906, C 0.0000 (50 Ep.), Return 642.2 -> lambda 17.806 (0.4 min)
+X1 Block 27/60: lambda 17.806, C 0.0000 (50 Ep.), Return 681.1 -> lambda 17.706 (0.4 min)
+X1 Block 28/60: lambda 17.706, C 0.0000 (50 Ep.), Return 729.6 -> lambda 17.606 (0.4 min)
+X1 Block 29/60: lambda 17.606, C 0.0000 (50 Ep.), Return 829.0 -> lambda 17.506 (0.4 min)
+X1 Block 30/60: lambda 17.506, C 0.0000 (50 Ep.), Return 893.1 -> lambda 17.406 (0.4 min)
+X1 Block 31/60: lambda 17.406, C 0.0000 (50 Ep.), Return 910.9 -> lambda 17.306 (0.4 min)
+X1 Block 32/60: lambda 17.306, C 0.0000 (50 Ep.), Return 909.7 -> lambda 17.206 (0.4 min)
+X1 Block 33/60: lambda 17.206, C 0.0000 (50 Ep.), Return 849.0 -> lambda 17.106 (0.4 min)
+X1 Block 34/60: lambda 17.106, C 0.0000 (50 Ep.), Return 826.4 -> lambda 17.006 (0.4 min)
+X1 Block 35/60: lambda 17.006, C 0.0000 (50 Ep.), Return 870.8 -> lambda 16.906 (0.4 min)
+X1 Block 36/60: lambda 16.906, C 0.0006 (50 Ep.), Return 962.3 -> lambda 16.809 (0.4 min)
+X1 Block 37/60: lambda 16.809, C 0.0000 (50 Ep.), Return 961.4 -> lambda 16.709 (0.4 min)
+X1 Block 38/60: lambda 16.709, C 0.0001 (50 Ep.), Return 1135.3 -> lambda 16.610 (0.4 min)
+X1 Block 39/60: lambda 16.610, C 0.0000 (50 Ep.), Return 1173.2 -> lambda 16.510 (0.4 min)
+X1 Block 40/60: lambda 16.510, C 0.0005 (50 Ep.), Return 1177.0 -> lambda 16.412 (0.4 min)
+X1 Block 41/60: lambda 16.412, C 0.0000 (50 Ep.), Return 1129.5 -> lambda 16.312 (0.4 min)
+X1 Block 42/60: lambda 16.312, C 0.0004 (50 Ep.), Return 1104.9 -> lambda 16.214 (0.4 min)
+X1 Block 43/60: lambda 16.214, C 0.0000 (50 Ep.), Return 1148.7 -> lambda 16.114 (0.4 min)
+X1 Block 44/60: lambda 16.114, C 0.0000 (50 Ep.), Return 1258.6 -> lambda 16.014 (0.4 min)
+X1 Block 45/60: lambda 16.014, C 0.0000 (50 Ep.), Return 1241.2 -> lambda 15.914 (0.4 min)
+X1 Block 46/60: lambda 15.914, C 0.0000 (50 Ep.), Return 1269.3 -> lambda 15.814 (0.4 min)
+X1 Block 47/60: lambda 15.814, C 0.0000 (50 Ep.), Return 1261.6 -> lambda 15.714 (0.4 min)
+X1 Block 48/60: lambda 15.714, C 0.0000 (50 Ep.), Return 1229.3 -> lambda 15.614 (0.4 min)
+X1 Block 49/60: lambda 15.614, C 0.0000 (50 Ep.), Return 1229.3 -> lambda 15.514 (0.4 min)
+X1 Block 50/60: lambda 15.514, C 0.0000 (50 Ep.), Return 1181.1 -> lambda 15.414 (0.4 min)
+X1 Block 51/60: lambda 15.414, C 0.0000 (50 Ep.), Return 1116.5 -> lambda 15.314 (0.4 min)
+X1 Block 52/60: lambda 15.314, C 0.0000 (50 Ep.), Return 1172.5 -> lambda 15.214 (0.4 min)
+X1 Block 53/60: lambda 15.214, C 0.0000 (50 Ep.), Return 1204.4 -> lambda 15.114 (0.4 min)
+X1 Block 54/60: lambda 15.114, C 0.0000 (50 Ep.), Return 1181.1 -> lambda 15.014 (0.4 min)
+X1 Block 55/60: lambda 15.014, C 0.0000 (50 Ep.), Return 1187.9 -> lambda 14.914 (0.4 min)
+X1 Block 56/60: lambda 14.914, C 0.0000 (50 Ep.), Return 1195.3 -> lambda 14.814 (0.4 min)
+X1 Block 57/60: lambda 14.814, C 0.0000 (50 Ep.), Return 1219.0 -> lambda 14.714 (0.4 min)
+X1 Block 58/60: lambda 14.714, C 0.0000 (50 Ep.), Return 1233.8 -> lambda 14.614 (0.4 min)
+X1 Block 59/60: lambda 14.614, C 0.0000 (50 Ep.), Return 1260.1 -> lambda 14.514 (0.4 min)
+X1 Block 60/60: lambda 14.514, C 0.0000 (50 Ep.), Return 1287.0 -> lambda 14.414 (0.4 min)
+X1: Training fertig nach 24.5 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r5_c1_th30_eta5_seed4_ep3000_b50_l1_lr0.0003.mat
+X5.2 x1 Seed 4: 24.5 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 5, kp 0, delta 0.02, Seed 5, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 1.000, C 0.4744 (50 Ep.), Return -650.0 -> lambda 3.272 (0.4 min)
+X1 Block  2/60: lambda 3.272, C 0.6640 (50 Ep.), Return -945.4 -> lambda 6.492 (0.4 min)
+X1 Block  3/60: lambda 6.492, C 0.5049 (50 Ep.), Return -1346.0 -> lambda 8.916 (0.4 min)
+X1 Block  4/60: lambda 8.916, C 0.4421 (50 Ep.), Return -1327.8 -> lambda 11.027 (0.4 min)
+X1 Block  5/60: lambda 11.027, C 0.4162 (50 Ep.), Return -1362.4 -> lambda 13.008 (0.4 min)
+X1 Block  6/60: lambda 13.008, C 0.3512 (50 Ep.), Return -1366.5 -> lambda 14.664 (0.4 min)
+X1 Block  7/60: lambda 14.664, C 0.2656 (50 Ep.), Return -1040.1 -> lambda 15.892 (0.3 min)
+X1 Block  8/60: lambda 15.892, C 0.2262 (50 Ep.), Return -794.0 -> lambda 16.923 (0.3 min)
+X1 Block  9/60: lambda 16.923, C 0.2089 (50 Ep.), Return -808.8 -> lambda 17.867 (0.3 min)
+X1 Block 10/60: lambda 17.867, C 0.1789 (50 Ep.), Return -988.2 -> lambda 18.662 (0.3 min)
+X1 Block 11/60: lambda 18.662, C 0.1919 (50 Ep.), Return -1189.1 -> lambda 19.521 (0.4 min)
+X1 Block 12/60: lambda 19.521, C 0.1943 (50 Ep.), Return -980.2 -> lambda 20.000 (0.3 min)
+X1 Block 13/60: lambda 20.000, C 0.1261 (50 Ep.), Return -718.8 -> lambda 20.000 (0.3 min)
+X1 Block 14/60: lambda 20.000, C 0.0815 (50 Ep.), Return -450.7 -> lambda 20.000 (0.3 min)
+X1 Block 15/60: lambda 20.000, C 0.0625 (50 Ep.), Return -381.4 -> lambda 20.000 (0.3 min)
+X1 Block 16/60: lambda 20.000, C 0.0492 (50 Ep.), Return -312.7 -> lambda 20.000 (0.3 min)
+X1 Block 17/60: lambda 20.000, C 0.0869 (50 Ep.), Return -543.0 -> lambda 20.000 (0.3 min)
+X1 Block 18/60: lambda 20.000, C 0.0873 (50 Ep.), Return -586.9 -> lambda 20.000 (0.3 min)
+X1 Block 19/60: lambda 20.000, C 0.0321 (50 Ep.), Return -264.7 -> lambda 20.000 (0.3 min)
+X1 Block 20/60: lambda 20.000, C 0.0325 (50 Ep.), Return -223.0 -> lambda 20.000 (0.3 min)
+X1 Block 21/60: lambda 20.000, C 0.0429 (50 Ep.), Return -249.4 -> lambda 20.000 (0.4 min)
+X1 Block 22/60: lambda 20.000, C 0.0286 (50 Ep.), Return -189.0 -> lambda 20.000 (0.4 min)
+X1 Block 23/60: lambda 20.000, C 0.0382 (50 Ep.), Return -250.0 -> lambda 20.000 (0.4 min)
+X1 Block 24/60: lambda 20.000, C 0.0413 (50 Ep.), Return -256.1 -> lambda 20.000 (0.4 min)
+X1 Block 25/60: lambda 20.000, C 0.0511 (50 Ep.), Return -260.2 -> lambda 20.000 (0.4 min)
+X1 Block 26/60: lambda 20.000, C 0.0359 (50 Ep.), Return -125.6 -> lambda 20.000 (0.4 min)
+X1 Block 27/60: lambda 20.000, C 0.0232 (50 Ep.), Return -24.0 -> lambda 20.000 (0.4 min)
+X1 Block 28/60: lambda 20.000, C 0.0230 (50 Ep.), Return 25.7 -> lambda 20.000 (0.4 min)
+X1 Block 29/60: lambda 20.000, C 0.0235 (50 Ep.), Return 57.7 -> lambda 20.000 (0.4 min)
+X1 Block 30/60: lambda 20.000, C 0.0819 (50 Ep.), Return -291.7 -> lambda 20.000 (0.4 min)
+X1 Block 31/60: lambda 20.000, C 0.0712 (50 Ep.), Return -209.5 -> lambda 20.000 (0.4 min)
+X1 Block 32/60: lambda 20.000, C 0.0206 (50 Ep.), Return -57.1 -> lambda 20.000 (0.4 min)
+X1 Block 33/60: lambda 20.000, C 0.0156 (50 Ep.), Return 60.5 -> lambda 19.978 (0.4 min)
+X1 Block 34/60: lambda 19.978, C 0.0310 (50 Ep.), Return 105.5 -> lambda 20.000 (0.4 min)
+X1 Block 35/60: lambda 20.000, C 0.0025 (50 Ep.), Return 250.8 -> lambda 19.913 (0.4 min)
+X1 Block 36/60: lambda 19.913, C 0.0019 (50 Ep.), Return 316.7 -> lambda 19.822 (0.4 min)
+X1 Block 37/60: lambda 19.822, C 0.0028 (50 Ep.), Return 391.1 -> lambda 19.736 (0.4 min)
+X1 Block 38/60: lambda 19.736, C 0.0011 (50 Ep.), Return 478.4 -> lambda 19.641 (0.4 min)
+X1 Block 39/60: lambda 19.641, C 0.0007 (50 Ep.), Return 557.6 -> lambda 19.545 (0.4 min)
+X1 Block 40/60: lambda 19.545, C 0.0000 (50 Ep.), Return 605.6 -> lambda 19.445 (0.4 min)
+X1 Block 41/60: lambda 19.445, C 0.0000 (50 Ep.), Return 687.5 -> lambda 19.345 (0.4 min)
+X1 Block 42/60: lambda 19.345, C 0.0009 (50 Ep.), Return 769.0 -> lambda 19.250 (0.4 min)
+X1 Block 43/60: lambda 19.250, C 0.0000 (50 Ep.), Return 796.8 -> lambda 19.150 (0.4 min)
+X1 Block 44/60: lambda 19.150, C 0.0000 (50 Ep.), Return 831.5 -> lambda 19.050 (0.4 min)
+X1 Block 45/60: lambda 19.050, C 0.0082 (50 Ep.), Return 894.4 -> lambda 18.991 (0.4 min)
+X1 Block 46/60: lambda 18.991, C 0.0038 (50 Ep.), Return 981.2 -> lambda 18.910 (0.4 min)
+X1 Block 47/60: lambda 18.910, C 0.0097 (50 Ep.), Return 962.8 -> lambda 18.858 (0.4 min)
+X1 Block 48/60: lambda 18.858, C 0.0033 (50 Ep.), Return 966.8 -> lambda 18.775 (0.4 min)
+X1 Block 49/60: lambda 18.775, C 0.0090 (50 Ep.), Return 1000.7 -> lambda 18.720 (0.4 min)
+X1 Block 50/60: lambda 18.720, C 0.0128 (50 Ep.), Return 736.6 -> lambda 18.684 (0.4 min)
+X1 Block 51/60: lambda 18.684, C 0.0036 (50 Ep.), Return 509.5 -> lambda 18.602 (0.4 min)
+X1 Block 52/60: lambda 18.602, C 0.0154 (50 Ep.), Return 627.2 -> lambda 18.579 (0.4 min)
+X1 Block 53/60: lambda 18.579, C 0.0040 (50 Ep.), Return 966.8 -> lambda 18.499 (0.4 min)
+X1 Block 54/60: lambda 18.499, C 0.0017 (50 Ep.), Return 1024.6 -> lambda 18.407 (0.4 min)
+X1 Block 55/60: lambda 18.407, C 0.0202 (50 Ep.), Return 974.2 -> lambda 18.409 (0.4 min)
+X1 Block 56/60: lambda 18.409, C 0.0058 (50 Ep.), Return 1072.2 -> lambda 18.338 (0.4 min)
+X1 Block 57/60: lambda 18.338, C 0.0068 (50 Ep.), Return 1077.3 -> lambda 18.272 (0.4 min)
+X1 Block 58/60: lambda 18.272, C 0.0040 (50 Ep.), Return 1055.6 -> lambda 18.192 (0.4 min)
+X1 Block 59/60: lambda 18.192, C 0.0135 (50 Ep.), Return 1065.6 -> lambda 18.160 (0.4 min)
+X1 Block 60/60: lambda 18.160, C 0.0097 (50 Ep.), Return 1028.8 -> lambda 18.108 (0.4 min)
+X1: Training fertig nach 23.9 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r5_c1_th30_eta5_seed5_ep3000_b50_l1_lr0.0003.mat
+X5.2 x1 Seed 5: 23.9 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 5, kp 0, delta 0.02, Seed 6, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 1.000, C 0.4512 (50 Ep.), Return -590.2 -> lambda 3.156 (0.4 min)
+X1 Block  2/60: lambda 3.156, C 0.6550 (50 Ep.), Return -664.3 -> lambda 6.331 (0.3 min)
+X1 Block  3/60: lambda 6.331, C 0.4768 (50 Ep.), Return -1014.1 -> lambda 8.615 (0.4 min)
+X1 Block  4/60: lambda 8.615, C 0.4025 (50 Ep.), Return -902.4 -> lambda 10.528 (0.3 min)
+X1 Block  5/60: lambda 10.528, C 0.3314 (50 Ep.), Return -782.0 -> lambda 12.085 (0.3 min)
+X1 Block  6/60: lambda 12.085, C 0.3675 (50 Ep.), Return -1019.6 -> lambda 13.823 (0.3 min)
+X1 Block  7/60: lambda 13.823, C 0.4338 (50 Ep.), Return -1353.1 -> lambda 15.892 (0.3 min)
+X1 Block  8/60: lambda 15.892, C 0.2905 (50 Ep.), Return -734.8 -> lambda 17.244 (0.3 min)
+X1 Block  9/60: lambda 17.244, C 0.2453 (50 Ep.), Return -712.4 -> lambda 18.371 (0.2 min)
+X1 Block 10/60: lambda 18.371, C 0.2125 (50 Ep.), Return -747.8 -> lambda 19.333 (0.3 min)
+X1 Block 11/60: lambda 19.333, C 0.1587 (50 Ep.), Return -872.5 -> lambda 20.000 (0.3 min)
+X1 Block 12/60: lambda 20.000, C 0.1992 (50 Ep.), Return -1271.1 -> lambda 20.000 (0.3 min)
+X1 Block 13/60: lambda 20.000, C 0.2532 (50 Ep.), Return -1350.2 -> lambda 20.000 (0.3 min)
+X1 Block 14/60: lambda 20.000, C 0.1374 (50 Ep.), Return -520.3 -> lambda 20.000 (0.3 min)
+X1 Block 15/60: lambda 20.000, C 0.1253 (50 Ep.), Return -506.7 -> lambda 20.000 (0.3 min)
+X1 Block 16/60: lambda 20.000, C 0.0913 (50 Ep.), Return -374.7 -> lambda 20.000 (0.3 min)
+X1 Block 17/60: lambda 20.000, C 0.0854 (50 Ep.), Return -315.2 -> lambda 20.000 (0.3 min)
+X1 Block 18/60: lambda 20.000, C 0.0841 (50 Ep.), Return -296.3 -> lambda 20.000 (0.3 min)
+X1 Block 19/60: lambda 20.000, C 0.0793 (50 Ep.), Return -304.2 -> lambda 20.000 (0.3 min)
+X1 Block 20/60: lambda 20.000, C 0.0547 (50 Ep.), Return -211.0 -> lambda 20.000 (0.3 min)
+X1 Block 21/60: lambda 20.000, C 0.0563 (50 Ep.), Return -185.5 -> lambda 20.000 (0.3 min)
+X1 Block 22/60: lambda 20.000, C 0.0432 (50 Ep.), Return -130.8 -> lambda 20.000 (0.3 min)
+X1 Block 23/60: lambda 20.000, C 0.0418 (50 Ep.), Return -120.6 -> lambda 20.000 (0.3 min)
+X1 Block 24/60: lambda 20.000, C 0.0389 (50 Ep.), Return -107.5 -> lambda 20.000 (0.3 min)
+X1 Block 25/60: lambda 20.000, C 0.0400 (50 Ep.), Return -97.7 -> lambda 20.000 (0.3 min)
+X1 Block 26/60: lambda 20.000, C 0.0506 (50 Ep.), Return -124.1 -> lambda 20.000 (0.3 min)
+X1 Block 27/60: lambda 20.000, C 0.0384 (50 Ep.), Return -81.3 -> lambda 20.000 (0.3 min)
+X1 Block 28/60: lambda 20.000, C 0.0388 (50 Ep.), Return -108.3 -> lambda 20.000 (0.3 min)
+X1 Block 29/60: lambda 20.000, C 0.0240 (50 Ep.), Return -39.2 -> lambda 20.000 (0.3 min)
+X1 Block 30/60: lambda 20.000, C 0.0283 (50 Ep.), Return -45.8 -> lambda 20.000 (0.3 min)
+X1 Block 31/60: lambda 20.000, C 0.0251 (50 Ep.), Return -31.7 -> lambda 20.000 (0.3 min)
+X1 Block 32/60: lambda 20.000, C 0.0243 (50 Ep.), Return -25.2 -> lambda 20.000 (0.3 min)
+X1 Block 33/60: lambda 20.000, C 0.0227 (50 Ep.), Return -4.7 -> lambda 20.000 (0.3 min)
+X1 Block 34/60: lambda 20.000, C 0.0190 (50 Ep.), Return 49.7 -> lambda 19.995 (0.3 min)
+X1 Block 35/60: lambda 19.995, C 0.0192 (50 Ep.), Return 32.2 -> lambda 19.991 (0.3 min)
+X1 Block 36/60: lambda 19.991, C 0.0203 (50 Ep.), Return 6.5 -> lambda 19.993 (0.4 min)
+X1 Block 37/60: lambda 19.993, C 0.0209 (50 Ep.), Return -7.3 -> lambda 19.998 (0.4 min)
+X1 Block 38/60: lambda 19.998, C 0.0391 (50 Ep.), Return -117.2 -> lambda 20.000 (0.4 min)
+X1 Block 39/60: lambda 20.000, C 0.0293 (50 Ep.), Return -23.9 -> lambda 20.000 (0.4 min)
+X1 Block 40/60: lambda 20.000, C 0.0322 (50 Ep.), Return -93.5 -> lambda 20.000 (0.4 min)
+X1 Block 41/60: lambda 20.000, C 0.0175 (50 Ep.), Return 10.6 -> lambda 19.988 (0.4 min)
+X1 Block 42/60: lambda 19.988, C 0.0094 (50 Ep.), Return 160.7 -> lambda 19.935 (0.4 min)
+X1 Block 43/60: lambda 19.935, C 0.0177 (50 Ep.), Return 154.2 -> lambda 19.923 (0.4 min)
+X1 Block 44/60: lambda 19.923, C 0.0037 (50 Ep.), Return 174.7 -> lambda 19.842 (0.4 min)
+X1 Block 45/60: lambda 19.842, C 0.0045 (50 Ep.), Return 245.3 -> lambda 19.764 (0.4 min)
+X1 Block 46/60: lambda 19.764, C 0.0009 (50 Ep.), Return 353.7 -> lambda 19.669 (0.4 min)
+X1 Block 47/60: lambda 19.669, C 0.0060 (50 Ep.), Return 354.6 -> lambda 19.599 (0.4 min)
+X1 Block 48/60: lambda 19.599, C 0.0017 (50 Ep.), Return 421.9 -> lambda 19.507 (0.4 min)
+X1 Block 49/60: lambda 19.507, C 0.0431 (50 Ep.), Return 155.2 -> lambda 19.623 (0.4 min)
+X1 Block 50/60: lambda 19.623, C 0.0000 (50 Ep.), Return 356.8 -> lambda 19.523 (0.4 min)
+X1 Block 51/60: lambda 19.523, C 0.0000 (50 Ep.), Return 443.3 -> lambda 19.423 (0.4 min)
+X1 Block 52/60: lambda 19.423, C 0.0000 (50 Ep.), Return 490.6 -> lambda 19.323 (0.4 min)
+X1 Block 53/60: lambda 19.323, C 0.0000 (50 Ep.), Return 554.8 -> lambda 19.223 (0.4 min)
+X1 Block 54/60: lambda 19.223, C 0.0000 (50 Ep.), Return 599.8 -> lambda 19.123 (0.4 min)
+X1 Block 55/60: lambda 19.123, C 0.0248 (50 Ep.), Return 490.2 -> lambda 19.147 (0.4 min)
+X1 Block 56/60: lambda 19.147, C 0.0249 (50 Ep.), Return 496.5 -> lambda 19.172 (0.4 min)
+X1 Block 57/60: lambda 19.172, C 0.0000 (50 Ep.), Return 707.7 -> lambda 19.072 (0.4 min)
+X1 Block 58/60: lambda 19.072, C 0.0261 (50 Ep.), Return 588.7 -> lambda 19.102 (0.4 min)
+X1 Block 59/60: lambda 19.102, C 0.0086 (50 Ep.), Return 690.4 -> lambda 19.045 (0.4 min)
+X1 Block 60/60: lambda 19.045, C 0.0001 (50 Ep.), Return 858.6 -> lambda 18.945 (0.4 min)
+X1: Training fertig nach 21.0 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r5_c1_th30_eta5_seed6_ep3000_b50_l1_lr0.0003.mat
+X5.2 x1 Seed 6: 21.0 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 5, kp 0, delta 0.02, Seed 7, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 1.000, C 0.4644 (50 Ep.), Return -659.7 -> lambda 3.222 (0.4 min)
+X1 Block  2/60: lambda 3.222, C 0.6492 (50 Ep.), Return -853.0 -> lambda 6.368 (0.4 min)
+X1 Block  3/60: lambda 6.368, C 0.4944 (50 Ep.), Return -1129.0 -> lambda 8.740 (0.4 min)
+X1 Block  4/60: lambda 8.740, C 0.4418 (50 Ep.), Return -1427.1 -> lambda 10.849 (0.4 min)
+X1 Block  5/60: lambda 10.849, C 0.2996 (50 Ep.), Return -1153.6 -> lambda 12.247 (0.3 min)
+X1 Block  6/60: lambda 12.247, C 0.2318 (50 Ep.), Return -720.1 -> lambda 13.306 (0.3 min)
+X1 Block  7/60: lambda 13.306, C 0.0622 (50 Ep.), Return -349.1 -> lambda 13.517 (0.3 min)
+X1 Block  8/60: lambda 13.517, C 0.0861 (50 Ep.), Return -361.1 -> lambda 13.847 (0.3 min)
+X1 Block  9/60: lambda 13.847, C 0.0235 (50 Ep.), Return -202.6 -> lambda 13.865 (0.3 min)
+X1 Block 10/60: lambda 13.865, C 0.0185 (50 Ep.), Return -81.6 -> lambda 13.857 (0.3 min)
+X1 Block 11/60: lambda 13.857, C 0.0029 (50 Ep.), Return -18.9 -> lambda 13.772 (0.3 min)
+X1 Block 12/60: lambda 13.772, C 0.0058 (50 Ep.), Return 10.9 -> lambda 13.701 (0.3 min)
+X1 Block 13/60: lambda 13.701, C 0.0023 (50 Ep.), Return 60.1 -> lambda 13.612 (0.3 min)
+X1 Block 14/60: lambda 13.612, C 0.0185 (50 Ep.), Return 1.2 -> lambda 13.605 (0.3 min)
+X1 Block 15/60: lambda 13.605, C 0.0086 (50 Ep.), Return 26.4 -> lambda 13.548 (0.3 min)
+X1 Block 16/60: lambda 13.548, C 0.0036 (50 Ep.), Return 77.2 -> lambda 13.466 (0.3 min)
+X1 Block 17/60: lambda 13.466, C 0.0034 (50 Ep.), Return 99.7 -> lambda 13.383 (0.3 min)
+X1 Block 18/60: lambda 13.383, C 0.0007 (50 Ep.), Return 146.1 -> lambda 13.287 (0.3 min)
+X1 Block 19/60: lambda 13.287, C 0.0000 (50 Ep.), Return 173.1 -> lambda 13.187 (0.3 min)
+X1 Block 20/60: lambda 13.187, C 0.0026 (50 Ep.), Return 206.6 -> lambda 13.099 (0.3 min)
+X1 Block 21/60: lambda 13.099, C 0.0021 (50 Ep.), Return 288.0 -> lambda 13.010 (0.4 min)
+X1 Block 22/60: lambda 13.010, C 0.0000 (50 Ep.), Return 330.3 -> lambda 12.910 (0.4 min)
+X1 Block 23/60: lambda 12.910, C 0.0008 (50 Ep.), Return 363.4 -> lambda 12.814 (0.4 min)
+X1 Block 24/60: lambda 12.814, C 0.0050 (50 Ep.), Return 309.6 -> lambda 12.739 (0.4 min)
+X1 Block 25/60: lambda 12.739, C 0.0029 (50 Ep.), Return 380.1 -> lambda 12.653 (0.4 min)
+X1 Block 26/60: lambda 12.653, C 0.0047 (50 Ep.), Return 376.2 -> lambda 12.576 (0.4 min)
+X1 Block 27/60: lambda 12.576, C 0.0225 (50 Ep.), Return 322.3 -> lambda 12.589 (0.4 min)
+X1 Block 28/60: lambda 12.589, C 0.0060 (50 Ep.), Return 367.6 -> lambda 12.519 (0.4 min)
+X1 Block 29/60: lambda 12.519, C 0.0001 (50 Ep.), Return 435.3 -> lambda 12.420 (0.4 min)
+X1 Block 30/60: lambda 12.420, C 0.0066 (50 Ep.), Return 497.1 -> lambda 12.353 (0.4 min)
+X1 Block 31/60: lambda 12.353, C 0.0256 (50 Ep.), Return 472.1 -> lambda 12.380 (0.4 min)
+X1 Block 32/60: lambda 12.380, C 0.0693 (50 Ep.), Return 319.6 -> lambda 12.627 (0.4 min)
+X1 Block 33/60: lambda 12.627, C 0.0173 (50 Ep.), Return 461.5 -> lambda 12.613 (0.4 min)
+X1 Block 34/60: lambda 12.613, C 0.0016 (50 Ep.), Return 541.8 -> lambda 12.521 (0.4 min)
+X1 Block 35/60: lambda 12.521, C 0.0035 (50 Ep.), Return 566.8 -> lambda 12.439 (0.4 min)
+X1 Block 36/60: lambda 12.439, C 0.0004 (50 Ep.), Return 537.9 -> lambda 12.341 (0.4 min)
+X1 Block 37/60: lambda 12.341, C 0.0000 (50 Ep.), Return 674.7 -> lambda 12.241 (0.4 min)
+X1 Block 38/60: lambda 12.241, C 0.0050 (50 Ep.), Return 684.6 -> lambda 12.166 (0.4 min)
+X1 Block 39/60: lambda 12.166, C 0.0347 (50 Ep.), Return 669.1 -> lambda 12.240 (0.4 min)
+X1 Block 40/60: lambda 12.240, C 0.0027 (50 Ep.), Return 709.9 -> lambda 12.153 (0.4 min)
+X1 Block 41/60: lambda 12.153, C 0.0014 (50 Ep.), Return 705.3 -> lambda 12.060 (0.4 min)
+X1 Block 42/60: lambda 12.060, C 0.0015 (50 Ep.), Return 681.4 -> lambda 11.968 (0.4 min)
+X1 Block 43/60: lambda 11.968, C 0.0154 (50 Ep.), Return 611.6 -> lambda 11.945 (0.4 min)
+X1 Block 44/60: lambda 11.945, C 0.0000 (50 Ep.), Return 636.3 -> lambda 11.845 (0.4 min)
+X1 Block 45/60: lambda 11.845, C 0.0033 (50 Ep.), Return 617.6 -> lambda 11.761 (0.4 min)
+X1 Block 46/60: lambda 11.761, C 0.0043 (50 Ep.), Return 580.6 -> lambda 11.683 (0.4 min)
+X1 Block 47/60: lambda 11.683, C 0.0084 (50 Ep.), Return 522.8 -> lambda 11.625 (0.4 min)
+X1 Block 48/60: lambda 11.625, C 0.0059 (50 Ep.), Return 504.5 -> lambda 11.554 (0.4 min)
+X1 Block 49/60: lambda 11.554, C 0.0063 (50 Ep.), Return 577.9 -> lambda 11.486 (0.4 min)
+X1 Block 50/60: lambda 11.486, C 0.0076 (50 Ep.), Return 572.9 -> lambda 11.424 (0.4 min)
+X1 Block 51/60: lambda 11.424, C 0.0153 (50 Ep.), Return 605.2 -> lambda 11.400 (0.4 min)
+X1 Block 52/60: lambda 11.400, C 0.0123 (50 Ep.), Return 624.6 -> lambda 11.362 (0.4 min)
+X1 Block 53/60: lambda 11.362, C 0.0038 (50 Ep.), Return 620.0 -> lambda 11.281 (0.4 min)
+X1 Block 54/60: lambda 11.281, C 0.0061 (50 Ep.), Return 661.2 -> lambda 11.211 (0.4 min)
+X1 Block 55/60: lambda 11.211, C 0.0107 (50 Ep.), Return 604.5 -> lambda 11.165 (0.4 min)
+X1 Block 56/60: lambda 11.165, C 0.0077 (50 Ep.), Return 596.1 -> lambda 11.104 (0.4 min)
+X1 Block 57/60: lambda 11.104, C 0.0015 (50 Ep.), Return 698.9 -> lambda 11.011 (0.4 min)
+X1 Block 58/60: lambda 11.011, C 0.0118 (50 Ep.), Return 670.3 -> lambda 10.970 (0.4 min)
+X1 Block 59/60: lambda 10.970, C 0.0024 (50 Ep.), Return 700.9 -> lambda 10.882 (0.4 min)
+X1 Block 60/60: lambda 10.882, C 0.0143 (50 Ep.), Return 656.8 -> lambda 10.854 (0.4 min)
+X1: Training fertig nach 23.3 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r5_c1_th30_eta5_seed7_ep3000_b50_l1_lr0.0003.mat
+X5.2 x1 Seed 7: 23.3 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 5, kp 0, delta 0.02, Seed 8, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 1.000, C 0.4937 (50 Ep.), Return -583.0 -> lambda 3.368 (0.4 min)
+X1 Block  2/60: lambda 3.368, C 0.5584 (50 Ep.), Return -766.3 -> lambda 6.061 (0.4 min)
+X1 Block  3/60: lambda 6.061, C 0.3470 (50 Ep.), Return -758.7 -> lambda 7.695 (0.3 min)
+X1 Block  4/60: lambda 7.695, C 0.4561 (50 Ep.), Return -965.9 -> lambda 9.876 (0.3 min)
+X1 Block  5/60: lambda 9.876, C 0.4334 (50 Ep.), Return -1443.0 -> lambda 11.943 (0.4 min)
+X1 Block  6/60: lambda 11.943, C 0.4424 (50 Ep.), Return -1753.7 -> lambda 14.055 (0.4 min)
+X1 Block  7/60: lambda 14.055, C 0.3683 (50 Ep.), Return -1554.7 -> lambda 15.796 (0.4 min)
+X1 Block  8/60: lambda 15.796, C 0.1440 (50 Ep.), Return -742.3 -> lambda 16.417 (0.3 min)
+X1 Block  9/60: lambda 16.417, C 0.0182 (50 Ep.), Return -178.2 -> lambda 16.407 (0.3 min)
+X1 Block 10/60: lambda 16.407, C 0.0391 (50 Ep.), Return -224.3 -> lambda 16.503 (0.3 min)
+X1 Block 11/60: lambda 16.503, C 0.0412 (50 Ep.), Return -236.3 -> lambda 16.608 (0.3 min)
+X1 Block 12/60: lambda 16.608, C 0.0630 (50 Ep.), Return -270.3 -> lambda 16.823 (0.3 min)
+X1 Block 13/60: lambda 16.823, C 0.0441 (50 Ep.), Return -185.7 -> lambda 16.944 (0.3 min)
+X1 Block 14/60: lambda 16.944, C 0.0136 (50 Ep.), Return -90.8 -> lambda 16.912 (0.3 min)
+X1 Block 15/60: lambda 16.912, C 0.0009 (50 Ep.), Return -7.5 -> lambda 16.816 (0.3 min)
+X1 Block 16/60: lambda 16.816, C 0.0066 (50 Ep.), Return 28.7 -> lambda 16.749 (0.3 min)
+X1 Block 17/60: lambda 16.749, C 0.0059 (50 Ep.), Return 66.7 -> lambda 16.678 (0.3 min)
+X1 Block 18/60: lambda 16.678, C 0.0276 (50 Ep.), Return -15.2 -> lambda 16.716 (0.3 min)
+X1 Block 19/60: lambda 16.716, C 0.0197 (50 Ep.), Return 28.6 -> lambda 16.715 (0.3 min)
+X1 Block 20/60: lambda 16.715, C 0.0278 (50 Ep.), Return -64.5 -> lambda 16.754 (0.3 min)
+X1 Block 21/60: lambda 16.754, C 0.0201 (50 Ep.), Return 32.5 -> lambda 16.755 (0.3 min)
+X1 Block 22/60: lambda 16.755, C 0.0145 (50 Ep.), Return 68.4 -> lambda 16.727 (0.3 min)
+X1 Block 23/60: lambda 16.727, C 0.0164 (50 Ep.), Return 82.3 -> lambda 16.709 (0.3 min)
+X1 Block 24/60: lambda 16.709, C 0.0176 (50 Ep.), Return 57.1 -> lambda 16.698 (0.4 min)
+X1 Block 25/60: lambda 16.698, C 0.0229 (50 Ep.), Return -40.9 -> lambda 16.712 (0.4 min)
+X1 Block 26/60: lambda 16.712, C 0.0135 (50 Ep.), Return 39.7 -> lambda 16.679 (0.4 min)
+X1 Block 27/60: lambda 16.679, C 0.0403 (50 Ep.), Return -90.5 -> lambda 16.781 (0.4 min)
+X1 Block 28/60: lambda 16.781, C 0.0323 (50 Ep.), Return -33.7 -> lambda 16.843 (0.4 min)
+X1 Block 29/60: lambda 16.843, C 0.0046 (50 Ep.), Return 127.0 -> lambda 16.766 (0.4 min)
+X1 Block 30/60: lambda 16.766, C 0.0042 (50 Ep.), Return 199.8 -> lambda 16.687 (0.4 min)
+X1 Block 31/60: lambda 16.687, C 0.0030 (50 Ep.), Return 318.4 -> lambda 16.602 (0.4 min)
+X1 Block 32/60: lambda 16.602, C 0.0190 (50 Ep.), Return 314.5 -> lambda 16.597 (0.4 min)
+X1 Block 33/60: lambda 16.597, C 0.0015 (50 Ep.), Return 394.3 -> lambda 16.504 (0.4 min)
+X1 Block 34/60: lambda 16.504, C 0.0012 (50 Ep.), Return 530.8 -> lambda 16.410 (0.4 min)
+X1 Block 35/60: lambda 16.410, C 0.0009 (50 Ep.), Return 579.0 -> lambda 16.314 (0.4 min)
+X1 Block 36/60: lambda 16.314, C 0.0110 (50 Ep.), Return 521.0 -> lambda 16.269 (0.4 min)
+X1 Block 37/60: lambda 16.269, C 0.0005 (50 Ep.), Return 529.0 -> lambda 16.172 (0.4 min)
+X1 Block 38/60: lambda 16.172, C 0.0000 (50 Ep.), Return 624.3 -> lambda 16.072 (0.4 min)
+X1 Block 39/60: lambda 16.072, C 0.0009 (50 Ep.), Return 681.5 -> lambda 15.976 (0.4 min)
+X1 Block 40/60: lambda 15.976, C 0.0011 (50 Ep.), Return 766.6 -> lambda 15.882 (0.5 min)
+X1 Block 41/60: lambda 15.882, C 0.0027 (50 Ep.), Return 738.9 -> lambda 15.795 (0.5 min)
+X1 Block 42/60: lambda 15.795, C 0.0038 (50 Ep.), Return 726.1 -> lambda 15.714 (0.5 min)
+X1 Block 43/60: lambda 15.714, C 0.0040 (50 Ep.), Return 709.5 -> lambda 15.634 (0.4 min)
+X1 Block 44/60: lambda 15.634, C 0.0032 (50 Ep.), Return 745.7 -> lambda 15.550 (0.6 min)
+X1 Block 45/60: lambda 15.550, C 0.0031 (50 Ep.), Return 799.3 -> lambda 15.466 (0.5 min)
+X1 Block 46/60: lambda 15.466, C 0.0018 (50 Ep.), Return 850.4 -> lambda 15.375 (0.4 min)
+X1 Block 47/60: lambda 15.375, C 0.0020 (50 Ep.), Return 846.4 -> lambda 15.285 (0.4 min)
+X1 Block 48/60: lambda 15.285, C 0.0024 (50 Ep.), Return 804.6 -> lambda 15.197 (0.4 min)
+X1 Block 49/60: lambda 15.197, C 0.0025 (50 Ep.), Return 822.7 -> lambda 15.109 (0.4 min)
+X1 Block 50/60: lambda 15.109, C 0.0029 (50 Ep.), Return 750.0 -> lambda 15.024 (0.4 min)
+X1 Block 51/60: lambda 15.024, C 0.0025 (50 Ep.), Return 737.0 -> lambda 14.936 (0.4 min)
+X1 Block 52/60: lambda 14.936, C 0.0042 (50 Ep.), Return 741.2 -> lambda 14.857 (0.4 min)
+X1 Block 53/60: lambda 14.857, C 0.0033 (50 Ep.), Return 759.3 -> lambda 14.774 (0.4 min)
+X1 Block 54/60: lambda 14.774, C 0.0052 (50 Ep.), Return 756.8 -> lambda 14.700 (0.4 min)
+X1 Block 55/60: lambda 14.700, C 0.0066 (50 Ep.), Return 753.1 -> lambda 14.633 (0.4 min)
+X1 Block 56/60: lambda 14.633, C 0.0103 (50 Ep.), Return 659.1 -> lambda 14.584 (0.4 min)
+X1 Block 57/60: lambda 14.584, C 0.0054 (50 Ep.), Return 686.5 -> lambda 14.511 (0.4 min)
+X1 Block 58/60: lambda 14.511, C 0.0003 (50 Ep.), Return 722.7 -> lambda 14.412 (0.4 min)
+X1 Block 59/60: lambda 14.412, C 0.0022 (50 Ep.), Return 747.5 -> lambda 14.323 (0.4 min)
+X1 Block 60/60: lambda 14.323, C 0.0016 (50 Ep.), Return 768.4 -> lambda 14.231 (0.4 min)
+X1: Training fertig nach 23.9 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r5_c1_th30_eta5_seed8_ep3000_b50_l1_lr0.0003.mat
+X5.2 x1 Seed 8: 24.0 min
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X1: theta 0.030 rad, Kosten 1, eta 5, kp 0, delta 0.02, Seed 9, 60 x 50 Episoden, 8 Worker
+X1 Block  1/60: lambda 1.000, C 0.4549 (50 Ep.), Return -614.2 -> lambda 3.175 (0.4 min)
+X1 Block  2/60: lambda 3.175, C 0.6928 (50 Ep.), Return -895.0 -> lambda 6.539 (0.4 min)
+X1 Block  3/60: lambda 6.539, C 0.4623 (50 Ep.), Return -1362.4 -> lambda 8.750 (0.4 min)
+X1 Block  4/60: lambda 8.750, C 0.4810 (50 Ep.), Return -1793.3 -> lambda 11.055 (0.4 min)
+X1 Block  5/60: lambda 11.055, C 0.3532 (50 Ep.), Return -1634.3 -> lambda 12.721 (0.4 min)
+X1 Block  6/60: lambda 12.721, C 0.2120 (50 Ep.), Return -1023.8 -> lambda 13.681 (0.4 min)
+X1 Block  7/60: lambda 13.681, C 0.2855 (50 Ep.), Return -1166.1 -> lambda 15.009 (0.4 min)
+X1 Block  8/60: lambda 15.009, C 0.1944 (50 Ep.), Return -867.6 -> lambda 15.881 (0.3 min)
+X1 Block  9/60: lambda 15.881, C 0.1554 (50 Ep.), Return -532.3 -> lambda 16.558 (0.3 min)
+X1 Block 10/60: lambda 16.558, C 0.1899 (50 Ep.), Return -693.1 -> lambda 17.407 (0.3 min)
+X1 Block 11/60: lambda 17.407, C 0.2056 (50 Ep.), Return -1012.6 -> lambda 18.335 (0.3 min)
+X1 Block 12/60: lambda 18.335, C 0.1010 (50 Ep.), Return -545.4 -> lambda 18.740 (0.3 min)
+X1 Block 13/60: lambda 18.740, C 0.1030 (50 Ep.), Return -541.7 -> lambda 19.155 (0.3 min)
+X1 Block 14/60: lambda 19.155, C 0.0805 (50 Ep.), Return -556.7 -> lambda 19.457 (0.4 min)
+X1 Block 15/60: lambda 19.457, C 0.0606 (50 Ep.), Return -230.2 -> lambda 19.660 (0.3 min)
+X1 Block 16/60: lambda 19.660, C 0.0639 (50 Ep.), Return -447.4 -> lambda 19.880 (0.4 min)
+X1 Block 17/60: lambda 19.880, C 0.0408 (50 Ep.), Return -226.6 -> lambda 19.984 (0.3 min)
+X1 Block 18/60: lambda 19.984, C 0.0186 (50 Ep.), Return -85.1 -> lambda 19.977 (0.3 min)
+X1 Block 19/60: lambda 19.977, C 0.0117 (50 Ep.), Return -5.8 -> lambda 19.935 (0.3 min)
+X1 Block 20/60: lambda 19.935, C 0.0109 (50 Ep.), Return 19.0 -> lambda 19.889 (0.3 min)
+X1 Block 21/60: lambda 19.889, C 0.0007 (50 Ep.), Return 70.8 -> lambda 19.793 (0.3 min)
+X1 Block 22/60: lambda 19.793, C 0.0017 (50 Ep.), Return 110.2 -> lambda 19.702 (0.3 min)
+X1 Block 23/60: lambda 19.702, C 0.0000 (50 Ep.), Return 150.7 -> lambda 19.602 (0.3 min)
+X1 Block 24/60: lambda 19.602, C 0.0000 (50 Ep.), Return 187.6 -> lambda 19.502 (0.3 min)
+X1 Block 25/60: lambda 19.502, C 0.0000 (50 Ep.), Return 220.0 -> lambda 19.402 (0.3 min)
+X1 Block 26/60: lambda 19.402, C 0.0000 (50 Ep.), Return 231.7 -> lambda 19.302 (0.3 min)
+X1 Block 27/60: lambda 19.302, C 0.0000 (50 Ep.), Return 291.7 -> lambda 19.202 (0.3 min)
+X1 Block 28/60: lambda 19.202, C 0.0000 (50 Ep.), Return 361.4 -> lambda 19.102 (0.4 min)
+X1 Block 29/60: lambda 19.102, C 0.0038 (50 Ep.), Return 363.1 -> lambda 19.020 (0.4 min)
+X1 Block 30/60: lambda 19.020, C 0.0022 (50 Ep.), Return 361.8 -> lambda 18.932 (0.4 min)
+X1 Block 31/60: lambda 18.932, C 0.0000 (50 Ep.), Return 412.0 -> lambda 18.832 (0.4 min)
+X1 Block 32/60: lambda 18.832, C 0.0061 (50 Ep.), Return 444.3 -> lambda 18.762 (0.4 min)
+X1 Block 33/60: lambda 18.762, C 0.0063 (50 Ep.), Return 478.4 -> lambda 18.694 (0.4 min)
+X1 Block 34/60: lambda 18.694, C 0.0040 (50 Ep.), Return 583.4 -> lambda 18.614 (0.4 min)
+X1 Block 35/60: lambda 18.614, C 0.0046 (50 Ep.), Return 740.4 -> lambda 18.537 (0.4 min)
+X1 Block 36/60: lambda 18.537, C 0.0092 (50 Ep.), Return 690.2 -> lambda 18.483 (0.4 min)
+X1 Block 37/60: lambda 18.483, C 0.0000 (50 Ep.), Return 819.4 -> lambda 18.383 (0.4 min)
+X1 Block 38/60: lambda 18.383, C 0.0000 (50 Ep.), Return 948.4 -> lambda 18.283 (0.4 min)
+X1 Block 39/60: lambda 18.283, C 0.0000 (50 Ep.), Return 934.4 -> lambda 18.183 (0.4 min)
+X1 Block 40/60: lambda 18.183, C 0.0000 (50 Ep.), Return 966.6 -> lambda 18.083 (0.4 min)
+X1 Block 41/60: lambda 18.083, C 0.0000 (50 Ep.), Return 970.4 -> lambda 17.983 (0.4 min)
+X1 Block 42/60: lambda 17.983, C 0.0004 (50 Ep.), Return 1035.7 -> lambda 17.884 (0.4 min)
+X1 Block 43/60: lambda 17.884, C 0.0063 (50 Ep.), Return 1040.6 -> lambda 17.816 (0.4 min)
+X1 Block 44/60: lambda 17.816, C 0.0000 (50 Ep.), Return 1086.3 -> lambda 17.716 (0.4 min)
+X1 Block 45/60: lambda 17.716, C 0.0000 (50 Ep.), Return 1060.6 -> lambda 17.616 (0.4 min)
+X1 Block 46/60: lambda 17.616, C 0.0000 (50 Ep.), Return 1097.7 -> lambda 17.516 (0.4 min)
+X1 Block 47/60: lambda 17.516, C 0.0000 (50 Ep.), Return 1129.0 -> lambda 17.416 (0.4 min)
+X1 Block 48/60: lambda 17.416, C 0.0008 (50 Ep.), Return 1139.2 -> lambda 17.320 (0.4 min)
+X1 Block 49/60: lambda 17.320, C 0.0000 (50 Ep.), Return 1190.3 -> lambda 17.220 (0.4 min)
+X1 Block 50/60: lambda 17.220, C 0.0000 (50 Ep.), Return 1229.6 -> lambda 17.120 (0.4 min)
+X1 Block 51/60: lambda 17.120, C 0.0000 (50 Ep.), Return 1249.5 -> lambda 17.020 (0.4 min)
+X1 Block 52/60: lambda 17.020, C 0.0000 (50 Ep.), Return 1256.2 -> lambda 16.920 (0.4 min)
+X1 Block 53/60: lambda 16.920, C 0.0000 (50 Ep.), Return 1265.9 -> lambda 16.820 (0.4 min)
+X1 Block 54/60: lambda 16.820, C 0.0000 (50 Ep.), Return 1267.7 -> lambda 16.720 (0.4 min)
+X1 Block 55/60: lambda 16.720, C 0.0000 (50 Ep.), Return 1266.8 -> lambda 16.620 (0.4 min)
+X1 Block 56/60: lambda 16.620, C 0.0000 (50 Ep.), Return 1135.6 -> lambda 16.520 (0.4 min)
+X1 Block 57/60: lambda 16.520, C 0.0000 (50 Ep.), Return 1290.2 -> lambda 16.420 (0.4 min)
+X1 Block 58/60: lambda 16.420, C 0.0000 (50 Ep.), Return 1294.0 -> lambda 16.320 (0.4 min)
+X1 Block 59/60: lambda 16.320, C 0.0000 (50 Ep.), Return 1301.3 -> lambda 16.220 (0.4 min)
+X1 Block 60/60: lambda 16.220, C 0.0000 (50 Ep.), Return 1295.8 -> lambda 16.120 (0.4 min)
+X1: Training fertig nach 23.1 min
+Gespeichert: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X5\X5_ppo_40hz_r5_c1_th30_eta5_seed9_ep3000_b50_l1_lr0.0003.mat
+X5.2 x1 Seed 9: 23.1 min
+X5.2 Training fertig nach 188.9 min
+  x1 Seed 2 Ep.  250: RMS 189.2 mm, ep_q4 356.6 mm, ori_max 105.2 mrad, Abbruch 1
+  x1 Seed 2 Ep.  500: RMS 196.1 mm, ep_q4 NaN mm, ori_max 52.8 mrad, Abbruch 1
+  x1 Seed 2 Ep.  750: RMS 175.3 mm, ep_q4 NaN mm, ori_max 21.8 mrad, Abbruch 1
+  x1 Seed 2 Ep. 1000: RMS 138.1 mm, ep_q4 NaN mm, ori_max 19.7 mrad, Abbruch 1
+  x1 Seed 2 Ep. 1250: RMS 116.1 mm, ep_q4 181.1 mm, ori_max 23.8 mrad, Abbruch 0
+  x1 Seed 2 Ep. 1500: RMS 140.7 mm, ep_q4 313.8 mm, ori_max 27.5 mrad, Abbruch 1
+  x1 Seed 2 Ep. 1750: RMS 108.5 mm, ep_q4 171.3 mm, ori_max 20.9 mrad, Abbruch 0
+  x1 Seed 2 Ep. 2000: RMS 14.2 mm, ep_q4 22.5 mm, ori_max 22.4 mrad, Abbruch 0
+  x1 Seed 2 Ep. 2250: RMS 11.1 mm, ep_q4 12.6 mm, ori_max 16.2 mrad, Abbruch 0
+  x1 Seed 2 Ep. 2500: RMS 13.2 mm, ep_q4 17.1 mm, ori_max 12.5 mrad, Abbruch 0
+  x1 Seed 2 Ep. 2750: RMS 12.0 mm, ep_q4 16.2 mm, ori_max 16.2 mrad, Abbruch 0
+  x1 Seed 2 Ep. 3000: RMS 22.0 mm, ep_q4 33.7 mm, ori_max 30.5 mrad, Abbruch 0
+  x1 Seed 3 Ep.  250: RMS 208.2 mm, ep_q4 NaN mm, ori_max 13.9 mrad, Abbruch 1
+  x1 Seed 3 Ep.  500: RMS 211.7 mm, ep_q4 NaN mm, ori_max 17.9 mrad, Abbruch 1
+  x1 Seed 3 Ep.  750: RMS 153.5 mm, ep_q4 NaN mm, ori_max 13.2 mrad, Abbruch 1
+  x1 Seed 3 Ep. 1000: RMS 123.4 mm, ep_q4 286.4 mm, ori_max 20.1 mrad, Abbruch 1
+  x1 Seed 3 Ep. 1250: RMS 124.9 mm, ep_q4 222.2 mm, ori_max 20.7 mrad, Abbruch 1
+  x1 Seed 3 Ep. 1500: RMS 128.8 mm, ep_q4 208.4 mm, ori_max 28.7 mrad, Abbruch 1
+  x1 Seed 3 Ep. 1750: RMS 94.8 mm, ep_q4 149.1 mm, ori_max 19.1 mrad, Abbruch 0
+  x1 Seed 3 Ep. 2000: RMS 120.7 mm, ep_q4 208.1 mm, ori_max 32.4 mrad, Abbruch 0
+  x1 Seed 3 Ep. 2250: RMS 20.0 mm, ep_q4 30.1 mm, ori_max 39.4 mrad, Abbruch 0
+  x1 Seed 3 Ep. 2500: RMS 14.7 mm, ep_q4 18.1 mm, ori_max 17.9 mrad, Abbruch 0
+  x1 Seed 3 Ep. 2750: RMS 21.1 mm, ep_q4 31.4 mm, ori_max 23.5 mrad, Abbruch 0
+  x1 Seed 3 Ep. 3000: RMS 11.5 mm, ep_q4 12.5 mm, ori_max 25.0 mrad, Abbruch 0
+  x1 Seed 4 Ep.  250: RMS 198.4 mm, ep_q4 NaN mm, ori_max 73.7 mrad, Abbruch 1
+  x1 Seed 4 Ep.  500: RMS 164.2 mm, ep_q4 NaN mm, ori_max 81.5 mrad, Abbruch 1
+  x1 Seed 4 Ep.  750: RMS 202.1 mm, ep_q4 NaN mm, ori_max 42.8 mrad, Abbruch 1
+  x1 Seed 4 Ep. 1000: RMS 185.5 mm, ep_q4 327.1 mm, ori_max 18.7 mrad, Abbruch 0
+  x1 Seed 4 Ep. 1250: RMS 81.6 mm, ep_q4 148.7 mm, ori_max 10.3 mrad, Abbruch 0
+  x1 Seed 4 Ep. 1500: RMS 27.4 mm, ep_q4 48.6 mm, ori_max 16.0 mrad, Abbruch 0
+  x1 Seed 4 Ep. 1750: RMS 22.8 mm, ep_q4 37.0 mm, ori_max 27.1 mrad, Abbruch 0
+  x1 Seed 4 Ep. 2000: RMS 10.9 mm, ep_q4 12.0 mm, ori_max 24.3 mrad, Abbruch 0
+  x1 Seed 4 Ep. 2250: RMS 13.0 mm, ep_q4 17.5 mm, ori_max 19.3 mrad, Abbruch 0
+  x1 Seed 4 Ep. 2500: RMS 9.4 mm, ep_q4 9.8 mm, ori_max 16.9 mrad, Abbruch 0
+  x1 Seed 4 Ep. 2750: RMS 10.4 mm, ep_q4 14.8 mm, ori_max 9.3 mrad, Abbruch 0
+  x1 Seed 4 Ep. 3000: RMS 9.6 mm, ep_q4 8.8 mm, ori_max 11.7 mrad, Abbruch 0
+  x1 Seed 5 Ep.  250: RMS 194.0 mm, ep_q4 NaN mm, ori_max 49.8 mrad, Abbruch 1
+  x1 Seed 5 Ep.  500: RMS 294.5 mm, ep_q4 463.6 mm, ori_max 136.0 mrad, Abbruch 0
+  x1 Seed 5 Ep.  750: RMS 189.3 mm, ep_q4 NaN mm, ori_max 55.1 mrad, Abbruch 1
+  x1 Seed 5 Ep. 1000: RMS 176.9 mm, ep_q4 NaN mm, ori_max 38.5 mrad, Abbruch 1
+  x1 Seed 5 Ep. 1250: RMS 157.7 mm, ep_q4 NaN mm, ori_max 61.2 mrad, Abbruch 1
+  x1 Seed 5 Ep. 1500: RMS 146.7 mm, ep_q4 467.8 mm, ori_max 37.6 mrad, Abbruch 1
+  x1 Seed 5 Ep. 1750: RMS 177.7 mm, ep_q4 391.4 mm, ori_max 44.1 mrad, Abbruch 1
+  x1 Seed 5 Ep. 2000: RMS 111.1 mm, ep_q4 199.6 mm, ori_max 37.7 mrad, Abbruch 0
+  x1 Seed 5 Ep. 2250: RMS 40.4 mm, ep_q4 52.4 mm, ori_max 29.8 mrad, Abbruch 0
+  x1 Seed 5 Ep. 2500: RMS 17.3 mm, ep_q4 19.5 mm, ori_max 27.1 mrad, Abbruch 0
+  x1 Seed 5 Ep. 2750: RMS 27.7 mm, ep_q4 35.1 mm, ori_max 27.4 mrad, Abbruch 0
+  x1 Seed 5 Ep. 3000: RMS 19.5 mm, ep_q4 27.0 mm, ori_max 33.5 mrad, Abbruch 0
+  x1 Seed 6 Ep.  250: RMS 184.9 mm, ep_q4 NaN mm, ori_max 110.9 mrad, Abbruch 1
+  x1 Seed 6 Ep.  500: RMS 196.5 mm, ep_q4 NaN mm, ori_max 99.4 mrad, Abbruch 1
+  x1 Seed 6 Ep.  750: RMS 208.5 mm, ep_q4 NaN mm, ori_max 83.7 mrad, Abbruch 1
+  x1 Seed 6 Ep. 1000: RMS 181.6 mm, ep_q4 NaN mm, ori_max 77.4 mrad, Abbruch 1
+  x1 Seed 6 Ep. 1250: RMS 176.0 mm, ep_q4 NaN mm, ori_max 51.8 mrad, Abbruch 1
+  x1 Seed 6 Ep. 1500: RMS 188.0 mm, ep_q4 NaN mm, ori_max 43.4 mrad, Abbruch 1
+  x1 Seed 6 Ep. 1750: RMS 178.1 mm, ep_q4 NaN mm, ori_max 38.0 mrad, Abbruch 1
+  x1 Seed 6 Ep. 2000: RMS 197.4 mm, ep_q4 367.5 mm, ori_max 38.1 mrad, Abbruch 1
+  x1 Seed 6 Ep. 2250: RMS 151.5 mm, ep_q4 264.9 mm, ori_max 22.9 mrad, Abbruch 0
+  x1 Seed 6 Ep. 2500: RMS 134.0 mm, ep_q4 239.6 mm, ori_max 18.2 mrad, Abbruch 0
+  x1 Seed 6 Ep. 2750: RMS 78.8 mm, ep_q4 144.1 mm, ori_max 26.7 mrad, Abbruch 0
+  x1 Seed 6 Ep. 3000: RMS 21.5 mm, ep_q4 36.8 mm, ori_max 20.1 mrad, Abbruch 0
+  x1 Seed 7 Ep.  250: RMS 201.5 mm, ep_q4 NaN mm, ori_max 62.9 mrad, Abbruch 1
+  x1 Seed 7 Ep.  500: RMS 181.7 mm, ep_q4 NaN mm, ori_max 16.8 mrad, Abbruch 1
+  x1 Seed 7 Ep.  750: RMS 171.4 mm, ep_q4 NaN mm, ori_max 21.8 mrad, Abbruch 1
+  x1 Seed 7 Ep. 1000: RMS 159.7 mm, ep_q4 NaN mm, ori_max 19.0 mrad, Abbruch 1
+  x1 Seed 7 Ep. 1250: RMS 145.5 mm, ep_q4 NaN mm, ori_max 22.2 mrad, Abbruch 1
+  x1 Seed 7 Ep. 1500: RMS 127.0 mm, ep_q4 450.1 mm, ori_max 26.3 mrad, Abbruch 1
+  x1 Seed 7 Ep. 1750: RMS 126.9 mm, ep_q4 279.3 mm, ori_max 48.9 mrad, Abbruch 1
+  x1 Seed 7 Ep. 2000: RMS 117.8 mm, ep_q4 256.7 mm, ori_max 41.6 mrad, Abbruch 1
+  x1 Seed 7 Ep. 2250: RMS 128.2 mm, ep_q4 276.3 mm, ori_max 19.6 mrad, Abbruch 1
+  x1 Seed 7 Ep. 2500: RMS 149.8 mm, ep_q4 277.3 mm, ori_max 90.9 mrad, Abbruch 1
+  x1 Seed 7 Ep. 2750: RMS 63.8 mm, ep_q4 113.3 mm, ori_max 19.8 mrad, Abbruch 0
+  x1 Seed 7 Ep. 3000: RMS 96.5 mm, ep_q4 169.3 mm, ori_max 46.8 mrad, Abbruch 0
+  x1 Seed 8 Ep.  250: RMS 221.3 mm, ep_q4 NaN mm, ori_max 115.2 mrad, Abbruch 1
+  x1 Seed 8 Ep.  500: RMS 212.9 mm, ep_q4 NaN mm, ori_max 86.4 mrad, Abbruch 1
+  x1 Seed 8 Ep.  750: RMS 179.4 mm, ep_q4 NaN mm, ori_max 40.2 mrad, Abbruch 1
+  x1 Seed 8 Ep. 1000: RMS 169.4 mm, ep_q4 NaN mm, ori_max 37.2 mrad, Abbruch 1
+  x1 Seed 8 Ep. 1250: RMS 184.0 mm, ep_q4 NaN mm, ori_max 50.2 mrad, Abbruch 1
+  x1 Seed 8 Ep. 1500: RMS 157.5 mm, ep_q4 NaN mm, ori_max 16.5 mrad, Abbruch 1
+  x1 Seed 8 Ep. 1750: RMS 188.3 mm, ep_q4 367.6 mm, ori_max 56.1 mrad, Abbruch 1
+  x1 Seed 8 Ep. 2000: RMS 116.1 mm, ep_q4 208.5 mm, ori_max 78.9 mrad, Abbruch 0
+  x1 Seed 8 Ep. 2250: RMS 125.3 mm, ep_q4 209.5 mm, ori_max 124.4 mrad, Abbruch 1
+  x1 Seed 8 Ep. 2500: RMS 37.4 mm, ep_q4 60.3 mm, ori_max 33.3 mrad, Abbruch 0
+  x1 Seed 8 Ep. 2750: RMS 137.3 mm, ep_q4 276.2 mm, ori_max 114.2 mrad, Abbruch 1
+  x1 Seed 8 Ep. 3000: RMS 46.8 mm, ep_q4 78.8 mm, ori_max 25.9 mrad, Abbruch 0
+  x1 Seed 9 Ep.  250: RMS 257.6 mm, ep_q4 NaN mm, ori_max 61.6 mrad, Abbruch 1
+  x1 Seed 9 Ep.  500: RMS 195.8 mm, ep_q4 NaN mm, ori_max 64.6 mrad, Abbruch 1
+  x1 Seed 9 Ep.  750: RMS 198.7 mm, ep_q4 NaN mm, ori_max 39.6 mrad, Abbruch 1
+  x1 Seed 9 Ep. 1000: RMS 179.3 mm, ep_q4 NaN mm, ori_max 21.1 mrad, Abbruch 1
+  x1 Seed 9 Ep. 1250: RMS 169.2 mm, ep_q4 NaN mm, ori_max 20.7 mrad, Abbruch 1
+  x1 Seed 9 Ep. 1500: RMS 159.5 mm, ep_q4 NaN mm, ori_max 16.7 mrad, Abbruch 1
+  x1 Seed 9 Ep. 1750: RMS 106.5 mm, ep_q4 176.5 mm, ori_max 40.0 mrad, Abbruch 0
+  x1 Seed 9 Ep. 2000: RMS 65.4 mm, ep_q4 116.7 mm, ori_max 42.7 mrad, Abbruch 0
+  x1 Seed 9 Ep. 2250: RMS 66.0 mm, ep_q4 114.3 mm, ori_max 36.8 mrad, Abbruch 0
+  x1 Seed 9 Ep. 2500: RMS 15.0 mm, ep_q4 25.9 mm, ori_max 27.4 mrad, Abbruch 0
+  x1 Seed 9 Ep. 2750: RMS 13.1 mm, ep_q4 19.8 mm, ori_max 26.7 mrad, Abbruch 0
+  x1 Seed 9 Ep. 3000: RMS 9.0 mm, ep_q4 5.9 mm, ori_max 24.9 mrad, Abbruch 0
+x1 Seed 2: folgt 1, RMS 24.2 mm, ep_q4 schlechteste 39.9 mm, ori_max schlechteste 37.5 mrad, Abbrueche 0
+x1 Seed 3: folgt 1, RMS 13.4 mm, ep_q4 schlechteste 14.4 mm, ori_max schlechteste 30.0 mrad, Abbrueche 0
+x1 Seed 4: folgt 1, RMS 11.5 mm, ep_q4 schlechteste 13.9 mm, ori_max schlechteste 17.3 mrad, Abbrueche 0
+x1 Seed 5: folgt 1, RMS 21.7 mm, ep_q4 schlechteste 33.9 mm, ori_max schlechteste 36.2 mrad, Abbrueche 0
+x1 Seed 6: folgt 1, RMS 23.2 mm, ep_q4 schlechteste 41.5 mm, ori_max schlechteste 25.3 mrad, Abbrueche 0
+x1 Seed 7: folgt 0, RMS 79.9 mm, ep_q4 schlechteste 174.6 mm, ori_max schlechteste 46.8 mrad, Abbrueche 0
+x1 Seed 8: folgt 0, RMS 47.3 mm, ep_q4 schlechteste 91.3 mm, ori_max schlechteste 29.0 mrad, Abbrueche 0
+x1 Seed 9: folgt 1, RMS 12.6 mm, ep_q4 schlechteste 15.7 mm, ori_max schlechteste 26.1 mrad, Abbrueche 0
+x1 Seed 2: folgt 1, RMS 14.9 mm, ep_q4 schlechteste 21.0 mm, ori_max schlechteste 21.2 mrad, Abbrueche 0
+x1 Seed 3: folgt 1, RMS 13.4 mm, ep_q4 schlechteste 14.4 mm, ori_max schlechteste 30.0 mrad, Abbrueche 0
+x1 Seed 4: folgt 1, RMS 13.2 mm, ep_q4 schlechteste 14.8 mm, ori_max schlechteste 21.4 mrad, Abbrueche 0
+x1 Seed 5: folgt 1, RMS 18.5 mm, ep_q4 schlechteste 28.8 mm, ori_max schlechteste 28.2 mrad, Abbrueche 0
+x1 Seed 6: folgt 1, RMS 23.2 mm, ep_q4 schlechteste 41.5 mm, ori_max schlechteste 25.3 mrad, Abbrueche 0
+x1 Seed 7: folgt 0, RMS 62.0 mm, ep_q4 schlechteste 124.9 mm, ori_max schlechteste 24.5 mrad, Abbrueche 0
+x1 Seed 8: folgt 0, RMS 40.1 mm, ep_q4 schlechteste 89.3 mm, ori_max schlechteste 38.0 mrad, Abbrueche 0
+x1 Seed 9: folgt 1, RMS 12.6 mm, ep_q4 schlechteste 15.7 mm, ori_max schlechteste 26.1 mrad, Abbrueche 0
+Go/No-Go x1: 12 von 16 Seeds folgen -> Go
+=== X5.3 fertig nach 8.1 h ===
