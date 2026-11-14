@@ -61,7 +61,8 @@ function res = ext_kinsim(policy, varargin)
 %   res.metrics  wie desktop_run_episode: mse_ee, rms_ee, max_ee, ep_q4, ori_mean, ori_max, w_mean, w_max, ret,
 %                early_stop, t_end, n_steps, stop_reason
 %   res.ts       t_ee, ep, ori, w (Solvertakt), t_agent, obs, a_raw, a_scaled, reward (Agententakt), q, dq,
-%                q_cmd (Solvertakt)
+%                q_cmd, pb (Basis-Schwerpunkt = Ursprung von base_link in Welt), quat (Basislage [w x y z],
+%                Basis -> Welt), ref (Sollbahn) (Solvertakt, pb, quat, ref seit 14.11. fuer Bilder und Videos)
 %   res.info     Laufzeit
 
 p = inputParser;
@@ -175,6 +176,7 @@ epS = nan(nS + 1, 3); oriS = nan(nS + 1, 1); wS = nan(nS + 1, 1);
 keep = o.keepTs;
 if keep
     qS = nan(nS + 1, 7); dqS = nan(nS + 1, 7); qcS = nan(nS + 1, 7);
+    pbS = nan(nS + 1, 3); quatS = nan(nS + 1, 4);   % Basislage fuer Bilder und Videos (14.11.)
 end
 obsA = nan(N + 1, nObs); aRaw = nan(N + 1, 7); aScl = nan(N + 1, 7); rew = nan(N + 1, 1); cst = nan(N + 1, 1);
 
@@ -324,7 +326,8 @@ if keep
     ka = 1:kEnd + 1;
     res.ts = struct('t_ee', tt, 'ep', epS(idx, :), 'ori', oriS(idx), 'w', wS(idx), 'q', qS(idx, :), ...
         'dq', dqS(idx, :), 'q_cmd', qcS(idx, :), 't_agent', (ka(:) - 1) * o.Ts_agent, 'obs', obsA(ka, :), ...
-        'a_raw', aRaw(ka, :), 'a_scaled', aScl(ka, :), 'reward', rew(ka), 'cost', cst(ka));
+        'a_raw', aRaw(ka, :), 'a_scaled', aScl(ka, :), 'reward', rew(ka), 'cost', cst(ka), ...
+        'pb', pbS(idx, :), 'quat', quatS(idx, :), 'ref', traj(idx, :));
 end
 res.info = struct('wallTime', toc(tWall));
 
@@ -346,6 +349,7 @@ res.info = struct('wallTime', toc(tWall));
         wS(j) = norm(tw(4:6));
         if keep
             qS(j, :) = q.'; dqS(j, :) = dq.'; qcS(j, :) = qc.';
+            pbS(j, :) = pb.'; quatS(j, :) = quat.';
         end
     end
 end
