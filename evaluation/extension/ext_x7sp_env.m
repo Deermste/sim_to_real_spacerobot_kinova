@@ -25,6 +25,10 @@ function [env, info] = ext_x7sp_env(pool, varargin)
 %       belohnte schnelles Fahren gegen die Referenz.
 %     gate false (Standard) oder true: Korrektur mal g(t), g = 1 bis Tm, linear auf 0 bis Tm + 1 s, danach 0.
 %       Das Halten macht dann der Regler allein. Die Strafe w_res |g Delta|^2 / 6 gilt fuer die wirksame Korrektur.
+%   Dritte Runde (X7.6, 15.11.2026):
+%     reward 'sp': -w_ori ori / 0,087 rad + 1 im Band - w_res |Delta|^2 / 6, dazu -d / 0,05 m erst ab t >= Tm.
+%       Waehrend der Fahrt kein Term fuer die Bahnfolge (die macht der Regler), naeher an J_sp (Drehung und
+%       Einschwingzeit). w_ori Standard 1.
 
 p = inputParser;
 p.addParameter('beta', 1);
@@ -37,6 +41,7 @@ p.addParameter('scenario', {});
 p.addParameter('sequential', false);
 p.addParameter('reward', 'goal');
 p.addParameter('gate', false);
+p.addParameter('w_ori', 1);
 p.parse(varargin{:});
 o = p.Results;
 [C, Knom, qHw] = ext_x7sp_setup();
@@ -116,7 +121,10 @@ info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o);
         if ok, L.hold = L.hold + 1; else, L.hold = 0; end
         if L.hold >= 20 && isnan(L.tSet), L.tSet = (L.S.k - 20) * C.Ts; end
         [~, isd] = ext_reward(ob(1:3), ob(4:6), zeros(7, 1), zeros(7, 1), ob(10:12), ob(27:29), 1, 0);
-        if strcmp(o.reward, 'ref')
+        if strcmp(o.reward, 'sp')
+            r = -o.w_ori * norm(ob(27:29)) / 0.087 + double(ok) - o.w_res * sum(dl .^ 2) / 6;
+            if L.S.k * C.Ts >= L.Tm, r = r - d / 0.05; end
+        elseif strcmp(o.reward, 'ref')
             dr = norm(y.p - L.S.traj(L.S.k * L.S.m + 1, :).');
             r = -dr / 0.01 - norm(ob(27:29)) / 0.087 + double(ok) - o.w_res * sum(dl .^ 2) / 6;
         else

@@ -9,7 +9,8 @@ function out = ext_x7sp_train(variant, seed, varargin)
 %   des Mittelwerts startet mit null. Nach jedem Block ein Zwischenstand und 16 feste Trainingspaare nominal in
 %   ext_kinsim (Erfolg, mittlere Einschwingzeit, mittlere Basisdrehung).
 %   Optionen: nEpisodes 3000, beta 1, eps_v 0,02, eps_w 0,02, w_res 0,1, actorLR 3e-4, criticLR 5e-4,
-%   ckptEvery 250, tag '', name '', reward 'goal' oder 'ref', gate false (ext_x7sp_env, X7.4).
+%   ckptEvery 250, tag '', name '', reward 'goal', 'ref' oder 'sp', gate false, w_ori 1
+%   (ext_x7sp_env, X7.4, X7.6).
 %   Ergebnis: SavedAgents/MotionProfile/X7/<Name>.mat, <Name>_ckpt/, data/simulation/extension/<Name>_*.csv.
 
 p = inputParser;
@@ -25,6 +26,7 @@ p.addParameter('tag', '');
 p.addParameter('name', '');
 p.addParameter('reward', 'goal');
 p.addParameter('gate', false);
+p.addParameter('w_ori', 1);
 p.parse(varargin{:});
 o = p.Results;
 assert(ismember(variant, {'res', 'resdr'}), 'ext_x7sp_train:variant', 'variant ist res oder resdr');
@@ -39,7 +41,7 @@ rsC = RandStream('mt19937ar', 'Seed', 4242);
 chk = pool(randperm(rsC, numel(pool), 16));
 cfg = struct('variant', variant, 'seed', seed, 'dr', dr, 'nEpisodes', o.nEpisodes, 'beta', o.beta, ...
     'eps_v', o.eps_v, 'eps_w', o.eps_w, 'w_res', o.w_res, 'hidden', 128, 'ckptEvery', o.ckptEvery, ...
-    'trainFile', dT(end).name, 'reward', o.reward, 'gate', o.gate);
+    'trainFile', dT(end).name, 'reward', o.reward, 'gate', o.gate, 'w_ori', o.w_ori);
 cfg.opts = struct('ExperienceHorizon', 1024, 'MiniBatchSize', 128, 'NumEpoch', 10, 'ClipFactor', 0.2, ...
     'DiscountFactor', 0.99, 'GAEFactor', 0.95, 'EntropyLossWeight', 1e-3, 'ActorLR', o.actorLR, ...
     'CriticLR', o.criticLR);
@@ -56,7 +58,7 @@ end
 ckDir = fullfile(agentDir, [name '_ckpt']);
 if ~isfolder(ckDir), mkdir(ckDir); end
 eArgs = {'beta', o.beta, 'eps_v', o.eps_v, 'eps_w', o.eps_w, 'w_res', o.w_res, 'dr', dr, 'reward', o.reward, ...
-         'gate', o.gate};
+         'gate', o.gate, 'w_ori', o.w_ori};
 [env0, info0] = ext_x7sp_env(pool, eArgs{:}, 'seed', seed);
 rng(seed, 'twister');
 agent = rlPPOAgent(info0.obsInfo, info0.actInfo, rlAgentInitializationOptions('NumHiddenUnit', cfg.hidden));

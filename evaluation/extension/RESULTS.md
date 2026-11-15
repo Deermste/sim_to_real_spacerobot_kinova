@@ -2708,6 +2708,22 @@ Datenquelle: `X7sp_E_dev_20261115_160418.csv`, `X7sp_E_S{4,5,6}_seed0_{train,ckp
 
 Paper: nein in dieser Form.
 
+### X7.6 Set-Point: dritte Runde, Regeln (festgelegt 15.11.2026 vor dem Lauf)
+
+Auftrag aus X7.1 gilt weiter (autonom verbessern, bis präsentierbar). Aus X7.4 und X7.5: Die Policy lernt,
+was der Reward belohnt, und beide Rewards lagen neben J_sp.
+
+**Reward 'sp'** (`ext_x7sp_env`): −w_ori · ori / 87 mrad + 1 im Band − 0,1 |Δ|² / 6, dazu −d / 5 cm erst ab
+t ≥ Tm. Während der Fahrt kein Term für die Bahnfolge, die macht der Regler. Grobe Abschätzung: 10 mrad weniger
+Drehung über 200 Schritte bringen bei w_ori 1 etwa 23, eine Sekunde früher im Band etwa 20. J_sp gewichtet
+10 mrad mit 0,16 und eine Sekunde mit 0,21. Die Gewichte liegen also in derselben Größenordnung.
+
+**Ablauf** (`ext_x7sp_round3`, alle mit gate, β 1, w_res 0,1, Seed 0, 3000 Episoden):
+- S7 resdr w_ori 1, S8 resdr w_ori 3, S9 res w_ori 1.
+- Kandidaten und Auswahl auf `ext_x7sp_dev` wie X7.4 (J kleiner als bei R nötig, sonst kein Hauptlauf).
+- Hauptlauf Seeds 1 bis 10, Schlussauswertung `ext_x7sp_eval` (Label F) mit dem Kriterium aus X7.2.
+- Bleibt auch diese Runde ohne Kandidaten vor R, wird X7 Set-Point als negatives Ergebnis abgeschlossen.
+
 ### X7.5 Set-Point: erste Runde ✅ 15.11.2026 (nicht präsentierbar)
 
 **Lauf** (`ext_x7_night` B und D):
