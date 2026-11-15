@@ -8,11 +8,13 @@ function [A, E, robFile] = ext_x7_eval(list, varargin)
 %      und je Teilnehmer (Mittel und schlechteste Episode, folgt wie X0.1).
 %   2  Robustheit (Standard an): ext_x2_robust mit den 26 Szenarien, nur Regler und Residual-Agenten
 %      (keine RL-Agenten, deren Werte liegen aus X2.3 und X2.4 vor).
+%   Option 'controllers' (Standard leer): weitere Regler fuer Teil 2 wie in ext_x2_robust (Name, Optionen).
 %   Ergebnis: data/simulation/extension/X7_<label>_{agents,episodes}_<Zeit>.csv und X7_<label>_robust_<Zeit>_*.
 
 p = inputParser;
 p.addParameter('robust', true);
 p.addParameter('label', 'eval');
+p.addParameter('controllers', {});
 p.parse(varargin{:});
 o = p.Results;
 setup_project;
@@ -51,7 +53,7 @@ writetable(A, fullfile(dd, sprintf('X7_%s_agents_%s.csv', o.label, stamp)));
 writetable(E, fullfile(dd, sprintf('X7_%s_episodes_%s.csv', o.label, stamp)));
 robFile = '';
 if o.robust
-    [~, ~, robFile] = ext_x2_robust('agents', 'none', 'useTuned', false, 'controllers', {}, ...
+    [~, ~, robFile] = ext_x2_robust('agents', 'none', 'useTuned', false, 'controllers', o.controllers, ...
                                     'residuals', list, 'prefix', sprintf('X7_%s_robust_', o.label));
 end
 end

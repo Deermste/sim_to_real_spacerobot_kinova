@@ -2533,6 +2533,115 @@ X2.3).
    Szenarien p < 0,05, und in keinem Szenario mehr als 2 Prozentpunkte weniger Erfolg.
 3. Auswahl der Variante nur auf dem Trainingssatz (Prüfpaare und DR-Ziehungen), nicht auf den 100 Testpaaren.
 
+### X7.3 Bahn: Ergebnis der Nachtkette 🔄 15.11.2026 (Bestätigung mit neuen Seeds läuft)
+
+**Lauf** (`ext_x7_night`, 15.11. 01:42 bis etwa 12 Uhr, Log `X7_night_matlab.log`):
+- A: TJ1 bis TJ3 (Reward J) je 3000 Episoden mit Seed 0, dazu der Pilot (Reward r4, nominal trainiert).
+  Auswahl auf `ext_x7_dev` (40 DR-Ziehungen):
+
+| Kandidat | RMS [mm] | ori_max [mrad] | J |
+|---|---|---|---|
+| R (Rβ 21,5) | 11,3 | 19,1 | 2,73 |
+| TJ1 (resdr, w_res 0,1) letzter / Ep. 1500 | 8,2 / 8,3 | 25,3 / 24,0 | 2,86 / 2,77 |
+| TJ2 (resdr, w_res 0,5) letzter / Ep. 500 | 9,2 / 8,9 | 21,9 / 21,9 | 2,71 / 2,67 |
+| TJ3 (res, w_res 0,1) letzter / Ep. 2000 | 6,9 / 6,8 | 25,3 / 25,7 | 2,72 / 2,73 |
+| Pilot r4 (res) letzter | 8,7 | 21,9 | **2,65** |
+
+  Alle folgen in allen 40 Ziehungen. Jede Variante senkt den Bahnfehler und dreht die Basis mehr. Gewählt
+  wurde der Pilot-Aufbau (res, Reward r4, w_res 0,1, letzter Agent). Der Reward J hat nicht geholfen.
+- C: dieser Aufbau mit Seeds 1 bis 10 (je 13,7 min), danach `ext_x7_eval` (X0.1 und 26 Szenarien).
+
+**X0.1** (21 Episoden, kinematisch):
+
+| | folgt | RMS nominal [mm] | ori_max nominal [mrad] | RMS Mittel 21 [mm] | ori_max Mittel 21 [mrad] |
+|---|---|---|---|---|---|
+| R (Rβ 21,5, Kp 5) | 21/21 | 8,99 | 12,98 | 9,88 | 14,81 |
+| Res, Median 10 Seeds (Bereich) | 21/21 bei allen | 6,67 (5,76–7,29) | 16,1 (13,5–19,3) | 7,47 | 17,4 |
+
+**Vorab festgelegtes Kriterium (X7.1):**
+
+| Kriterium | Ergebnis | erfüllt |
+|---|---|---|
+| 1. Nominal: ≥ 9/10 Seeds folgen, RMS und ori_max ≤ +10 % | 10/10 folgen, RMS −26 %, ori_max +24 % (nur 2 Seeds ≤ +10 %) | nein |
+| 2. 26 Szenarien gegen R: J kleiner in ≥ 2/3, Wilcoxon p < 0,05, kein Verlust der Bahn | 22/26, p 0,006, kein Verlust | ja |
+| 3. Gegen reines RL (X2.4 DR-voll) | J Median 2,09 gegen 4,84, besser in 26/26 | ja |
+
+- Gegen R ist der RMS in 26/26 Szenarien kleiner, ori_max aber nur in 3/26. Die Policy dominiert R also nur
+  in 3 Szenarien. Das ist die Verschiebung entlang der Front, die X7.1 ausdrücklich nicht als Verbesserung
+  zählt. Das Kriterium ist damit **nicht erfüllt**.
+- X4.6 V1 hat keine Auswertung über die 26 Szenarien, Kriterium 3 stützt sich nur auf X2.4. Auch gegen die
+  r4-Agenten ohne DR (Gruppe rl, J 5,46) und DR-M (5,70) ist die Policy in 26/26 Szenarien besser.
+
+**Nachtrag, nicht vorab festgelegt** (`ext_x7_posthoc_front`, Ergebnis
+`X2_sweep_20261115_104006.csv`, `X7_C_posthoc_robust_20261115_104248_*`):
+- Der Median der Policy (6,67 mm, 16,1 mrad) liegt fast genau auf dem Frontpunkt Kp 10, β 21,5 der Front F0
+  (6,64 mm, 16,2 mrad). Die Frage ist also, ob die Policy besser ist als ein klassischer Regler am selben Ort.
+- Dichtere Front: `ext_x2_sweep` mit Kp 5, 6, 7, 8, 10, 12, 15, 20 und β = logspace(0, 2, 25), volle Kette mit
+  Inversion, J6-Seite −1 (208 Läufe). Faktor wie X2.2 gegen diese Front plus F0: Median 0,91, 7 von 10 Seeds
+  unter 1 (0,73 bis 1,31). Gegen F0 allein: Median 0,85. Kein reiner RL-Agent lag bisher unter 1,37.
+- Klassische Regler am Ort der Policy, gewählt nur nach dem nominalen Punkt: C2 (Kp 12, β 26,1, 6,64 mm,
+  16,2 mrad, kleinste Drehung bei RMS ≤ 6,67 mm) und C1 (Kp 20, β 46,4, 6,98 mm, 15,9 mrad, kleinster RMS bei
+  ori ≤ 16,06 mrad), dazu Kp 10, β 21,5 und die auf DR-voll eingestellten Regler aus X2.4. Alle 26 Szenarien:
+
+| Vergleich (Res, Median 10 Seeds) | J nominal Regler | J besser | Wilcoxon p | Median J Res / Regler | dominiert |
+|---|---|---|---|---|---|
+| C2 (Kp 12, β 26,1) | 1,99 | 20/26 | 0,0009 | 2,09 / 2,18 | 14/26 |
+| C1 (Kp 20, β 46,4) | 2,00 | 20/26 | 0,0007 | 2,09 / 2,20 | 10/26 |
+| Kp 10, β 21,5 | 1,99 | 20/26 | 0,0014 | 2,09 / 2,18 | 12/26 |
+| Rβ 21,5 (R) | 2,00 | 22/26 | 0,006 | 2,09 / 2,12 | 3/26 |
+| Rt_acc / Rt_mid / Rt_calm (X2.4) | 2,06 / 2,04 / 2,33 | 20 / 19 / 23 | ≤ 0,031 | 2,09 / 2,14–2,45 | 1 |
+
+- Gegen C2 je Szenario (J Res gegen C2): am meisten gewinnt die Policy bei Drift −2 mrad/s (−16 %), Masse
+  ×0,25 (−15 %), Montage ±5 cm (−12 bis −13 %), Masse ×0,5 (−10 %) und Trägheit ×0,5 (−8 %). Sie verliert
+  bei schwerer Basis (Masse ×2 +7 %, Trägheit ×2 +4 %, Masse ×1,5 +3 %), Verstärkung 1,1 (+5 %), dreifachem
+  Rauschen (+7 %) und festem EE-Messfehler (+3 %). Nominal −2,4 %, Median über die Szenarien −4,9 %.
+- Die Policy wurde nominal trainiert (ohne DR). Der Vorteil unter Modellfehlern kommt also nicht aus der
+  Randomisierung. Eine mögliche Deutung: Die Policy nutzt die Drehrate der Basis als Rückführung, die der
+  klassische Regler ohne kOri nicht hat. Nicht geprüft.
+
+**Deutung (vorläufig):**
+- Residual RL schiebt den Regler nominal ein Stück vor die modellbasierte Front (Faktor 0,91) und ist am
+  selben Frontpunkt unter den meisten Störungen etwas besser als der klassische Regler (etwa 5 % in J).
+- Das vorab festgelegte Kriterium ist nicht erfüllt, weil es gegen R mit Kp 5 formuliert war. Der Vergleich mit
+  C2 ist erst nach dem Blick auf die Testszenarien entstanden. Er braucht deshalb eine Bestätigung mit neuen
+  Seeds, bevor er ins Paper kann.
+
+**Bestätigung (festgelegt 15.11.2026 vor dem Lauf, `ext_x7_round2`, Teil T):**
+- Derselbe Aufbau (res, Reward r4, w_res 0,1, 3000 Episoden, letzter Agent) mit neuen Seeds 11 bis 20.
+- `ext_x7_eval` mit C2 als zusätzlichem Regler (X0.1 und 26 Szenarien).
+- Bestätigt, wenn (Median über die 10 neuen Seeds je Szenario): J kleiner als bei C2 in mindestens 18 von 26
+  Szenarien, Wilcoxon p < 0,05 und kein Szenario, in dem C2 folgt und die Policy nicht. Zusätzlich berichtet:
+  Faktor gegen die dichte Front, Zahl der dominierten Szenarien.
+- Ist das erfüllt, gilt X7 Bahn als präsentierbar in der Form „Residual RL verbessert den Regler am selben
+  Frontpunkt leicht, vor allem bei leichterer Basis, Montagefehler und Drift". Sonst bleibt es ein Befund aus
+  einer einzelnen Seed-Gruppe.
+
+Datenquelle: `X7_A_dev_20261115_023049.csv`, `X7_C_list_20261115_060343.mat`,
+`X7_C_{agents,episodes}_20261115_060632.csv`, `X7_C_robust_20261115_061011_*`, Agenten
+`SavedAgents/MotionProfile/X7/X7_C_P_r4_seed*.mat`, reines RL aus `X2_robust_20261111_112342_summary.csv`, Front
+`X2_2_front_20261113_083657.csv` und `X2_sweep_20261115_104006.csv`.
+
+Paper: offen (E19).
+
+### X7.4 Set-Point: zweite Runde, Regeln (festgelegt 15.11.2026 vor dem Lauf)
+
+Die erste Runde (B, D) ist in X7.5 beschrieben. Auf dem Entwicklungssatz war dort keine Variante besser als
+Rβ 1 (J 2,32 gegen 2,00), und auf den 16 Prüfpaaren fiel der Erfolg im Training von 16/16 auf 4 bis 7/16.
+Vermutete Ursache: Der Reward −d / 5 cm misst den Abstand zum Endziel schon während der Fahrt und belohnt
+damit Fahren vor der Referenz. Das kostet Basisdrehung und stört das Einschwingen.
+
+**Änderungen** (`ext_x7sp_env`, Standardwerte unverändert):
+- Reward 'ref': −d_ref / 1 cm statt −d / 5 cm, d_ref = Abstand des wahren Werkzeugpunkts zur
+  Minimum-Jerk-Referenz. Nach Tm ist das der Abstand zum Ziel.
+- gate: Die Korrektur wird mit g(t) multipliziert, g = 1 bis Tm, linear auf 0 bis Tm + 1 s
+  (`ext_x7sp_gate`). Das Halten macht dann der Regler allein.
+
+**Ablauf** (`ext_x7_round2`, Teil S, nach Teil T):
+- S4 resdr ref gate, S5 res ref gate, S6 resdr ref ohne gate, je Seed 0, 3000 Episoden, w_res 0,1, β 1.
+- Kandidaten und Auswahl auf `ext_x7sp_dev` wie B. Neu: J muss kleiner sein als bei R. Erfüllt das kein
+  Kandidat, entfällt der Hauptlauf und das wird als Ergebnis berichtet.
+- Hauptlauf mit Seeds 1 bis 10, Schlussauswertung `ext_x7sp_eval` (Label E) mit dem Kriterium aus X7.2.
+
 ## Gliederung (für Phase P)
 
 Wird nach X1 und X2 vorgeschlagen.

@@ -19,6 +19,12 @@ function [env, info] = ext_x7sp_env(pool, varargin)
 %   DR-voll wie ext_x7_env, Verzoegerung in Schritten zu 50 ms (0 bis 2).
 %   Optionen: beta 1 (Rbeta 1, X7.2), eps_v 0,02 m/s, eps_w 0,02 rad/s, w_res 0,1, dr 'none' oder 'full', seed 0,
 %   scenario (Tests), sequential false.
+%   Zweite Runde (X7.4, 15.11.2026):
+%     reward 'goal' (Standard, wie oben) oder 'ref': -d_ref / 0,01 m statt -d / 0,05 m, d_ref = |p - pref(t)|
+%       (wahrer Werkzeugpunkt gegen die Minimum-Jerk-Referenz). Nach Tm ist d_ref = d. Der Abstand zum Endziel
+%       belohnte schnelles Fahren gegen die Referenz.
+%     gate false (Standard) oder true: Korrektur mal g(t), g = 1 bis Tm, linear auf 0 bis Tm + 1 s, danach 0.
+%       Das Halten macht dann der Regler allein. Die Strafe w_res |g Delta|^2 / 6 gilt fuer die wirksame Korrektur.
 
 p = inputParser;
 p.addParameter('beta', 1);
@@ -29,6 +35,8 @@ p.addParameter('dr', 'none');
 p.addParameter('seed', 0);
 p.addParameter('scenario', {});
 p.addParameter('sequential', false);
+p.addParameter('reward', 'goal');
+p.addParameter('gate', false);
 p.parse(varargin{:});
 o = p.Results;
 [C, Knom, qHw] = ext_x7sp_setup();
@@ -95,6 +103,7 @@ info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o);
     function [obs, r, done, L] = stepFcn(act, L)
         dl = min(max(double(act(:)), -1), 1);
         R = L.R;
+        if o.gate, dl = ext_x7sp_gate(R.t, L.Tm) * dl; end
         R.db = o.eps_v * dl(1:3);
         R.dw = o.eps_w * dl(4:6);
         u = L.ctrl(L.ob, R);
@@ -107,7 +116,12 @@ info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o);
         if ok, L.hold = L.hold + 1; else, L.hold = 0; end
         if L.hold >= 20 && isnan(L.tSet), L.tSet = (L.S.k - 20) * C.Ts; end
         [~, isd] = ext_reward(ob(1:3), ob(4:6), zeros(7, 1), zeros(7, 1), ob(10:12), ob(27:29), 1, 0);
-        r = -d / 0.05 - norm(ob(27:29)) / 0.087 + double(ok) - o.w_res * sum(dl .^ 2) / 6;
+        if strcmp(o.reward, 'ref')
+            dr = norm(y.p - L.S.traj(L.S.k * L.S.m + 1, :).');
+            r = -dr / 0.01 - norm(ob(27:29)) / 0.087 + double(ok) - o.w_res * sum(dl .^ 2) / 6;
+        else
+            r = -d / 0.05 - norm(ob(27:29)) / 0.087 + double(ok) - o.w_res * sum(dl .^ 2) / 6;
+        end
         if isd, r = -50; end
         done = isd || L.S.k >= L.S.N;
         if done

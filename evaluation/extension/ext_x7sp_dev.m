@@ -1,6 +1,6 @@
 function T = ext_x7sp_dev(list, varargin)
 %EXT_X7SP_DEV  Entwicklungssatz fuer X7-SP (15.11.2026): Auswahl ohne die Testpaare.
-%   T = ext_x7sp_dev(list)        list: struct mit file, label, beta, eps_v, eps_w (leer: nur Rbeta 1)
+%   T = ext_x7sp_dev(list)        list: struct mit file, label, beta, eps_v, eps_w, optional gate (leer: nur Rbeta 1)
 %
 %   n = 48 Episoden aus der DR-voll-Verteilung von ext_x7sp_env auf dem Trainingssatz (X6_train), eigener Seed
 %   777777. Jeder Teilnehmer faehrt dieselben Ziehungen (Paar und Stoerung): R (Rbeta 1, Korrektur null) und jede
@@ -17,15 +17,15 @@ setup_project;
 dd = sk_path('data', 'simulation', 'extension');
 dT = dir(fullfile(dd, 'X6_train_*.mat'));
 Lt = load(fullfile(dT(end).folder, dT(end).name), 'P');
-subj = struct('label', {'R'}, 'pol', {@(ob) zeros(6, 1)}, 'beta', {1}, 'eps_v', {0.02}, 'eps_w', {0.02});
+subj = struct('label', {'R'}, 'pol', {@(ob) zeros(6, 1)}, 'beta', {1}, 'eps_v', {0.02}, 'eps_w', {0.02}, 'gate', false);
 for k = 1:numel(list)
     subj(end + 1) = struct('label', list(k).label, 'pol', ext_policy(list(k).file), 'beta', list(k).beta, ...
-                           'eps_v', list(k).eps_v, 'eps_w', list(k).eps_w); %#ok<AGROW>
+                           'eps_v', list(k).eps_v, 'eps_w', list(k).eps_w, 'gate', gateOf(list(k))); %#ok<AGROW>
 end
 M = nan(numel(subj), o.n, 3);
 for j = 1:numel(subj)
     env = ext_x7sp_env(Lt.P, 'dr', 'full', 'seed', o.seed, 'beta', subj(j).beta, 'eps_v', subj(j).eps_v, ...
-                       'eps_w', subj(j).eps_w);
+                       'eps_w', subj(j).eps_w, 'gate', subj(j).gate);
     for e = 1:o.n
         ob = reset(env); done = false;
         while ~done
@@ -44,4 +44,8 @@ for j = 1:numel(subj)
         'ori_mean', mean(r(:, 3)), 'J', mean(r(:, 3)) / oR + mean(r(:, 2)) / tR); %#ok<AGROW>
 end
 T = struct2table([rows{:}]);
+end
+
+function g = gateOf(c)
+g = isfield(c, 'gate') && c.gate;
 end

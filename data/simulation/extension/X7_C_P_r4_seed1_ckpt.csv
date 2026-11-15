@@ -1,0 +1,13 @@
+episodes,nom_rms_ee,nom_ep_q4,nom_ori_max,nom_stop,delta_mean,reward_mean,file
+250,0.00751569693674454,0.0078254434487882,0.0152851172815966,0,0.371949278865047,2510.63750886136,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed1_ckpt\ep00250.mat
+500,0.008297298467636,0.00750940643000574,0.0162413712726586,0,0.723802600023052,2636.53769361776,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed1_ckpt\ep00500.mat
+750,0.00827695046908388,0.0065247823913215,0.0169572878679565,0,0.915813807843559,2643.75608280647,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed1_ckpt\ep00750.mat
+1000,0.00874702401665498,0.006925655393311,0.0165095773649078,0,0.975708612230224,2636.91676857602,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed1_ckpt\ep01000.mat
+1250,0.0102280465474754,0.00677020154187811,0.0185452393413961,0,1.01604920200511,2619.61626218243,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed1_ckpt\ep01250.mat
+1500,0.0113835724108424,0.00846349256649667,0.017050962713354,0,1.09751120508549,2602.14341782679,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed1_ckpt\ep01500.mat
+1750,0.0116777862542061,0.0101271621843574,0.0161752181291411,0,1.05429008712405,2602.10460907089,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed1_ckpt\ep01750.mat
+2000,0.0120709036144377,0.0107325664118998,0.0167307584627695,0,1.07917250843202,2582.39094168808,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed1_ckpt\ep02000.mat
+2250,0.007686731923449,0.00519538221591829,0.0219242318275921,0,0.926261834835608,2634.28914982303,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed1_ckpt\ep02250.mat
+2500,0.00737182084270483,0.00673484582475679,0.0157866459500402,0,0.812855675298141,2652.64091871302,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed1_ckpt\ep02500.mat
+2750,0.0081521774353889,0.00810909908641568,0.0170697867270291,0,0.80104088505779,2658.66711812517,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed1_ckpt\ep02750.mat
+3000,0.00711802961161999,0.00594031123284742,0.0179444904144082,0,0.794398619530744,2666.47789532776,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed1_ckpt\ep03000.mat
