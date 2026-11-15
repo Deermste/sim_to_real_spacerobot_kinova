@@ -13,7 +13,7 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 - Jeder Eintrag endet mit „Paper:“ und dem Ziel (Abschnitt, Tabelle, Abbildung) sowie „offen“ oder „übertragen“.
 - Kernaussagen nach jedem Eintrag aktualisieren.
 
-## Kernaussagen (Stand 14.11.2026)
+## Kernaussagen (Stand 15.11.2026)
 
 | # | Aussage | Beleg | Sicherheit |
 |---|---|---|---|
@@ -29,6 +29,7 @@ geschrieben. Wer nur den Stand braucht, liest „Kernaussagen“. Wer eine Zahl 
 | K10 | Weder richtige Beobachtungsgrenzen noch mehr Information (Zustand der Befehlskette, Vorschau der Bahn) noch eine schnellere Kette (Filter 0,85 oder Rate Limiter 2 statt 0,5 rad/s²) machen die Agenten genauer (RMS 12 bis 13 mm in allen Varianten, Faktor gegen die alte Front 2,25 bis 2,69). Die schnellere Kette erhöht nur den Befehlsruck (4- bis 9-fach). Den Regler dagegen bremst die Kette über den Rate Limiter: mit 2 rad/s² 1,4 statt 5,7 mm, der Faktor gegen die eigene Front steigt dann auf 9,5. Die Genauigkeit der Agenten setzt in diesem Aufbau das Lernverfahren, nicht die Schnittstelle. Die Agenten mit dem kleinsten Abstand nutzen den negativen Zweig von J6 | X4.6 (V1 bis V4) | 5 Seeds je Variante, aufbauend, nur Simulation. Nur große Effekte nachweisbar (kleinstes p nach Holm 0,024). V4 nachträglich, gleiche Hyperparameter wie V1 |
 
 | K11 | Auf der gekippten 3D-Bahn mit allen sieben Gelenken lernen die Agenten verlässlich (r4: 9 von 10 beste Zwischenstände folgen, 11,8 mm RMS, 17,8 mrad schlechteste Drehung im Median). Der Abstand zur Front ist größer als in der Ebene (Faktor 4,1 statt 2 bis 3), weil der Regler den Nullraum nutzt. Ein Budget von 0,03 rad ist in 3D locker und macht die Agenten nicht ruhiger, sondern lässt mehr Drehung zu als r4 (7 von 7 Seed-Paaren, Median +7,7 mrad) | X5.2b, X5.3 | 10 Seeds je Variante, 21 Episoden je Agent, nur Simulation. Bester Zwischenstand nominal ausgewählt, letzte Agenten schlechter (r4 7 von 10 folgen). Nur ein Budget und eine Bahn |
+| K12 | Residual RL auf dem modellbasierten Regler (Korrektur der Sollwerte) liegt nominal etwa auf der klassischen Front (Faktor 0,91 und 0,93 in zwei Seed-Gruppen) und senkt J gegen einen klassischen Regler am selben Frontpunkt in 21 von 26 Störszenarien, im Median um etwa 5 % (Gewinn bei leichter Basis, Montagefehler und Drift, Verlust bei schwerer Basis). Beim Set-Point brachte RL in zwei Runden keine Verbesserung | X7.3, X7.4, X7.5 | 2 × 10 Seeds, Bestätigung vorab festgelegt, Vergleichsregler nachträglich gewählt, nur kinematisch, ebene Bahn |
 X0.1 (Auswerteprotokoll) steht und reproduziert D17. Mit ±2° Startstörung folgen 19 von 20 D16/D17-Agenten in
 allen 21 Episoden der Bahn, der Ausreißer ist ein ruhiger Agent. X0.2 (kinematischer Simulator) trifft
 `SK_desktop` im geschlossenen Kreis auf ≤ 0,45 mm und ≤ 0,34 mrad, meist auf 1e-6, und ist etwa zwölfmal schneller.
@@ -2533,7 +2534,7 @@ X2.3).
    Szenarien p < 0,05, und in keinem Szenario mehr als 2 Prozentpunkte weniger Erfolg.
 3. Auswahl der Variante nur auf dem Trainingssatz (Prüfpaare und DR-Ziehungen), nicht auf den 100 Testpaaren.
 
-### X7.3 Bahn: Ergebnis der Nachtkette 🔄 15.11.2026 (Bestätigung mit neuen Seeds läuft)
+### X7.3 Bahn: Ergebnis der Nachtkette und Bestätigung ✅ 15.11.2026
 
 **Lauf** (`ext_x7_night`, 15.11. 01:42 bis etwa 12 Uhr, Log `X7_night_matlab.log`):
 - A: TJ1 bis TJ3 (Reward J) je 3000 Episoden mit Seed 0, dazu der Pilot (Reward r4, nominal trainiert).
@@ -2616,14 +2617,49 @@ X2.3).
   Frontpunkt leicht, vor allem bei leichterer Basis, Montagefehler und Drift". Sonst bleibt es ein Befund aus
   einer einzelnen Seed-Gruppe.
 
-Datenquelle: `X7_A_dev_20261115_023049.csv`, `X7_C_list_20261115_060343.mat`,
+**Ergebnis der Bestätigung** (`ext_x7_round2` Teil T, 15.11. 12:30 bis 14:51, Seeds 11 bis 20 je 13,3 min, ein
+erster Start brach nach dem ersten Block ohne Meldung ab und wurde neu gestartet):
+- X0.1: alle 10 Seeds folgen in allen 21 Episoden. Nominal RMS 6,24 mm (5,47–8,21), ori_max 16,4 mrad
+  (13,9–19,3), Median. Faktor gegen die dichte Front: Median 0,93, 7 von 10 Seeds unter 1 (0,75 bis 1,38).
+
+| Vergleich (Res Seeds 11–20, Median) | J besser | Wilcoxon p | Median J Res / Regler | dominiert | Bahn verloren |
+|---|---|---|---|---|---|
+| **C2 (Kp 12, β 26,1)** | **21/26** | **0,00015** | 2,09 / 2,18 | 14/26 | 0 |
+| Rβ 21,5 (R) | 20/26 | 0,0014 | 2,09 / 2,12 | 3/26 | 0 |
+| Rβ 46,4 | 21/26 | 0,013 | 2,09 / 2,14 | 1/26 | 0 |
+| Rβ 1 | 26/26 | 3e-8 | 2,09 / 2,43 | 4/26 | 0 |
+
+- **Bestätigt** nach der vorab festgelegten Regel (≥ 18/26, p < 0,05, kein Verlust der Bahn).
+- Das Muster je Szenario wiederholt sich: Gewinn bei Masse ×0,25 (−15 %), Drift −2 mrad/s (−14 %), Montage
+  (−11 bis −13 %), Masse ×0,5 (−9 %). Verlust bei Masse ×2 (+6 %), Trägheit ×2 (+3 %), EE-Messfehler (+3 %),
+  Masse ×1,5 (+2 %), Verstärkung 1,1 (+2 %). Median über die Szenarien −5,2 % gegen C2 (Seeds 1–10: −4,9 %).
+- Dass der Median von J über die Szenarien bei beiden Seed-Gruppen 2,09 ist, ist Zufall (2,0855 und 2,0863,
+  andere Szenarien in der Mitte).
+
+**Aussage für das Paper (Vorschlag):** Eine Residual-Policy auf dem modellbasierten Regler (Korrektur der
+Sollwerte, ±0,02 m/s und ±0,01 rad/s, nominal trainiert) liegt nominal etwa auf der klassischen Front, in 7 von
+10 Seeds knapp davor. Gegen einen klassischen Regler am selben Frontpunkt senkt sie J in 21 von 26
+Störszenarien, im Median um etwa 5 %. Der Gewinn liegt bei leichter Basis, Montagefehlern und Drift, bei
+schwerer Basis verliert sie leicht. Das ist eine kleine, aber in zwei Seed-Gruppen wiederholte Verbesserung.
+Sie gilt nur im kinematischen Simulator und für die ebene Bahn.
+
+**Grenzen:**
+- Nur kinematisch, nur die ebene Bahn, eine Policy-Einstellung. Auf der Hardware nicht geprüft.
+- C2 wurde nach der ersten Auswertung gewählt (nur nach dem nominalen Punkt). Die Bestätigung nutzt dieselben
+  26 Szenarien, aber neue Seeds.
+- J gewichtet Bahnfehler und Drehung gleich, bezogen auf R. Mit anderer Gewichtung kann das Bild kippen.
+- Warum die Policy unter Modellfehlern gewinnt, ist nicht untersucht.
+
+Datenquelle: `X7_A_dev_20261115_023049.csv`, `X7_C_list_20261115_060343.mat`, Bestätigung
+`X7_T2_list_20261115_144432.mat`, `X7_T2_{agents,episodes}_20261115_144722.csv`, `X7_T2_robust_20261115_145114_*`,
+Log `X7_round2_matlab.log`,
 `X7_C_{agents,episodes}_20261115_060632.csv`, `X7_C_robust_20261115_061011_*`, Agenten
 `SavedAgents/MotionProfile/X7/X7_C_P_r4_seed*.mat`, reines RL aus `X2_robust_20261111_112342_summary.csv`, Front
 `X2_2_front_20261113_083657.csv` und `X2_sweep_20261115_104006.csv`.
 
 Paper: offen (E19).
 
-### X7.4 Set-Point: zweite Runde, Regeln (festgelegt 15.11.2026 vor dem Lauf)
+### X7.4 Set-Point: zweite Runde ✅ 15.11.2026 (Regeln vor dem Lauf festgelegt, kein Kandidat besser als Rβ 1)
 
 Die erste Runde (B, D) ist in X7.5 beschrieben. Auf dem Entwicklungssatz war dort keine Variante besser als
 Rβ 1 (J 2,32 gegen 2,00), und auf den 16 Prüfpaaren fiel der Erfolg im Training von 16/16 auf 4 bis 7/16.
@@ -2644,7 +2680,33 @@ damit Fahren vor der Referenz. Das kostet Basisdrehung und stört das Einschwing
 
 **Prüfung** (`ext_x7sp_check`, erweitert): Umgebung gegen `ext_kinsim` mit und ohne gate, nominal und
 kombiniert, bitgleich (max_dq 0 in allen 10 Prüfungen). Rauchtest der ganzen Runde ohne Fehler. Start 15.11.
-12:26, Log `X7_round2_matlab.log`.
+12:30, Log `X7_round2_matlab.log`.
+
+**Ergebnis** (S4 bis S6 je 20 bis 24 min, `ext_x7sp_dev` mit 48 DR-Ziehungen):
+
+| Kandidat | Erfolg | t Mittel [s] | ori Mittel [mrad] | J |
+|---|---|---|---|---|
+| R (Rβ 1) | 22,9 % | 13,0 | 81,8 | **2,00** |
+| S4 (resdr, ref, gate) letzter / Ep. 250 | 22,9 % / 22,9 % | 13,3 / 13,1 | 106 / 84,0 | 2,31 / 2,03 |
+| S5 (res, ref, gate) letzter / Ep. 250 | 22,9 % / 22,9 % | 13,2 / 13,1 | 108 / 83,2 | 2,33 / 2,02 |
+| S6 (resdr, ref, ohne gate) letzter / Ep. 250 | 6,3 % / 22,9 % | 14,6 / 13,1 | 147 / 104 | 2,92 / 2,28 |
+
+- Kein Kandidat ist besser als R, der Hauptlauf entfiel nach der Regel.
+- Das gate hilft beim Halten: Mit gate bleiben die 16 Prüfpaare über alle 3000 Episoden bei 16/16, ohne gate
+  fällt der Erfolg wie in Runde 1 auf 6/16.
+- Die Basisdrehung steigt aber auch mit dem neuen Reward mit jedem Block (Prüfpaare S4 62 auf 87 mrad, S5 61
+  auf 92 mrad, Rβ 1 allein 55 mrad im Rauchtest mit Korrektur null). Die Policy tauscht Drehung gegen genauere
+  Bahnfolge. Der Reward gewichtet die Bahnfolge (−d_ref / 1 cm) stärker als die Drehung, J_sp bewertet aber
+  nur Drehung und Einschwingzeit.
+
+**Deutung:** In zwei Runden hat RL den Set-Point-Regler nicht verbessert. In beiden Runden lag der Reward
+neben dem Maß J_sp, und die Policy hat das gelernt, was der Reward belohnt. Ein Reward, der näher an J_sp
+liegt (Drehung stärker gewichtet, Bahnfolge nur über die Einschwingzeit), ist nicht geprüft.
+
+Datenquelle: `X7sp_E_dev_20261115_160418.csv`, `X7sp_E_S{4,5,6}_seed0_{train,ckpt}.csv`, Log
+`X7_round2_matlab.log`, Agenten `SavedAgents/MotionProfile/X7/X7sp_E_*`.
+
+Paper: nein in dieser Form.
 
 ### X7.5 Set-Point: erste Runde ✅ 15.11.2026 (nicht präsentierbar)
 
