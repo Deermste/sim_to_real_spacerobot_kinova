@@ -86,7 +86,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X6.4 | Hauptlauf 5 Seeds, Auswertung auf 500 Paaren, Gegenprobe in Simscape | 1 Tag | ≈ 8–12 h | X6.3 | ⬜ |
 | X6.5 | Deploy-Skript Set-Point v25 mit Emulation der Basis, Trockenläufe, Vorhersage | 2 Tage | 1 h | X3.1, X6.4 | ⬜ |
 | X6.6 | Labortag Set-Point (Tracking X3.2 am selben Tag, wenn Zeit bleibt) | 1 Tag Labor + 1 Tag Auswertung | – | Labor | ⏸ |
-| X7 | Residual RL: Policy korrigiert den Regler, Vorteil unter Modellfehlern? 4 Varianten × 10 Seeds | 2–3 Tage | ≈ 2–4 h | E19, X4.6 V4 | 🔄 15.11.: Umgebung bitgleich, Korrektur auf die Sollwerte des Reglers statt auf die Gelenke (RESULTS X7.0), Pilot läuft. E19 entscheidet nur über das Paper |
+| X7 | Residual RL: Policy korrigiert den Regler, Vorteil unter Modellfehlern? 4 Varianten × 10 Seeds | 2–3 Tage | ≈ 2–4 h | E19, X4.6 V4 | 🔄 15.11.: Umgebung bitgleich, Korrektur auf die Sollwerte des Reglers (RESULTS X7.0). Auf Wunsch des Nutzers auch Set-Point (X7.2, Grundregler Rβ 1). Nachtkette `ext_x7_night` läuft: Auswahl auf Entwicklungssätzen, dann je 10 Seeds und Schlussauswertung. Kriterien vorher festgelegt (X7.1, X7.2). E19 entscheidet nur über das Paper |
 | P | Paper neu aufbauen und Ergebnisse übertragen | 2–3 Wochen | – | alle | ⏸ |
 
 Summe Rechenzeit ohne X5.3 etwa 55–65 h. Das sind etwa eine bis eineinhalb Wochen, wenn nachts und am Wochenende
