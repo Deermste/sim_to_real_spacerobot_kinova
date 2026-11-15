@@ -35,9 +35,48 @@ switch scene
                       'RL-Agent mit Budget 1,7° (\theta = 0,03 rad)'};
         main = {'Free-floating base, half-circle path: base budget as a constraint', ...
                 'Frei schwebende Basis, Halbkreis: Budget fuer die Basisdrehung'};
+    case 'residual'
+        out = residualScene(varargin{:});
+        return
     otherwise
-        error('media_scenes_sim:scene', 'Szene problem oder budget');
+        error('media_scenes_sim:scene', 'Szene problem, budget oder residual');
 end
 % Mast 1,0 m (z. B. Antenne) und Balken bis 5 Grad, damit die Basisdrehung sichtbar wird (Nutzer 14.11.)
 out = media_scene1('panels', P, 'name', ['sim_' scene], 'main', main, 'boom', 1.0, 'barMax', 5, varargin{:});
+end
+
+% =====================================================================
+function out = residualScene(varargin)
+% X7 (15.11.2026): Szenario mass_0.25 aus X2.3 (Basis 16,25 kg, beide kennen nur das Nominalmodell 65 kg).
+% Links C2 (Kp 12, beta 26,1, J6-Seite -1), rechts derselbe Grundregler der Policy (Rbeta 21,5) plus gelernte
+% Korrektur, Seed 17 aus der Bestaetigung (X7_T2). Seed 17 liegt in diesem Szenario im Mittelfeld der 20 Seeds
+% (Rang 11 von 20, J -15,4 % gegen C2), nicht beim besten. Rechnung wie ext_x2_robust, die Kennzahlen werden gegen
+% X7_T2_robust_20261115_145114_summary.csv geprueft.
+dd = sk_path('data', 'simulation', 'extension');
+Knom = ext_kin_model();
+Kp = ext_kin_model('base_mass', 65 * 0.25);
+bC2 = logspace(0, 2, 25);
+c = ext_x2_controller('j6_lim', 0.9774, 'invert', true, 'K', Knom, 'beta', bC2(18), 'j6_side', -1, 'Kp', 12);
+runs{1} = ext_kinsim([], 'ctrl', c, 'j6_lim', 0.9774, 'reward_mode', 4, 'K', Kp);
+L = load(fullfile(dd, 'X7_T2_list_20261115_144432.mat'), 'list');
+k = find(endsWith(string({L.list.file}), 'X7_T2_P_r4_seed17.mat'));
+assert(numel(k) == 1, 'media_scenes_sim:seed', 'Seed 17 nicht in der Liste');
+rk = L.list(k);
+h = ext_x7_ctrl(ext_policy(rk.file), 'eps_v', rk.eps_v, 'eps_w', rk.eps_w, 'K', Knom);
+runs{2} = ext_kinsim([], 'ctrl', h, 'j6_lim', 0.9774, 'reward_mode', 4, 'K', Kp);
+S = readtable(fullfile(dd, 'X7_T2_robust_20261115_145114_summary.csv'), 'TextType', 'string');
+S = S(S.scenario == "mass_0.25", :);
+ref = [S(S.subject == "C2", :); S(S.subject == "P_r4_s17", :)];
+for i = 1:2
+    m = runs{i}.metrics;
+    assert(abs(m.rms_ee - ref.rms_ee(i)) < 1e-9 && abs(m.ori_max - ref.ori_max(i)) < 1e-9, ...
+           'media_scenes_sim:check', 'Lauf %d weicht von der Auswertung ab', i);
+end
+titles = {{'Classical controller C2 (nominal model)', 'Klassischer Regler C2 (Nominalmodell)'}, ...
+          {'Same kind of controller + learned correction (residual RL)', ...
+           'Gleicher Reglertyp + gelernte Korrektur (Residual RL)'}};
+main = {'Base 4× lighter than the model assumes (16 kg instead of 65 kg)', ...
+        'Basis viermal leichter als im Modell (16 kg statt 65 kg)'};
+out = media_scene1('runs', runs, 'titles', titles, 'name', 'sim_residual', 'main', main, 'boom', 1.0, ...
+                   'barMax', 3, varargin{:});
 end

@@ -31,6 +31,8 @@ p.addParameter('tag', '');              % Zusatz im Dateinamen, z. B. 'rl'
 % (agent), joints ('J246' wie die Bestandsagenten oder 'all7'), path ('planar'/'tilted'), tilt, title {en, de}.
 % Ersetzt die beiden Regler von Szene 1. Dazu name (Dateiname statt 'scene1') und main {en, de} (Gesamttitel).
 p.addParameter('panels', []);
+p.addParameter('runs', {});             % fertige ext_kinsim-Laeufe (15.11.), dazu 'titles' als {{en, de}, ...}
+p.addParameter('titles', {});
 p.addParameter('boom', 0);              % Mast an der Basis [m] (maßstaeblich mitgedreht, z. B. Antenne), 0 = aus
 p.addParameter('barMax', 9);            % Balken der Basisdrehung bis barMax Grad
 p.addParameter('name', 'scene1');
@@ -46,11 +48,13 @@ K = ext_kin_model();
 lim = [0.98; 0.98; 0.98; 0.98; 0.58; 0.58; 0.58];
 betas = [0 4.6416];
 runs = cell(1, 2);
-if ~isempty(o.panels)
+if ~isempty(o.runs)
+    runs = o.runs; titles = o.titles; betas = [];   % fertig gerechnete Laeufe (media_scenes_sim 'residual')
+elseif ~isempty(o.panels)
     [runs, titles] = buildRuns(o.panels, K);
     betas = []; % nur Szene 1
 end
-for i = 1:2 * isempty(o.panels)
+for i = 1:2 * (isempty(o.panels) && isempty(o.runs))
     c = ext_x2_controller('joints', 1:7, 'task', [1 2 3], 'lim', lim, 'j6_side', 0, 'K', K, 'invert', true, ...
                           'beta', betas(i));
     runs{i} = ext_kinsim([], 'ctrl', c, 'lim', lim, 'reward_mode', 4, 'path', 'tilted', 'tilt', -30, ...
@@ -58,7 +62,7 @@ for i = 1:2 * isempty(o.panels)
     fprintf('beta %.4g: RMS %.2f mm, ori_max %.1f mrad\n', betas(i), 1000 * runs{i}.metrics.rms_ee, ...
             1000 * runs{i}.metrics.ori_max);
 end
-if isempty(o.panels)
+if isempty(o.panels) && isempty(o.runs)
     titles = {{'Controller without null space (R0)', 'Regler ohne Nullraum (R0)'}, ...
               {'Controller with reaction-reducing null space (R\beta, \beta = 4.6)', ...
                'Regler mit reaktionsarmer Nullraumbewegung (R\beta, \beta = 4,6)'}};
@@ -187,6 +191,7 @@ end
 
 function fig = makeFigure(res)
 fig = figure('Visible', 'off', 'Color', 'w', 'Units', 'pixels', 'Position', [0 0 res]);
+try, fig.Theme = 'light'; catch, end     % matlab -batch nimmt sonst das dunkle Theme (blasse Schrift)
 end
 
 function [A, S] = setupPanels(fig, M, runs, L, strobe, tStrobe)
