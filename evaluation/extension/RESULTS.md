@@ -2836,4 +2836,113 @@ Paper: nein in dieser Form.
 
 ## Gliederung (für Phase P)
 
-Wird nach X1 und X2 vorgeschlagen.
+Vorschlag vom 15.11.2026 nach X0 bis X7. Noch nicht mit dem Betreuer abgestimmt (E7, E19). Offene Punkte am Ende.
+
+### Geschichte in drei Sätzen
+
+1. RL-Policies für den frei schwebenden 7-DOF-Arm landen je nach Seed auf verschiedenen Punkten des Zielkonflikts
+   zwischen Bahngenauigkeit und Basisdrehung. Ein Reward-Gewicht steuert das nicht, eine Nebenbedingung schon,
+   aber auf Kosten der Bahn (K2, K9).
+2. Ein modellbasierter Regler (GJM mit gewichtetem Basisterm, Nominalmodell) liegt in allen Vergleichen vorn,
+   auch unter Modellfehlern und in 3D. Der Abstand kommt vom Lernverfahren, nicht von der Schnittstelle (K5 bis
+   K8, K10, K11). Als Korrektur auf diesem Regler erreicht RL die Front und ist unter Modellfehlern robuster als
+   der Regler am selben Frontpunkt (K12). Beim Set-Point hilft es nicht.
+3. Auf dem fest montierten Arm prüfen wir, was dort prüfbar ist (Armregelung, Timing, Signalkette, Sicherheit).
+   Mit einer kinematischen Emulation der Basis schließen wir den Regelkreis der Policy auf Geschwindigkeitsebene
+   (X3, Labortag offen).
+
+Damit ändert sich die Ausrichtung gegenüber Submission 1: Kern ist der Zielkonflikt und der Vergleich mit dem
+Regler, die Hardware ist der zweite Teil. Das entspricht Option A in der Fassung vom 10.11. (Schnittstelle und
+Armregelung auf der Hardware, Free-Floating-Dynamik nur in Simulation, Emulation als Prüfmethode).
+
+### Titel (Vorschläge)
+
+- „Tracking Accuracy versus Base Rotation in Learned Control of a Free-Floating 7-DOF Manipulator: Constraints,
+  a Model-Based Baseline, and Residual Learning“
+- „Where Does Reinforcement Learning Help a Free-Floating Space Manipulator? A Comparison with Model-Based
+  Control and Fixed-Base Hardware Tests“
+
+Der zweite Titel passt besser, wenn die Hardware mit Emulation (X3.2) ins Paper kommt.
+
+### Beiträge (zwei, nach R2.5)
+
+- **B1** Systematische Bewertung des Zielkonflikts für RL mit einer modellbasierten Vergleichsbasis: Gewicht gegen
+  Nebenbedingung gegen Filter, Abstand zur Front und Ursache (Ablation), Robustheit in 26 Szenarien, Residual RL als
+  Weg, die Front zu erreichen. Alles mit 10 Seeds und einem festen Protokoll (X0.1).
+- **B2** Prüfung auf dem fest montierten Arm mit klarer Abgrenzung, was dort prüfbar ist (R2.2), dem
+  Diagnoseweg für die Loop-Rate als Vorgehen statt als Erkenntnis (R2.3, R3.2) und der kinematischen Emulation
+  der Basis (X3).
+
+Nicht mehr als Beitrag: Algorithmenvergleich, Bayes-Suche, CDR (R2.4), der Fund des Basis-Bonus als eigene
+Entdeckung (wird Motivation für B1, K1).
+
+### Abschnitte
+
+| # | Abschnitt | Inhalt | Belege | aus Submission 1 |
+|---|---|---|---|---|
+| I | Introduction | Problem (Basisdrehung stört Lage und Kommunikation, RL-Arbeiten bestrafen sie im Reward), Frage, B1, B2, Ergebnisse in einem Absatz | K1, K2, K5, K9, K12 | neu geschrieben, Fig. `coupling` bleibt |
+| II | Related Work | RL für frei schwebende Arme [L10–L13], GJM und RNS [L1–L4], Constrained RL und CBF [L14–L20], Residual Policy Learning (Literatur fehlt noch), Sim-to-Real und Bodentestanlagen [L5–L9 und bisherige] | X0.3 | Tabelle `related` erweitert um „baseline“ und „constraint“ |
+| III | System, Task and Evaluation | Plattform, Simscape und kinematischer Simulator (X0.2), Befehlskette, MDP, Reward-Varianten r0 bis r4, Protokoll X0.1, die 26 Szenarien | X0.1, X0.2, A72 | III gekürzt, Fig. `pipeline`, `smoothing` |
+| IV | Model-Based Baseline | Regler Rβ (gewichtete RNS-Form, Inversion der Kette), Front über Kp und β, Machbarkeit | X2.1, X2.2, A73 | neu |
+| V | The Trade-off in Learned Policies | Basis-Bonus erzeugt den späten Bahnverlust (kurz), Gewichtsreihe auf 10 Seeds, Budget mit Lagrange-PPO, Sicherheitsfilter, Sensitivität der Schwellen | K1, K2, K9, X1.4, X4.5 | alter Abschnitt „Diagnosis“ als Unterabschnitt, Fig. `tradeoff` neu mit Front |
+| VI | Distance to the Model-Based Controller | Abstand zur Front, Ablation (Beobachtung, Information, Kette), Robustheit RL gegen Regler und DR, 3D-Bahn mit Redundanz | K5, K6, K8, K10, K7, K11 | neu |
+| VII | Residual Learning on the Controller | Aufbau (Korrektur der Sollwerte, warum nicht auf die Gelenke), Ergebnis Bahn mit Bestätigung, Set-Point als negatives Ergebnis | K12, X7.0 bis X7.6 | neu |
+| VIII | Fixed-Base Hardware | Was auf fester Basis prüfbar ist (Tabelle `scope`), Gelenkbahnen der Hardware gegen Simulation, Loop-Rate-Diagnose kompakt, kontrollierte Kampagne, Emulation (Methode, Validierung, Vorhersage, Labor) | K4, X3.1, X3.2, alte Sec. V und VI-B/C | alte Sec. V und VI zusammengelegt und gekürzt |
+| IX | Discussion and Limitations | nur kinematisch für X1 bis X7 (Simscape-Gegenproben), ebene Bahn für Residual, feste Basis, Seeds statt Verteilungen, Schwellen, Set-Point | alle | alte Sec. VII ausgebaut |
+| X | Conclusion | B1, B2, Ausblick (Residual auf Hardware mit Emulation, Air-Bearing) | – | neu |
+
+### Abbildungen und Tabellen
+
+- **Neu, zentral:** Ebene Bahnfehler gegen Basisdrehung mit der Front des Reglers, den Agenten der Gewichtsreihe,
+  den Budget-Agenten und den Residual-Agenten (eine Abbildung für V bis VII). Vorhanden ist `tradeoff` (alt) und
+  `tradeoff3d` (X5.3).
+- **Neu:** Tabelle Robustheit (26 Szenarien zu Gruppen zusammengefasst: Modell, Aktor, Sensor, Anfang, Drift) für
+  RL, DR, Regler und Residual.
+- **Neu:** Tabelle Ablation X4.6 (V1 bis V4, Abstand zur Front).
+- **Neu:** Residual gegen C2 je Szenario (Balken oder Punkte, zwei Seed-Gruppen).
+- **Neu, wenn Labortag:** Emulation an gegen aus, Hardware gegen Vorhersage.
+- **Bleiben:** `coupling`, `pipeline`, `smoothing`, `hardware_setup`, `scope`, `looprate`, `hw_tracking`.
+- **Kürzen oder Anhang:** `algos`, `curves`, `cdr`, `ppo40hz`, `return_decomp`, `reward_diag`, `scripts`,
+  `playback`, `loop_timing`, `diagnosis`.
+- **Set-Point (`p2p_*`):** hängt an E7.
+
+### Was aus Submission 1 wegfällt oder kürzer wird (Vorschlag X4.4, ergänzt)
+
+- Algorithmenvergleich: ein Absatz mit Verweis auf das Access-Paper.
+- Bayes-Suche: streichen. CDR: durch DR aus X2.4 ersetzen, alte Tabelle in den Anhang.
+- Versionen des Deploy-Skripts: ein Absatz, Tabelle `scripts` in den Anhang.
+- Set-Point: Der alte Teil (sechs Hardware-Läufe, ein fester Start in Simulation) trägt nach R1.9 nicht. Neues
+  Set-Point-RL ist gescheitert (X6.3 hält nicht, X7 Residual negativ). Vorschlag: Set-Point aus dem Hauptteil
+  nehmen und in IX in zwei Sätzen als Grenze nennen. Alternative: kurzer Unterabschnitt in VIII nur für die
+  Hardware-Kette ohne Erfolgsquote.
+
+### Bezug zu den Reviews
+
+| Punkt | Wie die Gliederung ihn aufnimmt |
+|---|---|
+| AE.1, R2.1, R2.5 | eine Forschungsfrage mit Vergleichsbasis, zwei Beiträge, Diagnose der Fehler nur noch als Motivation |
+| AE.2, R3.1 | Hardware klar als Prüfung der Schnittstelle, Emulation als Prüfmethode mit Grenzen, keine Free-Floating-Aussage aus der Hardware |
+| R2.2 | Tabelle `scope` in VIII, ergänzt um die Emulation |
+| R2.3, R3.2 | Loop-Rate in VIII als Vorgehen (Check vor dem Training), kurz |
+| R2.4 | Optimierung als Methodik in III, nicht als Beitrag |
+| R1.9 | Set-Point nur nach E7, ohne aggregierte Erfolgsquote |
+| R3.5 | 3D-Bahn (K7, K11) und 26 Szenarien |
+
+### Umfang
+
+Ohne Seitenlimit geschätzt 13 bis 15 Seiten in `ieeeconf` (heute 11). Die Kürzungen in III, IV-alt und V-alt
+sparen etwa 2 Seiten, IV, VI und VII neu kosten etwa 4 bis 5.
+
+### Offen vor dem Schreiben
+
+1. **E7** (Betreuer): Geschichte wie oben, Zielkonferenz, Set-Point raus oder kurz, Schnittstellendiagnose als
+   Abschnitt oder eigenes Paper.
+2. **E19** (Betreuer): Residual RL ins Paper. Vorschlag ja, als Abschnitt VII.
+3. **X3.2 Labortag** (E5): Mit Labor wird die Emulation ein Ergebnis, ohne Labor nur Methode, Validierung und
+   Vorhersage. Das Paper lässt sich ohne Labortag schreiben, der Abschnitt wird dann kürzer.
+4. **Literatur Residual Policy Learning** (wie X0.3): noch nicht geprüft. Nötig für II und für die Neuheit von VII.
+5. **Volltexte** [L5], [L9], [L13], [L14] lesen (aus X0.3).
+6. **X2.3 Filter**: der Filter fehlt noch in der Robustheitstabelle (klein, Daten aus X1.4 Teil 3 prüfen).
+7. Zahlen aus RESULTS in `paper_numbers.md` einer neuen `Reviews/Submission_2/` übertragen.
+
+Paper: diese Gliederung, offen bis E7.
