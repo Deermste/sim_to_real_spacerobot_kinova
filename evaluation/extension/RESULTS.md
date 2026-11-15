@@ -2467,6 +2467,35 @@ Datenquelle: Ausgabe von `ext_x7_check` (Log der Sitzung), Testlauf unter `data/
 
 Paper: offen (E19).
 
+### X7.1 Vorgehen über Nacht und Kriterium „präsentierbar“ (festgelegt 15.11.2026, vor jeder Auswertung)
+
+Auftrag des Nutzers (15.11. abends): den Regler mit der Residual-Policy selbstständig verbessern, bis er nach
+eigenem Ermessen als Verbesserung des klassischen Reglers durch RL ins Paper kann.
+
+**Trennung von Auswahl und Test:**
+- Varianten (ε, w_res, Lernrate, Episoden, DR oder nicht) werden nur auf dem Entwicklungssatz verglichen
+  (`ext_x7_dev`: 40 Ziehungen aus der DR-voll-Verteilung mit eigenem Seed 777777, R auf denselben Ziehungen).
+- Die 26 Szenarien aus X2.3 und X0.1 werden für die Auswahl nicht benutzt. Ausnahme ist der Pilot (Seed 0),
+  dessen Auswertung schon vor dieser Festlegung gestartet war. Er zählt nicht zum Hauptlauf.
+- Hauptlauf: die auf dem Entwicklungssatz beste Variante mit 10 neuen Seeds (1 bis 10), danach einmal die
+  Schlussauswertung.
+
+**Maß:** J = RMS / 8,99 mm + ori_max / 12,98 mrad (beide Werte von R nominal). J gewichtet Bahnfehler und
+Basisdrehung gleich, bezogen auf den Regler. Eine Verschiebung entlang der Front (mehr Drehung für weniger Fehler)
+soll nicht als Verbesserung zählen. Deshalb wird zusätzlich gezählt, in wie vielen Szenarien Res-DR den Regler
+dominiert (RMS und ori_max beide nicht größer).
+
+**Kriterium „präsentierbar als Verbesserung“** (alle drei, Median über die 10 Seeds je Szenario):
+1. Nominal (X0.1, 21 Episoden): mindestens 9 von 10 Seeds folgen in allen Episoden, RMS und ori_max höchstens
+   10 % über R.
+2. 26 Szenarien: J kleiner als bei R in mindestens 2/3 der Szenarien, Wilcoxon-Vorzeichen-Rang-Test über die
+   Szenarien p < 0,05, und kein Szenario, in dem R folgt und Res-DR nicht.
+3. Gegen reines RL (DR-voll-Agenten aus X2.4 und X4.6 V1 auf denselben Szenarien): J kleiner im Median über die
+   Szenarien.
+
+Erfüllt keine Variante das Kriterium, wird das als Ergebnis berichtet („RL als Korrektur verbessert den Regler
+hier nicht verlässlich“). Die Grenze für die Nacht ist die Rechenzeit, nicht ein bestimmtes Ergebnis.
+
 ## Gliederung (für Phase P)
 
 Wird nach X1 und X2 vorgeschlagen.
