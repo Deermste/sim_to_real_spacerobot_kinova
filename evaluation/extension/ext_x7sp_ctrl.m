@@ -5,12 +5,14 @@ function ctrl = ext_x7sp_ctrl(pol, pT, Tm, varargin)
 %
 %   Gleiche Rechnung wie ext_x7sp_env. Der Werkzeugpunkt ist p = ep + pref (Beobachtung plus Referenz).
 %   Je Episode einen neuen ctrl erzeugen (Zustand der Kette).
+%   Option 'gate' (Standard false): Korrektur mal ext_x7sp_gate(t, Tm) wie in ext_x7sp_env (X7.4).
 
 p = inputParser;
 p.addParameter('beta', 1);
 p.addParameter('eps_v', 0.02);
 p.addParameter('eps_w', 0.02);
 p.addParameter('K', []);
+p.addParameter('gate', false);
 p.parse(varargin{:});
 o = p.Results;
 if ischar(pol) || isstring(pol), pol = ext_policy(char(pol)); end
@@ -25,6 +27,7 @@ ctrl = @step;
         xc = api.propose(obs, R);
         p = obs(1:3) + R.pref;
         d = min(max(double(pol([obs; pT - p; xc(:) ./ C.v_max; min(R.t / Tm, 1)])), -1), 1);
+        if o.gate, d = ext_x7sp_gate(R.t, Tm) * d; end
         R.db = o.eps_v * d(1:3);
         R.dw = o.eps_w * d(4:6);
         u = c(obs, R);

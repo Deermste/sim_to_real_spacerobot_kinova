@@ -2642,6 +2642,61 @@ damit Fahren vor der Referenz. Das kostet Basisdrehung und stört das Einschwing
   Kandidat, entfällt der Hauptlauf und das wird als Ergebnis berichtet.
 - Hauptlauf mit Seeds 1 bis 10, Schlussauswertung `ext_x7sp_eval` (Label E) mit dem Kriterium aus X7.2.
 
+**Prüfung** (`ext_x7sp_check`, erweitert): Umgebung gegen `ext_kinsim` mit und ohne gate, nominal und
+kombiniert, bitgleich (max_dq 0 in allen 10 Prüfungen). Rauchtest der ganzen Runde ohne Fehler. Start 15.11.
+12:26, Log `X7_round2_matlab.log`.
+
+### X7.5 Set-Point: erste Runde ✅ 15.11.2026 (nicht präsentierbar)
+
+**Lauf** (`ext_x7_night` B und D):
+- B: S1 (resdr, w_res 0,1), S2 (resdr, 0,5), S3 (res, 0,1), Seed 0, je 3000 Episoden (22 bis 24 min).
+  Auf `ext_x7sp_dev` (48 DR-Ziehungen) war kein Kandidat besser als R (Rβ 1):
+
+| Kandidat | Erfolg | t Mittel [s] | ori Mittel [mrad] | J |
+|---|---|---|---|---|
+| R (Rβ 1) | 22,9 % | 13,0 | 81,8 | 2,00 |
+| S1 letzter / Ep. 250 | 2,1 % / 22,9 % | 14,9 / 13,2 | 155 / 115 | 3,04 / 2,41 |
+| S2 letzter / Ep. 250 | 12,5 % / 22,9 % | 14,4 / 13,2 | 155 / 107 | 3,00 / **2,32** |
+| S3 letzter / Ep. 500 | 2,1 % / 22,9 % | 14,9 / 13,2 | 162 / 117 | 3,12 / 2,43 |
+
+  Die Regel wählte trotzdem den besten Kandidaten (S2, Zwischenstand), weil sie keinen Vorsprung vor R
+  verlangte. Das ist in X7.4 korrigiert. Der niedrige Erfolg von R liegt an der DR-Verteilung (bis 100 ms
+  Verzögerung, bis zweifaches Rauschen, 5 mm/s Band).
+- Im Training fällt der Erfolg auf den 16 Prüfpaaren mit jedem Block: in D von 16/16 nach 250 Episoden auf
+  4 bis 7/16 nach 3000 Episoden. Die Basisdrehung der Prüfpaare steigt dabei von etwa 90 auf 115 bis 125 mrad.
+- D: S2 mit Seeds 1 bis 10, Zwischenstand nach derselben Regel, Schlussauswertung auf 100 Testpaaren ×
+  26 Szenarien (36 400 Läufe, 125 min). Bezug für J_sp: R0 nominal, ori_R 64,1 mrad, t_R 4,68 s.
+
+**Ergebnis** (nominal, 100 Testpaare):
+
+| Teilnehmer | Erfolg | t_settle Median [s] | ori_max Median [mrad] | J_sp Median | J_sp Mittel über 26 Szenarien |
+|---|---|---|---|---|---|
+| R0 | 99 % | 4,68 | 64,1 | 2,01 | 2,55 |
+| Rβ 1 (Grundregler) | 99 % | 4,68 | 36,7 | 1,61 | 2,19 |
+| Rβ 4,6 | 99 % | 4,68 | 31,5 | 1,53 | 2,12 |
+| Rβ 21,5 | 99 % | 5,10 | 26,2 | 1,48 | **2,11** |
+| Res S2, Median 10 Seeds (Bereich) | 99 % (98–99) | 4,65 (4,63–4,80) | 74,3 (55,0–81,4) | 2,08 | 2,42–2,78 je Seed |
+
+**Kriterium X7.2** gegen den besten klassischen Regler (Rβ 21,5, kleinstes mittleres J_sp):
+1. Nominal Erfolg 99 % gegen 99 %: erfüllt.
+2. J_sp kleiner in 0 von 26 Szenarien (Wilcoxon p 3e-8, zugunsten des Reglers): nicht erfüllt. Mehr als
+   2 Prozentpunkte weniger Erfolg in keinem Szenario.
+3. Auswahl nur auf dem Trainingssatz: eingehalten.
+
+**Deutung:**
+- Die Korrektur verkürzt das Einschwingen kaum (4,65 gegen 4,68 s bei Rβ 1) und verdoppelt die Basisdrehung
+  (74 gegen 37 mrad). Sie ist auch schlechter als ihr eigener Grundregler, in allen Seeds.
+- Passt zur Vermutung aus X7.4: Der Reward −d / 5 cm belohnt Fahren vor der Referenz, das dreht die Basis.
+- Unter `noise_1x` und `noise_3x` hat kein Teilnehmer Erfolg, auch die Regler nicht. `ext_x7sp_run` prüft das
+  Band von 5 mm/s an der verrauschten Beobachtung. Für den Vergleich ist das gleich, als Erfolgsquote aber
+  nicht aussagekräftig.
+- Weiter mit der zweiten Runde (X7.4).
+
+Datenquelle: `X7sp_B_dev_20261115_034706.csv`, `X7sp_D_list_20261115_101510.mat`,
+`X7sp_D_20261115_122024_{episodes,summary}.csv`, `X7sp_{B,D}_*_{train,ckpt}.csv`, Log `X7_night_matlab.log`.
+
+Paper: nein in dieser Form.
+
 ## Gliederung (für Phase P)
 
 Wird nach X1 und X2 vorgeschlagen.

@@ -1,6 +1,6 @@
 function [S, E, outFile] = ext_x7sp_eval(list, varargin)
 %EXT_X7SP_EVAL  Schlussauswertung X7-SP (15.11.2026): Regler allein gegen Regler plus Korrektur, 26 Szenarien.
-%   [S, E] = ext_x7sp_eval(list)          list: struct mit file, label, group, beta, eps_v, eps_w
+%   [S, E] = ext_x7sp_eval(list)          list: struct mit file, label, group, beta, eps_v, eps_w, optional gate
 %   [S, E] = ext_x7sp_eval(list, 'nPairs', 100, 'betas', [0 1], 'scenarios', {'nominal'})
 %
 %   Paare: die ersten nPairs des Auswertesatzes (X6_pairs, set "eval", fest, vor der Auswertung gewaehlt).
@@ -30,14 +30,15 @@ dE = dir(fullfile(dd, 'X6_pairs_*.mat'));
 Le = load(fullfile(dE(end).folder, dE(end).name), 'P');
 Pev = Le.P([Le.P.set] == "eval");
 Pev = Pev(1:min(o.nPairs, numel(Pev)));
-subj = struct('label', {}, 'group', {}, 'pol', {}, 'beta', {}, 'eps_v', {}, 'eps_w', {});
+subj = struct('label', {}, 'group', {}, 'pol', {}, 'beta', {}, 'eps_v', {}, 'eps_w', {}, 'gate', {});
 for b = o.betas
     subj(end + 1) = struct('label', sprintf('R%g', b), 'group', 'ctrl', 'pol', [], 'beta', b, 'eps_v', 0, ...
-                           'eps_w', 0); %#ok<AGROW>
+                           'eps_w', 0, 'gate', false); %#ok<AGROW>
 end
 for k = 1:numel(list)
     subj(end + 1) = struct('label', list(k).label, 'group', list(k).group, 'pol', ext_policy(list(k).file), ...
-                           'beta', list(k).beta, 'eps_v', list(k).eps_v, 'eps_w', list(k).eps_w); %#ok<AGROW>
+                           'beta', list(k).beta, 'eps_v', list(k).eps_v, 'eps_w', list(k).eps_w, ...
+                           'gate', isfield(list(k), 'gate') && list(k).gate); %#ok<AGROW>
 end
 sc = scenarios();
 if ~isempty(o.scenarios), sc = sc(ismember({sc.name}, o.scenarios)); end
@@ -60,7 +61,8 @@ for s = 1:numel(sc)
             Tm = min(max(1.5, 9.4 * pr.d0), 10);
             pol = subj(j).pol;
             if isempty(pol), pol = @(ob) zeros(6, 1); end
-            c = ext_x7sp_ctrl(pol, pr.pT, Tm, 'beta', subj(j).beta, 'eps_v', subj(j).eps_v, 'eps_w', subj(j).eps_w);
+            c = ext_x7sp_ctrl(pol, pr.pT, Tm, 'beta', subj(j).beta, 'eps_v', subj(j).eps_v, 'eps_w', subj(j).eps_w, ...
+                              'gate', subj(j).gate);
             r = ext_x7sp_run(c, pr, extra{:});
             r.subject = string(subj(j).label); r.group = string(subj(j).group);
             r.scenario = string(scs.name); r.sgroup = string(scs.group);

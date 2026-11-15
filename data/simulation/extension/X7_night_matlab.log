@@ -1,0 +1,527 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+=== A Bahn-Auswahl ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+X7 resdr, Seed 0: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.10, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -120.8, nominal RMS 7.91 mm, ori_max 19.54 mrad, |Delta| 0.642 (1.6 min)
+  Block  2:  500 Episoden, Return -38.7, nominal RMS 8.39 mm, ori_max 18.41 mrad, |Delta| 0.623 (3.0 min)
+  Block  3:  750 Episoden, Return 113.2, nominal RMS 6.71 mm, ori_max 18.62 mrad, |Delta| 0.686 (4.4 min)
+  Block  4: 1000 Episoden, Return 240.7, nominal RMS 5.97 mm, ori_max 18.14 mrad, |Delta| 0.672 (5.8 min)
+  Block  5: 1250 Episoden, Return 124.3, nominal RMS 5.94 mm, ori_max 19.08 mrad, |Delta| 0.686 (7.2 min)
+  Block  6: 1500 Episoden, Return 162.9, nominal RMS 5.88 mm, ori_max 18.03 mrad, |Delta| 0.694 (8.5 min)
+  Block  7: 1750 Episoden, Return 215.8, nominal RMS 5.68 mm, ori_max 18.58 mrad, |Delta| 0.668 (9.8 min)
+  Block  8: 2000 Episoden, Return 197.3, nominal RMS 5.38 mm, ori_max 19.43 mrad, |Delta| 0.668 (11.1 min)
+  Block  9: 2250 Episoden, Return 145.9, nominal RMS 5.41 mm, ori_max 19.08 mrad, |Delta| 0.684 (12.5 min)
+  Block 10: 2500 Episoden, Return 170.5, nominal RMS 5.68 mm, ori_max 20.52 mrad, |Delta| 0.710 (13.8 min)
+  Block 11: 2750 Episoden, Return 255.1, nominal RMS 6.06 mm, ori_max 19.79 mrad, |Delta| 0.716 (15.1 min)
+  Block 12: 3000 Episoden, Return 288.2, nominal RMS 6.16 mm, ori_max 19.40 mrad, |Delta| 0.678 (16.5 min)
+X7 resdr Seed 0 fertig nach 16.5 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_A_TJ1_seed0.mat
+  TJ1 fertig (16.8 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7 resdr, Seed 0: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.50, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -240.1, nominal RMS 6.76 mm, ori_max 16.81 mrad, |Delta| 0.349 (1.3 min)
+  Block  2:  500 Episoden, Return -33.2, nominal RMS 6.36 mm, ori_max 15.98 mrad, |Delta| 0.327 (2.7 min)
+  Block  3:  750 Episoden, Return 198.1, nominal RMS 6.34 mm, ori_max 16.33 mrad, |Delta| 0.300 (4.1 min)
+  Block  4: 1000 Episoden, Return 268.1, nominal RMS 6.54 mm, ori_max 16.01 mrad, |Delta| 0.295 (5.4 min)
+  Block  5: 1250 Episoden, Return 113.7, nominal RMS 6.40 mm, ori_max 16.60 mrad, |Delta| 0.337 (6.7 min)
+  Block  6: 1500 Episoden, Return 166.8, nominal RMS 6.68 mm, ori_max 16.10 mrad, |Delta| 0.316 (8.1 min)
+  Block  7: 1750 Episoden, Return 212.4, nominal RMS 6.53 mm, ori_max 16.40 mrad, |Delta| 0.349 (9.4 min)
+  Block  8: 2000 Episoden, Return 181.9, nominal RMS 6.42 mm, ori_max 16.40 mrad, |Delta| 0.339 (10.7 min)
+  Block  9: 2250 Episoden, Return 126.1, nominal RMS 6.38 mm, ori_max 16.31 mrad, |Delta| 0.335 (12.1 min)
+  Block 10: 2500 Episoden, Return 123.6, nominal RMS 6.31 mm, ori_max 16.44 mrad, |Delta| 0.342 (13.4 min)
+  Block 11: 2750 Episoden, Return 243.5, nominal RMS 6.33 mm, ori_max 16.45 mrad, |Delta| 0.341 (14.7 min)
+  Block 12: 3000 Episoden, Return 258.9, nominal RMS 6.72 mm, ori_max 15.94 mrad, |Delta| 0.322 (16.1 min)
+X7 resdr Seed 0 fertig nach 16.1 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_A_TJ2_seed0.mat
+  TJ2 fertig (32.9 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7 res, Seed 0: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.10, DR none, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return 250.4, nominal RMS 8.97 mm, ori_max 14.18 mrad, |Delta| 0.249 (1.1 min)
+  Block  2:  500 Episoden, Return 371.7, nominal RMS 3.38 mm, ori_max 18.56 mrad, |Delta| 0.437 (2.2 min)
+  Block  3:  750 Episoden, Return 449.1, nominal RMS 3.30 mm, ori_max 18.49 mrad, |Delta| 0.406 (3.4 min)
+  Block  4: 1000 Episoden, Return 453.3, nominal RMS 3.17 mm, ori_max 18.94 mrad, |Delta| 0.460 (4.5 min)
+  Block  5: 1250 Episoden, Return 460.4, nominal RMS 3.11 mm, ori_max 18.86 mrad, |Delta| 0.449 (5.6 min)
+  Block  6: 1500 Episoden, Return 463.0, nominal RMS 3.05 mm, ori_max 18.86 mrad, |Delta| 0.428 (6.7 min)
+  Block  7: 1750 Episoden, Return 462.9, nominal RMS 3.09 mm, ori_max 18.69 mrad, |Delta| 0.462 (7.8 min)
+  Block  8: 2000 Episoden, Return 466.9, nominal RMS 3.06 mm, ori_max 18.63 mrad, |Delta| 0.469 (8.9 min)
+  Block  9: 2250 Episoden, Return 463.1, nominal RMS 3.37 mm, ori_max 18.85 mrad, |Delta| 0.490 (10.1 min)
+  Block 10: 2500 Episoden, Return 463.4, nominal RMS 3.09 mm, ori_max 18.71 mrad, |Delta| 0.480 (11.2 min)
+  Block 11: 2750 Episoden, Return 466.5, nominal RMS 3.16 mm, ori_max 18.53 mrad, |Delta| 0.470 (12.3 min)
+  Block 12: 3000 Episoden, Return 468.0, nominal RMS 3.28 mm, ori_max 18.45 mrad, |Delta| 0.458 (13.4 min)
+X7 res Seed 0 fertig nach 13.4 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_A_TJ3_seed0.mat
+  TJ3 fertig (46.3 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+      subject       follows     rms_ee        ep_q4      ori_max       d_rms         d_ori      better_rms    better_ori      J   
+    ____________    _______    _________    _________    ________    __________    _________    __________    __________    ______
+
+    "R"                1        0.011305     0.013986    0.019061             0            0        0               0        2.726
+    "TJ1_final"        1       0.0081877    0.0035961    0.025347    -0.0031176    0.0062857        1            0.15       2.8635
+    "TJ1_ep1500"       1       0.0082724    0.0054243    0.024043    -0.0030328    0.0049815        1           0.175       2.7725
+    "TJ2_final"        1       0.0092256    0.0076747     0.02188    -0.0020796    0.0028191        1           0.225       2.7119
+    "TJ2_ep500"        1       0.0088953    0.0071954    0.021863      -0.00241    0.0028013        1           0.225       2.6738
+    "TJ3_final"        1       0.0069014    0.0049297    0.025317    -0.0044039     0.006256        1           0.025       2.7182
+    "TJ3_ep2000"       1       0.0067795    0.0045783    0.025656    -0.0045258    0.0065944        1           0.025       2.7307
+    "P_r4_final"       1       0.0086682    0.0065219    0.021883     -0.002637    0.0028213        1             0.2       2.6501
+
+A gewaehlt: P_r4_final (final), J 2.650 gegen R 2.726
+=== B Set-Point-Auswahl (50.7 min) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7-SP resdr, Seed 0: beta 1, eps_v 0.020 m/s, eps_w 0.020 rad/s, w_res 0.10, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -927.2, Pruefpaare Erfolg 16/16, t_settle 5.91 s, ori 83.0 mrad (2.1 min)
+  Block  2:  500 Episoden, Return -988.7, Pruefpaare Erfolg 16/16, t_settle 6.02 s, ori 88.8 mrad (4.1 min)
+  Block  3:  750 Episoden, Return -1308.7, Pruefpaare Erfolg 16/16, t_settle 5.97 s, ori 93.9 mrad (6.1 min)
+  Block  4: 1000 Episoden, Return -1536.9, Pruefpaare Erfolg 16/16, t_settle 6.23 s, ori 105.0 mrad (8.1 min)
+  Block  5: 1250 Episoden, Return -1111.0, Pruefpaare Erfolg 15/16, t_settle 6.75 s, ori 116.9 mrad (10.1 min)
+  Block  6: 1500 Episoden, Return -1686.7, Pruefpaare Erfolg 13/16, t_settle 7.19 s, ori 121.3 mrad (12.1 min)
+  Block  7: 1750 Episoden, Return -965.0, Pruefpaare Erfolg 16/16, t_settle 6.66 s, ori 124.8 mrad (14.2 min)
+  Block  8: 2000 Episoden, Return -842.1, Pruefpaare Erfolg 11/16, t_settle 9.03 s, ori 127.9 mrad (16.2 min)
+  Block  9: 2250 Episoden, Return -1325.4, Pruefpaare Erfolg 6/16, t_settle 12.02 s, ori 123.5 mrad (18.2 min)
+  Block 10: 2500 Episoden, Return -1523.3, Pruefpaare Erfolg 9/16, t_settle 10.52 s, ori 115.5 mrad (20.2 min)
+  Block 11: 2750 Episoden, Return -904.4, Pruefpaare Erfolg 9/16, t_settle 10.36 s, ori 129.6 mrad (22.2 min)
+  Block 12: 3000 Episoden, Return -1701.6, Pruefpaare Erfolg 6/16, t_settle 13.02 s, ori 116.1 mrad (24.2 min)
+X7-SP resdr Seed 0 fertig nach 24.2 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_B_S1_seed0.mat
+  S1 fertig (75.0 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7-SP resdr, Seed 0: beta 1, eps_v 0.020 m/s, eps_w 0.020 rad/s, w_res 0.50, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -972.1, Pruefpaare Erfolg 16/16, t_settle 6.00 s, ori 83.7 mrad (2.0 min)
+  Block  2:  500 Episoden, Return -1025.7, Pruefpaare Erfolg 16/16, t_settle 5.97 s, ori 88.2 mrad (4.0 min)
+  Block  3:  750 Episoden, Return -1362.9, Pruefpaare Erfolg 16/16, t_settle 6.06 s, ori 109.9 mrad (6.1 min)
+  Block  4: 1000 Episoden, Return -1580.1, Pruefpaare Erfolg 16/16, t_settle 6.24 s, ori 117.5 mrad (8.1 min)
+  Block  5: 1250 Episoden, Return -1159.1, Pruefpaare Erfolg 16/16, t_settle 6.08 s, ori 120.6 mrad (10.1 min)
+  Block  6: 1500 Episoden, Return -1719.5, Pruefpaare Erfolg 16/16, t_settle 6.55 s, ori 107.1 mrad (12.1 min)
+  Block  7: 1750 Episoden, Return -1002.6, Pruefpaare Erfolg 16/16, t_settle 6.63 s, ori 111.7 mrad (14.1 min)
+  Block  8: 2000 Episoden, Return -920.0, Pruefpaare Erfolg 15/16, t_settle 7.64 s, ori 109.0 mrad (16.2 min)
+  Block  9: 2250 Episoden, Return -1448.6, Pruefpaare Erfolg 9/16, t_settle 10.84 s, ori 111.7 mrad (18.2 min)
+  Block 10: 2500 Episoden, Return -1561.8, Pruefpaare Erfolg 9/16, t_settle 11.24 s, ori 115.0 mrad (20.2 min)
+  Block 11: 2750 Episoden, Return -1013.1, Pruefpaare Erfolg 7/16, t_settle 11.49 s, ori 120.5 mrad (22.3 min)
+  Block 12: 3000 Episoden, Return -1820.4, Pruefpaare Erfolg 8/16, t_settle 11.14 s, ori 121.5 mrad (24.3 min)
+X7-SP resdr Seed 0 fertig nach 24.3 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_B_S2_seed0.mat
+  S2 fertig (99.3 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7-SP res, Seed 0: beta 1, eps_v 0.020 m/s, eps_w 0.020 rad/s, w_res 0.10, DR none, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -856.2, Pruefpaare Erfolg 16/16, t_settle 6.08 s, ori 96.1 mrad (1.8 min)
+  Block  2:  500 Episoden, Return -918.5, Pruefpaare Erfolg 16/16, t_settle 6.02 s, ori 93.7 mrad (3.6 min)
+  Block  3:  750 Episoden, Return -1214.0, Pruefpaare Erfolg 16/16, t_settle 6.14 s, ori 103.5 mrad (5.4 min)
+  Block  4: 1000 Episoden, Return -1432.0, Pruefpaare Erfolg 16/16, t_settle 6.38 s, ori 106.3 mrad (7.2 min)
+  Block  5: 1250 Episoden, Return -1002.0, Pruefpaare Erfolg 16/16, t_settle 6.17 s, ori 113.4 mrad (9.0 min)
+  Block  6: 1500 Episoden, Return -1438.7, Pruefpaare Erfolg 16/16, t_settle 6.36 s, ori 110.0 mrad (10.8 min)
+  Block  7: 1750 Episoden, Return -851.2, Pruefpaare Erfolg 16/16, t_settle 6.48 s, ori 110.0 mrad (12.6 min)
+  Block  8: 2000 Episoden, Return -778.4, Pruefpaare Erfolg 12/16, t_settle 9.20 s, ori 113.5 mrad (14.4 min)
+  Block  9: 2250 Episoden, Return -1245.2, Pruefpaare Erfolg 8/16, t_settle 11.00 s, ori 112.0 mrad (16.3 min)
+  Block 10: 2500 Episoden, Return -1313.5, Pruefpaare Erfolg 4/16, t_settle 12.89 s, ori 114.2 mrad (18.1 min)
+  Block 11: 2750 Episoden, Return -889.8, Pruefpaare Erfolg 6/16, t_settle 12.23 s, ori 132.3 mrad (19.9 min)
+  Block 12: 3000 Episoden, Return -1708.9, Pruefpaare Erfolg 9/16, t_settle 11.43 s, ori 125.7 mrad (21.7 min)
+X7-SP res Seed 0 fertig nach 21.7 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_B_S3_seed0.mat
+  S3 fertig (121.0 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+     subject      success     t_mean    ori_mean      J   
+    __________    ________    ______    ________    ______
+
+    "R"            0.22917    13.035    0.081805         2
+    "S1_final"    0.020833    14.895     0.15529    3.0409
+    "S1_ep250"     0.22917    13.153     0.11453     2.409
+    "S2_final"       0.125    14.391     0.15538    3.0034
+    "S2_ep250"     0.22917    13.193     0.10663    2.3155
+    "S3_final"    0.020833    14.856     0.16218    3.1222
+    "S3_ep500"     0.22917    13.156     0.11651    2.4336
+
+B gewaehlt: S2_ep250 (best), J 2.316 gegen R 2.000
+=== C Bahn-Hauptlauf P_r4 (127.0 min) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7 res, Seed 1: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.10, DR none, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return 2510.6, nominal RMS 7.52 mm, ori_max 15.29 mrad, |Delta| 0.372 (1.1 min)
+  Block  2:  500 Episoden, Return 2636.5, nominal RMS 8.30 mm, ori_max 16.24 mrad, |Delta| 0.724 (2.3 min)
+  Block  3:  750 Episoden, Return 2643.8, nominal RMS 8.28 mm, ori_max 16.96 mrad, |Delta| 0.916 (3.4 min)
+  Block  4: 1000 Episoden, Return 2636.9, nominal RMS 8.75 mm, ori_max 16.51 mrad, |Delta| 0.976 (4.5 min)
+  Block  5: 1250 Episoden, Return 2619.6, nominal RMS 10.23 mm, ori_max 18.55 mrad, |Delta| 1.016 (5.7 min)
+  Block  6: 1500 Episoden, Return 2602.1, nominal RMS 11.38 mm, ori_max 17.05 mrad, |Delta| 1.098 (6.8 min)
+  Block  7: 1750 Episoden, Return 2602.1, nominal RMS 11.68 mm, ori_max 16.18 mrad, |Delta| 1.054 (8.0 min)
+  Block  8: 2000 Episoden, Return 2582.4, nominal RMS 12.07 mm, ori_max 16.73 mrad, |Delta| 1.079 (9.1 min)
+  Block  9: 2250 Episoden, Return 2634.3, nominal RMS 7.69 mm, ori_max 21.92 mrad, |Delta| 0.926 (10.2 min)
+  Block 10: 2500 Episoden, Return 2652.6, nominal RMS 7.37 mm, ori_max 15.79 mrad, |Delta| 0.813 (11.4 min)
+  Block 11: 2750 Episoden, Return 2658.7, nominal RMS 8.15 mm, ori_max 17.07 mrad, |Delta| 0.801 (12.5 min)
+  Block 12: 3000 Episoden, Return 2666.5, nominal RMS 7.12 mm, ori_max 17.94 mrad, |Delta| 0.794 (13.6 min)
+X7 res Seed 1 fertig nach 13.6 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed1.mat
+  Seed 1 fertig (140.6 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7 res, Seed 2: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.10, DR none, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return 2470.9, nominal RMS 9.66 mm, ori_max 14.58 mrad, |Delta| 0.400 (1.1 min)
+  Block  2:  500 Episoden, Return 2607.6, nominal RMS 10.03 mm, ori_max 17.84 mrad, |Delta| 0.726 (2.3 min)
+  Block  3:  750 Episoden, Return 2646.3, nominal RMS 10.39 mm, ori_max 19.58 mrad, |Delta| 0.955 (3.4 min)
+  Block  4: 1000 Episoden, Return 2669.6, nominal RMS 11.18 mm, ori_max 18.83 mrad, |Delta| 0.970 (4.6 min)
+  Block  5: 1250 Episoden, Return 2670.6, nominal RMS 9.96 mm, ori_max 17.55 mrad, |Delta| 0.972 (5.7 min)
+  Block  6: 1500 Episoden, Return 2668.0, nominal RMS 10.01 mm, ori_max 17.68 mrad, |Delta| 1.031 (6.8 min)
+  Block  7: 1750 Episoden, Return 2667.0, nominal RMS 9.26 mm, ori_max 17.12 mrad, |Delta| 1.031 (8.0 min)
+  Block  8: 2000 Episoden, Return 2666.9, nominal RMS 7.34 mm, ori_max 19.55 mrad, |Delta| 1.004 (9.1 min)
+  Block  9: 2250 Episoden, Return 2664.8, nominal RMS 5.85 mm, ori_max 17.97 mrad, |Delta| 0.954 (10.2 min)
+  Block 10: 2500 Episoden, Return 2665.7, nominal RMS 5.95 mm, ori_max 16.86 mrad, |Delta| 0.881 (11.4 min)
+  Block 11: 2750 Episoden, Return 2670.7, nominal RMS 6.65 mm, ori_max 13.64 mrad, |Delta| 0.810 (12.5 min)
+  Block 12: 3000 Episoden, Return 2667.9, nominal RMS 6.69 mm, ori_max 13.52 mrad, |Delta| 0.750 (13.6 min)
+X7 res Seed 2 fertig nach 13.6 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed2.mat
+  Seed 2 fertig (154.3 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7 res, Seed 3: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.10, DR none, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return 2461.3, nominal RMS 7.90 mm, ori_max 14.78 mrad, |Delta| 0.261 (1.1 min)
+  Block  2:  500 Episoden, Return 2601.2, nominal RMS 9.28 mm, ori_max 17.81 mrad, |Delta| 0.657 (2.3 min)
+  Block  3:  750 Episoden, Return 2648.3, nominal RMS 9.39 mm, ori_max 17.88 mrad, |Delta| 0.822 (3.4 min)
+  Block  4: 1000 Episoden, Return 2649.3, nominal RMS 9.73 mm, ori_max 16.35 mrad, |Delta| 0.889 (4.6 min)
+  Block  5: 1250 Episoden, Return 2643.8, nominal RMS 9.41 mm, ori_max 18.38 mrad, |Delta| 0.928 (5.7 min)
+  Block  6: 1500 Episoden, Return 2663.2, nominal RMS 8.70 mm, ori_max 17.21 mrad, |Delta| 0.922 (6.8 min)
+  Block  7: 1750 Episoden, Return 2666.0, nominal RMS 7.36 mm, ori_max 17.77 mrad, |Delta| 0.842 (8.0 min)
+  Block  8: 2000 Episoden, Return 2676.2, nominal RMS 5.73 mm, ori_max 17.91 mrad, |Delta| 0.680 (9.1 min)
+  Block  9: 2250 Episoden, Return 2675.0, nominal RMS 6.50 mm, ori_max 18.68 mrad, |Delta| 0.636 (10.2 min)
+  Block 10: 2500 Episoden, Return 2676.5, nominal RMS 6.62 mm, ori_max 16.18 mrad, |Delta| 0.630 (11.4 min)
+  Block 11: 2750 Episoden, Return 2673.2, nominal RMS 6.16 mm, ori_max 14.16 mrad, |Delta| 0.575 (12.5 min)
+  Block 12: 3000 Episoden, Return 2667.0, nominal RMS 6.06 mm, ori_max 14.40 mrad, |Delta| 0.616 (13.7 min)
+X7 res Seed 3 fertig nach 13.7 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed3.mat
+  Seed 3 fertig (168.0 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7 res, Seed 4: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.10, DR none, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return 2533.9, nominal RMS 5.77 mm, ori_max 17.98 mrad, |Delta| 0.411 (1.1 min)
+  Block  2:  500 Episoden, Return 2635.8, nominal RMS 8.80 mm, ori_max 16.26 mrad, |Delta| 0.651 (2.3 min)
+  Block  3:  750 Episoden, Return 2645.2, nominal RMS 8.96 mm, ori_max 19.06 mrad, |Delta| 0.802 (3.4 min)
+  Block  4: 1000 Episoden, Return 2661.8, nominal RMS 9.52 mm, ori_max 18.55 mrad, |Delta| 0.849 (4.6 min)
+  Block  5: 1250 Episoden, Return 2665.4, nominal RMS 9.54 mm, ori_max 20.86 mrad, |Delta| 0.870 (5.7 min)
+  Block  6: 1500 Episoden, Return 2670.0, nominal RMS 9.34 mm, ori_max 17.70 mrad, |Delta| 0.888 (6.8 min)
+  Block  7: 1750 Episoden, Return 2673.8, nominal RMS 8.46 mm, ori_max 17.69 mrad, |Delta| 0.912 (8.0 min)
+  Block  8: 2000 Episoden, Return 2674.5, nominal RMS 7.11 mm, ori_max 19.42 mrad, |Delta| 0.826 (9.1 min)
+  Block  9: 2250 Episoden, Return 2680.4, nominal RMS 6.20 mm, ori_max 16.70 mrad, |Delta| 0.740 (10.2 min)
+  Block 10: 2500 Episoden, Return 2681.6, nominal RMS 6.02 mm, ori_max 17.17 mrad, |Delta| 0.688 (11.4 min)
+  Block 11: 2750 Episoden, Return 2683.6, nominal RMS 6.29 mm, ori_max 15.14 mrad, |Delta| 0.619 (12.5 min)
+  Block 12: 3000 Episoden, Return 2685.9, nominal RMS 5.76 mm, ori_max 18.07 mrad, |Delta| 0.592 (13.6 min)
+X7 res Seed 4 fertig nach 13.6 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed4.mat
+  Seed 4 fertig (181.6 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7 res, Seed 5: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.10, DR none, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return 2496.5, nominal RMS 6.11 mm, ori_max 16.73 mrad, |Delta| 0.384 (1.1 min)
+  Block  2:  500 Episoden, Return 2632.9, nominal RMS 7.80 mm, ori_max 18.40 mrad, |Delta| 0.602 (2.3 min)
+  Block  3:  750 Episoden, Return 2677.7, nominal RMS 7.60 mm, ori_max 18.46 mrad, |Delta| 0.700 (3.4 min)
+  Block  4: 1000 Episoden, Return 2676.1, nominal RMS 7.19 mm, ori_max 16.15 mrad, |Delta| 0.740 (4.6 min)
+  Block  5: 1250 Episoden, Return 2679.1, nominal RMS 6.58 mm, ori_max 19.41 mrad, |Delta| 0.754 (5.7 min)
+  Block  6: 1500 Episoden, Return 2678.3, nominal RMS 6.68 mm, ori_max 18.63 mrad, |Delta| 0.739 (6.9 min)
+  Block  7: 1750 Episoden, Return 2682.8, nominal RMS 6.43 mm, ori_max 17.28 mrad, |Delta| 0.627 (8.0 min)
+  Block  8: 2000 Episoden, Return 2684.3, nominal RMS 6.69 mm, ori_max 15.95 mrad, |Delta| 0.582 (9.1 min)
+  Block  9: 2250 Episoden, Return 2687.2, nominal RMS 6.43 mm, ori_max 17.71 mrad, |Delta| 0.548 (10.3 min)
+  Block 10: 2500 Episoden, Return 2690.2, nominal RMS 6.79 mm, ori_max 16.44 mrad, |Delta| 0.508 (11.4 min)
+  Block 11: 2750 Episoden, Return 2689.5, nominal RMS 7.07 mm, ori_max 16.07 mrad, |Delta| 0.538 (12.5 min)
+  Block 12: 3000 Episoden, Return 2687.9, nominal RMS 6.91 mm, ori_max 17.34 mrad, |Delta| 0.526 (13.7 min)
+X7 res Seed 5 fertig nach 13.7 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed5.mat
+  Seed 5 fertig (195.3 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7 res, Seed 6: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.10, DR none, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return 2483.5, nominal RMS 6.86 mm, ori_max 17.04 mrad, |Delta| 0.341 (1.1 min)
+  Block  2:  500 Episoden, Return 2618.6, nominal RMS 9.27 mm, ori_max 17.41 mrad, |Delta| 0.537 (2.3 min)
+  Block  3:  750 Episoden, Return 2657.9, nominal RMS 9.01 mm, ori_max 17.51 mrad, |Delta| 0.699 (3.4 min)
+  Block  4: 1000 Episoden, Return 2659.9, nominal RMS 9.01 mm, ori_max 20.38 mrad, |Delta| 0.750 (4.5 min)
+  Block  5: 1250 Episoden, Return 2664.2, nominal RMS 9.40 mm, ori_max 21.48 mrad, |Delta| 0.790 (5.7 min)
+  Block  6: 1500 Episoden, Return 2641.8, nominal RMS 7.56 mm, ori_max 14.07 mrad, |Delta| 0.857 (6.8 min)
+  Block  7: 1750 Episoden, Return 2658.1, nominal RMS 5.67 mm, ori_max 17.25 mrad, |Delta| 0.683 (8.0 min)
+  Block  8: 2000 Episoden, Return 2647.7, nominal RMS 5.68 mm, ori_max 17.22 mrad, |Delta| 0.602 (9.1 min)
+  Block  9: 2250 Episoden, Return 2610.8, nominal RMS 5.96 mm, ori_max 25.29 mrad, |Delta| 0.739 (10.2 min)
+  Block 10: 2500 Episoden, Return 2633.9, nominal RMS 5.51 mm, ori_max 28.84 mrad, |Delta| 0.726 (11.4 min)
+  Block 11: 2750 Episoden, Return 2611.5, nominal RMS 7.63 mm, ori_max 24.36 mrad, |Delta| 0.939 (12.5 min)
+  Block 12: 3000 Episoden, Return 2550.6, nominal RMS 7.29 mm, ori_max 19.28 mrad, |Delta| 1.046 (13.7 min)
+X7 res Seed 6 fertig nach 13.7 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed6.mat
+  Seed 6 fertig (209.0 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7 res, Seed 7: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.10, DR none, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return 2473.3, nominal RMS 8.28 mm, ori_max 14.70 mrad, |Delta| 0.199 (1.1 min)
+  Block  2:  500 Episoden, Return 2576.6, nominal RMS 10.12 mm, ori_max 16.75 mrad, |Delta| 0.682 (2.3 min)
+  Block  3:  750 Episoden, Return 2636.2, nominal RMS 9.84 mm, ori_max 20.04 mrad, |Delta| 0.819 (3.4 min)
+  Block  4: 1000 Episoden, Return 2651.4, nominal RMS 10.18 mm, ori_max 17.13 mrad, |Delta| 0.926 (4.5 min)
+  Block  5: 1250 Episoden, Return 2654.5, nominal RMS 9.93 mm, ori_max 19.37 mrad, |Delta| 1.013 (5.7 min)
+  Block  6: 1500 Episoden, Return 2662.6, nominal RMS 9.92 mm, ori_max 21.41 mrad, |Delta| 1.035 (6.8 min)
+  Block  7: 1750 Episoden, Return 2662.0, nominal RMS 9.95 mm, ori_max 18.53 mrad, |Delta| 1.063 (8.0 min)
+  Block  8: 2000 Episoden, Return 2659.5, nominal RMS 10.08 mm, ori_max 17.76 mrad, |Delta| 1.093 (9.1 min)
+  Block  9: 2250 Episoden, Return 2661.5, nominal RMS 10.06 mm, ori_max 17.79 mrad, |Delta| 1.105 (10.2 min)
+  Block 10: 2500 Episoden, Return 2665.4, nominal RMS 8.99 mm, ori_max 16.85 mrad, |Delta| 1.090 (11.4 min)
+  Block 11: 2750 Episoden, Return 2667.5, nominal RMS 6.96 mm, ori_max 17.36 mrad, |Delta| 0.982 (12.5 min)
+  Block 12: 3000 Episoden, Return 2668.0, nominal RMS 6.12 mm, ori_max 17.13 mrad, |Delta| 0.839 (13.6 min)
+X7 res Seed 7 fertig nach 13.6 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed7.mat
+  Seed 7 fertig (222.6 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7 res, Seed 8: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.10, DR none, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return 2441.4, nominal RMS 8.40 mm, ori_max 13.65 mrad, |Delta| 0.219 (1.1 min)
+  Block  2:  500 Episoden, Return 2614.6, nominal RMS 9.37 mm, ori_max 18.51 mrad, |Delta| 0.677 (2.3 min)
+  Block  3:  750 Episoden, Return 2651.2, nominal RMS 9.05 mm, ori_max 19.93 mrad, |Delta| 0.853 (3.4 min)
+  Block  4: 1000 Episoden, Return 2658.4, nominal RMS 7.63 mm, ori_max 16.57 mrad, |Delta| 0.830 (4.5 min)
+  Block  5: 1250 Episoden, Return 2661.1, nominal RMS 8.18 mm, ori_max 20.16 mrad, |Delta| 0.946 (5.7 min)
+  Block  6: 1500 Episoden, Return 2654.0, nominal RMS 6.98 mm, ori_max 19.23 mrad, |Delta| 0.923 (6.8 min)
+  Block  7: 1750 Episoden, Return 2658.4, nominal RMS 6.39 mm, ori_max 19.20 mrad, |Delta| 0.841 (8.0 min)
+  Block  8: 2000 Episoden, Return 2656.5, nominal RMS 6.01 mm, ori_max 20.30 mrad, |Delta| 0.747 (9.1 min)
+  Block  9: 2250 Episoden, Return 2666.8, nominal RMS 5.88 mm, ori_max 16.55 mrad, |Delta| 0.626 (10.2 min)
+  Block 10: 2500 Episoden, Return 2675.1, nominal RMS 6.17 mm, ori_max 15.33 mrad, |Delta| 0.613 (11.4 min)
+  Block 11: 2750 Episoden, Return 2679.7, nominal RMS 6.58 mm, ori_max 13.92 mrad, |Delta| 0.572 (12.5 min)
+  Block 12: 3000 Episoden, Return 2679.0, nominal RMS 6.38 mm, ori_max 14.98 mrad, |Delta| 0.586 (13.6 min)
+X7 res Seed 8 fertig nach 13.6 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed8.mat
+  Seed 8 fertig (236.3 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7 res, Seed 9: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.10, DR none, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return 2502.2, nominal RMS 8.34 mm, ori_max 15.06 mrad, |Delta| 0.310 (1.1 min)
+  Block  2:  500 Episoden, Return 2639.8, nominal RMS 8.94 mm, ori_max 19.45 mrad, |Delta| 0.629 (2.3 min)
+  Block  3:  750 Episoden, Return 2661.2, nominal RMS 9.88 mm, ori_max 19.22 mrad, |Delta| 0.688 (3.4 min)
+  Block  4: 1000 Episoden, Return 2657.1, nominal RMS 9.74 mm, ori_max 24.35 mrad, |Delta| 0.694 (4.6 min)
+  Block  5: 1250 Episoden, Return 2674.7, nominal RMS 9.15 mm, ori_max 19.63 mrad, |Delta| 0.688 (5.7 min)
+  Block  6: 1500 Episoden, Return 2675.2, nominal RMS 8.13 mm, ori_max 18.23 mrad, |Delta| 0.724 (6.8 min)
+  Block  7: 1750 Episoden, Return 2679.3, nominal RMS 7.64 mm, ori_max 17.00 mrad, |Delta| 0.697 (8.0 min)
+  Block  8: 2000 Episoden, Return 2682.0, nominal RMS 6.48 mm, ori_max 15.12 mrad, |Delta| 0.599 (9.1 min)
+  Block  9: 2250 Episoden, Return 2686.7, nominal RMS 6.11 mm, ori_max 15.43 mrad, |Delta| 0.561 (10.2 min)
+  Block 10: 2500 Episoden, Return 2689.3, nominal RMS 6.06 mm, ori_max 15.61 mrad, |Delta| 0.533 (11.4 min)
+  Block 11: 2750 Episoden, Return 2689.8, nominal RMS 6.27 mm, ori_max 16.06 mrad, |Delta| 0.559 (12.5 min)
+  Block 12: 3000 Episoden, Return 2690.0, nominal RMS 6.65 mm, ori_max 14.80 mrad, |Delta| 0.545 (13.7 min)
+X7 res Seed 9 fertig nach 13.7 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed9.mat
+  Seed 9 fertig (249.9 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7 res, Seed 10: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.10, DR none, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return 2480.5, nominal RMS 7.12 mm, ori_max 15.41 mrad, |Delta| 0.290 (1.1 min)
+  Block  2:  500 Episoden, Return 2630.5, nominal RMS 9.19 mm, ori_max 16.66 mrad, |Delta| 0.767 (2.3 min)
+  Block  3:  750 Episoden, Return 2656.2, nominal RMS 9.53 mm, ori_max 20.97 mrad, |Delta| 0.907 (3.4 min)
+  Block  4: 1000 Episoden, Return 2652.7, nominal RMS 10.69 mm, ori_max 19.50 mrad, |Delta| 1.006 (4.6 min)
+  Block  5: 1250 Episoden, Return 2648.4, nominal RMS 10.44 mm, ori_max 20.03 mrad, |Delta| 1.008 (5.7 min)
+  Block  6: 1500 Episoden, Return 2658.8, nominal RMS 8.80 mm, ori_max 18.58 mrad, |Delta| 0.989 (6.8 min)
+  Block  7: 1750 Episoden, Return 2665.9, nominal RMS 6.93 mm, ori_max 16.93 mrad, |Delta| 0.853 (8.0 min)
+  Block  8: 2000 Episoden, Return 2669.2, nominal RMS 6.87 mm, ori_max 15.61 mrad, |Delta| 0.824 (9.1 min)
+  Block  9: 2250 Episoden, Return 2672.2, nominal RMS 5.90 mm, ori_max 15.66 mrad, |Delta| 0.639 (10.2 min)
+  Block 10: 2500 Episoden, Return 2672.8, nominal RMS 6.12 mm, ori_max 15.88 mrad, |Delta| 0.653 (11.4 min)
+  Block 11: 2750 Episoden, Return 2670.4, nominal RMS 6.24 mm, ori_max 15.32 mrad, |Delta| 0.668 (12.5 min)
+  Block 12: 3000 Episoden, Return 2670.0, nominal RMS 7.03 mm, ori_max 13.90 mrad, |Delta| 0.689 (13.7 min)
+X7 res Seed 10 fertig nach 13.7 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_C_P_r4_seed10.mat
+  Seed 10 fertig (263.6 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+     subject        group      follows     rms_ee      ep_q4_worst    ori_max     ori_max_worst    nom_rms_ee    nom_ori_max
+    __________    _________    _______    _________    ___________    ________    _____________    __________    ___________
+
+    "P_r4_s1"     "res_res"       1       0.0081413     0.0081748      0.01952      0.025921        0.007118      0.017944  
+    "P_r4_s10"    "res_res"       1        0.007948     0.0083541     0.015756      0.019048       0.0070276      0.013902  
+    "P_r4_s2"     "res_res"       1        0.007607     0.0080472     0.015263      0.019044        0.006689      0.013521  
+    "P_r4_s3"     "res_res"       1       0.0070598     0.0062153     0.016657      0.020795       0.0060621      0.014404  
+    "P_r4_s4"     "res_res"       1       0.0067556     0.0043176     0.019334      0.025619       0.0057555      0.018067  
+    "P_r4_s5"     "res_res"       1       0.0072891     0.0040555     0.018207      0.022514       0.0069079      0.017336  
+    "P_r4_s6"     "res_res"       1       0.0085932     0.0053303     0.021652      0.030318       0.0072939      0.019278  
+    "P_r4_s7"     "res_res"       1       0.0069321     0.0052142      0.01827      0.023871       0.0061181      0.017131  
+    "P_r4_s8"     "res_res"       1       0.0073543     0.0066028     0.016386      0.020449       0.0063771       0.01498  
+    "P_r4_s9"     "res_res"       1        0.007588     0.0073588     0.015973      0.020446       0.0066528      0.014799  
+    "R"           "ctrl"          1       0.0098836      0.014063     0.014812      0.019532       0.0089869      0.012982  
+
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+nominal        fertig (0.1 min)
+mass_0.25      fertig (0.2 min)
+mass_0.5       fertig (0.3 min)
+mass_0.75      fertig (0.4 min)
+mass_1.5       fertig (0.5 min)
+mass_2         fertig (0.6 min)
+inertia_0.5    fertig (0.7 min)
+inertia_2      fertig (0.8 min)
+links_0.8      fertig (0.9 min)
+links_1.2      fertig (1.0 min)
+mount_x+5cm    fertig (1.1 min)
+mount_x-5cm    fertig (1.2 min)
+mount_z+5cm    fertig (1.3 min)
+delay_25ms     fertig (1.4 min)
+delay_50ms     fertig (1.4 min)
+gain_0.9       fertig (1.5 min)
+gain_1.1       fertig (1.6 min)
+servo_tau50ms  fertig (1.7 min)
+noise_1x       fertig (2.2 min)
+noise_3x       fertig (2.7 min)
+bias_ori_10mrad fertig (2.8 min)
+bias_ee_5mm    fertig (2.9 min)
+pose_2deg      fertig (3.4 min)
+drift_y+2mrad  fertig (3.4 min)
+drift_y-2mrad  fertig (3.5 min)
+drift_x2mrad   fertig (3.6 min)
+532 Episoden in 3.6 min
+Ergebnis: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X7_C_robust_20261115_061011_*.csv
+=== D Set-Point-Hauptlauf S2 (270.1 min) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7-SP resdr, Seed 1: beta 1, eps_v 0.020 m/s, eps_w 0.020 rad/s, w_res 0.50, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -1120.1, Pruefpaare Erfolg 16/16, t_settle 5.82 s, ori 95.3 mrad (2.0 min)
+  Block  2:  500 Episoden, Return -1252.0, Pruefpaare Erfolg 16/16, t_settle 6.04 s, ori 103.4 mrad (4.0 min)
+  Block  3:  750 Episoden, Return -1381.2, Pruefpaare Erfolg 16/16, t_settle 6.04 s, ori 111.0 mrad (6.0 min)
+  Block  4: 1000 Episoden, Return -1369.2, Pruefpaare Erfolg 16/16, t_settle 6.07 s, ori 111.0 mrad (8.1 min)
+  Block  5: 1250 Episoden, Return -1639.7, Pruefpaare Erfolg 12/16, t_settle 8.42 s, ori 107.8 mrad (10.1 min)
+  Block  6: 1500 Episoden, Return -1040.2, Pruefpaare Erfolg 13/16, t_settle 7.93 s, ori 116.9 mrad (12.1 min)
+  Block  7: 1750 Episoden, Return -1797.8, Pruefpaare Erfolg 10/16, t_settle 9.75 s, ori 118.0 mrad (14.1 min)
+  Block  8: 2000 Episoden, Return -1205.2, Pruefpaare Erfolg 10/16, t_settle 10.00 s, ori 113.0 mrad (16.1 min)
+  Block  9: 2250 Episoden, Return -1508.6, Pruefpaare Erfolg 11/16, t_settle 9.74 s, ori 114.6 mrad (18.2 min)
+  Block 10: 2500 Episoden, Return -1502.6, Pruefpaare Erfolg 7/16, t_settle 11.55 s, ori 119.6 mrad (20.2 min)
+  Block 11: 2750 Episoden, Return -1516.6, Pruefpaare Erfolg 6/16, t_settle 12.27 s, ori 121.6 mrad (22.2 min)
+  Block 12: 3000 Episoden, Return -1454.4, Pruefpaare Erfolg 3/16, t_settle 13.42 s, ori 119.8 mrad (24.3 min)
+X7-SP resdr Seed 1 fertig nach 24.3 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_D_S2_seed1.mat
+  Seed 1 fertig (294.4 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7-SP resdr, Seed 2: beta 1, eps_v 0.020 m/s, eps_w 0.020 rad/s, w_res 0.50, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -1235.0, Pruefpaare Erfolg 16/16, t_settle 6.08 s, ori 78.9 mrad (2.0 min)
+  Block  2:  500 Episoden, Return -1271.3, Pruefpaare Erfolg 16/16, t_settle 6.16 s, ori 101.6 mrad (4.0 min)
+  Block  3:  750 Episoden, Return -1397.1, Pruefpaare Erfolg 16/16, t_settle 6.22 s, ori 96.7 mrad (6.1 min)
+  Block  4: 1000 Episoden, Return -1873.6, Pruefpaare Erfolg 16/16, t_settle 6.22 s, ori 105.8 mrad (8.1 min)
+  Block  5: 1250 Episoden, Return -1276.3, Pruefpaare Erfolg 13/16, t_settle 7.99 s, ori 103.3 mrad (10.1 min)
+  Block  6: 1500 Episoden, Return -856.5, Pruefpaare Erfolg 13/16, t_settle 8.13 s, ori 120.7 mrad (12.1 min)
+  Block  7: 1750 Episoden, Return -1718.7, Pruefpaare Erfolg 11/16, t_settle 9.97 s, ori 121.4 mrad (14.2 min)
+  Block  8: 2000 Episoden, Return -1338.5, Pruefpaare Erfolg 9/16, t_settle 10.36 s, ori 118.2 mrad (16.2 min)
+  Block  9: 2250 Episoden, Return -1297.9, Pruefpaare Erfolg 10/16, t_settle 10.39 s, ori 116.2 mrad (18.2 min)
+  Block 10: 2500 Episoden, Return -959.1, Pruefpaare Erfolg 8/16, t_settle 11.15 s, ori 114.5 mrad (20.2 min)
+  Block 11: 2750 Episoden, Return -1166.4, Pruefpaare Erfolg 9/16, t_settle 11.21 s, ori 115.4 mrad (22.3 min)
+  Block 12: 3000 Episoden, Return -1320.4, Pruefpaare Erfolg 10/16, t_settle 10.11 s, ori 122.3 mrad (24.3 min)
+X7-SP resdr Seed 2 fertig nach 24.3 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_D_S2_seed2.mat
+  Seed 2 fertig (318.7 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7-SP resdr, Seed 3: beta 1, eps_v 0.020 m/s, eps_w 0.020 rad/s, w_res 0.50, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -1276.7, Pruefpaare Erfolg 16/16, t_settle 6.05 s, ori 94.8 mrad (2.0 min)
+  Block  2:  500 Episoden, Return -1103.2, Pruefpaare Erfolg 16/16, t_settle 6.08 s, ori 110.5 mrad (4.1 min)
+  Block  3:  750 Episoden, Return -1797.3, Pruefpaare Erfolg 16/16, t_settle 6.31 s, ori 108.8 mrad (6.1 min)
+  Block  4: 1000 Episoden, Return -1072.3, Pruefpaare Erfolg 14/16, t_settle 6.88 s, ori 105.7 mrad (8.1 min)
+  Block  5: 1250 Episoden, Return -1066.1, Pruefpaare Erfolg 16/16, t_settle 5.98 s, ori 105.2 mrad (10.1 min)
+  Block  6: 1500 Episoden, Return -1495.7, Pruefpaare Erfolg 15/16, t_settle 6.38 s, ori 107.9 mrad (12.2 min)
+  Block  7: 1750 Episoden, Return -1283.7, Pruefpaare Erfolg 15/16, t_settle 6.95 s, ori 109.6 mrad (14.2 min)
+  Block  8: 2000 Episoden, Return -1649.8, Pruefpaare Erfolg 13/16, t_settle 7.83 s, ori 112.1 mrad (16.2 min)
+  Block  9: 2250 Episoden, Return -1459.1, Pruefpaare Erfolg 13/16, t_settle 8.09 s, ori 113.1 mrad (18.3 min)
+  Block 10: 2500 Episoden, Return -1314.2, Pruefpaare Erfolg 11/16, t_settle 9.48 s, ori 113.4 mrad (20.3 min)
+  Block 11: 2750 Episoden, Return -1457.8, Pruefpaare Erfolg 5/16, t_settle 12.15 s, ori 119.8 mrad (22.3 min)
+  Block 12: 3000 Episoden, Return -1418.6, Pruefpaare Erfolg 9/16, t_settle 10.72 s, ori 127.8 mrad (24.4 min)
+X7-SP resdr Seed 3 fertig nach 24.4 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_D_S2_seed3.mat
+  Seed 3 fertig (343.1 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7-SP resdr, Seed 4: beta 1, eps_v 0.020 m/s, eps_w 0.020 rad/s, w_res 0.50, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -936.3, Pruefpaare Erfolg 16/16, t_settle 6.10 s, ori 87.9 mrad (2.0 min)
+  Block  2:  500 Episoden, Return -1496.3, Pruefpaare Erfolg 16/16, t_settle 6.22 s, ori 102.2 mrad (4.1 min)
+  Block  3:  750 Episoden, Return -1806.4, Pruefpaare Erfolg 16/16, t_settle 6.30 s, ori 110.5 mrad (6.1 min)
+  Block  4: 1000 Episoden, Return -848.8, Pruefpaare Erfolg 16/16, t_settle 6.28 s, ori 97.7 mrad (8.1 min)
+  Block  5: 1250 Episoden, Return -1041.6, Pruefpaare Erfolg 16/16, t_settle 6.73 s, ori 117.6 mrad (10.2 min)
+  Block  6: 1500 Episoden, Return -1011.8, Pruefpaare Erfolg 13/16, t_settle 8.62 s, ori 122.0 mrad (12.2 min)
+  Block  7: 1750 Episoden, Return -1348.8, Pruefpaare Erfolg 12/16, t_settle 9.57 s, ori 123.0 mrad (14.3 min)
+  Block  8: 2000 Episoden, Return -1580.9, Pruefpaare Erfolg 12/16, t_settle 8.42 s, ori 113.1 mrad (16.3 min)
+  Block  9: 2250 Episoden, Return -1174.8, Pruefpaare Erfolg 9/16, t_settle 10.85 s, ori 120.7 mrad (18.3 min)
+  Block 10: 2500 Episoden, Return -1536.9, Pruefpaare Erfolg 4/16, t_settle 13.53 s, ori 121.2 mrad (20.4 min)
+  Block 11: 2750 Episoden, Return -1340.9, Pruefpaare Erfolg 5/16, t_settle 13.00 s, ori 121.1 mrad (22.4 min)
+  Block 12: 3000 Episoden, Return -688.5, Pruefpaare Erfolg 6/16, t_settle 12.48 s, ori 121.1 mrad (24.5 min)
+X7-SP resdr Seed 4 fertig nach 24.5 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_D_S2_seed4.mat
+  Seed 4 fertig (367.6 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7-SP resdr, Seed 5: beta 1, eps_v 0.020 m/s, eps_w 0.020 rad/s, w_res 0.50, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -1407.8, Pruefpaare Erfolg 16/16, t_settle 5.95 s, ori 88.6 mrad (2.0 min)
+  Block  2:  500 Episoden, Return -1519.4, Pruefpaare Erfolg 16/16, t_settle 5.92 s, ori 97.9 mrad (4.1 min)
+  Block  3:  750 Episoden, Return -924.7, Pruefpaare Erfolg 16/16, t_settle 6.08 s, ori 101.9 mrad (6.1 min)
+  Block  4: 1000 Episoden, Return -1637.9, Pruefpaare Erfolg 15/16, t_settle 6.40 s, ori 110.7 mrad (8.1 min)
+  Block  5: 1250 Episoden, Return -1239.5, Pruefpaare Erfolg 16/16, t_settle 6.15 s, ori 115.4 mrad (10.2 min)
+  Block  6: 1500 Episoden, Return -1294.0, Pruefpaare Erfolg 14/16, t_settle 7.33 s, ori 114.7 mrad (12.2 min)
+  Block  7: 1750 Episoden, Return -1348.9, Pruefpaare Erfolg 14/16, t_settle 7.88 s, ori 113.7 mrad (14.3 min)
+  Block  8: 2000 Episoden, Return -755.6, Pruefpaare Erfolg 10/16, t_settle 10.15 s, ori 121.9 mrad (16.3 min)
+  Block  9: 2250 Episoden, Return -1430.9, Pruefpaare Erfolg 11/16, t_settle 10.05 s, ori 125.5 mrad (18.3 min)
+  Block 10: 2500 Episoden, Return -1145.1, Pruefpaare Erfolg 9/16, t_settle 10.80 s, ori 124.2 mrad (20.4 min)
+  Block 11: 2750 Episoden, Return -1129.0, Pruefpaare Erfolg 2/16, t_settle 13.97 s, ori 123.1 mrad (22.5 min)
+  Block 12: 3000 Episoden, Return -1132.5, Pruefpaare Erfolg 3/16, t_settle 14.00 s, ori 116.1 mrad (24.5 min)
+X7-SP resdr Seed 5 fertig nach 24.5 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_D_S2_seed5.mat
+  Seed 5 fertig (392.1 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7-SP resdr, Seed 6: beta 1, eps_v 0.020 m/s, eps_w 0.020 rad/s, w_res 0.50, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -721.8, Pruefpaare Erfolg 16/16, t_settle 6.00 s, ori 75.3 mrad (2.0 min)
+  Block  2:  500 Episoden, Return -1325.9, Pruefpaare Erfolg 16/16, t_settle 6.15 s, ori 82.0 mrad (4.1 min)
+  Block  3:  750 Episoden, Return -1217.2, Pruefpaare Erfolg 16/16, t_settle 6.24 s, ori 99.0 mrad (6.1 min)
+  Block  4: 1000 Episoden, Return -1679.2, Pruefpaare Erfolg 16/16, t_settle 6.18 s, ori 104.6 mrad (8.2 min)
+  Block  5: 1250 Episoden, Return -1145.4, Pruefpaare Erfolg 16/16, t_settle 6.25 s, ori 109.7 mrad (10.2 min)
+  Block  6: 1500 Episoden, Return -1423.8, Pruefpaare Erfolg 15/16, t_settle 6.73 s, ori 103.7 mrad (12.2 min)
+  Block  7: 1750 Episoden, Return -1177.3, Pruefpaare Erfolg 14/16, t_settle 7.50 s, ori 107.6 mrad (14.3 min)
+  Block  8: 2000 Episoden, Return -1331.0, Pruefpaare Erfolg 15/16, t_settle 6.76 s, ori 112.9 mrad (16.3 min)
+  Block  9: 2250 Episoden, Return -1550.7, Pruefpaare Erfolg 11/16, t_settle 9.47 s, ori 119.0 mrad (18.3 min)
+  Block 10: 2500 Episoden, Return -1697.5, Pruefpaare Erfolg 5/16, t_settle 12.70 s, ori 114.7 mrad (20.4 min)
+  Block 11: 2750 Episoden, Return -1516.8, Pruefpaare Erfolg 5/16, t_settle 12.72 s, ori 115.6 mrad (22.5 min)
+  Block 12: 3000 Episoden, Return -1506.7, Pruefpaare Erfolg 3/16, t_settle 13.77 s, ori 119.7 mrad (24.6 min)
+X7-SP resdr Seed 6 fertig nach 24.6 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_D_S2_seed6.mat
+  Seed 6 fertig (416.7 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7-SP resdr, Seed 7: beta 1, eps_v 0.020 m/s, eps_w 0.020 rad/s, w_res 0.50, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -923.6, Pruefpaare Erfolg 16/16, t_settle 5.98 s, ori 85.9 mrad (2.0 min)
+  Block  2:  500 Episoden, Return -886.8, Pruefpaare Erfolg 16/16, t_settle 6.05 s, ori 112.6 mrad (4.1 min)
+  Block  3:  750 Episoden, Return -967.8, Pruefpaare Erfolg 16/16, t_settle 6.22 s, ori 107.3 mrad (6.1 min)
+  Block  4: 1000 Episoden, Return -1374.2, Pruefpaare Erfolg 16/16, t_settle 5.94 s, ori 115.0 mrad (8.2 min)
+  Block  5: 1250 Episoden, Return -1869.7, Pruefpaare Erfolg 16/16, t_settle 5.92 s, ori 118.4 mrad (10.2 min)
+  Block  6: 1500 Episoden, Return -1598.0, Pruefpaare Erfolg 15/16, t_settle 7.14 s, ori 118.3 mrad (12.2 min)
+  Block  7: 1750 Episoden, Return -1211.5, Pruefpaare Erfolg 14/16, t_settle 7.43 s, ori 118.9 mrad (14.3 min)
+  Block  8: 2000 Episoden, Return -1704.1, Pruefpaare Erfolg 11/16, t_settle 9.06 s, ori 115.1 mrad (16.3 min)
+  Block  9: 2250 Episoden, Return -1136.6, Pruefpaare Erfolg 11/16, t_settle 9.72 s, ori 115.3 mrad (18.4 min)
+  Block 10: 2500 Episoden, Return -1518.1, Pruefpaare Erfolg 14/16, t_settle 8.55 s, ori 120.5 mrad (20.4 min)
+  Block 11: 2750 Episoden, Return -1207.6, Pruefpaare Erfolg 11/16, t_settle 9.56 s, ori 120.9 mrad (22.4 min)
+  Block 12: 3000 Episoden, Return -1679.6, Pruefpaare Erfolg 7/16, t_settle 11.49 s, ori 121.7 mrad (24.5 min)
+X7-SP resdr Seed 7 fertig nach 24.5 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_D_S2_seed7.mat
+  Seed 7 fertig (441.2 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7-SP resdr, Seed 8: beta 1, eps_v 0.020 m/s, eps_w 0.020 rad/s, w_res 0.50, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -1097.9, Pruefpaare Erfolg 16/16, t_settle 6.12 s, ori 89.2 mrad (2.0 min)
+  Block  2:  500 Episoden, Return -1118.4, Pruefpaare Erfolg 16/16, t_settle 6.08 s, ori 108.3 mrad (4.1 min)
+  Block  3:  750 Episoden, Return -1272.3, Pruefpaare Erfolg 16/16, t_settle 6.00 s, ori 108.3 mrad (6.3 min)
+  Block  4: 1000 Episoden, Return -1504.8, Pruefpaare Erfolg 16/16, t_settle 6.09 s, ori 95.2 mrad (8.3 min)
+  Block  5: 1250 Episoden, Return -1307.3, Pruefpaare Erfolg 16/16, t_settle 6.22 s, ori 118.2 mrad (10.4 min)
+  Block  6: 1500 Episoden, Return -1323.2, Pruefpaare Erfolg 13/16, t_settle 7.98 s, ori 114.9 mrad (12.4 min)
+  Block  7: 1750 Episoden, Return -881.1, Pruefpaare Erfolg 10/16, t_settle 9.45 s, ori 116.8 mrad (14.4 min)
+  Block  8: 2000 Episoden, Return -1493.0, Pruefpaare Erfolg 9/16, t_settle 9.94 s, ori 113.2 mrad (16.5 min)
+  Block  9: 2250 Episoden, Return -1541.3, Pruefpaare Erfolg 6/16, t_settle 11.78 s, ori 115.3 mrad (18.5 min)
+  Block 10: 2500 Episoden, Return -997.1, Pruefpaare Erfolg 12/16, t_settle 9.76 s, ori 121.3 mrad (20.6 min)
+  Block 11: 2750 Episoden, Return -1679.1, Pruefpaare Erfolg 5/16, t_settle 13.02 s, ori 119.8 mrad (22.6 min)
+  Block 12: 3000 Episoden, Return -1501.2, Pruefpaare Erfolg 4/16, t_settle 13.06 s, ori 119.1 mrad (24.7 min)
+X7-SP resdr Seed 8 fertig nach 24.7 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_D_S2_seed8.mat
+  Seed 8 fertig (465.9 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7-SP resdr, Seed 9: beta 1, eps_v 0.020 m/s, eps_w 0.020 rad/s, w_res 0.50, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -1130.2, Pruefpaare Erfolg 16/16, t_settle 5.97 s, ori 95.1 mrad (2.0 min)
+  Block  2:  500 Episoden, Return -905.8, Pruefpaare Erfolg 16/16, t_settle 6.13 s, ori 100.7 mrad (4.1 min)
+  Block  3:  750 Episoden, Return -1295.4, Pruefpaare Erfolg 16/16, t_settle 6.28 s, ori 97.7 mrad (6.1 min)
+  Block  4: 1000 Episoden, Return -1837.1, Pruefpaare Erfolg 16/16, t_settle 5.99 s, ori 90.4 mrad (8.2 min)
+  Block  5: 1250 Episoden, Return -1433.7, Pruefpaare Erfolg 16/16, t_settle 6.11 s, ori 99.5 mrad (10.2 min)
+  Block  6: 1500 Episoden, Return -1454.8, Pruefpaare Erfolg 16/16, t_settle 6.21 s, ori 110.9 mrad (12.3 min)
+  Block  7: 1750 Episoden, Return -1014.6, Pruefpaare Erfolg 16/16, t_settle 6.10 s, ori 107.5 mrad (14.3 min)
+  Block  8: 2000 Episoden, Return -1139.2, Pruefpaare Erfolg 15/16, t_settle 6.98 s, ori 106.8 mrad (16.3 min)
+  Block  9: 2250 Episoden, Return -1190.5, Pruefpaare Erfolg 14/16, t_settle 7.96 s, ori 114.3 mrad (18.4 min)
+  Block 10: 2500 Episoden, Return -1258.6, Pruefpaare Erfolg 10/16, t_settle 9.78 s, ori 114.3 mrad (20.4 min)
+  Block 11: 2750 Episoden, Return -1736.6, Pruefpaare Erfolg 8/16, t_settle 11.05 s, ori 113.5 mrad (22.5 min)
+  Block 12: 3000 Episoden, Return -1678.9, Pruefpaare Erfolg 6/16, t_settle 11.77 s, ori 122.2 mrad (24.5 min)
+X7-SP resdr Seed 9 fertig nach 24.5 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_D_S2_seed9.mat
+  Seed 9 fertig (490.4 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7-SP resdr, Seed 10: beta 1, eps_v 0.020 m/s, eps_w 0.020 rad/s, w_res 0.50, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return -1012.5, Pruefpaare Erfolg 16/16, t_settle 6.10 s, ori 90.9 mrad (2.0 min)
+  Block  2:  500 Episoden, Return -1162.2, Pruefpaare Erfolg 16/16, t_settle 5.99 s, ori 93.8 mrad (4.1 min)
+  Block  3:  750 Episoden, Return -1282.6, Pruefpaare Erfolg 16/16, t_settle 6.02 s, ori 91.1 mrad (6.1 min)
+  Block  4: 1000 Episoden, Return -1611.2, Pruefpaare Erfolg 14/16, t_settle 7.36 s, ori 102.8 mrad (8.2 min)
+  Block  5: 1250 Episoden, Return -1204.8, Pruefpaare Erfolg 11/16, t_settle 8.79 s, ori 110.1 mrad (10.2 min)
+  Block  6: 1500 Episoden, Return -1085.0, Pruefpaare Erfolg 12/16, t_settle 9.05 s, ori 111.7 mrad (12.3 min)
+  Block  7: 1750 Episoden, Return -1656.0, Pruefpaare Erfolg 11/16, t_settle 9.34 s, ori 120.0 mrad (14.3 min)
+  Block  8: 2000 Episoden, Return -1220.6, Pruefpaare Erfolg 12/16, t_settle 9.04 s, ori 120.3 mrad (16.4 min)
+  Block  9: 2250 Episoden, Return -570.2, Pruefpaare Erfolg 11/16, t_settle 8.98 s, ori 125.5 mrad (18.4 min)
+  Block 10: 2500 Episoden, Return -1749.9, Pruefpaare Erfolg 12/16, t_settle 9.67 s, ori 122.2 mrad (20.5 min)
+  Block 11: 2750 Episoden, Return -950.3, Pruefpaare Erfolg 9/16, t_settle 10.90 s, ori 118.1 mrad (22.6 min)
+  Block 12: 3000 Episoden, Return -1180.9, Pruefpaare Erfolg 7/16, t_settle 11.89 s, ori 125.2 mrad (24.6 min)
+X7-SP resdr Seed 10 fertig nach 24.6 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_D_S2_seed10.mat
+  Seed 10 fertig (515.1 min)
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+nominal          fertig (4.7 min)
+mass_0.25        fertig (9.5 min)
+mass_0.5         fertig (14.3 min)
+mass_0.75        fertig (19.3 min)
+mass_1.5         fertig (24.4 min)
+mass_2           fertig (29.5 min)
+inertia_0.5      fertig (34.5 min)
+inertia_2        fertig (39.2 min)
+links_0.8        fertig (44.0 min)
+links_1.2        fertig (48.8 min)
+mount_x+5cm      fertig (53.6 min)
+mount_x-5cm      fertig (58.4 min)
+mount_z+5cm      fertig (63.2 min)
+delay_50ms       fertig (68.0 min)
+delay_100ms      fertig (72.8 min)
+gain_0.9         fertig (77.6 min)
+gain_1.1         fertig (82.3 min)
+servo_tau50ms    fertig (87.0 min)
+noise_1x         fertig (91.8 min)
+noise_3x         fertig (96.9 min)
+bias_ori_10mrad  fertig (101.6 min)
+bias_ee_5mm      fertig (106.3 min)
+pose_2deg        fertig (111.0 min)
+drift_y+2mrad    fertig (115.7 min)
+drift_y-2mrad    fertig (120.5 min)
+drift_x2mrad     fertig (125.2 min)
+36400 Laeufe in 125.2 min, Bezug ori_R 64.1 mrad, t_R 4.68 s
+Ergebnis: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X7sp_D_20261115_122024_*.csv
+=== X7-Nachtkette fertig nach 10.7 h ===

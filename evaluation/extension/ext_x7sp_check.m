@@ -6,6 +6,7 @@ function T = ext_x7sp_check()
 %   2  ext_x7sp_env mit fester, beobachtungsabhaengiger Korrektur gegen ext_kinsim mit ext_x7sp_ctrl und derselben
 %      Korrektur, zwei Paare, nominal und kombiniert (Masse, Verzoegerung, Verstaerkung, Rauschen). Bitgleich.
 %   3  Laufzeit einer Episode.
+%   Teil 2 je Szenario ohne und mit gate (mit gate Reward 'ref', X7.4).
 
 setup_project;
 [C, Knom, qHw] = ext_x7sp_setup();
@@ -34,18 +35,23 @@ for ip = 1:numel(prs)
     r2 = ext_kinsim([], 'ctrl', ext_x7sp_ctrl(@(ob) zeros(6, 1), pr.pT, Tm), kargs{:}, 'K', Knom);
     rows{end + 1} = row(sprintf("1 Paar %d Regler gegen Korrektur null", pr.id), r1.ts.q, r2.ts.q); %#ok<AGROW>
     for s = 1:size(scen, 1)
-        env = ext_x7sp_env(pr, 'scenario', scen{s, 2}, 'sequential', true);
-        ob = reset(env); done = false; t0 = tic;
-        while ~done, [ob, ~, done] = step(env, dfun(ob)); end
-        tEp = toc(t0);
-        L = env.LoggedSignals;
-        qE = L.S.qS(1:L.S.k * L.S.m + 1, :);
-        sa = scen{s, 3};
-        if isempty(sa), sa = {'K', Knom}; end
-        rk = ext_kinsim([], 'ctrl', ext_x7sp_ctrl(dfun, pr.pT, Tm), kargs{:}, sa{:});
-        rows{end + 1} = row(sprintf("2 Paar %d Umgebung gegen ext_kinsim, %s", pr.id, scen{s, 1}), rk.ts.q, qE); %#ok<AGROW>
-        fprintf('  Paar %d %s: %d Schritte, %.2f s, ori_max %.1f mrad\n', pr.id, scen{s, 1}, L.S.k, tEp, ...
-                1000 * max(L.S.oriS(1:L.S.k * L.S.m + 1)));
+        for gt = [false true]
+            rw = 'goal';
+            if gt, rw = 'ref'; end
+            env = ext_x7sp_env(pr, 'scenario', scen{s, 2}, 'sequential', true, 'gate', gt, 'reward', rw);
+            ob = reset(env); done = false; t0 = tic;
+            while ~done, [ob, ~, done] = step(env, dfun(ob)); end
+            tEp = toc(t0);
+            L = env.LoggedSignals;
+            qE = L.S.qS(1:L.S.k * L.S.m + 1, :);
+            sa = scen{s, 3};
+            if isempty(sa), sa = {'K', Knom}; end
+            rk = ext_kinsim([], 'ctrl', ext_x7sp_ctrl(dfun, pr.pT, Tm, 'gate', gt), kargs{:}, sa{:});
+            rows{end + 1} = row(sprintf("2 Paar %d Umgebung gegen ext_kinsim, %s, gate %d", pr.id, scen{s, 1}, ...
+                                        gt), rk.ts.q, qE); %#ok<AGROW>
+            fprintf('  Paar %d %s gate %d: %d Schritte, %.2f s, ori_max %.1f mrad\n', pr.id, scen{s, 1}, gt, ...
+                    L.S.k, tEp, 1000 * max(L.S.oriS(1:L.S.k * L.S.m + 1)));
+        end
     end
 end
 T = struct2table([rows{:}]);
