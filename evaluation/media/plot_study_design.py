@@ -9,10 +9,13 @@ Schematic, no data. Same style as fig/src/plot_pipeline.py in the paper repo (fi
              emulation (X3, base states computed from the measured joints)
   metrics    EE error RMS, largest base rotation, follows the path (X0.1), compared with the controller front (X2.2)
 Output (Matlab repo): media/figures/study_design.{pdf,png}
+With --residual (15.11.2026): a third policy between the two, residual RL (X7, PPO corrects the set points of the
+controller), output media/figures/study_design_res.{pdf,png}.
 
-Usage: python evaluation/media/plot_study_design.py
+Usage: python evaluation/media/plot_study_design.py [--residual]
 """
 import os
+import sys
 
 import matplotlib
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
@@ -57,10 +60,23 @@ for x, t in [(11.5, 'Policies'), (48.75, 'Shared command interface'), (88.0, 'Pl
     ax.text(x, 40.6, t, fontsize=7.5, fontweight='bold', ha='center', va='center', color=INK)
 
 # Policies
-box(1.5, 23.5, 20, 9.5, 'RL agent (PPO)\nreward: tracking plus a base\nterm, or a base budget\n(Lagrange multiplier)', C_POL)
-box(1.5, 9.5, 20, 9.5, 'Model-based controller\ngeneralized Jacobian,\nnull space with weight β,\ninverts the command chain', C_POL)
-ax.text(11.5, 21.25, 'same observation, same outputs', fontsize=6, color=INK2, ha='center', va='center',
-        style='italic')
+RES = '--residual' in sys.argv
+if RES:
+    ys = [30.75, 19.25, 7.75]
+    box(1.5, 26.0, 20, 9.5, 'RL agent (PPO)\nreward: tracking plus a base\nterm, or a base budget\n(Lagrange multiplier)',
+        C_POL)
+    box(1.5, 14.5, 20, 9.5, 'Residual RL\nmodel-based controller plus a\nlearned, bounded correction of\nits set points (PPO)',
+        '#fdf3dc', ec='#c98500')
+    box(1.5, 3.0, 20, 9.5, 'Model-based controller\ngeneralized Jacobian,\nnull space with weight β,\ninverts the command chain',
+        C_POL)
+else:
+    ys = [28.25, 14.25]
+    box(1.5, 23.5, 20, 9.5, 'RL agent (PPO)\nreward: tracking plus a base\nterm, or a base budget\n(Lagrange multiplier)',
+        C_POL)
+    box(1.5, 9.5, 20, 9.5, 'Model-based controller\ngeneralized Jacobian,\nnull space with weight β,\ninverts the command chain',
+        C_POL)
+    ax.text(11.5, 21.25, 'same observation, same outputs', fontsize=6, color=INK2, ha='center', va='center',
+            style='italic')
 
 # Gemeinsame Befehlskette
 ax.add_patch(FancyBboxPatch((27.0, 13.5), 43.5, 15.5, boxstyle='round,pad=0.3,rounding_size=1.0', fc=C_SHARED,
@@ -73,8 +89,13 @@ for x, t in zip(xs, labels):
     box(x, 16.0, 11.5, 8.5, t, 'white')
 for a, b in zip(xs[:-1], xs[1:]):
     arrow((a + 11.5 + 0.3, 20.25), (b - 0.3, 20.25))
-arrow((21.8, 28.25), (28.7, 22.0), conn='arc3,rad=-0.15')
-arrow((21.8, 14.25), (28.7, 18.5), conn='arc3,rad=0.15')
+if RES:
+    arrow((21.8, ys[0]), (28.7, 22.5), conn='arc3,rad=-0.15')
+    arrow((21.8, ys[1]), (28.7, 20.25))
+    arrow((21.8, ys[2]), (28.7, 18.0), conn='arc3,rad=0.15')
+else:
+    arrow((21.8, 28.25), (28.7, 22.0), conn='arc3,rad=-0.15')
+    arrow((21.8, 14.25), (28.7, 18.5), conn='arc3,rad=0.15')
 
 # Strecken
 box(76.0, 29.0, 24.0, 8.0, 'Free-floating model (Simscape)\ntraining and evaluation,\n21 episodes per agent', C_SIM)
@@ -89,11 +110,14 @@ ax.text(88.0, 3.4, 'base states computed from the measured joints', fontsize=6, 
 ax.plot([100.6, 100.6], [10.0, 37.9], color=INK2, lw=0.8)
 for y in (33.0, 21.5, 10.0):
     ax.plot([100.3, 100.6], [y, y], color=INK2, lw=0.8)
-ax.plot([100.6, -0.4, -0.4], [37.9, 37.9, 14.25], color=INK2, lw=0.8)
-arrow((-0.4, 28.25), (1.2, 28.25))
-arrow((-0.4, 14.25), (1.2, 14.25))
-ax.text(56.0, 37.9, 'observation (29): end-effector error, joints, base states (simulated or emulated)',
-        fontsize=6.5, color=INK2, ha='center', va='center', bbox=dict(fc='white', ec='none', pad=0.6))
+ax.plot([100.6, -0.4, -0.4], [37.9, 37.9, ys[-1]], color=INK2, lw=0.8)
+for y in ys:
+    arrow((-0.4, y), (1.2, y))
+obs = 'observation (29): end-effector error, joints, base states (simulated or emulated)'
+if RES:
+    obs += ', for residual RL plus the controller proposal'
+ax.text(52.0 if RES else 56.0, 37.9, obs, fontsize=6.5, color=INK2, ha='center', va='center',
+        bbox=dict(fc='white', ec='none', pad=0.6))
 
 # Kennzahlen
 ax.add_patch(FancyBboxPatch((27.0, 3.0), 43.5, 6.0, boxstyle='round,pad=0.3,rounding_size=1.0', fc='white',
@@ -103,6 +127,7 @@ ax.text(48.75, 4.6, 'end-effector error (RMS)  ·  largest base rotation  ·  fo
                     '→ compared with the controller front (error vs. base rotation)', fontsize=6, ha='center',
         va='center', color=INK, linespacing=1.2)
 
+name = 'study_design_res' if RES else 'study_design'
 for ext in ('pdf', 'png'):
-    fig.savefig(os.path.join(OUT, 'study_design.' + ext), dpi=300)
-print('saved', os.path.normpath(os.path.join(OUT, 'study_design.pdf')))
+    fig.savefig(os.path.join(OUT, name + '.' + ext), dpi=300)
+print('saved', os.path.normpath(os.path.join(OUT, name + '.pdf')))
