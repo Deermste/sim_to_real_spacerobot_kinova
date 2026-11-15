@@ -1,0 +1,13 @@
+episodes,succ,t_settle,ori_max,reward_mean,file
+250,1,5.928125,0.0638762511671392,-160.459013530026,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_F_S7_seed0_ckpt\ep00250.mat
+500,1,5.95,0.0621456808562291,-114.446523712953,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_F_S7_seed0_ckpt\ep00500.mat
+750,1,6.0375,0.0726405244454574,-174.388891773194,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_F_S7_seed0_ckpt\ep00750.mat
+1000,1,6.125,0.0805471284778233,-210.221095525942,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_F_S7_seed0_ckpt\ep01000.mat
+1250,1,6.040625,0.0799088347004909,-143.60463064818,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_F_S7_seed0_ckpt\ep01250.mat
+1500,1,6.146875,0.0852677825942926,-394.941566334273,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_F_S7_seed0_ckpt\ep01500.mat
+1750,1,6.540625,0.093927820369382,-145.780487272079,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_F_S7_seed0_ckpt\ep01750.mat
+2000,1,6.371875,0.0928773136781406,-185.654686879484,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_F_S7_seed0_ckpt\ep02000.mat
+2250,1,6.565625,0.0854476093039277,-236.178589985142,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_F_S7_seed0_ckpt\ep02250.mat
+2500,1,6.725,0.0915902913041213,-319.119776567783,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_F_S7_seed0_ckpt\ep02500.mat
+2750,1,6.684375,0.0871031681156576,-159.771362317197,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_F_S7_seed0_ckpt\ep02750.mat
+3000,1,6.66875,0.0744637058397297,-216.331714922372,C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7sp_F_S7_seed0_ckpt\ep03000.mat
