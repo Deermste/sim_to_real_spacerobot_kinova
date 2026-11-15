@@ -11,6 +11,9 @@ function [E, S, outFile] = ext_x2_robust(varargin)
 %     jeder Agent zusaetzlich mit dem Sicherheitsfilter ext_x1_shield nach der Kette (Nominalmodell, gemessene
 %     Lage und Gelenkwinkel), je theta ein Teilnehmer <label>_f<theta in mrad>, Gruppe <group>_f<theta in mrad>.
 %     Feld 'measured' (Standard true) wie in ext_x1_shield.
+%   [E, S] = ext_x2_robust('residuals', list)   X7: Residual-Agenten (struct mit file, label, group, eps_v,
+%     eps_w), ausgefuehrt als Rbeta 21,5 plus Korrektur ueber ext_x7_ctrl (Nominalmodell, neue Instanz je Episode).
+%   'prefix' (Standard 'X2_robust_'): Anfang des Dateinamens.
 %
 %   Alles im kinematischen Simulator (ext_kinsim, volle Befehlskette, J6 0,9774 rad/s, Halbkreis 8,5 s, 40 Hz).
 %   Die Regler (ext_x2_controller mit Inversion der Kette) rechnen immer mit dem Nominalmodell (65 kg) und kennen
@@ -37,6 +40,8 @@ p.addParameter('controllers', {});
 p.addParameter('useTuned', true);
 p.addParameter('save', true);
 p.addParameter('shield', []);
+p.addParameter('residuals', []);
+p.addParameter('prefix', 'X2_robust_');
 p.parse(varargin{:});
 o = p.Results;
 setup_project;
@@ -74,6 +79,13 @@ for k = 1:numel(list)
     end
 end
 
+for k = 1:numel(o.residuals)
+    rk = o.residuals(k);
+    pol = ext_policy(rk.file);
+    mk = @() ext_x7_ctrl(pol, 'eps_v', rk.eps_v, 'eps_w', rk.eps_w, 'K', Knom);
+    subj(end + 1) = struct('label', rk.label, 'group', rk.group, 'make', mk, 'hook', []); %#ok<AGROW>
+end
+
 % --- Szenarien ---
 sc = scenarios();
 if ~isempty(o.scenarios), sc = sc(ismember({sc.name}, o.scenarios)); end
@@ -94,7 +106,7 @@ for s = 1:numel(sc)
         end
         for j = 1:numel(subj)
             h = subj(j).make();
-            if strcmp(subj(j).group, 'ctrl')
+            if strcmp(subj(j).group, 'ctrl') || startsWith(subj(j).group, 'res')
                 res = ext_kinsim([], 'ctrl', h, 'j6_lim', 0.9774, 'reward_mode', 4, 'K', K, extra{:});
             else
                 hk = {};
@@ -129,7 +141,7 @@ fprintf('%d Episoden in %.1f min\n', height(E), toc(tAll) / 60);
 outFile = '';
 if o.save
     stamp = char(datetime('now', 'Format', 'yyyyMMdd_HHmmss'));
-    outFile = sk_path('data', 'simulation', 'extension', ['X2_robust_' stamp]);
+    outFile = sk_path('data', 'simulation', 'extension', [o.prefix stamp]);
     writetable(E, [outFile '_episodes.csv']);
     writetable(S, [outFile '_summary.csv']);
     agents = list; %#ok<NASGU>

@@ -86,7 +86,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X6.4 | Hauptlauf 5 Seeds, Auswertung auf 500 Paaren, Gegenprobe in Simscape | 1 Tag | ≈ 8–12 h | X6.3 | ⬜ |
 | X6.5 | Deploy-Skript Set-Point v25 mit Emulation der Basis, Trockenläufe, Vorhersage | 2 Tage | 1 h | X3.1, X6.4 | ⬜ |
 | X6.6 | Labortag Set-Point (Tracking X3.2 am selben Tag, wenn Zeit bleibt) | 1 Tag Labor + 1 Tag Auswertung | – | Labor | ⏸ |
-| X7 | Residual RL: Policy korrigiert den Regler, Vorteil unter Modellfehlern? 4 Varianten × 10 Seeds | 2–3 Tage | ≈ 2–4 h | E19, X4.6 V4 | ⏸ (Betreuer) |
+| X7 | Residual RL: Policy korrigiert den Regler, Vorteil unter Modellfehlern? 4 Varianten × 10 Seeds | 2–3 Tage | ≈ 2–4 h | E19, X4.6 V4 | 🔄 15.11.: Umgebung bitgleich, Korrektur auf die Sollwerte des Reglers statt auf die Gelenke (RESULTS X7.0), Pilot läuft. E19 entscheidet nur über das Paper |
 | P | Paper neu aufbauen und Ergebnisse übertragen | 2–3 Wochen | – | alle | ⏸ |
 
 Summe Rechenzeit ohne X5.3 etwa 55–65 h. Das sind etwa eine bis eineinhalb Wochen, wenn nachts und am Wochenende
@@ -726,6 +726,10 @@ schlechter zu werden? Und ist er besser als reines RL?
 - Grundregler: ein Punkt der Front aus X2.1 mit Nominalmodell, Inversion der Kette, Vorschlag Rβ 21,5 (J6-Seite −,
   Kp 5). Er gibt die Gelenkgeschwindigkeit x_c.
 - Policy: Aktion Δ ∈ [−1, 1]³, Befehl x = x_c + ε·Δ mit ε = 0,2 rad/s (Variante 0,05). Danach dieselbe Kette.
+  Geändert am 15.11.2026 (RESULTS X7.0): Die Korrektur auf die Gelenkgeschwindigkeit lässt den redundanten Arm im
+  Nullraum driften (0,02 rad/s auf J2 ergibt 306 mm). Stattdessen korrigiert Δ die Sollwerte des Reglers:
+  Sollgeschwindigkeit des EE ± 0,02 m/s (x, z) und Soll-Drehrate der Basis ± 0,01 rad/s. Reward r4 ohne
+  Befehlsterme, dazu −0,1 |Δ|². Rate Limiter 0,5 rad/s² (Hardware).
   Beobachtung wie X4.6 V1 (29 Kanäle, richtige Grenzen) und dazu x_c (3 Kanäle).
 - Reward r4 mit Gewicht 2 (wie D16) und eine Strafe auf |Δ|², damit die Korrektur ohne Grund null bleibt.
 - Training im kinematischen Simulator (rlFunctionEnv auf `ext_x6_plant` mit der alten Kette, gegen `ext_kinsim`

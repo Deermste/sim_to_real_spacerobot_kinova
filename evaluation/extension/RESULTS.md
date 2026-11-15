@@ -2403,6 +2403,70 @@ Datenquelle: `X6_pilot_{a,b,c}_seed0_{log,curve,eval}_20261114_*.csv`, Log `X6_p
 
 Paper: Nein (Fehlschlag des Aufbaus). Die Lehre zum Reward gehört höchstens in die Methode.
 
+## X7 Residual RL
+
+### X7.0 Umgebung und Aufbau ✅ 15.11.2026 (Korrektur im Aufgabenraum statt auf die Gelenkgeschwindigkeit)
+
+**Frage aus PLAN X7:** Ist Regler plus gelernte Korrektur unter Modellfehlern besser als der Regler allein, ohne
+nominal schlechter zu werden? Und ist er besser als reines RL? Begonnen vor dem Gespräch mit dem Betreuer (E19),
+auf Wunsch des Nutzers. E19 entscheidet nur, ob X7 ins Paper kommt.
+
+**Bausteine:**
+- `ext_x2_controller`: zweiter Ausgang `api` mit `propose` (Vorschlag ohne Zustandsänderung) und `apply`.
+  Dazu die Felder `R.db` (Sollgeschwindigkeit des EE) und `R.dw` (Soll-Drehrate der Basis). Ohne die Felder
+  rechnet der Regler wie bisher.
+- `ext_x7_plant`: Strecke von `ext_kinsim` (volle Kette) als Schrittfunktion, mit Modell, Verzögerung,
+  Verstärkung, Rauschen, festem Messfehler, Startstellung und Drift.
+- `ext_x7_env`: rlFunctionEnv, Rβ 21,5 (J6-Seite −, Kp 5, Nominalmodell, Inversion der Kette) plus Korrektur.
+  DR-voll wie X2.4 (Masse, Trägheit, Verzögerung 0 bis 2, Verstärkung 0,9 bis 1,1, Rauschen 0 bis 2-fach,
+  Startstellung ±2°).
+- `ext_x7_ctrl`: dieselbe Rechnung als ctrl-Funktion für `ext_kinsim`. Alle Auswertungen laufen damit in
+  `ext_kinsim`, wie bei den Reglern und Agenten aus X2.3 und X2.4.
+- `ext_x7_train`: PPO wie die r4-Agenten (128 Neuronen, Horizont 1024), Lernrate des Actors 3e-4 (X5.2b). Die
+  letzte Schicht des Mittelwerts startet mit null, die Policy beginnt also beim Regler. Zwischenstand alle 250
+  Episoden mit einer nominalen Episode.
+- `ext_x7_eval`: X0.1 (21 Startstellungen, kinematisch) und die 26 Szenarien aus X2.3 (`ext_x2_robust` mit der
+  neuen Option `residuals`).
+
+**Prüfung** (`ext_x7_check`): Der Regler mit Korrektur null ist bitgleich zum alten Regler (Gelenkbahn,
+Kennzahlen). Die Umgebung ist mit einer festen Korrektur bitgleich zu `ext_kinsim`, nominal und mit allen
+Störungen zugleich (32,5 kg, Verzögerung 1, Verstärkung 1,1, Rauschen, Startstellung, Drift 2 mrad/s). Eine
+Episode dauert 0,43 s nominal und 0,79 s mit DR-voll.
+
+**Abweichung vom Plan:** Der Plan sah die Korrektur auf der Gelenkgeschwindigkeit vor (x = x_c + ε Δ, ε 0,2 rad/s).
+Ein Test mit konstanter Korrektur zeigte, dass das bei einem redundanten Arm nicht trägt:
+- Rβ 21,5 allein: 9,0 mm RMS, 13,0 mrad. Mit 0,004 rad/s auf J2: 11,4 mm. Mit 0,02 rad/s auf J2 (Δ = 0,1):
+  306 mm, 141 mrad, q2 läuft bis an die Grenze von 2,41 rad. R0 verhält sich gleich (328 mm).
+- Grund: Der Regler regelt nur den EE-Fehler und gewichtet die Basis. Einen Versatz in Richtung des Nullraums
+  holt nichts zurück. Die Haltung driftet, bis eine Grenze greift, danach geht die Bahn verloren.
+- Eine Policy mit kleinem Mittelwertfehler würde so schon zu Beginn die Bahn verlieren. Im ersten Kurztest lag der
+  nominale RMS nach 16 Episoden bei 264 mm.
+
+Deshalb wirkt die Korrektur jetzt auf die Sollwerte des Reglers: db = ε_v Δ(1:2) auf die Sollgeschwindigkeit des
+EE (x, z) und dw = ε_w Δ(3) auf die Soll-Drehrate der Basis um y, mit ε_v 0,02 m/s und ε_w 0,01 rad/s. Der Regler
+bleibt für Nullraum, Schranken und Kette zuständig. Konstante Korrekturen bleiben begrenzt:
+
+| Korrektur (db_x, db_z, dw_y) | RMS [mm] | ep_q4 [mm] | ori_max [mrad] |
+|---|---|---|---|
+| keine (R) | 8,99 | 12,5 | 13,0 |
+| 0,02 m/s in x | 10,4 | 15,6 | 11,7 |
+| 0,02 m/s in z | 9,9 | 14,2 | 12,5 |
+| +0,01 rad/s | 10,7 | 1,9 | 47,0 |
+| −0,01 rad/s | 26,8 | 49,1 | 55,6 |
+| +0,03 rad/s | 34,8 | 15,2 | 74,2 |
+
+Die Korrektur der Drehrate hat den größten Hebel, auch auf den Bahnfehler im letzten Viertel. Reward: r4 mit
+Gewicht 2 ohne die Befehlsterme (die Glättung macht der Regler), dazu −0,1 |Δ|². Beobachtung: die 29 Kanäle und
+der Vorschlag des Reglers ohne Korrektur (3 Kanäle).
+
+**Pilot** (`ext_x7_pilot`, gestartet 15.11.): Res und Res-DR je Seed 0, 3000 Episoden, letzter Agent mit X0.1 und
+26 Szenarien gegen R. Go-Regel vor dem Lauf: Beide Agenten folgen in allen 21 Episoden, nominaler RMS höchstens
+10 % über R. Die Erwartungen aus PLAN X7 gelten unverändert.
+
+Datenquelle: Ausgabe von `ext_x7_check` (Log der Sitzung), Testlauf unter `data/simulation/desktop/_test/`.
+
+Paper: offen (E19).
+
 ## Gliederung (für Phase P)
 
 Wird nach X1 und X2 vorgeschlagen.

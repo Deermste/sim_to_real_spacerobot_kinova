@@ -1,4 +1,4 @@
-function ctrl = ext_x2_controller(varargin)
+function [ctrl, api] = ext_x2_controller(varargin)
 %EXT_X2_CONTROLLER  Modellbasierter Bahnregler mit Basisminimierung fuer ext_kinsim (Ausbau X2.1).
 %   ctrl = ext_x2_controller()                      R0: Resolved-Rate auf der verallgemeinerten Jacobi-Matrix
 %   ctrl = ext_x2_controller('beta', 10)            Rbeta, gewichtete Form (erweiterte Aufgabe)
@@ -40,6 +40,16 @@ function ctrl = ext_x2_controller(varargin)
 %   qLim 7x1 Winkelgrenzen, die der Regler einhaelt (Standard wie SK_desktop, mit chainP die Grenzen der Kette).
 %   filt_a (Standard 0,95): Koeffizient des Befehlsfilters, den der Regler mit invert kennt (X4.6 V3: 0,85, dann
 %   in ext_kinsim dasselbe filt_a angeben).
+%
+%   Residual RL (X7, 15.11.2026): [ctrl, api] = ext_x2_controller(...) liefert zusaetzlich zwei Teilschritte:
+%     [xc, lo, hi] = api.propose(obs, R)   Gesetz wie step, ohne den Zustand der Kette zu aendern. xc, lo, hi
+%                                          sind die Geschwindigkeiten und Schranken der aktiven Gelenke.
+%     u = api.apply(dx)                    Befehl fuer x = xc + dx (auf lo, hi begrenzt), danach dieselbe
+%                                          Inversion der Kette wie step. dx = 0 ergibt genau step (bitgleich).
+%   Die Korrektur wirkt also auf die gewuenschte Gelenkgeschwindigkeit vor der Inversion. Die interne Kopie der
+%   Kette bleibt damit gleich der echten Kette in ext_kinsim.
+%   Korrektur im Aufgabenraum (X7, verwendet): R.db (Aufgabe, z. B. x und z) wird zur Sollgeschwindigkeit b
+%   addiert, R.dw (3x1, Welt) zur Soll-Drehrate w* der Basis. Ohne die Felder wie bisher (bitgleich).
 
 p = inputParser;
 p.addParameter('beta', 0);
@@ -88,9 +98,27 @@ if x6
 end
 d = d .* ones(7, 1);                         % je Gelenk (a_max darf ein Vektor sein, Handbuch Gen3 Tabelle 44)
 yf = zeros(7, 1); yr = zeros(7, 1);           % interne Kopie der Befehlskette (invert)
+pend = struct('x', [], 'lo', [], 'hi', []);   % Vorschlag aus propose fuer apply (X7)
 ctrl = @step;
+api = struct('propose', @propose, 'apply', @apply, 'joints', a, 'lim', lim7(a));
+
+    function [xc, lo, hi] = propose(obs, R)
+        [xc, lo, hi] = bounds(obs, R);
+        pend = struct('x', xc, 'lo', lo, 'hi', hi);
+    end
+
+    function u = apply(dx)
+        x = pend.x;
+        if any(dx(:) ~= 0), x = min(max(x + dx(:), pend.lo), pend.hi); end
+        u = finish(x);
+    end
 
     function u = step(obs, R)
+        x = bounds(obs, R);
+        u = finish(x);
+    end
+
+    function [x, lo, hi] = bounds(obs, R)
         if R.t == 0, yf(:) = 0; yr(:) = 0; end
         q = obs(13:19);
         lo = max(-lim7(a), (qLo(a) - q(a)) / o.horizon);
@@ -110,6 +138,9 @@ ctrl = @step;
         end
         hi = max(hi, lo);
         x = law(obs, R, o, lo, hi);
+    end
+
+    function u = finish(x)
         u = zeros(7, 1);
         u(a) = x;
         if ~o.invert, return; end
@@ -146,6 +177,8 @@ A = o.P * Rb * Je(:, a);
 W = Rb * G(4:6, a);
 b = o.P * (R.vref - o.Kp * ep);
 wDes = -o.kOri * eo;
+if isfield(R, 'db'), b = b + R.db(:); end      % X7: Korrektur der Sollgeschwindigkeit (Aufgabenraum)
+if isfield(R, 'dw'), wDes = wDes + R.dw(:); end   % X7: Korrektur der Soll-Drehrate der Basis (Welt)
 rm = sqrt(o.mu) * eye(n);
 if o.gamma > 0                              % X6: Gelenke mit endlicher Grenze zur Mitte ziehen
     fc = find(abs(o.qLimC(a)) < 2 * pi - 1e-9);
