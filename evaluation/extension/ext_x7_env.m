@@ -16,6 +16,8 @@ function [env, info] = ext_x7_env(varargin)
 %   Reward: ext_reward Modus 4, Gewicht 2 (wie D16) auf der Beobachtung nach dem Schritt, ohne die
 %   Befehlsterme (Befehl null, die Glaettung ist Sache des Reglers), dazu -w_res |Delta|^2.
 %   Ende bei isDone aus ext_reward (Reward -50) oder nach T.
+%   reward 'J' (15.11., X7.1): je Schritt 2 - |ep| / 8,99 mm - |e_ori| / 12,98 mrad - w_res |Delta|^2, also das
+%   Mass J der Auswertung je Schritt (Bezug R nominal), Abbruch wie oben mit -50.
 %   Optionen: eps_v 0,02 m/s, eps_w 0,01 rad/s, w_res 0,1, dr 'none' oder 'full', seed 0, ctrlArgs (Zellarray
 %   fuer ext_x2_controller, ersetzt Rbeta 21,5), scenario (Zellarray mit festen Optionen fuer ext_x7_plant und
 %   'plant' fuer ext_kin_model, nur Tests).
@@ -29,6 +31,7 @@ p = inputParser;
 p.addParameter('eps_v', 0.02);
 p.addParameter('eps_w', 0.01);
 p.addParameter('w_res', 0.1);
+p.addParameter('reward', 'r4');
 p.addParameter('dr', 'none');
 p.addParameter('seed', 0);
 p.addParameter('ctrlArgs', {});
@@ -106,6 +109,9 @@ info = struct('obsInfo', obsInfo, 'actInfo', actInfo, 'opts', o);
         [ob, L.S] = ext_x7_plant('obs', L.S);
         L.ob = ob;
         [r, isd] = ext_reward(ob(1:3), ob(4:6), zeros(7, 1), zeros(7, 1), ob(10:12), ob(27:29), 4, 2);
+        if strcmp(o.reward, 'J') && ~isd
+            r = 2 - norm(ob(1:3)) / 0.00899 - norm(ob(27:29)) / 0.01298;
+        end
         r = r - o.w_res * sum(dl .^ 2);
         done = isd || L.S.k >= L.S.N;
         if done

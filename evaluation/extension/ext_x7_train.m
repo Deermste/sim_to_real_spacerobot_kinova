@@ -12,7 +12,8 @@ function out = ext_x7_train(variant, seed, varargin)
 %   Mittel null, die Policy startet beim Regler (ueblich bei Residual RL).
 %   Training in Bloecken zu ckptEvery Episoden, nach jedem Block ein Zwischenstand und eine nominale Episode in
 %   ext_kinsim (RMS, ori_max, mittlere |Delta|).
-%   Optionen: nEpisodes 3000, eps_v 0,02, eps_w 0,01, w_res 0,1, actorLR 3e-4, criticLR 5e-4, ckptEvery 250, tag ''.
+%   Optionen: nEpisodes 3000, eps_v 0,02, eps_w 0,01, w_res 0,1, actorLR 3e-4, criticLR 5e-4, ckptEvery 250,
+%   tag '', name '' (eigener Dateiname), reward 'r4' oder 'J' (ext_x7_env).
 %   Ergebnis: SavedAgents/MotionProfile/X7/<Name>.mat (agent, cfg, curve, ckpt), Zwischenstaende in
 %   <Name>_ckpt/epNNNNN.mat, data/simulation/extension/<Name>_{train,ckpt}.csv.
 %   <Name> = X7_<variant>_seed<seed>_ep<nEpisodes>
@@ -26,6 +27,8 @@ p.addParameter('actorLR', 3e-4);
 p.addParameter('criticLR', 5e-4);
 p.addParameter('ckptEvery', 250);
 p.addParameter('tag', '');
+p.addParameter('name', '');        % eigener Name (ext_x7_sweep)
+p.addParameter('reward', 'r4');    % 'r4' oder 'J' (ext_x7_env)
 p.parse(varargin{:});
 o = p.Results;
 assert(ismember(variant, {'res', 'resdr'}), 'ext_x7_train:variant', 'variant ist res oder resdr');
@@ -33,11 +36,12 @@ setup_project;
 dr = 'none';
 if strcmp(variant, 'resdr'), dr = 'full'; end
 cfg = struct('variant', variant, 'seed', seed, 'dr', dr, 'nEpisodes', o.nEpisodes, 'eps_v', o.eps_v, ...
-    'eps_w', o.eps_w, 'w_res', o.w_res, 'hidden', 128, 'ckptEvery', o.ckptEvery, 'ctrl', 'Rb21 (beta 21.544, j6_side -1, Kp 5)');
+    'eps_w', o.eps_w, 'w_res', o.w_res, 'reward', o.reward, 'hidden', 128, 'ckptEvery', o.ckptEvery, 'ctrl', 'Rb21 (beta 21.544, j6_side -1, Kp 5)');
 cfg.opts = struct('ExperienceHorizon', 1024, 'MiniBatchSize', 128, 'NumEpoch', 10, 'ClipFactor', 0.2, ...
     'DiscountFactor', 0.99, 'GAEFactor', 0.95, 'EntropyLossWeight', 1e-3, 'ActorLR', o.actorLR, ...
     'CriticLR', o.criticLR);
 name = sprintf('X7_%s_seed%d_ep%d', variant, seed, o.nEpisodes);
+if ~isempty(o.name), name = o.name; end
 if isempty(o.tag)
     agentDir = sk_path('SavedAgents', 'MotionProfile', 'X7');
     csvDir = sk_path('data', 'simulation', 'extension');
@@ -49,7 +53,8 @@ end
 ckDir = fullfile(agentDir, [name '_ckpt']);
 if ~isfolder(ckDir), mkdir(ckDir); end
 
-[env0, info0] = ext_x7_env('eps_v', o.eps_v, 'eps_w', o.eps_w, 'w_res', o.w_res, 'dr', dr, 'seed', seed);
+[env0, info0] = ext_x7_env('eps_v', o.eps_v, 'eps_w', o.eps_w, 'w_res', o.w_res, 'dr', dr, 'seed', seed, ...
+                           'reward', o.reward);
 rng(seed, 'twister');
 agent = rlPPOAgent(info0.obsInfo, info0.actInfo, rlAgentInitializationOptions('NumHiddenUnit', cfg.hidden));
 ao = agent.AgentOptions;
@@ -87,7 +92,8 @@ curve = table(); ck = {}; nEp = 0; b = 0; tStart = tic;
 while nEp < o.nEpisodes
     b = b + 1;
     nB = min(o.ckptEvery, o.nEpisodes - nEp);
-    env = ext_x7_env('eps_v', o.eps_v, 'eps_w', o.eps_w, 'w_res', o.w_res, 'dr', dr, 'seed', 1000 * seed + b);
+    env = ext_x7_env('eps_v', o.eps_v, 'eps_w', o.eps_w, 'w_res', o.w_res, 'dr', dr, 'seed', 1000 * seed + b, ...
+                     'reward', o.reward);
     trainOpts = rlTrainingOptions('MaxEpisodes', nB, 'MaxStepsPerEpisode', nMax, ...
         'ScoreAveragingWindowLength', 50, 'StopTrainingCriteria', 'EpisodeCount', 'StopTrainingValue', nB, ...
         'Plots', 'none', 'Verbose', false, 'StopOnError', 'off', 'UseParallel', true, ...

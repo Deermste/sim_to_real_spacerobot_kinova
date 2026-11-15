@@ -6,12 +6,15 @@ function [out, out2] = ext_x7_plant(S, a2)
 %                                      Filter, Rate Limiter, Cmd Scale, dann Integration ueber [t_k, t_k+1] mit
 %                                      dem Befehl aus Schritt k-1 (Rate Transition)
 %   m = ext_x7_plant('metrics', S)     Kennzahlen wie ext_kinsim (rms_ee, ep_q4, max_ee, ori_max, w_max)
+%   y = ext_x7_plant('tool', S)        EE- bzw. Werkzeugpunkt p und seine Geschwindigkeit v (Welt) zum Schritt
 %
 %   Dieselbe Rechnung in derselben Reihenfolge wie ext_kinsim mit chain 'full', damit die Gelenkbahn bitgleich
 %   ist (Pruefung ext_x7_check). ext_kinsim bleibt unveraendert und ist die Referenz fuer alle Auswertungen.
 %   Optionen (Standard wie ext_kinsim): Ts 0,005, Ts_agent 0,025, T 8,5, r 0,2, center, path 'planar', tilt 30,
 %   j6_lim 0,9774, lim [], slew 0,5, cmd_scale 1, delay_steps 0, q0 zeros(7,1), tau 0,02, K (ext_kin_model),
 %   obsNoise 29x1, obsBias 29x1, rngSeed 0, w0_init 3x1, filt_a 0,95.
+%   Set-Point (X7-SP, 15.11.): chain 'x6' mit chainP (chain_step statt Saettigung, Filter, Rate Limiter, wie
+%   ext_kinsim), refFcn @(t) -> numel(t) x 3 (eigene Referenz), qLim 7x1.
 %   Die Beobachtung ist [ep; ev; v_base; w_base; q; dq; e_ori] wie ext_kinsim. Das Rauschen kommt aus einem eigenen
 %   Strom mit rngSeed, je Agentenschritt ein randn(29, 1) wie in ext_kinsim.
 
@@ -21,6 +24,8 @@ if ischar(S)
             [out, out2] = observe(a2);
         case 'metrics'
             out = metrics(a2);
+        case 'tool'
+            out = struct('p', a2.pb + a2.Rb * a2.pe, 'v', a2.Rb * (a2.Je * a2.dq + a2.Dd));
     end
     return
 end
@@ -37,7 +42,7 @@ d = struct('Ts', 0.005, 'Ts_agent', 0.025, 'T', 8.5, 'r', 0.2, 'center', [0.0, -
            'path', 'planar', 'tilt', 30, 'j6_lim', 0.9774, 'lim', [], 'slew', 0.5, 'cmd_scale', 1, ...
            'delay_steps', 0, 'q0', zeros(7, 1), 'tau', 0.02, 'K', [], 'obsNoise', zeros(29, 1), ...
            'obsBias', zeros(29, 1), 'rngSeed', 0, 'w0_init', zeros(3, 1), 'filt_a', 0.95, ...
-           'qLim', [2*pi; 2.41; 2*pi; 2.66; 2.23; 2.01; 2*pi]);
+           'qLim', [2*pi; 2.41; 2*pi; 2.66; 2.23; 2.01; 2*pi], 'chain', 'full', 'chainP', [], 'refFcn', []);
 fn = fieldnames(opt);
 for k = 1:numel(fn), d.(fn{k}) = opt.(fn{k}); end
 S.o = d;
@@ -53,7 +58,16 @@ if ~isempty(d.lim), S.lim = d.lim(:); end
 S.qLim = d.qLim(:);
 S.dSlew = d.slew * d.Ts_agent;
 t = (0:nS).' * h;
-S.traj = ext_ref_path(t, d);
+if isempty(d.refFcn)
+    S.traj = ext_ref_path(t, d);
+else
+    S.traj = d.refFcn(t);
+end
+S.x6 = strcmp(d.chain, 'x6');
+if S.x6
+    assert(abs(d.chainP.Ts - d.Ts_agent) < 1e-12, 'ext_x7_plant:x6', 'chainP.Ts muss Ts_agent sein');
+    S.cs = chain_step('init', d.chainP);
+end
 S.vref = [zeros(1, 3); diff(S.traj) / h];
 tau = d.tau;
 A = [0 1; -1 / tau^2, -2 / tau];
@@ -104,14 +118,19 @@ if S.o.delay_steps > 0
     a = S.dBuf(:, 1);
     S.dBuf(:, 1) = [];
 end
-sat = min(max(a, -S.lim), S.lim);
-if S.o.filt_a == 0.95
-    S.yf = 0.95 * S.yf + 0.05 * sat;
+if S.x6
+    [cmd, S.cs] = chain_step(S.cs, a, S.q);
+    cmd = cmd * S.o.cmd_scale;
 else
-    S.yf = S.o.filt_a * S.yf + (1 - S.o.filt_a) * sat;
+    sat = min(max(a, -S.lim), S.lim);
+    if S.o.filt_a == 0.95
+        S.yf = 0.95 * S.yf + 0.05 * sat;
+    else
+        S.yf = S.o.filt_a * S.yf + (1 - S.o.filt_a) * sat;
+    end
+    S.yr = S.yr + min(max(S.yf - S.yr, -S.dSlew), S.dSlew);
+    cmd = S.yr * S.o.cmd_scale;
 end
-S.yr = S.yr + min(max(S.yf - S.yr, -S.dSlew), S.dSlew);
-cmd = S.yr * S.o.cmd_scale;
 n = S.k * S.m;
 u = S.cmdHeld;
 S.cmdHeld = cmd;
