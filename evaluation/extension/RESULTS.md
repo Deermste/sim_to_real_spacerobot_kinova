@@ -2496,6 +2496,43 @@ dominiert (RMS und ori_max beide nicht größer).
 Erfüllt keine Variante das Kriterium, wird das als Ergebnis berichtet („RL als Korrektur verbessert den Regler
 hier nicht verlässlich“). Die Grenze für die Nacht ist die Rechenzeit, nicht ein bestimmtes Ergebnis.
 
+### X7.2 Set-Point: klassische Vergleichsbasis und Kriterium (festgelegt 15.11.2026, vor jeder RL-Auswertung)
+
+Nachtrag des Nutzers (15.11. nachts): Residual RL auch für den Set-Point.
+
+**Klassische Regler mit Basisterm** (`ext_x6_ctrl_eval` mit der neuen Option `variants`, gewichtete Form,
+a_max 1 / 10 rad/s², 500 Paare des Auswertesatzes, 5,6 min):
+
+| Regler | Erfolg | Nachlauf Median / 90 % [s] | Endfehler 95 % [mm] | Basisdrehung Median [mrad] |
+|---|---|---|---|---|
+| R0 (β 0) | 497 / 500 | −0,27 / 0,32 | < 0,001 | 88,4 |
+| Rβ 1 | 498 / 500 | −0,24 / 0,35 | 0,002 | 51,7 |
+| Rβ 4,6 | 498 / 500 | −0,06 / 0,57 | 0,007 | 47,5 |
+| Rβ 21,5 | 498 / 500 | 0,49 / 1,51 | 0,038 | 42,4 |
+| Rβ 100 | 369 / 500 | 1,44 / 6,16 | 21,2 | 35,8 |
+
+- In der gewichteten Form senkt schon β 1 die Basisdrehung um 42 % bei gleichem Erfolg und fast gleichem
+  Nachlauf. Die Nullraumformen aus X6.2 (R0n, Rb1n) scheiterten dagegen am Halten. R0 ist also nicht die faire
+  klassische Basis.
+- Grundregler für die Residual-Policy: Rβ 1. Diese Wahl beruht auf dem Auswertesatz und begünstigt damit die
+  klassische Seite, nicht die RL-Seite.
+
+**Aufbau X7-SP:** `ext_x7sp_env` (Korrektur der Sollgeschwindigkeit des Werkzeugpunkts ±0,02 m/s und der
+Soll-Drehrate der Basis ±0,02 rad/s je Achse, 6 Aktionen, Beobachtung 40 Kanäle), Reward je Schritt −d / 5 cm −
+ori / 87 mrad + 1 im Toleranzband − 0,1 |Δ|² / 6, DR-voll wie X7. Training auf dem Trainingssatz `X6_train`.
+Prüfung `ext_x7sp_check`, Auswertung `ext_x7sp_eval` (die ersten 100 Paare des Auswertesatzes, 26 Szenarien wie
+X2.3).
+
+**Maß:** J_sp je Lauf = ori_max / ori_R + t / t_R, t = Einschwingzeit (Fehlschlag 15 s), Bezug R0 nominal
+(Median über die Paare).
+
+**Kriterium „präsentierbar“** (alle drei, Median über die Seeds je Szenario):
+1. Nominal: Erfolg mindestens so hoch wie der beste klassische Regler minus 1 Prozentpunkt.
+2. 26 Szenarien gegen den besten klassischen Regler (der von R0, Rβ 1, Rβ 4,6 und Rβ 21,5 mit dem kleinsten
+   mittleren J_sp über die Szenarien): J_sp im Median kleiner in mindestens 2/3 der Szenarien, Wilcoxon über die
+   Szenarien p < 0,05, und in keinem Szenario mehr als 2 Prozentpunkte weniger Erfolg.
+3. Auswahl der Variante nur auf dem Trainingssatz (Prüfpaare und DR-Ziehungen), nicht auf den 100 Testpaaren.
+
 ## Gliederung (für Phase P)
 
 Wird nach X1 und X2 vorgeschlagen.
