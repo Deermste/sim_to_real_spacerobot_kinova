@@ -69,7 +69,9 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X2.3 | Robustheit gegen falsche Trägheitsparameter, RL gegen Regler | 2 Tage | 3 h | X2.1, X1.3 | 🔄 Teil 1 ✅ 10.11., X4.1 und X2.4 ✅ 11.11., X1.3 ✅ 13.11., Filter offen |
 | X2.4 | RL mit Domain Randomization (DR-M und DR-voll), je 10 Seeds | 1 Tag | ≈ 10 h | – | ✅ 11.11., X0.1 in SK_desktop 13.11. |
 | X3.1 | Kinematische Free-Floating-Emulation im Deploy-Skript, Validierung in Simulation | 3 Tage | 2 h | X0.2 | ✅ 10.11., Vorhersage 13.11. (Trockenläufe nach E5) |
-| X3.2 | Labortag: Emulation an gegen aus | 1 Tag Labor + 1 Tag Auswertung | – | Labor, E5 | ⏸ Vorhersage und Vorschlag für E5 in RESULTS X3.2 |
+| X3.2 | Labortag 3 (Pflicht, ein Tag, höchstens 6 h): Regler, Residual und RL mit Emulation, Emulation an/aus, Modellfehler über die Emulation. Plan neu 17.11. | 1 Tag Labor + 1 Tag Auswertung | – | Labor, X3.3 | ⏸ Plan steht (X3.2 Tag 1), wartet auf X3.3 und Termin |
+| X3.3 | Vorbereitung Labortag 3: `deploy_tracking_v26` mit Regler- und Residual-Modus, Trockenläufe, Vorhersage erweitern, Auswerteregeln vorab, Anleitung | 2–3 Tage | < 1 h | X3.1, X7 | ⬜ |
+| X3.4 | Labortag 4 (optional, kein Muss): 3D-Bahn, mehr Residual-Seeds, weitere emulierte Szenarien, Set-Point | 1 Tag Labor + Vorbereitung je Teil | – | X3.2, E7 | ⬜ optional |
 | X4.1 | Gewichtsreihe aus D17 auf 10 Seeds auffüllen | ½ Tag | ≈ 13 h | E3 | ✅ 11.11. |
 | X4.2 | Alle Bestandsagenten mit dem Protokoll X0.1 neu auswerten | ½ Tag | 2 h | X0.1 | ✅ 11.11. |
 | X4.3 | Ratenpaar D10 auf 10 Seeds (optional) | ½ Tag | ≈ 3 h | E6 | ⏸ |
@@ -85,7 +87,7 @@ Status-Legende: ⬜ offen, 🔄 läuft, ✅ erledigt, ⏸ wartet auf Entscheidun
 | X6.3 | Pilot: drei Varianten × 1 Seed | 1 Tag | ≈ 4–6 h | X6.1, E12–E14 | ⚠️ 14.11.: erster Lauf am Reward gescheitert. Nach der Korrektur lernt PPO im Plausibilitätstest die Annäherung auf wenige mm, aber kein Halten (0 % bei 5 mm). SAC mit und ohne HER (E14) hält auch nicht, nähert sich schlechter an. Entscheidung offen: X7 oder weiter PPO |
 | X6.4 | Hauptlauf 5 Seeds, Auswertung auf 500 Paaren, Gegenprobe in Simscape | 1 Tag | ≈ 8–12 h | X6.3 | ⬜ |
 | X6.5 | Deploy-Skript Set-Point v25 mit Emulation der Basis, Trockenläufe, Vorhersage | 2 Tage | 1 h | X3.1, X6.4 | ⬜ |
-| X6.6 | Labortag Set-Point (Tracking X3.2 am selben Tag, wenn Zeit bleibt) | 1 Tag Labor + 1 Tag Auswertung | – | Labor | ⏸ |
+| X6.6 | Labortag Set-Point | 1 Tag Labor + 1 Tag Auswertung | – | Labor | ⏸ 17.11.: nicht mehr Pflicht. Nur als Teil O4 von Labortag 4 (X3.4) und nur, wenn E7 Set-Point im Paper lässt |
 | X7 | Residual RL: Policy korrigiert den Regler, Vorteil unter Modellfehlern? 4 Varianten × 10 Seeds | 2–3 Tage | ≈ 2–4 h | E19, X4.6 V4 | ✅ 15.11.: Nachtkette fertig. Bahn (X7.3): Kriterium X7.1 nicht erfüllt (Verschiebung entlang der Front), am selben Frontpunkt (C2) besser in 20/26 Szenarien, mit neuen Seeds 11–20 vorab festgelegt bestätigt (21/26, p 0,00015, K12). Set-Point: erste Runde schlechter als Rβ 1 in 26/26 (X7.5), zweite Runde ohne Kandidaten besser als Rβ 1 (X7.4), dritte Runde (Reward 'sp') gegen Rβ 21,5 besser in 1/26 (X7.6), Set-Point als negatives Ergebnis abgeschlossen. E19 entscheidet nur über das Paper |
 | P | Paper neu aufbauen und Ergebnisse übertragen | 2–3 Wochen | – | alle | ⏸ |
 
@@ -103,7 +105,11 @@ trainiert wird. Die Arbeit liegt bei etwa vier bis sechs Wochen, das Paper danac
 7. **X4.5 und X4.6:** X4.5 erste Runde sofort (nur Daten), zweite nach X1.3. X4.6 in der Nacht nach X1.3, vorher
    Modus und Bitgleichheit prüfen.
 8. **X6 (Set-Point):** X6.0 bis X6.2 in freien Stunden. Pilot und Hauptlauf in Nächten, in denen keine Kette aus
-   X1 bis X5 läuft. Der Labortag X6.6 kann mit X3.2 zusammenfallen (E16).
+   X1 bis X5 läuft. Neu 17.11.: Set-Point ist nicht mehr Teil des Pflicht-Labortags (X3.2), höchstens Teil O4
+   des optionalen Labortags 4 (X3.4).
+10. **Labortag (Stand 17.11.):** zuerst X3.3 (Skript, Trockenläufe, Vorhersage, Regeln), dann Labortag 3 (X3.2,
+    ein Tag, höchstens 6 h). Phase P kann parallel beginnen, der Hardware-Abschnitt wird zuletzt geschrieben.
+    Labortag 4 (X3.4) nur, wenn Zeit und Labor es erlauben.
 9. **X7 (Residual RL):** erst nach dem Gespräch mit dem Betreuer (E19) und nach V4 aus X4.6. Die Umgebung braucht
    nur Bausteine, die schon stehen (Strecke `ext_x6_plant`, Regler, Störszenarien aus X2.3).
 
@@ -354,15 +360,98 @@ ist kleiner als damals gedacht, weil die Rechnung schon existiert.
   Hardware.
 - Vorhersage für X3.2: jede geplante Hardware-Bedingung einmal im Trockenlauf, Tabelle `X3_prediction.csv`.
 
-### X3.2 Labortag (wartet auf Laborzugang)
+### X3.2 Labortag 3 (Pflicht, ein Tag, höchstens 6 h) – Plan vom 17.11.2026
 
-- Agenten (Entscheidung E5): r0 (Einbruch), r4 ruhig (D16 s2, 1000 Episoden), r4 genau (D16 s7 oder s4), der
-  Medianagent für θ = 0,03 und 0,05 aus X1.3, eventuell ein X2.4-Agent.
-- Je Agent Emulation aus und an, je fünf Läufe, Halbkreis 8,5 s, Faktor 1,0. Etwa 60 Läufe.
-- Vorher der übliche Anfahr- und Trockenlauf-Check, OOD-Grenzen wie am zweiten Labortag. Die Emulation ändert die
-  Bahn der Gelenke, deshalb jede Bedingung erst im Trockenlauf.
-- Auswertung: Übereinstimmung Hardware gegen Vorhersage (RMS, Basisdrehung virtuell), Vergleich mit Emulation aus.
-- Anleitung `hardware/campaign/ANLEITUNG_LABOR_TAG3.md` erst schreiben, wenn der Termin steht.
+Ersetzt den Plan vom 10.11. (nur RL-Agenten, Emulation an gegen aus, etwa 60 Läufe). Grund: Nach der Empfehlung
+für das Paper (Abschnitt „Empfehlung für Paper und Einreichung“) soll die Hardware den Kern prüfen, also den
+Vergleich Regler, Residual und RL. Der Nutzer will alles Nötige an einem Tag mit höchstens 6 h schaffen.
+
+**Fragen (in dieser Rangfolge):**
+1. Hält die Reihenfolge aus der Simulation (Regler, Residual-Policy, reines RL) auf dem echten Servo bei 20 Hz,
+   wenn die Basis emuliert wird? Trifft jede Bedingung die Vorhersage aus dem kinematischen Simulator?
+2. Ändert die Emulation das Verhalten der RL-Agenten so, wie vorhergesagt (an gegen aus, X3.2 Vorhersage)?
+3. Zeigt sich der Effekt der Basismasse aus X2.3 und X7.3 (Residual gewinnt bei leichter Basis, verliert leicht bei
+   schwerer) auch auf der Hardware, wenn nur die Masse im Emulationsmodell geändert wird?
+
+**Bedingungen** (Halbkreis 8,5 s, Faktor 1,0, 20 Hz, Startstellung null, OOD-Grenzen wie Labortag 2, zusätzlich
+`oodThresholdPhys` 0,4 m):
+
+| Kürzel | Steuerung | Herkunft | Warum |
+|---|---|---|---|
+| C2 | Regler Kp 12, β 26,1, Nominalmodell | X7.3 | klassischer Regler am Frontpunkt der Residual-Policy (Vergleich K12) |
+| R | Regler Rβ 21,5, Kp 5 | X2, X7 | Grundregler der Residual-Policy |
+| Res-a | R plus Residual-Policy, Seeds 1–10 | X7.3 C | Seed mit mittlerem nominalem J der Gruppe, vor dem Labortag festlegen |
+| Res-b | wie Res-a, Seeds 11–20 | X7.3 T2 | zweite, unabhängige Seed-Gruppe |
+| RL-r4 | D16 r4 s7, 3000 Ep. | Labortag 2 | Anker zum Labortag 2, großer Unterschied an/aus (−6,6 mm) |
+| RL-θ | X1.3 θ 0,03 s6 | X1.3 | bester Budget-Agent, Unterschied an/aus −4,7 mm |
+| RL-DR | X2.4 DR-voll s6 | X2.4 | reines RL mit Randomisierung, Vergleich in X7.3 |
+
+Regler und Residual laufen nur mit Emulation (sie brauchen die Basislage). Die Basismasse der Emulation ist 65 kg,
+in Block D 16,25 kg (×0,25) und 130 kg (×2). `ext_kin_model` skaliert die Trägheit mit, wie `mass_f` in X2.3.
+
+**Ablauf Tag 1** (etwa 1,2 min je Lauf mit Anfahren und ENTER, Erfahrung Labortag 2):
+
+| Block | Inhalt | Läufe | Dauer |
+|---|---|---|---|
+| 0 | Vorbereitung: Arbeitsraum, Not-Aus, Laptop, Git sauber, Startpose, ein Lauf `measure_loop_timing` | – | 30 min |
+| A | Anker: RL-r4 Emulation aus, 2 Läufe. Vergleich mit Labortag 2 (18 mm). Weicht es um mehr als 3 mm ab, erst Ursache klären | 2 | 5 min |
+| B0 | Erster Lauf im neuen Modus: R mit Emulation, einmal, Not-Aus in der Hand, physischen Fehler beobachten | 1 | 5 min |
+| **B** | **Kern, Emulation an, 65 kg:** C2, R, Res-a, Res-b, RL-r4, RL-θ, RL-DR je 5 Läufe, in Runden (jede Runde alle sieben einmal, Reihenfolge je Runde gemischt) | 35 | 50–60 min |
+| C | Emulation aus: RL-r4 (3 weitere, mit A zusammen 5) und RL-θ (5) | 8 | 10–15 min |
+| **D** | **Modellfehler über die Emulation:** C2, Res-a, RL-DR bei 16,25 kg und 130 kg, je 3 Läufe, in Runden | 18 | 25–30 min |
+| Abschluss | Logs sichern (zwei Orte), Laborbuch, `campaign_index.csv` prüfen | – | 15 min |
+| **Summe** | | **64** | **etwa 2,5–3 h**, mit Pausen und Wechseln etwa 3,5 h |
+
+Damit bleiben etwa 2,5 h Puffer für Störungen, besonders für den neuen Regler-Modus. Reicht die Zeit, in dieser
+Reihenfolge weiter (jeder Punkt für sich verwertbar):
+- P1: Res-b in Block D (6 Läufe).
+- P2: Masse ×0,5 (32,5 kg) für C2 und Res-a (je 3).
+- P3: RL-θ in Block D (6 Läufe).
+- P4: D16 r0 s0 Emulation an und aus, je 3 Läufe (Gegenprobe zu K1, bricht in beiden Modi ein).
+
+**Rückfallregel:** Läuft der Regler-Modus auf dem Arm nicht sicher (unerwartete Bewegung, Stopp in B0), werden
+B ohne C2, R, Res und dann C und D nur mit den RL-Agenten gefahren. Das entspricht dem alten Plan vom 10.11. und
+liefert die Aussage zur Emulation (Frage 2) trotzdem. Den Regler-Modus dann am optionalen Tag 4 nachholen.
+
+**Auswertung (Regeln vor dem Labortag in RESULTS X3.3 festschreiben):**
+- Je Bedingung Median über die Läufe: RMS virtuell, ori_max virtuell, RMS physisch, letztes Viertel, Stoppgrund.
+- Frage 1: Abweichung Hardware gegen Vorhersage je Bedingung (Labortag 2: +2 bis +3 mm). Reihenfolge nach J
+  (wie X7.1) auf der Hardware gegen die Reihenfolge in der Vorhersage. Fünf Läufe je Bedingung reichen für die
+  Streuung der Hardware, nicht für eine Aussage über Seeds. Die Seed-Statistik bleibt in der Simulation.
+- Frage 2: an minus aus je RL-Agent gegen die Vorhersage (−6,6 und −4,7 mm).
+- Frage 3: J bei 16,25 und 130 kg gegen 65 kg je Steuerung, Vorzeichen des Unterschieds Res gegen C2 gegen die
+  Vorhersage. Klein erwartet (X7.3: −15 % und +6 % in J), deshalb nur als Bestätigung der Richtung lesen.
+- Grenze bleibt: Der Arm ist fest montiert, die Basis ist emuliert und nicht gemessen (AE.2, R3.1).
+
+### X3.3 Vorbereitung Labortag 3 (vor dem Termin, Pflicht)
+
+1. **`deploy_tracking_v26.m`** = v25 plus Option `controller` ('agent' wie bisher, 'reg' für `ext_x2_controller`
+   mit Kp und β, 'res' für `ext_x7_ctrl` mit Residual-Agent). 'reg' und 'res' nur mit `emulateBase`, sonst Abbruch.
+   Befehlskette, Inversion der Kette und Takt wie in `ext_kinsim` bei 20 Hz (X3.1 Stufe 2 lief schon mit Rβ 46).
+   Schutzschicht unverändert. Zusätzlich loggen: Vorschlag des Reglers, Korrektur der Policy, Rechenzeit.
+2. **Trockenläufe** (`dryRunKinematic`) für alle 64 Läufe von Tag 1 und die Punkte P1 bis P4: Abgleich gegen
+   `ext_kinsim` bei 20 Hz, Ziel ≤ 0,5 mm RMS und ≤ 0,5 mrad wie X3.1 Stufe 2. Rechenzeit Regler je Schritt messen,
+   Ziel < 10 ms (frei sind etwa 20 ms der 50-ms-Schleife).
+3. **Vorhersage erweitern** (`ext_x3_2_predict`): C2, R, Res-a, Res-b, dazu Block D und P2. Je Bedingung auch der
+   physische Fehler (größter Wert gegen `oodThresholdPhys` 0,4 m, bei 16,25 kg besonders prüfen).
+4. **Residual-Seeds festlegen** nach der Regel oben, bevor eine Vorhersage angesehen wird.
+5. **Auswerteregeln** aus X3.2 in RESULTS (Abschnitt X3.3) eintragen, mit Datum, vor dem Labortag.
+6. `campaign_plan.m` um die Bedingungen ergänzen, `hardware/campaign/ANLEITUNG_LABOR_TAG3.md` mit Zeitplan und
+   Aufrufen schreiben, alles committen.
+
+### X3.4 Labortag 4 (optional, kein Muss für das Paper)
+
+Nur wenn Tag 3 gut lief und Labor und Zeit es erlauben. Teile unabhängig wählbar, nach Nutzen für das Paper:
+- **O1 3D-Bahn (X5) auf der Hardware:** Nullraum-Regler und bester r4-Agent aus X5.3, je 5 Läufe mit Emulation.
+  Höchster Nutzen (zeigt Redundanz und 3D auf echter Aktorik). Vorbereitung 2–3 Tage: Deploy für 7 Gelenke und die
+  gekippte Bahn, neue Freigabe des Arbeitsraums, Vorhersage.
+- **O2 Mehr Residual-Seeds:** je Gruppe zwei weitere Seeds nominal und bei 16,25 kg (etwa 20 Läufe). Zeigt die
+  Streuung über Seeds auch auf der Hardware.
+- **O3 Weitere emulierte Szenarien:** Trägheit ×2, Montagefehler (`mount_offset` im Emulationsmodell), Drift
+  (braucht eine Änderung in `virtual_base_step`). Für C2 und Res-a, je 3 Läufe.
+- **O4 Set-Point:** nur wenn E7 Set-Point im Paper lässt. Braucht X6.5 (`deploy_setpoint_v25`). Regler R0 und
+  `fixed1` von den alten Starts, mit Emulation.
+- **O5 Budget:** Median-Agent θ 0,05 aus X1.3, Emulation an und aus.
 
 ---
 
@@ -693,6 +782,10 @@ Damit ist sichtbar, wie viel die neue Kette allein bringt.
 
 ### X6.6 Labortag
 
+**Stand 17.11.2026:** Nicht mehr Pflicht. Set-Point-RL ist gescheitert (X6.3, X7.4 bis X7.6), nach der Empfehlung
+für das Paper kommt Set-Point nur noch kurz vor. Hardware-Teil höchstens als O4 am optionalen Labortag 4 (X3.4).
+Der Rest dieses Abschnitts ist der alte Plan.
+
 Reihenfolge nach Wunsch des Nutzers (E16): Set-Point zuerst. Bei wenig Zeit nur Set-Point.
 - Bester Seed aus X6.4. Etwa 20 freigegebene Paare × 2 Durchgänge mit Emulation, 5 Paare ohne Emulation als
   Gegenprobe (der Agent sieht eine ruhende Basis), dazu die alten neun Ziele von drei Starts für den Vergleich
@@ -772,9 +865,83 @@ entscheidet.
 
 ---
 
+## Empfehlung für Paper und Einreichung (17.11.2026)
+
+Vom Nutzer übernommen als Richtung für Phase P. Mit dem Betreuer noch abzustimmen (E7, E19).
+
+**Ein Paper, kein Split.** Geprüfte Aufteilungen und warum nicht:
+- Zielkonflikt allein und Regler/Residual getrennt: Das erste wäre wieder RL gegen RL ohne Vergleichsbasis (AE.1,
+  R2.1), das zweite ohne Motivation.
+- Simulation und Hardware mit Emulation getrennt: Das Hardware-Paper allein wäre dünn. Kinematische Emulation ist im
+  Prinzip bekannt (HIL-Anlagen wie EPOS), ohne neue Hardware-Ergebnisse wäre es Salami-Slicing.
+- Set-Point allein: negatives Ergebnis, trägt kein eigenes Paper.
+
+**Strategie:** Der Kern ist die Simulationsstudie mit Modellregler. Die Hardware prüft, ob die Reihenfolge auf
+echter Aktorik und echtem Timing hält (X3.2). Damit verliert AE.2 (feste Basis) das meiste Gewicht. Die
+konkurrierenden RL-Arbeiten in den Ziel-Journals sind fast alle reine Simulation.
+
+**Arbeitstitel:** „Where Does Reinforcement Learning Help a Free-Floating Space Manipulator? Constraints, a
+Model-Based Baseline, and Residual Learning“
+
+**Forschungsfrage:** Wie lässt sich der Zielkonflikt zwischen Bahngenauigkeit und Basisdrehung bei gelernten
+Policies steuern, und wo steht RL dabei gegenüber einem modellbasierten Regler, auch unter Modellfehlern?
+
+**Beiträge:**
+1. Systematische Bewertung des Zielkonflikts mit modellbasierter Vergleichsbasis: Gewicht gegen Budget gegen Filter
+   (K2, K9), Abstand zur Front und Ursache (K5, K10), Robustheit in 26 Szenarien (K6, K8), 3D mit Redundanz (K7,
+   K11). 10 Seeds, festes Protokoll.
+2. Residual RL als konstruktive Antwort (K12), mit vorab festgelegter Bestätigung. Set-Point als kurzer negativer
+   Befund.
+Die Hardware ist kein eigener Beitrag, sondern die Prüfung der Übertragbarkeit auf Armebene.
+
+**Gliederung:** wie RESULTS „Gliederung (für Phase P)“, mit drei Änderungen:
+- III: Algorithmenvergleich ein Absatz mit Verweis auf das Access-Paper, dazu ein Satz zum Unterschied (dort TRPO
+  stabil und Standard-PPO 3/10, hier lernt PPO; andere Aktorik, Moment gegen Geschwindigkeit, Takt, Lernrate).
+- VII: Set-Point nur 2 bis 3 Sätze als negativer Befund. Alter Set-Point-Hardware-Teil entfällt.
+- VIII: Hardware kurz und auf den Kern bezogen (Tabelle `scope`, K4, Emulation mit Methode, Validierung und
+  Labortag 3). Schnittstellendiagnose (Loop-Rate, Deploy-Skript) nur ein Absatz mit der Checkliste,
+  Versionstabelle in den Anhang oder streichen.
+- Streichen: Bayes-Suche, CDR, Return-Zerlegung, alte Abbildungen nach X4.4. K1 nur als Motivation (2 bis 3 Sätze).
+
+**Vor dem Einreichen offen (nach Wirkung):**
+1. Labortag 3 mit Regler und Residual (X3.2, X3.3).
+2. Related Work: Volltexte prüfen und abgrenzen. Hu et al. 2026 (HIT, arXiv 2605.25362, zwei PPO-Agenten für EE
+   und Basislage mit „prior-policy guidance“ und Expertenumschaltung, prüfen ob der Experte ein Modellregler ist),
+   Yang et al. 2025 (HIT, TQC mit Unterdrückung der Basisdrift), Huang et al. (RL im Nullraum mit
+   Basisstörung), Übersicht arXiv 2609.16880 (Sept. 2026), Residual RL: Silver et al. 2018 (arXiv 1812.06298),
+   Johannink et al. 2019, Li et al. (IEEE/ASME TMECH 2025, DR-RL auf 7-DOF). Recherche 17.11.: keine Arbeit mit
+   RL gegen GJM/RNS-Regler und Robustheitsvergleich gefunden, mit Volltexten bestätigen.
+3. Fairness des Reglervergleichs offensiv begründen: Gelenke bewegungsgesteuert, Basisbewegung kinematisch, Modell
+   fast exakt. Dagegen X2.3 (Nominalmodell unter Fehlern) und ein Absatz, wo RL einen strukturellen Vorteil haben
+   könnte (Momentenebene, unbekannte Last, Kontakt).
+4. Optional: SAC auf r4, 5 Seeds, damit K10 nicht nur für PPO gilt. Sonst Aussage auf „PPO in diesem Aufbau“
+   einschränken.
+5. E7 und E19 mit dem Betreuer.
+
+**Wo einreichen** (Recherche 17.11.2026, Angaben vor dem Einreichen prüfen):
+
+| Rang | Venue | Bemerkung |
+|---|---|---|
+| 1 | Aerospace Science and Technology (Elsevier) | Konkurrenzarbeiten erscheinen dort ([14], [17] im Access-Paper, HIT-Gruppe). Kein enges Seitenlimit, Gutachter schätzen Modellregler und Robustheit. Impact Factor etwa 5 |
+| 2 | IEEE Trans. Aerospace and Electronic Systems | mehr Prestige ([15] dort), Begutachtung langsamer und strenger |
+| 3 | Acta Astronautica | [13] dort, breit, sichere Rückfalloption |
+| bedingt | RA-L (jederzeit, IROS-2027-Option, Frist 1. März 2027) | 6 Seiten plus 2 für je 175 USD. Würde starke Kürzung erzwingen, passt nicht zum Umfang |
+| entfällt | i-SAIRAS/iSpaRo 2026 | fand 3. bis 6. Nov. 2026 statt, iSpaRo ohnehin ausgeschlossen |
+| unsicher | ESA ASTRA 2027 | bisher zweijährig, kein Call gefunden, höchstens als Vortrag |
+
+Für Elsevier beim Einreichen auf `elsarticle` wechseln. Bis dahin bleibt `ieeeconf` (CLAUDE.md im Paper-Repo).
+
+**Später, nur mit neuem Inhalt ein zweites Paper:**
+- Residual RL auf Momentenebene oder mit unbekannter Last, wo RL gegen den Modellregler einen strukturellen Vorteil
+  haben könnte (passt zur Masterarbeit).
+- Bodentest von Free-Floating-Policies auf kommerziellen Armen mit mehreren Labortagen (Tracking, Set-Point, 3D),
+  eventuell gegen eine Air-Bearing-Anlage. Robotik-Venue (RA-L, ICRA 2028). Dort hätte auch die
+  Schnittstellendiagnose ihren Platz.
+
 ## Phase P: Paper
 
-Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
+Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist. Richtung nach „Empfehlung für Paper und
+Einreichung“ oben.
 1. Gliederung neu (Vorschlag nach den Ergebnissen in `RESULTS.md`, Abschnitt „Gliederung“).
 2. Zahlen aus `RESULTS.md` übertragen, jede in `Reviews/Submission_1/paper_numbers.md` (oder Submission 2) mit
    Quelle eintragen.
@@ -793,7 +960,9 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
   Agenten sind vorsichtiger als nötig (RESULTS, X1.2b).
 - **E3** ✅ 10.11.2026: Gewichte 0, 2, 4, 8, 16 (mit 4). 30 Läufe.
 - **E4** ✅ 14.11.2026 (Nutzer bestätigt): X5 Go nach X5.2b (3 von 4 folgen), Hauptlauf X5.3 erledigt.
-- **E5** Agenten für den Labortag X3.2.
+- **E5** Agenten für den Labortag X3.2. Vorschlag 17.11.2026 (Nutzer: alles an einem Tag, höchstens 6 h): Tabelle
+  „Bedingungen“ in X3.2, also C2, R, Res-a, Res-b, D16 r4 s7, X1.3 θ 0,03 s6, X2.4 DR-voll s6. Res-Seeds nach
+  fester Regel in X3.3.
 - **E6** Ratenpaar auf 10 Seeds ja oder nein.
 - **E8** ✅ 10.11.2026 (Befund A72): Beobachtungsgrenzen für neue Trainings (X1, X2.4, X4.1) belassen, damit
   alle Agenten vergleichbar bleiben. Im Paper als Eigenschaft des Aufbaus nennen. Für X5 durch E9 ersetzt.
@@ -806,6 +975,9 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
 - **E7** Mit dem Betreuer: neue Geschichte, Zielkonferenz, was nach X4.4 aus dem Paper fliegt, ob die
   Schnittstellendiagnose ein Abschnitt bleibt oder ein eigenes kurzes Paper wird. Neu: ob X6 (Set-Point) in
   dieses Paper kommt oder in ein eigenes.
+  Vorschlag 17.11.2026 (vom Nutzer übernommen, Betreuer offen): ein Paper, Ziel Aerospace Science and Technology,
+  Schnittstellendiagnose nur ein Absatz, Set-Point nur kurz als negativer Befund, kein eigenes Set-Point-Paper.
+  Einzelheiten im Abschnitt „Empfehlung für Paper und Einreichung“.
 - **E11** ✅ 11.11.2026 (Vorschlag übernommen): Zielwerte für X6 5 mm und 5 mm/s, 1 s gehalten, innerhalb von
   15 s, ≥ 95 % in Simulation, ≥ 90 % auf der Hardware, Bezug Greiferspitze. Orientierung erst in Stufe 2.
 - **E12** ✅ 11.11.2026 (Vorschlag übernommen): X6 im kinematischen Simulator trainieren, Gegenprobe in Simscape.
@@ -817,6 +989,8 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
   so angreifbar wie bisher. Der Regler belegt zugleich, welche Ziele erreichbar sind. Der Aufwand ist klein, weil
   `ext_x2_controller` schon 7 Gelenke und 3D kann (X5.1).
 - **E16** ✅ 11.11.2026 (Nutzer): Auf dem nächsten Labortag Set-Point vor Tracking. Bei wenig Zeit nur Set-Point.
+  Ersetzt 17.11.2026 (Nutzer): Labortag 3 nur Tracking mit Regler, Residual und RL (X3.2). Set-Point höchstens
+  am optionalen Labortag 4 (X3.4, O4).
 - **E17** ✅ 11.11.2026 (Vorschlag übernommen): Filterzeitkonstante für X4.6 V3 0,15 s (Koeffizient 0,85 bei
   40 Hz) statt 0,49 s.
 - **E18** 13.11.2026 (Nutzer: Kette für X6 neu entwerfen): Entwurf in „Neue Befehlskette für X6“. Offen sind
@@ -832,3 +1006,4 @@ Erst wenn X1, X2 und X4.1 fertig sind und E7 entschieden ist.
 - **E19** (mit dem Betreuer): X7 Residual RL in dieses Paper? Vorschlag: ja, als konstruktiver Teil nach dem
   Vergleich mit dem Regler. Es verschiebt die Geschichte von „Bewertung“ zu „Bewertung mit Ausweg“. Offen
   außerdem: Grundregler (Vorschlag Rβ 21,5), ε (0,2 rad/s) und der Rate Limiter (nach V4).
+  17.11.2026: Empfehlung bleibt ja, als zweiter Beitrag. Residual und Regler gehen auf Labortag 3 (X3.2).
