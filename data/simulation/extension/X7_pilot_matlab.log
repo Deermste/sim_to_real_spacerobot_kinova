@@ -1,0 +1,28 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+X7 res, Seed 0: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.10, DR none, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return 2496.0, nominal RMS 6.68 mm, ori_max 16.18 mrad, |Delta| 0.356 (1.4 min)
+  Block  2:  500 Episoden, Return 2641.7, nominal RMS 7.72 mm, ori_max 18.39 mrad, |Delta| 0.797 (2.5 min)
+  Block  3:  750 Episoden, Return 2658.9, nominal RMS 8.67 mm, ori_max 16.77 mrad, |Delta| 0.934 (3.6 min)
+  Block  4: 1000 Episoden, Return 2649.0, nominal RMS 9.37 mm, ori_max 19.85 mrad, |Delta| 1.021 (4.7 min)
+  Block  5: 1250 Episoden, Return 2647.6, nominal RMS 9.41 mm, ori_max 23.97 mrad, |Delta| 1.049 (5.8 min)
+  Block  6: 1500 Episoden, Return 2633.9, nominal RMS 10.01 mm, ori_max 20.42 mrad, |Delta| 1.067 (6.9 min)
+  Block  7: 1750 Episoden, Return 2636.5, nominal RMS 10.25 mm, ori_max 22.40 mrad, |Delta| 1.089 (8.0 min)
+  Block  8: 2000 Episoden, Return 2645.0, nominal RMS 9.71 mm, ori_max 18.95 mrad, |Delta| 1.061 (9.1 min)
+  Block  9: 2250 Episoden, Return 2656.8, nominal RMS 8.27 mm, ori_max 16.50 mrad, |Delta| 1.038 (10.2 min)
+  Block 10: 2500 Episoden, Return 2655.7, nominal RMS 6.31 mm, ori_max 19.33 mrad, |Delta| 0.914 (11.3 min)
+  Block 11: 2750 Episoden, Return 2657.5, nominal RMS 6.36 mm, ori_max 15.08 mrad, |Delta| 0.876 (12.4 min)
+  Block 12: 3000 Episoden, Return 2659.6, nominal RMS 5.93 mm, ori_max 16.74 mrad, |Delta| 0.770 (13.6 min)
+X7 res Seed 0 fertig nach 13.6 min: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\SavedAgents\MotionProfile\X7\X7_res_seed0_ep3000.mat
+=== res fertig (13.9 min) ===
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+X7 resdr, Seed 0: eps_v 0.020 m/s, eps_w 0.010 rad/s, w_res 0.10, DR full, 3000 Episoden, 8 Worker
+  Block  1:  250 Episoden, Return 2178.1, nominal RMS 11.96 mm, ori_max 10.83 mrad, |Delta| 0.312 (1.5 min)
+  Block  2:  500 Episoden, Return 2284.1, nominal RMS 16.39 mm, ori_max 17.95 mrad, |Delta| 0.607 (2.8 min)
+  Block  3:  750 Episoden, Return 2305.8, nominal RMS 18.21 mm, ori_max 19.08 mrad, |Delta| 0.876 (4.3 min)
+  Block  4: 1000 Episoden, Return 2315.5, nominal RMS 17.85 mm, ori_max 21.98 mrad, |Delta| 0.887 (6.9 min)
+  Block  5: 1250 Episoden, Return 2163.8, nominal RMS 16.95 mm, ori_max 16.72 mrad, |Delta| 0.980 (9.3 min)

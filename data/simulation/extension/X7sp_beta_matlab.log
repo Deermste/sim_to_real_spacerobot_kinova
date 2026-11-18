@@ -1,0 +1,17 @@
+SpaceKinova eingerichtet: C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab
+500 Paare aus C:\Users\Deermste\Documents\FraUas\BachelorThesis\Matlab\data\simulation\extension\X6_pairs_20261113_195451.mat
+a_max [1 1 1 1 10 10 10] rad/s^2, Varianten R0, Rb1, Rb4.6, Rb21, Rb100
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Preserving jobs with IDs: 2 because they contain crash dump files.
+You can use 'delete(myCluster.Jobs)' to remove all jobs created with profile Processes. To create 'myCluster' use 'myCluster = parcluster('Processes')'.
+Connected to parallel pool with 8 workers.
+2500 Laeufe in 5.6 min
+     set       ctrl       n     n_success    lag_med     lag_q90    err_end_med    err_end_q95    ori_max_med    n_stop    brake_med
+    ______    _______    ___    _________    ________    _______    ___________    ___________    ___________    ______    _________
+
+    "eval"    "R0"       500       497       -0.26827    0.32396    2.5053e-15     4.6192e-10      0.088393        0           0    
+    "eval"    "Rb1"      500       498       -0.23524       0.35    1.9564e-15     1.7296e-06      0.051729        0           0    
+    "eval"    "Rb4.6"    500       498       -0.06207    0.57094    1.8957e-15     6.8415e-06      0.047464        0           0    
+    "eval"    "Rb21"     500       498        0.48625     1.5119    1.3063e-13     3.8205e-05      0.042361        0           0    
+    "eval"    "Rb100"    500       369         1.4353     6.1587    0.00010258       0.021218      0.035798        0           0    
+
